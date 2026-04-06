@@ -278,6 +278,8 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     // HR: Employee Salary Setup
     Route::get('/hr/payroll/salaries',                  [PayrollController::class, 'salaries'])->name('hr.payroll.salaries');
     Route::post('/hr/payroll/salaries',                 [PayrollController::class, 'storeSalary'])->name('hr.payroll.salaries.store');
+    Route::put('/hr/payroll/salaries/{salary}',         [PayrollController::class, 'updateSalary'])->name('hr.payroll.salaries.update');
+    Route::delete('/hr/payroll/salaries/{salary}',      [PayrollController::class, 'deleteSalary'])->name('hr.payroll.salaries.destroy');
     Route::get('/hr/payroll/adjustments/{employee}',    [PayrollController::class, 'adjustments'])->name('hr.payroll.adjustments');
 
     // HR: Payroll Configuration (must be before {payRun} parameter route)

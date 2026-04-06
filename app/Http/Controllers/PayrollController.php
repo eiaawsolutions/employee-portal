@@ -123,6 +123,7 @@ class PayrollController extends Controller
                 'bank_account_number' => $e->bank_account_number ?? '',
                 'epf_category' => $e->epf_category ?? '1',
                 'is_resident' => $e->is_resident ? '1' : '0',
+                'last_salary_date' => $e->last_salary_date ? $e->last_salary_date->format('Y-m-d') : '',
             ],
         ]);
 
@@ -140,6 +141,7 @@ class PayrollController extends Controller
             'bank_account_number' => 'nullable|string|max:50',
             'epf_category' => 'required|in:1,2,3',
             'is_resident' => 'required|boolean',
+            'last_salary_date' => 'nullable|date',
             'effective_from' => 'required|date',
             'items' => 'nullable|array',
             'items.*.payroll_item_id' => 'required|exists:payroll_items,id',
@@ -192,9 +194,72 @@ class PayrollController extends Controller
         ], fn ($v) => $v !== null);
         $syncData['epf_category'] = $data['epf_category'];
         $syncData['is_resident'] = $data['is_resident'];
+        if (!empty($data['last_salary_date'])) {
+            $syncData['last_salary_date'] = $data['last_salary_date'];
+        }
         Employee::where('id', $data['employee_id'])->update($syncData);
 
         return back()->with('success', 'Salary structure saved.');
+    }
+
+    public function updateSalary(Request $request, EmployeeSalary $salary)
+    {
+        $this->authorizePayrollManage();
+        $data = $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'basic_salary' => 'required|numeric|min:0',
+            'payment_method' => 'required|in:bank_transfer,cheque,cash',
+            'bank_name' => 'nullable|string|max:100',
+            'bank_account_number' => 'nullable|string|max:50',
+            'epf_category' => 'required|in:1,2,3',
+            'is_resident' => 'required|boolean',
+            'last_salary_date' => 'nullable|date',
+            'effective_from' => 'required|date',
+        ]);
+
+        // Log adjustment if salary amount changed
+        if ((float) $salary->basic_salary !== (float) $data['basic_salary']) {
+            SalaryAdjustment::create([
+                'employee_id' => $data['employee_id'],
+                'adjusted_by' => Auth::id(),
+                'type' => 'adjustment',
+                'previous_salary' => $salary->basic_salary,
+                'new_salary' => $data['basic_salary'],
+                'effective_date' => $data['effective_from'],
+                'reason' => 'Salary record updated',
+            ]);
+        }
+
+        $salary->update([
+            'basic_salary' => $data['basic_salary'],
+            'payment_method' => $data['payment_method'],
+            'bank_name' => $data['bank_name'] ?? null,
+            'bank_account_number' => $data['bank_account_number'] ?? null,
+            'effective_from' => $data['effective_from'],
+        ]);
+
+        // Sync back to employee record
+        $syncData = array_filter([
+            'bank_name' => $data['bank_name'] ?? null,
+            'bank_account_number' => $data['bank_account_number'] ?? null,
+        ], fn ($v) => $v !== null);
+        $syncData['epf_category'] = $data['epf_category'];
+        $syncData['is_resident'] = $data['is_resident'];
+        if (!empty($data['last_salary_date'])) {
+            $syncData['last_salary_date'] = $data['last_salary_date'];
+        }
+        Employee::where('id', $data['employee_id'])->update($syncData);
+
+        return back()->with('success', 'Salary record updated.');
+    }
+
+    public function deleteSalary(EmployeeSalary $salary)
+    {
+        $this->authorizePayrollManage();
+        $salary->items()->delete();
+        $salary->delete();
+
+        return back()->with('success', 'Salary record deleted.');
     }
 
     // ── HR: Pay Runs ───────────────────────────────────────────────────
