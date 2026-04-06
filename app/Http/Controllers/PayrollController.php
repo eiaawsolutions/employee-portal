@@ -15,7 +15,6 @@ use App\Models\PayrollConfig;
 use App\Models\SalaryAdjustment;
 use App\Models\Company;
 use App\Models\EaForm;
-use App\Models\Company;
 use App\Models\PayrollRegulatoryAlert;
 use App\Mail\EaFormReadyMail;
 use App\Mail\PayslipReadyMail;
