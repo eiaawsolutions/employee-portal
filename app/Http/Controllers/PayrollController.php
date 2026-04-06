@@ -194,9 +194,7 @@ class PayrollController extends Controller
         ], fn ($v) => $v !== null);
         $syncData['epf_category'] = $data['epf_category'];
         $syncData['is_resident'] = $data['is_resident'];
-        if (!empty($data['last_salary_date'])) {
-            $syncData['last_salary_date'] = $data['last_salary_date'];
-        }
+        $syncData['last_salary_date'] = $data['last_salary_date'] ?? null;
         Employee::where('id', $data['employee_id'])->update($syncData);
 
         return back()->with('success', 'Salary structure saved.');
@@ -245,9 +243,7 @@ class PayrollController extends Controller
         ], fn ($v) => $v !== null);
         $syncData['epf_category'] = $data['epf_category'];
         $syncData['is_resident'] = $data['is_resident'];
-        if (!empty($data['last_salary_date'])) {
-            $syncData['last_salary_date'] = $data['last_salary_date'];
-        }
+        $syncData['last_salary_date'] = $data['last_salary_date'] ?? null;
         Employee::where('id', $data['employee_id'])->update($syncData);
 
         return back()->with('success', 'Salary record updated.');

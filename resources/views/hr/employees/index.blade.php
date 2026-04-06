@@ -241,6 +241,7 @@
                         <th>Company</th>
                         <th>Department</th>
                         <th>Start Date</th>
+                        <th>Last Salary Date</th>
                         <th>Employment Type</th>
                         <th>Company Email</th>
                         <th>Actions</th>
@@ -256,6 +257,7 @@
                         <td>{{ $emp->company ?? '—' }}</td>
                         <td>{{ $emp->department ?? '—' }}</td>
                         <td>{{ $emp->start_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $emp->last_salary_date?->format('d M Y') ?? '—' }}</td>
                         <td>{{ $emp->employment_type ? ucfirst($emp->employment_type) : '—' }}</td>
                         <td>{{ $emp->company_email ?? '—' }}</td>
                         <td>
