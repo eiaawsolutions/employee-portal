@@ -26,31 +26,41 @@ class ExpenseClaimController extends Controller
 
     /**
      * My Claims — list all claims for the logged-in employee.
+     * Supports ?month=N&year=YYYY to view any month within current year.
      */
-    public function myClaims()
+    public function myClaims(Request $request)
     {
         $employee = Auth::user()->employee;
         if (!$employee) {
             return back()->with('error', 'No employee profile found.');
         }
 
+        $now = Carbon::now();
+        $year = (int) $request->input('year', $now->year);
+        $month = (int) $request->input('month', $now->month);
+
+        // Only allow current year, valid month range, no future months
+        if ($year !== $now->year || $month < 1 || $month > 12 || $month > $now->month) {
+            $year = $now->year;
+            $month = $now->month;
+        }
+
         $claims = $employee->expenseClaims()->with('items.category')->get();
         $policy = ExpenseClaimPolicy::forCompany($employee->company);
 
-        // Current month claim (auto-create draft if doesn't exist)
-        $now = Carbon::now();
-        $currentClaim = $this->getOrCreateDraft($employee, $now->year, $now->month);
+        // Selected month claim (auto-create draft if doesn't exist)
+        $currentClaim = $this->getOrCreateDraft($employee, $year, $month);
 
         $categories = ExpenseCategory::active()
             ->where(function ($q) use ($employee) {
                 $q->where('company', $employee->company)->orWhereNull('company');
             })->get();
 
-        return view('user.claims.index', compact('employee', 'claims', 'currentClaim', 'categories', 'policy'));
+        return view('user.claims.index', compact('employee', 'claims', 'currentClaim', 'categories', 'policy', 'year', 'month'));
     }
 
     /**
-     * Add an item to the current month's draft claim.
+     * Add an item to a draft claim (any month within current year).
      */
     public function addItem(Request $request)
     {
@@ -59,8 +69,10 @@ class ExpenseClaimController extends Controller
             return back()->with('error', 'No employee profile found.');
         }
 
+        $startOfYear = Carbon::now()->startOfYear()->toDateString();
+
         $validated = $request->validate([
-            'expense_date' => 'required|date|before_or_equal:today',
+            'expense_date' => "required|date|after_or_equal:{$startOfYear}|before_or_equal:today",
             'description' => 'required|string|max:500',
             'project_client' => 'nullable|string|max:255',
             'expense_category_id' => 'required|exists:expense_categories,id',
@@ -77,9 +89,41 @@ class ExpenseClaimController extends Controller
             return back()->with('error', 'This claim has already been submitted and cannot be edited.');
         }
 
+        // ── Duplicate item detection (same date + description + amount across active claims) ──
+        $cleanDescription = strip_tags($validated['description']);
+        $duplicateItem = ExpenseClaimItem::whereHas('claim', function ($q) use ($employee) {
+            $q->where('employee_id', $employee->id);
+        })
+            ->where('expense_date', $validated['expense_date'])
+            ->where('description', $cleanDescription)
+            ->where('amount', $validated['amount'])
+            ->first();
+
+        if ($duplicateItem) {
+            return back()->withErrors([
+                'description' => 'A similar expense already exists (same date, description & amount) in claim ' . $duplicateItem->claim->claim_number . '.',
+            ])->withInput();
+        }
+
         // Handle receipt upload
         $receiptPath = null;
+        $receiptHash = null;
         if ($request->hasFile('receipt')) {
+            // ── Receipt duplicate detection via SHA-256 hash ──
+            $receiptHash = hash_file('sha256', $request->file('receipt')->getRealPath());
+
+            $existingReceipt = ExpenseClaimItem::whereHas('claim', function ($q) use ($employee) {
+                $q->where('employee_id', $employee->id);
+            })
+                ->where('receipt_hash', $receiptHash)
+                ->first();
+
+            if ($existingReceipt) {
+                return back()->withErrors([
+                    'receipt' => 'This receipt has already been uploaded in claim ' . $existingReceipt->claim->claim_number . '.',
+                ])->withInput();
+            }
+
             $receiptPath = $request->file('receipt')->store(
                 'claim_receipts/' . $employee->id . '/' . $expenseDate->format('Y-m'),
                 'local'
@@ -89,6 +133,9 @@ class ExpenseClaimController extends Controller
         // Validate total integrity — server-side check that total = amount + GST
         $expectedTotal = round((float) $validated['amount'] + (float) ($validated['gst_amount'] ?? 0), 2);
         if (abs($expectedTotal - (float) $validated['total_with_gst']) > 0.01) {
+            if ($receiptPath) {
+                Storage::disk('local')->delete($receiptPath);
+            }
             return back()->withErrors(['total_with_gst' => 'Total does not match amount + GST.'])->withInput();
         }
 
@@ -99,29 +146,29 @@ class ExpenseClaimController extends Controller
                 ->where('expense_category_id', $category->id)
                 ->sum('amount');
             if (($existingCategoryTotal + (float) $validated['amount']) > $category->monthly_limit) {
+                if ($receiptPath) {
+                    Storage::disk('local')->delete($receiptPath);
+                }
                 return back()->withErrors(['amount' => 'Exceeds monthly category limit of RM ' . number_format($category->monthly_limit, 2) . ' for ' . $category->name . '.'])->withInput();
             }
-        }
-
-        // Enforce submission deadline
-        if ($claim->submission_deadline && Carbon::now()->gt($claim->submission_deadline)) {
-            return back()->with('error', 'Submission deadline has passed for this claim period.');
         }
 
         $claim->items()->create([
             'expense_category_id' => $validated['expense_category_id'],
             'expense_date' => $validated['expense_date'],
-            'description' => strip_tags($validated['description']),
+            'description' => $cleanDescription,
             'project_client' => $validated['project_client'] ? strip_tags($validated['project_client']) : null,
             'amount' => $validated['amount'],
             'gst_amount' => $validated['gst_amount'] ?? 0,
             'total_with_gst' => $expectedTotal,
             'receipt_path' => $receiptPath,
+            'receipt_hash' => $receiptHash,
         ]);
 
         $claim->recalculateTotals();
 
-        return back()->with('success', 'Expense item added successfully.');
+        return redirect()->route('user.claims.index', ['month' => $expenseDate->month, 'year' => $expenseDate->year])
+            ->with('success', 'Expense item added to ' . $expenseDate->format('F Y') . ' claim.');
     }
 
     /**

@@ -10,7 +10,7 @@ class ExpenseClaimItem extends Model
     protected $fillable = [
         'expense_claim_id', 'expense_category_id', 'expense_date',
         'description', 'project_client', 'amount', 'gst_amount',
-        'total_with_gst', 'receipt_path', 'is_locked', 'remarks',
+        'total_with_gst', 'receipt_path', 'receipt_hash', 'is_locked', 'remarks',
     ];
 
     protected $casts = [

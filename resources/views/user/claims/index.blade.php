@@ -50,7 +50,27 @@
         </div>
     </div>
 
-    {{-- ── Current Month Claim ── --}}
+    {{-- ── Month Selector ── --}}
+    @php
+        $now = \Carbon\Carbon::now();
+        $selectedYear = $year ?? $now->year;
+        $selectedMonth = $month ?? $now->month;
+    @endphp
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body py-2">
+            <div class="d-flex flex-wrap gap-1 justify-content-center align-items-center">
+                <span class="fw-semibold text-muted me-2 small">{{ $selectedYear }}</span>
+                @for($m = 1; $m <= $now->month; $m++)
+                <a href="{{ route('user.claims.index', ['month' => $m, 'year' => $selectedYear]) }}"
+                   class="btn btn-sm {{ $m === $selectedMonth ? 'btn-primary' : 'btn-outline-secondary' }}">
+                    {{ \Carbon\Carbon::create($selectedYear, $m)->format('M') }}
+                </a>
+                @endfor
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Selected Month Claim ── --}}
     @php
         $currentClaim->loadMissing('items.category');
         $monthLabel = \Carbon\Carbon::create($currentClaim->year, $currentClaim->month)->format('F Y');
@@ -101,7 +121,7 @@
                     <div class="row g-3">
                         <div class="col-sm-6 col-md-3">
                             <label class="form-label fw-semibold">Date of Expense <span class="text-danger">*</span></label>
-                            <input type="date" name="expense_date" class="form-control" value="{{ old('expense_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required>
+                            <input type="date" name="expense_date" class="form-control" value="{{ old('expense_date', date('Y-m-d')) }}" min="{{ date('Y') }}-01-01" max="{{ date('Y-m-d') }}" required>
                         </div>
                         <div class="col-sm-6 col-md-5">
                             <label class="form-label fw-semibold">Expense Description <span class="text-danger">*</span></label>
