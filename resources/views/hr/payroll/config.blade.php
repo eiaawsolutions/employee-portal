@@ -3,6 +3,7 @@
 @section('page-title', 'Payroll Configuration')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <form method="POST" action="{{ route('hr.payroll.config.update') }}">
     @csrf
     @method('PUT')

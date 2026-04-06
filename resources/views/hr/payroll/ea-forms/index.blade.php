@@ -3,6 +3,7 @@
 @section('page-title', 'EA Forms — Borang EA (CP.8D)')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 
 {{-- Action Bar --}}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">

@@ -3,6 +3,7 @@
 @section('page-title', 'Payslip Detail')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-receipt-cutoff me-2"></i>{{ $payslip->payslip_number }}</h5>

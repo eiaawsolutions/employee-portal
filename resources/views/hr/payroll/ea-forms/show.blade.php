@@ -3,6 +3,7 @@
 @section('page-title', 'Borang EA (CP.8D) — ' . $eaForm->year)
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-1"></i>{{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>

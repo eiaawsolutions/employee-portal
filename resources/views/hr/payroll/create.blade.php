@@ -3,6 +3,7 @@
 @section('page-title', 'Create Pay Run')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <form method="POST" action="{{ route('hr.payroll.pay-runs.store') }}">
     @csrf
     <div class="card mb-4">

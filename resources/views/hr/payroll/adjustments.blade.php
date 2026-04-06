@@ -3,6 +3,7 @@
 @section('page-title', 'Salary Adjustment History')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <div class="card">
     <div class="card-header">
         <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>{{ $employee->full_name }} — Salary History</h5>

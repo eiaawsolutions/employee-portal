@@ -3,6 +3,7 @@
 @section('page-title', 'Pay Runs')
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Pay Runs</h5>

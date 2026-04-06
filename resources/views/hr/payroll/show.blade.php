@@ -3,6 +3,7 @@
 @section('page-title', $payRun->title)
 
 @section('content')
+@include('hr.payroll.partials.nav-tabs')
 <!-- Summary Cards -->
 <div class="row mb-4">
     <div class="col-md-3">
