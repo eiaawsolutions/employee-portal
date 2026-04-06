@@ -58,12 +58,12 @@
     @endphp
 
     <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-white border-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div>
                 <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>{{ $monthLabel }}</h5>
                 <small class="text-muted">{{ $currentClaim->claim_number }} &mdash; <span class="badge bg-{{ $currentClaim->statusBadge()['class'] }}">{{ $currentClaim->statusBadge()['label'] }}</span></small>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-shrink-0">
                 @if($currentClaim->isSubmittable())
                 <form action="{{ route('user.claims.submit', $currentClaim) }}" method="POST" class="d-inline" onsubmit="return confirm('Submit this claim for manager approval? Items will be locked after submission.')">
                     @csrf
@@ -99,19 +99,19 @@
                 <form action="{{ route('user.claims.add-item') }}" method="POST" enctype="multipart/form-data" id="addItemForm">
                     @csrf
                     <div class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-sm-6 col-md-3">
                             <label class="form-label fw-semibold">Date of Expense <span class="text-danger">*</span></label>
                             <input type="date" name="expense_date" class="form-control" value="{{ old('expense_date', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" required>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-sm-6 col-md-5">
                             <label class="form-label fw-semibold">Expense Description <span class="text-danger">*</span></label>
                             <input type="text" name="description" class="form-control" id="expenseDescription" placeholder="e.g., Grab to client meeting" maxlength="500" required>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-12 col-md-4">
                             <label class="form-label fw-semibold">Project / Client Name</label>
                             <input type="text" name="project_client" class="form-control" placeholder="e.g., Project Alpha" maxlength="255">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-12 col-md-4">
                             <label class="form-label fw-semibold">Expense Category <span class="text-danger">*</span></label>
                             <select name="expense_category_id" class="form-select" id="expenseCategory" required>
                                 <option value="">-- Select Category --</option>
@@ -121,19 +121,19 @@
                             </select>
                             <small class="text-muted" id="categoryHint" style="display:none;"><i class="bi bi-magic me-1"></i>Auto-suggested</small>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">RM (w/o GST) <span class="text-danger">*</span></label>
                             <input type="number" name="amount" class="form-control" id="amountNoGst" step="0.01" min="0.01" max="99999.99" placeholder="0.00" required>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">GST (RM)</label>
                             <input type="number" name="gst_amount" class="form-control" id="gstAmount" step="0.01" min="0" max="99999.99" placeholder="0.00" value="0">
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">Total (w/ GST)</label>
                             <input type="number" name="total_with_gst" class="form-control fw-bold" id="totalWithGst" step="0.01" min="0.01" readonly>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-12 col-md-2">
                             <label class="form-label fw-semibold">Receipt</label>
                             <input type="file" name="receipt" class="form-control" accept=".jpg,.jpeg,.png,.pdf" id="receiptFile">
                             <small class="text-muted">JPG, PNG, PDF (max 5MB)</small>
@@ -146,9 +146,9 @@
             </div>
             @endif
 
-            {{-- Items Table --}}
+            {{-- Items Table (desktop) --}}
             @if($currentClaim->items->count() > 0)
-            <div class="table-responsive">
+            <div class="d-none d-md-block table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-dark">
                         <tr>
@@ -197,7 +197,7 @@
                     </tbody>
                     <tfoot class="table-light">
                         <tr class="fw-bold">
-                            <td colspan="{{ $canEdit ? 5 : 5 }}" class="text-end">TOTAL</td>
+                            <td colspan="5" class="text-end">TOTAL</td>
                             <td class="text-end">{{ number_format($currentClaim->total_amount, 2) }}</td>
                             <td class="text-end">{{ number_format($currentClaim->total_gst, 2) }}</td>
                             <td class="text-end text-primary">RM {{ number_format($currentClaim->total_with_gst, 2) }}</td>
@@ -206,6 +206,39 @@
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+
+            {{-- Items Cards (mobile) --}}
+            <div class="d-md-none">
+                @foreach($currentClaim->items as $i => $item)
+                <div class="border rounded p-3 mb-2">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                            <strong>{{ $i + 1 }}. {{ $item->description }}</strong>
+                            <div class="small text-muted">{{ $item->expense_date->format('d M Y') }}@if($item->project_client) &middot; {{ $item->project_client }}@endif</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-1">
+                            @if($item->receipt_path)
+                            <a href="{{ route('secure.file', $item->receipt_path) }}" target="_blank" class="btn btn-sm btn-outline-primary py-0"><i class="bi bi-paperclip"></i></a>
+                            @endif
+                            @if($canEdit && !$item->is_locked)
+                            <form action="{{ route('user.claims.remove-item', $item) }}" method="POST" onsubmit="return confirm('Remove this item?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></button>
+                            </form>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-secondary">{{ $item->category->name ?? '-' }}</span>
+                        <span class="fw-bold">RM {{ number_format($item->total_with_gst, 2) }}</span>
+                    </div>
+                </div>
+                @endforeach
+                <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold">
+                    <span>TOTAL</span>
+                    <span class="text-primary">RM {{ number_format($currentClaim->total_with_gst, 2) }}</span>
+                </div>
             </div>
             @else
             <div class="text-center text-muted py-4">
