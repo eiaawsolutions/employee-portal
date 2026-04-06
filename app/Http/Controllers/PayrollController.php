@@ -13,6 +13,7 @@ use App\Models\Payslip;
 use App\Models\PayslipItem;
 use App\Models\PayrollConfig;
 use App\Models\SalaryAdjustment;
+use App\Models\Company;
 use App\Models\EaForm;
 use App\Models\Company;
 use App\Models\PayrollRegulatoryAlert;
@@ -60,7 +61,8 @@ class PayrollController extends Controller
     {
         $this->authorizePayrollView();
         $items = PayrollItem::orderBy('type')->orderBy('name')->get();
-        return view('hr.payroll.items', compact('items'));
+        $companies = Company::orderBy('name')->pluck('name');
+        return view('hr.payroll.items', compact('items', 'companies'));
     }
 
     public function storeItem(Request $request)
@@ -77,6 +79,7 @@ class PayrollController extends Controller
 
         $data['is_statutory'] = $request->boolean('is_statutory');
         $data['is_recurring'] = $request->boolean('is_recurring');
+        $data['company'] = $data['company'] ?: null;
 
         PayrollItem::create($data);
 
@@ -89,6 +92,7 @@ class PayrollController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:100',
             'code' => 'required|string|max:30|unique:payroll_items,code,' . $item->id,
+            'company' => 'nullable|string|max:255',
             'type' => 'required|in:earning,deduction',
             'is_statutory' => 'boolean',
             'is_recurring' => 'boolean',
@@ -98,6 +102,7 @@ class PayrollController extends Controller
         $data['is_statutory'] = $request->boolean('is_statutory');
         $data['is_recurring'] = $request->boolean('is_recurring');
         $data['is_active'] = $request->boolean('is_active');
+        $data['company'] = $data['company'] ?: null;
 
         $item->update($data);
 
@@ -377,7 +382,7 @@ class PayrollController extends Controller
                     ->sum('amount');
                 $totalEarnings = (float) $salary->basic_salary + (float) $recurringEarnings + $otAmount - $unpaidLeaveAmount;
 
-                // Calculate approved expense claims for this period
+                // Calculate approved expense claims for this period (non-taxable reimbursement)
                 $approvedClaims = \App\Models\ExpenseClaim::where('employee_id', $employee->id)
                     ->where('status', 'hr_approved')
                     ->where(function ($q) use ($payRun) {
@@ -386,6 +391,8 @@ class PayrollController extends Controller
                     })
                     ->get();
                 $claimReimbursement = $approvedClaims->sum('total_with_gst');
+                // Reimbursement included in total_earnings for net pay, but tracked separately
+                // so calculateStatutory() can exclude it from the statutory base
                 $totalEarnings += (float) $claimReimbursement;
 
                 $payslip = Payslip::create([
@@ -394,6 +401,7 @@ class PayrollController extends Controller
                     'payslip_number' => $payslipNumber,
                     'basic_salary' => $salary->basic_salary,
                     'total_earnings' => $totalEarnings,
+                    'claim_reimbursement' => $claimReimbursement,
                     'unpaid_leave_days' => $unpaidLeaveDays,
                     'unpaid_leave_amount' => $unpaidLeaveAmount,
                     'overtime_hours' => $otHours,

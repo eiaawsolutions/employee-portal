@@ -16,6 +16,7 @@
                     <tr>
                         <th>Code</th>
                         <th>Name</th>
+                        <th>Company</th>
                         <th>Type</th>
                         <th class="text-center">Statutory</th>
                         <th class="text-center">Recurring</th>
@@ -28,6 +29,7 @@
                     <tr>
                         <td><code>{{ $item->code }}</code></td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->company ?? 'All Companies' }}</td>
                         <td><span class="badge bg-{{ $item->type === 'earning' ? 'success' : 'danger' }}">{{ ucfirst($item->type) }}</span></td>
                         <td class="text-center">{!! $item->is_statutory ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle text-muted"></i>' !!}</td>
                         <td class="text-center">{!! $item->is_recurring ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle text-muted"></i>' !!}</td>
@@ -37,6 +39,7 @@
                                 data-id="{{ $item->id }}"
                                 data-name="{{ $item->name }}"
                                 data-code="{{ $item->code }}"
+                                data-company="{{ $item->company ?? '' }}"
                                 data-type="{{ $item->type }}"
                                 data-is_statutory="{{ $item->is_statutory }}"
                                 data-is_recurring="{{ $item->is_recurring }}"
@@ -47,7 +50,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="text-center text-muted py-4">No payroll items configured.</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4">No payroll items configured.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -65,6 +68,16 @@
                 <div class="modal-body">
                     <div class="mb-3"><label class="form-label">Code</label><input type="text" name="code" class="form-control" required></div>
                     <div class="mb-3"><label class="form-label">Name</label><input type="text" name="name" class="form-control" required></div>
+                    <div class="mb-3">
+                        <label class="form-label">Company</label>
+                        <select name="company" class="form-select">
+                            <option value="">All Companies</option>
+                            @foreach($companies as $company)
+                            <option value="{{ $company }}">{{ $company }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">Leave blank to apply to all companies</small>
+                    </div>
                     <div class="mb-3"><label class="form-label">Type</label>
                         <select name="type" class="form-select" required>
                             <option value="earning">Earning</option>
@@ -90,6 +103,15 @@
                 <div class="modal-body">
                     <div class="mb-3"><label class="form-label">Code</label><input type="text" name="code" id="editCode" class="form-control" required></div>
                     <div class="mb-3"><label class="form-label">Name</label><input type="text" name="name" id="editName" class="form-control" required></div>
+                    <div class="mb-3">
+                        <label class="form-label">Company</label>
+                        <select name="company" id="editCompany" class="form-select">
+                            <option value="">All Companies</option>
+                            @foreach($companies as $company)
+                            <option value="{{ $company }}">{{ $company }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="mb-3"><label class="form-label">Type</label>
                         <select name="type" id="editType" class="form-select" required>
                             <option value="earning">Earning</option>
@@ -113,6 +135,7 @@ document.querySelectorAll('.edit-item-btn').forEach(btn => {
         document.getElementById('editItemForm').action = '{{ url("hr/payroll/items") }}/' + btn.dataset.id;
         document.getElementById('editCode').value = btn.dataset.code;
         document.getElementById('editName').value = btn.dataset.name;
+        document.getElementById('editCompany').value = btn.dataset.company;
         document.getElementById('editType').value = btn.dataset.type;
         document.getElementById('editStatutory').checked = btn.dataset.is_statutory === '1';
         document.getElementById('editRecurring').checked = btn.dataset.is_recurring === '1';

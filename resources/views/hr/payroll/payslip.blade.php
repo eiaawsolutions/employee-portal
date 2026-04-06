@@ -102,6 +102,13 @@
                 <h2 class="mb-0">RM {{ number_format($payslip->net_pay, 2) }}</h2>
             </div>
         </div>
+
+        @if(($payslip->claim_reimbursement ?? 0) > 0)
+        <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            <strong>RM {{ number_format($payslip->claim_reimbursement, 2) }}</strong> of the total earnings is expense claim reimbursement (non-taxable — excluded from statutory calculation base).
+        </div>
+        @endif
     </div>
 </div>
 

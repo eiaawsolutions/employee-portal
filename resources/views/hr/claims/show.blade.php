@@ -155,6 +155,44 @@
     </div>
     @endif
 
+    {{-- Payroll Linkage --}}
+    @if($claim->status === 'paid' && ($claim->payslip_id || $claim->pay_run_id))
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h6 class="mb-0"><i class="bi bi-link-45deg me-2"></i>Payroll Linkage</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                @if($claim->pay_run_id && $claim->payRun)
+                <div class="col-md-4">
+                    <label class="text-muted small">Pay Run</label>
+                    <div class="fw-semibold">
+                        {{ $claim->payRun->reference ?? 'Pay Run #' . $claim->pay_run_id }}
+                        <span class="badge bg-success ms-1">Processed</span>
+                    </div>
+                    <small class="text-muted">{{ $claim->payRun->period_label ?? \Carbon\Carbon::create($claim->year, $claim->month)->format('F Y') }}</small>
+                </div>
+                @endif
+                @if($claim->payslip_id && $claim->payslip)
+                <div class="col-md-4">
+                    <label class="text-muted small">Payslip</label>
+                    <div class="fw-semibold">
+                        <a href="{{ route('hr.payroll.payslip', $claim->payslip_id) }}" class="text-decoration-none">
+                            {{ $claim->payslip->payslip_number ?? 'Payslip #' . $claim->payslip_id }}
+                        </a>
+                    </div>
+                </div>
+                @endif
+                <div class="col-md-4">
+                    <label class="text-muted small">Reimbursement Amount</label>
+                    <div class="fw-semibold text-success">RM {{ number_format($claim->total_with_gst, 2) }}</div>
+                    <small class="text-muted">Non-taxable — excluded from statutory calculation</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     @if($claim->notes)
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-body">

@@ -15,6 +15,7 @@ class Payslip extends Model
         'epf_employer', 'socso_employer', 'eis_employer', 'hrdf_amount',
         'unpaid_leave_days', 'unpaid_leave_amount',
         'overtime_hours', 'overtime_amount',
+        'claim_reimbursement',
         'status',
     ];
 
@@ -35,6 +36,7 @@ class Payslip extends Model
         'unpaid_leave_amount' => 'decimal:2',
         'overtime_hours' => 'decimal:2',
         'overtime_amount' => 'decimal:2',
+        'claim_reimbursement' => 'decimal:2',
     ];
 
     // ── Accessors (alias DB columns for Blade views) ───────────────────
@@ -66,7 +68,8 @@ class Payslip extends Model
      */
     public function calculateStatutory(): void
     {
-        $gross = (float) $this->total_earnings;
+        // Statutory base excludes expense claim reimbursements (non-taxable)
+        $gross = (float) $this->total_earnings - (float) ($this->claim_reimbursement ?? 0);
         $employee = $this->employee ?? Employee::find($this->employee_id);
         $epfCategory = $employee->epf_category ?? '1';
         $isResident = $employee->is_resident ?? true;
