@@ -15,6 +15,7 @@ use App\Models\PayrollConfig;
 use App\Models\SalaryAdjustment;
 use App\Models\EaForm;
 use App\Models\Company;
+use App\Models\PayrollRegulatoryAlert;
 use App\Mail\EaFormReadyMail;
 use App\Mail\PayslipReadyMail;
 use Illuminate\Http\Request;
@@ -486,23 +487,45 @@ class PayrollController extends Controller
     {
         $this->authorizePayrollManage();
         $config = PayrollConfig::forCompany();
-        return view('hr.payroll.config', compact('config'));
+        $alerts = PayrollRegulatoryAlert::orderByDesc('effective_date')->get();
+        $pendingAlertCount = PayrollRegulatoryAlert::pending()->count();
+        return view('hr.payroll.config', compact('config', 'alerts', 'pendingAlertCount'));
     }
 
     public function updateConfig(Request $request)
     {
         $this->authorizePayrollManage();
         $data = $request->validate([
+            // EPF — Malaysian citizens
             'epf_employee_rate' => 'required|numeric|min:0|max:100',
             'epf_employer_rate' => 'required|numeric|min:0|max:100',
+            'epf_employer_rate_high' => 'required|numeric|min:0|max:100',
+            'epf_employer_salary_threshold' => 'required|numeric|min:0',
+            // EPF — Senior (60+)
+            'epf_employee_rate_senior' => 'required|numeric|min:0|max:100',
+            'epf_employer_rate_senior' => 'required|numeric|min:0|max:100',
+            // EPF — Foreign workers
+            'epf_foreign_employee_rate' => 'required|numeric|min:0|max:100',
+            'epf_foreign_employer_flat' => 'required|numeric|min:0',
+            // SOCSO
             'socso_employee_rate' => 'required|numeric|min:0|max:100',
             'socso_employer_rate' => 'required|numeric|min:0|max:100',
             'socso_wage_ceiling' => 'required|numeric|min:0',
+            'socso_foreign_employer_rate' => 'required|numeric|min:0|max:100',
+            // EIS
             'eis_rate' => 'required|numeric|min:0|max:100',
             'eis_wage_ceiling' => 'required|numeric|min:0',
+            'eis_foreign_exempt' => 'boolean',
+            // PCB
+            'pcb_nonresident_rate' => 'required|numeric|min:0|max:100',
+            // Minimum Wage
+            'minimum_wage' => 'required|numeric|min:0',
+            'minimum_wage_effective_date' => 'nullable|date',
+            // HRDF
             'hrdf_rate' => 'required|numeric|min:0|max:100',
             'hrdf_enabled' => 'boolean',
             'default_working_days' => 'required|integer|min:1|max:31',
+            // Bank & Registration
             'bank_name' => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:50',
             'lhdn_employer_no' => 'nullable|string|max:50',
@@ -512,6 +535,7 @@ class PayrollController extends Controller
         ]);
 
         $data['hrdf_enabled'] = $request->boolean('hrdf_enabled');
+        $data['eis_foreign_exempt'] = $request->boolean('eis_foreign_exempt');
 
         PayrollConfig::updateOrCreate(
             ['company' => null],
@@ -519,6 +543,24 @@ class PayrollController extends Controller
         );
 
         return back()->with('success', 'Payroll configuration updated.');
+    }
+
+    // ── Regulatory Alert Management ────────────────────────────────────
+    public function acknowledgeAlert(Request $request, PayrollRegulatoryAlert $alert)
+    {
+        $this->authorizePayrollManage();
+        $newStatus = $request->input('status', 'acknowledged');
+        if (!in_array($newStatus, ['acknowledged', 'implemented'])) {
+            $newStatus = 'acknowledged';
+        }
+
+        $alert->update([
+            'status' => $newStatus,
+            'acknowledged_by' => Auth::id(),
+            'acknowledged_at' => now(),
+        ]);
+
+        return back()->with('success', "Alert \"{$alert->title}\" marked as {$newStatus}.");
     }
 
     // ── Salary Adjustments (audit log) ─────────────────────────────────

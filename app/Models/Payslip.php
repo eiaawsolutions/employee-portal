@@ -61,6 +61,7 @@ class Payslip extends Model
     /**
      * Calculate Malaysian statutory contributions.
      * Uses EPF category from Employee if available.
+     * Reads rates from PayrollConfig; falls back to statutory defaults.
      * References: KWSP Act 1991, PERKESO Act 1969, EIS Act 2017, Income Tax Act 1967.
      */
     public function calculateStatutory(): void
@@ -70,47 +71,67 @@ class Payslip extends Model
         $epfCategory = $employee->epf_category ?? '1';
         $isResident = $employee->is_resident ?? true;
         $age = $employee->date_of_birth ? $employee->date_of_birth->age : 30;
+        $isForeign = $epfCategory === '3';
 
-        // ── EPF rates by category (KWSP 2024 rates) ────────────────────
-        // Category 1: <60 years — EE 11%, ER 13% (≤RM5,000) / 12% (>RM5,000)
-        // Category 2: 60-75 disabled/pensionable — EE 0%, ER 4%
-        // Category 3: Foreign workers — no mandatory EPF
-        if ($epfCategory === '3') {
-            $this->epf_employee = 0;
-            $this->epf_employer = 0;
+        $cfg = PayrollConfig::forCompany();
+
+        // ── EPF (KWSP Act 1991, Third Schedule) ────────────────────────
+        if ($isForeign) {
+            // Category 3: Foreign workers — voluntary
+            $foreignEeRate = (float) ($cfg->epf_foreign_employee_rate ?? 0) / 100;
+            $this->epf_employee = round($gross * $foreignEeRate, 2);
+            $this->epf_employer = round((float) ($cfg->epf_foreign_employer_flat ?? 5), 2);
         } elseif ($epfCategory === '2' || $age >= 60) {
-            $this->epf_employee = round($gross * 0.055, 2);  // 5.5%
-            $this->epf_employer = round($gross * 0.065, 2);  // 6.5%
+            // Category 2: Senior / disabled / pensionable
+            $this->epf_employee = round($gross * ((float) ($cfg->epf_employee_rate_senior ?? 5.50) / 100), 2);
+            $this->epf_employer = round($gross * ((float) ($cfg->epf_employer_rate_senior ?? 6.50) / 100), 2);
         } else {
-            $this->epf_employee = round($gross * 0.11, 2);   // 11%
-            $erRate = $gross <= 5000 ? 0.13 : 0.12;
+            // Category 1: Malaysian <60 years
+            $this->epf_employee = round($gross * ((float) ($cfg->epf_employee_rate ?? 11) / 100), 2);
+            $threshold = (float) ($cfg->epf_employer_salary_threshold ?? 5000);
+            $erRate = $gross <= $threshold
+                ? (float) ($cfg->epf_employer_rate ?? 13) / 100
+                : (float) ($cfg->epf_employer_rate_high ?? 12) / 100;
             $this->epf_employer = round($gross * $erRate, 2);
         }
 
-        // ── SOCSO (Employment Injury + Invalidity Scheme) ──────────────
-        // Applicable to employees earning ≤RM5,000/month; rates are tiered
-        if ($gross <= 5000) {
-            $this->socso_employee = round($gross * 0.005, 2);
-            $this->socso_employer = round($gross * 0.0175, 2);
+        // ── SOCSO (Employees' Social Security Act 1969) ────────────────
+        $socsoCeiling = (float) ($cfg->socso_wage_ceiling ?? 6000);
+        if ($isForeign) {
+            // FWCS — employer only, no employee portion
+            $this->socso_employee = 0;
+            $fwcsWage = min($gross, $socsoCeiling);
+            $this->socso_employer = round($fwcsWage * ((float) ($cfg->socso_foreign_employer_rate ?? 1.25) / 100), 2);
         } else {
-            $this->socso_employee = round(5000 * 0.005, 2);   // Cap at RM5K
-            $this->socso_employer = round(5000 * 0.0175, 2);
+            $socsoWage = min($gross, $socsoCeiling);
+            $this->socso_employee = round($socsoWage * ((float) ($cfg->socso_employee_rate ?? 0.50) / 100), 2);
+            $this->socso_employer = round($socsoWage * ((float) ($cfg->socso_employer_rate ?? 1.75) / 100), 2);
         }
 
-        // ── EIS (Employment Insurance System — PERKESO) ────────────────
-        $eisWage = min($gross, 5000);
-        $this->eis_employee = round($eisWage * 0.002, 2);
-        $this->eis_employer = round($eisWage * 0.002, 2);
+        // ── EIS (Employment Insurance System Act 2017) ─────────────────
+        $eisExemptForeign = (bool) ($cfg->eis_foreign_exempt ?? true);
+        if ($isForeign && $eisExemptForeign) {
+            // s.5 EIS Act 2017 — foreign workers exempt
+            $this->eis_employee = 0;
+            $this->eis_employer = 0;
+        } else {
+            $eisCeiling = (float) ($cfg->eis_wage_ceiling ?? 6000);
+            $eisWage = min($gross, $eisCeiling);
+            $eisRate = (float) ($cfg->eis_rate ?? 0.20) / 100;
+            $this->eis_employee = round($eisWage * $eisRate, 2);
+            $this->eis_employer = round($eisWage * $eisRate, 2);
+        }
 
         // ── HRDF (employer only — 1% for companies ≥10 employees) ──────
-        $this->hrdf_amount = round($gross * 0.01, 2);
+        $hrdfEnabled = (bool) ($cfg->hrdf_enabled ?? true);
+        $this->hrdf_amount = $hrdfEnabled
+            ? round($gross * ((float) ($cfg->hrdf_rate ?? 1) / 100), 2)
+            : 0;
 
-        // ── PCB / MTD (Monthly Tax Deduction) ──────────────────────────
-        // Simplified: uses approximate monthly tax bracket for residents.
-        // Non-residents are taxed at flat 30%.
-        // Production systems should use LHDN PCB Calculator API or e-PCB tables.
+        // ── PCB / MTD (Income Tax Act 1967) ────────────────────────────
         if (!$isResident) {
-            $this->pcb_amount = round($gross * 0.30, 2);
+            $pcbRate = (float) ($cfg->pcb_nonresident_rate ?? 30) / 100;
+            $this->pcb_amount = round($gross * $pcbRate, 2);
         } else {
             $this->pcb_amount = $this->estimateMonthlyPcb($gross);
         }

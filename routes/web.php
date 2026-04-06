@@ -283,6 +283,7 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     // HR: Payroll Configuration (must be before {payRun} parameter route)
     Route::get('/hr/payroll/config',                    [PayrollController::class, 'config'])->name('hr.payroll.config');
     Route::put('/hr/payroll/config',                    [PayrollController::class, 'updateConfig'])->name('hr.payroll.config.update');
+    Route::post('/hr/payroll/config/alerts/{alert}/acknowledge', [PayrollController::class, 'acknowledgeAlert'])->name('hr.payroll.alerts.acknowledge');
 
     // HR: Payslip Detail (must be before {payRun} parameter route)
     Route::get('/hr/payroll/payslip/{payslip}',         [PayrollController::class, 'viewPayslipHr'])->name('hr.payroll.payslip');
