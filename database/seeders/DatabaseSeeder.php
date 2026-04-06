@@ -207,5 +207,7 @@ class DatabaseSeeder extends Seeder
             'acknowledgement_token'=> Str::random(64),
         ]);
         // No Employee record for Priya — start date not yet reached
+
+        $this->call(ExpenseCategorySeeder::class);
     }
 }
