@@ -67,7 +67,7 @@
                 <div class="col-md-2">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
-                        @foreach(['draft','submitted','manager_approved','manager_rejected','hr_approved','hr_rejected','paid','cancelled'] as $s)
+                        @foreach(['submitted','manager_approved','manager_rejected','hr_approved','hr_rejected','paid','cancelled'] as $s)
                         <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ str_replace('_',' ', ucfirst($s)) }}</option>
                         @endforeach
                     </select>

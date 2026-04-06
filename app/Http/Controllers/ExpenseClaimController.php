@@ -48,8 +48,11 @@ class ExpenseClaimController extends Controller
         $claims = $employee->expenseClaims()->with('items.category')->get();
         $policy = ExpenseClaimPolicy::forCompany($employee->company);
 
-        // Selected month claim (auto-create draft if doesn't exist)
-        $currentClaim = $this->getOrCreateDraft($employee, $year, $month);
+        // Find existing claim for selected month (don't auto-create empty drafts)
+        $currentClaim = ExpenseClaim::where('employee_id', $employee->id)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->first();
 
         $categories = ExpenseCategory::active()
             ->where(function ($q) use ($employee) {
@@ -419,9 +422,11 @@ class ExpenseClaimController extends Controller
 
         $query = ExpenseClaim::with(['employee', 'items.category']);
 
-        // Filters
+        // Filters — exclude drafts by default; only show when explicitly selected
         if ($status = $request->input('status')) {
             $query->where('status', $status);
+        } else {
+            $query->where('status', '!=', 'draft');
         }
         if ($year = $request->input('year')) {
             $query->where('year', $year);
@@ -589,8 +594,11 @@ class ExpenseClaimController extends Controller
 
         $query = ExpenseClaim::with(['employee', 'items.category']);
 
+        // Exclude drafts from export unless explicitly filtered
         if ($status = $request->input('status')) {
             $query->where('status', $status);
+        } else {
+            $query->where('status', '!=', 'draft');
         }
         if ($year = $request->input('year')) {
             $query->where('year', $year);
@@ -795,12 +803,12 @@ class ExpenseClaimController extends Controller
     private function getClaimStats(): array
     {
         return [
-            'pending_manager' => ExpenseClaim::where('status', 'submitted')->count(),
-            'pending_hr' => ExpenseClaim::where('status', 'manager_approved')->count(),
+            'pending' => ExpenseClaim::whereIn('status', ['submitted', 'manager_approved'])->count(),
             'approved' => ExpenseClaim::where('status', 'hr_approved')->count(),
-            'total_approved_amount' => ExpenseClaim::where('status', 'hr_approved')
+            'total_approved' => ExpenseClaim::where('status', 'hr_approved')
                 ->whereYear('created_at', now()->year)
                 ->sum('total_with_gst'),
+            'total' => ExpenseClaim::where('status', '!=', 'draft')->count(),
         ];
     }
 

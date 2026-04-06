@@ -72,25 +72,33 @@
 
     {{-- ── Selected Month Claim ── --}}
     @php
-        $currentClaim->loadMissing('items.category');
-        $monthLabel = \Carbon\Carbon::create($currentClaim->year, $currentClaim->month)->format('F Y');
-        $canEdit = $currentClaim->isEditable();
+        $monthLabel = \Carbon\Carbon::create($selectedYear, $selectedMonth)->format('F Y');
+        if ($currentClaim) {
+            $currentClaim->loadMissing('items.category');
+            $canEdit = $currentClaim->isEditable();
+        } else {
+            $canEdit = true; // No claim yet = user can add items (draft will be created on first add)
+        }
     @endphp
 
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-white border-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div>
                 <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>{{ $monthLabel }}</h5>
+                @if($currentClaim)
                 <small class="text-muted">{{ $currentClaim->claim_number }} &mdash; <span class="badge bg-{{ $currentClaim->statusBadge()['class'] }}">{{ $currentClaim->statusBadge()['label'] }}</span></small>
+                @else
+                <small class="text-muted">No claim yet &mdash; add an expense item to start</small>
+                @endif
             </div>
             <div class="d-flex gap-2 flex-shrink-0">
-                @if($currentClaim->isSubmittable())
+                @if($currentClaim && $currentClaim->isSubmittable())
                 <form action="{{ route('user.claims.submit', $currentClaim) }}" method="POST" class="d-inline" onsubmit="return confirm('Submit this claim for manager approval? Items will be locked after submission.')">
                     @csrf
                     <button class="btn btn-primary btn-sm"><i class="bi bi-send me-1"></i>Submit for Approval</button>
                 </form>
                 @endif
-                @if($currentClaim->status === 'submitted')
+                @if($currentClaim && $currentClaim->status === 'submitted')
                 <form action="{{ route('user.claims.cancel', $currentClaim) }}" method="POST" class="d-inline" onsubmit="return confirm('Recall this claim to draft?')">
                     @csrf
                     <button class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-counterclockwise me-1"></i>Recall</button>
@@ -100,12 +108,12 @@
         </div>
 
         {{-- Rejection remarks --}}
-        @if($currentClaim->status === 'manager_rejected' && $currentClaim->manager_remarks)
+        @if($currentClaim && $currentClaim->status === 'manager_rejected' && $currentClaim->manager_remarks)
         <div class="alert alert-warning mx-3 mt-2 mb-0">
             <strong><i class="bi bi-exclamation-triangle me-1"></i>Manager Remarks:</strong> {{ $currentClaim->manager_remarks }}
         </div>
         @endif
-        @if($currentClaim->status === 'hr_rejected' && $currentClaim->hr_remarks)
+        @if($currentClaim && $currentClaim->status === 'hr_rejected' && $currentClaim->hr_remarks)
         <div class="alert alert-warning mx-3 mt-2 mb-0">
             <strong><i class="bi bi-exclamation-triangle me-1"></i>HR Remarks:</strong> {{ $currentClaim->hr_remarks }}
         </div>
@@ -116,47 +124,74 @@
             @if($canEdit)
             <div class="border rounded p-3 mb-4 bg-light">
                 <h6 class="mb-3"><i class="bi bi-plus-circle me-1"></i>Add Expense Item</h6>
-                <form action="{{ route('user.claims.add-item') }}" method="POST" enctype="multipart/form-data" id="addItemForm">
+                <form action="{{ route('user.claims.add-item') }}" method="POST" enctype="multipart/form-data" id="addItemForm" novalidate>
                     @csrf
                     <div class="row g-3">
                         <div class="col-sm-6 col-md-3">
                             <label class="form-label fw-semibold">Date of Expense <span class="text-danger">*</span></label>
-                            <input type="date" name="expense_date" class="form-control" value="{{ old('expense_date', date('Y-m-d')) }}" min="{{ date('Y') }}-01-01" max="{{ date('Y-m-d') }}" required>
+                            <input type="date" name="expense_date" class="form-control @error('expense_date') is-invalid @enderror" value="{{ old('expense_date', date('Y-m-d')) }}" min="{{ date('Y') }}-01-01" max="{{ date('Y-m-d') }}" required>
+                            @error('expense_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                            <div class="invalid-feedback">Select a date within {{ date('Y') }} (Jan 1 – today).</div>
+                            @enderror
                         </div>
                         <div class="col-sm-6 col-md-5">
                             <label class="form-label fw-semibold">Expense Description <span class="text-danger">*</span></label>
-                            <input type="text" name="description" class="form-control" id="expenseDescription" placeholder="e.g., Grab to client meeting" maxlength="500" required>
+                            <input type="text" name="description" class="form-control @error('description') is-invalid @enderror" id="expenseDescription" value="{{ old('description') }}" placeholder="e.g., Grab to client meeting" maxlength="500" required>
+                            @error('description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                            <div class="invalid-feedback">Describe the expense (e.g., "Grab to ABC Corp meeting", "Lunch with client").</div>
+                            @enderror
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label fw-semibold">Project / Client Name</label>
-                            <input type="text" name="project_client" class="form-control" placeholder="e.g., Project Alpha" maxlength="255">
+                            <input type="text" name="project_client" class="form-control" value="{{ old('project_client') }}" placeholder="e.g., Project Alpha" maxlength="255">
+                            <small class="text-muted">Optional — link this expense to a project or client.</small>
                         </div>
                         <div class="col-12 col-md-4">
                             <label class="form-label fw-semibold">Expense Category <span class="text-danger">*</span></label>
-                            <select name="expense_category_id" class="form-select" id="expenseCategory" required>
+                            <select name="expense_category_id" class="form-select @error('expense_category_id') is-invalid @enderror" id="expenseCategory" required>
                                 <option value="">-- Select Category --</option>
                                 @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" data-requires-receipt="{{ $cat->requires_receipt ? '1' : '0' }}">{{ $cat->name }}</option>
+                                <option value="{{ $cat->id }}" {{ old('expense_category_id') == $cat->id ? 'selected' : '' }} data-requires-receipt="{{ $cat->requires_receipt ? '1' : '0' }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
+                            @error('expense_category_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                            <div class="invalid-feedback">Choose a category (e.g., "Transport", "Meals & Entertainment").</div>
+                            @enderror
                             <small class="text-muted" id="categoryHint" style="display:none;"><i class="bi bi-magic me-1"></i>Auto-suggested</small>
                         </div>
                         <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">RM (w/o GST) <span class="text-danger">*</span></label>
-                            <input type="number" name="amount" class="form-control" id="amountNoGst" step="0.01" min="0.01" max="99999.99" placeholder="0.00" required>
+                            <input type="number" name="amount" class="form-control @error('amount') is-invalid @enderror" id="amountNoGst" value="{{ old('amount') }}" step="0.01" min="0.01" max="99999.99" placeholder="0.00" required>
+                            @error('amount')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @else
+                            <div class="invalid-feedback">Enter the amount before GST (e.g., 25.00).</div>
+                            @enderror
                         </div>
                         <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">GST (RM)</label>
-                            <input type="number" name="gst_amount" class="form-control" id="gstAmount" step="0.01" min="0" max="99999.99" placeholder="0.00" value="0">
+                            <input type="number" name="gst_amount" class="form-control" id="gstAmount" value="{{ old('gst_amount', 0) }}" step="0.01" min="0" max="99999.99" placeholder="0.00">
+                            <small class="text-muted d-none d-md-block">Leave 0 if no GST.</small>
                         </div>
                         <div class="col-4 col-md-2">
                             <label class="form-label fw-semibold">Total (w/ GST)</label>
                             <input type="number" name="total_with_gst" class="form-control fw-bold" id="totalWithGst" step="0.01" min="0.01" readonly>
+                            <small class="text-muted d-none d-md-block">Auto-calculated.</small>
                         </div>
                         <div class="col-12 col-md-2">
                             <label class="form-label fw-semibold">Receipt</label>
-                            <input type="file" name="receipt" class="form-control" accept=".jpg,.jpeg,.png,.pdf" id="receiptFile">
+                            <input type="file" name="receipt" class="form-control @error('receipt') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf" id="receiptFile">
+                            @error('receipt')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @else
                             <small class="text-muted">JPG, PNG, PDF (max 5MB)</small>
+                            @enderror
                         </div>
                     </div>
                     <div class="mt-3 text-end">
@@ -167,7 +202,7 @@
             @endif
 
             {{-- Items Table (desktop) --}}
-            @if($currentClaim->items->count() > 0)
+            @if($currentClaim && $currentClaim->items->count() > 0)
             <div class="d-none d-md-block table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-dark">
@@ -218,9 +253,9 @@
                     <tfoot class="table-light">
                         <tr class="fw-bold">
                             <td colspan="5" class="text-end">TOTAL</td>
-                            <td class="text-end">{{ number_format($currentClaim->total_amount, 2) }}</td>
-                            <td class="text-end">{{ number_format($currentClaim->total_gst, 2) }}</td>
-                            <td class="text-end text-primary">RM {{ number_format($currentClaim->total_with_gst, 2) }}</td>
+                            <td class="text-end">{{ number_format($currentClaim?->total_amount ?? 0, 2) }}</td>
+                            <td class="text-end">{{ number_format($currentClaim?->total_gst ?? 0, 2) }}</td>
+                            <td class="text-end text-primary">RM {{ number_format($currentClaim?->total_with_gst ?? 0, 2) }}</td>
                             <td></td>
                             @if($canEdit)<td></td>@endif
                         </tr>
@@ -257,7 +292,7 @@
                 @endforeach
                 <div class="border-top pt-2 mt-2 d-flex justify-content-between fw-bold">
                     <span>TOTAL</span>
-                    <span class="text-primary">RM {{ number_format($currentClaim->total_with_gst, 2) }}</span>
+                    <span class="text-primary">RM {{ number_format($currentClaim?->total_with_gst ?? 0, 2) }}</span>
                 </div>
             </div>
             @else
@@ -269,8 +304,12 @@
         </div>
     </div>
 
-    {{-- ── Claims History ── --}}
-    @php $historyClaims = $claims->where('id', '!=', $currentClaim->id); @endphp
+    {{-- ── Claims History (exclude drafts — only show submitted/processed claims) ── --}}
+    @php
+        $historyClaims = $claims
+            ->where('status', '!=', 'draft')
+            ->when($currentClaim, fn($c) => $c->where('id', '!=', $currentClaim->id));
+    @endphp
     @if($historyClaims->count() > 0)
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white border-0">
@@ -318,7 +357,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('amountNoGst');
     const gstInput = document.getElementById('gstAmount');
     const totalInput = document.getElementById('totalWithGst');
+    const form = document.getElementById('addItemForm');
     let debounceTimer;
+
+    // ── Client-side validation with field highlighting ──
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+            form.querySelectorAll('.form-control, .form-select').forEach(el => el.classList.remove('is-invalid'));
+
+            // Required field checks
+            const requiredFields = [
+                { el: form.querySelector('[name="expense_date"]'), msg: 'Select a date within the current year.' },
+                { el: form.querySelector('[name="description"]'), msg: 'Describe the expense (e.g., "Grab to client meeting").' },
+                { el: form.querySelector('[name="expense_category_id"]'), msg: 'Choose a category (e.g., "Transport").' },
+                { el: form.querySelector('[name="amount"]'), msg: 'Enter the amount before GST (e.g., 25.00).' },
+            ];
+
+            requiredFields.forEach(f => {
+                if (!f.el.value || f.el.value.trim() === '') {
+                    f.el.classList.add('is-invalid');
+                    valid = false;
+                }
+            });
+
+            // Amount must be > 0
+            if (amountInput && parseFloat(amountInput.value) <= 0) {
+                amountInput.classList.add('is-invalid');
+                valid = false;
+            }
+
+            // Category receipt requirement check
+            if (categorySelect && categorySelect.value) {
+                const opt = categorySelect.selectedOptions[0];
+                const receiptInput = document.getElementById('receiptFile');
+                if (opt && opt.dataset.requiresReceipt === '1' && receiptInput && !receiptInput.files.length) {
+                    receiptInput.classList.add('is-invalid');
+                    const fb = receiptInput.nextElementSibling;
+                    if (fb && fb.classList.contains('invalid-feedback')) {
+                        fb.textContent = 'This category requires a receipt. Upload JPG, PNG, or PDF.';
+                    }
+                    valid = false;
+                }
+            }
+
+            if (!valid) {
+                e.preventDefault();
+                // Scroll to first invalid field
+                const firstInvalid = form.querySelector('.is-invalid');
+                if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        // Clear invalid state on input
+        form.querySelectorAll('.form-control, .form-select').forEach(el => {
+            el.addEventListener('input', () => el.classList.remove('is-invalid'));
+            el.addEventListener('change', () => el.classList.remove('is-invalid'));
+        });
+    }
 
     // Auto-detect category based on description
     if (descInput && categorySelect) {
