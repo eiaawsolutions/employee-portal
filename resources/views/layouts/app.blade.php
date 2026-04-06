@@ -398,6 +398,12 @@
                 <i class="bi bi-building"></i> Company Registration
             </a>
         </div>
+        <div class="nav-item">
+            <a href="{{ route('superadmin.kb.gate') }}"
+               class="nav-link {{ request()->routeIs('superadmin.kb.*') ? 'active' : '' }}">
+                <i class="bi bi-book"></i> System Logic
+            </a>
+        </div>
 
         {{-- ── Account ── --}}
         <div class="sidebar-section">Account</div>

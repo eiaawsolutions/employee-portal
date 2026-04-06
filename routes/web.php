@@ -20,6 +20,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ExpenseClaimController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SecureFileController;
+use App\Http\Controllers\KnowledgeBaseController;
 use App\Http\Controllers\Accounting\AccountingDashboardController;
 use App\Http\Controllers\Accounting\ChartOfAccountController;
 use App\Http\Controllers\Accounting\GeneralLedgerController;
@@ -132,6 +133,17 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::post('/superadmin/account-management/{user}/activate', [AccountManagementController::class, 'activate'])->name('superadmin.accounts.activate');
 
     Route::get('/superadmin/system-overview',           [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
+
+    // Knowledge Base (Superadmin only — separate password)
+    Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
+    Route::post('/superadmin/knowledge-base/setup',    [KnowledgeBaseController::class, 'storePassword'])->name('superadmin.kb.setup.store');
+    Route::get('/superadmin/knowledge-base/gate',      [KnowledgeBaseController::class, 'gate'])->name('superadmin.kb.gate');
+    Route::post('/superadmin/knowledge-base/unlock',   [KnowledgeBaseController::class, 'unlock'])->name('superadmin.kb.unlock');
+    Route::get('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'changePassword'])->name('superadmin.kb.password.change');
+    Route::put('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'updatePassword'])->name('superadmin.kb.password.update');
+    Route::get('/superadmin/knowledge-base',           [KnowledgeBaseController::class, 'index'])->name('superadmin.kb.index');
+    Route::post('/superadmin/knowledge-base/lock',     [KnowledgeBaseController::class, 'lock'])->name('superadmin.kb.lock');
+    Route::get('/superadmin/knowledge-base/{slug}',    [KnowledgeBaseController::class, 'topic'])->name('superadmin.kb.topic');
 
     // ══════════════════════════════════════════════════════════════════════
     // C-SUITE REPORTS & ANALYTICS
