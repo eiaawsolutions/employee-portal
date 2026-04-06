@@ -112,10 +112,18 @@ class PayrollController extends Controller
             ->orderBy('employee_id')
             ->paginate(20);
 
-        $employees = Employee::orderBy('full_name')->get();
+        $employees = Employee::where('employment_status', 'active')->orderBy('full_name')->get();
         $payrollItems = PayrollItem::where('is_active', true)->where('is_recurring', true)->get();
 
-        return view('hr.payroll.salaries', compact('salaries', 'employees', 'payrollItems'));
+        // Bank info map for JS auto-fill on employee selection
+        $employeeBankData = $employees->mapWithKeys(fn ($e) => [
+            $e->id => [
+                'bank_name' => $e->bank_name ?? '',
+                'bank_account_number' => $e->bank_account_number ?? '',
+            ],
+        ]);
+
+        return view('hr.payroll.salaries', compact('salaries', 'employees', 'payrollItems', 'employeeBankData'));
     }
 
     public function storeSalary(Request $request)
@@ -170,6 +178,14 @@ class PayrollController extends Controller
                     'amount' => $item['amount'],
                 ]);
             }
+        }
+
+        // Sync bank info back to employee record if changed
+        if (!empty($data['bank_name']) || !empty($data['bank_account_number'])) {
+            Employee::where('id', $data['employee_id'])->update(array_filter([
+                'bank_name' => $data['bank_name'] ?? null,
+                'bank_account_number' => $data['bank_account_number'] ?? null,
+            ], fn ($v) => $v !== null));
         }
 
         return back()->with('success', 'Salary structure saved.');

@@ -53,7 +53,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Employee</label>
-                            <select name="employee_id" class="form-select" required>
+                            <select name="employee_id" id="salaryEmployeeSelect" class="form-select" required>
                                 <option value="">— Select —</option>
                                 @foreach($employees as $emp)
                                 <option value="{{ $emp->id }}">{{ $emp->full_name }}</option>
@@ -76,11 +76,11 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Bank Name</label>
-                            <input type="text" name="bank_name" class="form-control">
+                            <input type="text" name="bank_name" id="salaryBankName" class="form-control">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Account Number</label>
-                            <input type="text" name="bank_account_number" class="form-control">
+                            <input type="text" name="bank_account_number" id="salaryBankAccount" class="form-control">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -105,3 +105,14 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    const employeeBankData = @json($employeeBankData);
+    document.getElementById('salaryEmployeeSelect')?.addEventListener('change', function () {
+        const data = employeeBankData[this.value] || { bank_name: '', bank_account_number: '' };
+        document.getElementById('salaryBankName').value = data.bank_name;
+        document.getElementById('salaryBankAccount').value = data.bank_account_number;
+    });
+</script>
+@endpush
