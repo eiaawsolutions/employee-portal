@@ -72,6 +72,7 @@ class PayrollController extends Controller
             'code' => 'required|string|max:30|unique:payroll_items,code',
             'company' => 'nullable|string|max:255',
             'type' => 'required|in:earning,deduction',
+            'default_amount' => 'nullable|numeric|min:0',
             'is_statutory' => 'boolean',
             'is_recurring' => 'boolean',
         ]);
@@ -79,6 +80,7 @@ class PayrollController extends Controller
         $data['is_statutory'] = $request->boolean('is_statutory');
         $data['is_recurring'] = $request->boolean('is_recurring');
         $data['company'] = $data['company'] ?: null;
+        $data['default_amount'] = $data['default_amount'] ?: null;
 
         PayrollItem::create($data);
 
@@ -93,6 +95,7 @@ class PayrollController extends Controller
             'code' => 'required|string|max:30|unique:payroll_items,code,' . $item->id,
             'company' => 'nullable|string|max:255',
             'type' => 'required|in:earning,deduction',
+            'default_amount' => 'nullable|numeric|min:0',
             'is_statutory' => 'boolean',
             'is_recurring' => 'boolean',
             'is_active' => 'boolean',
@@ -102,6 +105,7 @@ class PayrollController extends Controller
         $data['is_recurring'] = $request->boolean('is_recurring');
         $data['is_active'] = $request->boolean('is_active');
         $data['company'] = $data['company'] ?: null;
+        $data['default_amount'] = $data['default_amount'] ?: null;
 
         $item->update($data);
 
@@ -148,8 +152,7 @@ class PayrollController extends Controller
             'last_salary_date' => 'nullable|date',
             'effective_from' => 'required|date',
             'items' => 'nullable|array',
-            'items.*.payroll_item_id' => 'required|exists:payroll_items,id',
-            'items.*.amount' => 'required|numeric|min:0',
+            'items.*' => 'nullable|numeric|min:0',
         ]);
 
         // Deactivate previous salary and log adjustment
@@ -182,12 +185,14 @@ class PayrollController extends Controller
         ]);
 
         if (!empty($data['items'])) {
-            foreach ($data['items'] as $item) {
-                EmployeeSalaryItem::create([
-                    'employee_salary_id' => $salary->id,
-                    'payroll_item_id' => $item['payroll_item_id'],
-                    'amount' => $item['amount'],
-                ]);
+            foreach ($data['items'] as $payrollItemId => $amount) {
+                if ($amount > 0) {
+                    EmployeeSalaryItem::create([
+                        'employee_salary_id' => $salary->id,
+                        'payroll_item_id' => $payrollItemId,
+                        'amount' => $amount,
+                    ]);
+                }
             }
         }
 

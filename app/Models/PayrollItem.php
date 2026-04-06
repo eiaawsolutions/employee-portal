@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PayrollItem extends Model
 {
     protected $fillable = [
-        'company', 'name', 'code', 'type',
+        'company', 'name', 'code', 'type', 'default_amount',
         'is_statutory', 'is_recurring', 'is_active',
     ];
 
     protected $casts = [
+        'default_amount' => 'decimal:2',
         'is_statutory' => 'boolean',
         'is_recurring' => 'boolean',
         'is_active' => 'boolean',

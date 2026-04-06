@@ -159,7 +159,7 @@
                         @foreach($payrollItems as $pi)
                         <div class="row mb-2">
                             <div class="col-6"><label class="form-label">{{ $pi->name }} <span class="badge bg-{{ $pi->type === 'earning' ? 'success' : 'danger' }} badge-sm">{{ $pi->type }}</span></label></div>
-                            <div class="col-6"><input type="number" name="items[{{ $pi->id }}]" class="form-control form-control-sm" step="0.01" min="0" placeholder="0.00"></div>
+                            <div class="col-6"><input type="number" name="items[{{ $pi->id }}]" class="form-control form-control-sm" step="0.01" min="0" placeholder="0.00" value="{{ $pi->default_amount ? number_format($pi->default_amount, 2, '.', '') : '' }}"></div>
                         </div>
                         @endforeach
                     </div>

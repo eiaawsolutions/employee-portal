@@ -18,6 +18,7 @@
                         <th>Name</th>
                         <th>Company</th>
                         <th>Type</th>
+                        <th class="text-end">Default Amount</th>
                         <th class="text-center">Statutory</th>
                         <th class="text-center">Recurring</th>
                         <th class="text-center">Status</th>
@@ -31,6 +32,7 @@
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->company ?? 'All Companies' }}</td>
                         <td><span class="badge bg-{{ $item->type === 'earning' ? 'success' : 'danger' }}">{{ ucfirst($item->type) }}</span></td>
+                        <td class="text-end">{{ $item->default_amount ? 'RM ' . number_format($item->default_amount, 2) : '—' }}</td>
                         <td class="text-center">{!! $item->is_statutory ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle text-muted"></i>' !!}</td>
                         <td class="text-center">{!! $item->is_recurring ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-x-circle text-muted"></i>' !!}</td>
                         <td class="text-center"><span class="badge bg-{{ $item->is_active ? 'success' : 'secondary' }}">{{ $item->is_active ? 'Active' : 'Inactive' }}</span></td>
@@ -40,6 +42,7 @@
                                 data-name="{{ $item->name }}"
                                 data-code="{{ $item->code }}"
                                 data-company="{{ $item->company ?? '' }}"
+                                data-default_amount="{{ $item->default_amount ?? '' }}"
                                 data-type="{{ $item->type }}"
                                 data-is_statutory="{{ $item->is_statutory }}"
                                 data-is_recurring="{{ $item->is_recurring }}"
@@ -50,7 +53,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="8" class="text-center text-muted py-4">No payroll items configured.</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted py-4">No payroll items configured.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -84,6 +87,7 @@
                             <option value="deduction">Deduction</option>
                         </select>
                     </div>
+                    <div class="mb-3"><label class="form-label">Default Amount (RM)</label><input type="number" name="default_amount" class="form-control" step="0.01" min="0" placeholder="Optional — pre-fills on salary form"></div>
                     <div class="form-check mb-2"><input type="checkbox" name="is_statutory" value="1" class="form-check-input" id="addStatutory"><label class="form-check-label" for="addStatutory">Statutory</label></div>
                     <div class="form-check mb-2"><input type="checkbox" name="is_recurring" value="1" class="form-check-input" id="addRecurring" checked><label class="form-check-label" for="addRecurring">Recurring</label></div>
                 </div>
@@ -118,6 +122,7 @@
                             <option value="deduction">Deduction</option>
                         </select>
                     </div>
+                    <div class="mb-3"><label class="form-label">Default Amount (RM)</label><input type="number" name="default_amount" id="editDefaultAmount" class="form-control" step="0.01" min="0" placeholder="Optional"></div>
                     <div class="form-check mb-2"><input type="checkbox" name="is_statutory" value="1" class="form-check-input" id="editStatutory"><label class="form-check-label" for="editStatutory">Statutory</label></div>
                     <div class="form-check mb-2"><input type="checkbox" name="is_recurring" value="1" class="form-check-input" id="editRecurring"><label class="form-check-label" for="editRecurring">Recurring</label></div>
                     <div class="form-check mb-2"><input type="checkbox" name="is_active" value="1" class="form-check-input" id="editActive"><label class="form-check-label" for="editActive">Active</label></div>
@@ -136,6 +141,7 @@ document.querySelectorAll('.edit-item-btn').forEach(btn => {
         document.getElementById('editCode').value = btn.dataset.code;
         document.getElementById('editName').value = btn.dataset.name;
         document.getElementById('editCompany').value = btn.dataset.company;
+        document.getElementById('editDefaultAmount').value = btn.dataset.default_amount;
         document.getElementById('editType').value = btn.dataset.type;
         document.getElementById('editStatutory').checked = btn.dataset.is_statutory === '1';
         document.getElementById('editRecurring').checked = btn.dataset.is_recurring === '1';
