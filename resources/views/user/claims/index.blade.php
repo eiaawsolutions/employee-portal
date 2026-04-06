@@ -119,6 +119,82 @@
         </div>
         @endif
 
+        {{-- ── Claim Status Tracker (visible after submission) ── --}}
+        @if($currentClaim && $currentClaim->status !== 'draft')
+        @php
+            $statusSteps = [
+                ['key' => 'submitted',         'icon' => 'bi-send-fill',       'label' => 'Submitted'],
+                ['key' => 'manager_approved',   'icon' => 'bi-person-check-fill','label' => 'Manager'],
+                ['key' => 'hr_approved',        'icon' => 'bi-building-check',  'label' => 'HR'],
+                ['key' => 'paid',               'icon' => 'bi-cash-coin',       'label' => 'Paid'],
+            ];
+            $statusOrder = ['submitted' => 1, 'manager_approved' => 2, 'hr_approved' => 3, 'paid' => 4];
+            $rejected = in_array($currentClaim->status, ['manager_rejected', 'hr_rejected', 'cancelled']);
+            $currentStep = $statusOrder[$currentClaim->status] ?? 0;
+        @endphp
+        <div class="px-3 pt-3 pb-2">
+            <div class="d-flex align-items-center justify-content-between position-relative" style="max-width:600px; margin:0 auto;">
+                {{-- Connecting line --}}
+                <div class="position-absolute" style="top:18px; left:36px; right:36px; height:3px; background:#dee2e6; z-index:0;"></div>
+                @if(!$rejected && $currentStep > 0)
+                <div class="position-absolute" style="top:18px; left:36px; height:3px; background:#0d6efd; z-index:1; width:{{ min(100, ($currentStep - 1) * 33.33) }}%;"></div>
+                @endif
+
+                @foreach($statusSteps as $i => $step)
+                @php
+                    $stepNum = $i + 1;
+                    if ($rejected) {
+                        // For rejected: mark steps up to the rejection point, then show red
+                        $rejectedAt = $currentClaim->status === 'manager_rejected' ? 1 : ($currentClaim->status === 'hr_rejected' ? 2 : $currentStep);
+                        if ($stepNum < $rejectedAt) {
+                            $cls = 'bg-success text-white';
+                        } elseif ($stepNum === $rejectedAt) {
+                            $cls = 'bg-danger text-white';
+                        } else {
+                            $cls = 'bg-light text-muted border';
+                        }
+                    } elseif ($stepNum < $currentStep) {
+                        $cls = 'bg-success text-white';
+                    } elseif ($stepNum === $currentStep) {
+                        $cls = 'bg-primary text-white';
+                    } else {
+                        $cls = 'bg-light text-muted border';
+                    }
+                @endphp
+                <div class="text-center position-relative" style="z-index:2; flex:1;">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center {{ $cls }}" style="width:36px; height:36px;">
+                        <i class="bi {{ $step['icon'] }}" style="font-size:.9rem;"></i>
+                    </div>
+                    <div class="small mt-1 {{ $stepNum <= $currentStep && !$rejected ? 'fw-semibold' : 'text-muted' }}">{{ $step['label'] }}</div>
+                </div>
+                @endforeach
+            </div>
+
+            @if($rejected)
+            <div class="text-center mt-2">
+                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>{{ $currentClaim->statusBadge()['label'] }}</span>
+            </div>
+            @elseif($currentClaim->status === 'submitted')
+            <div class="text-center mt-2">
+                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting manager approval{{ $currentClaim->submitted_at ? ' — submitted ' . $currentClaim->submitted_at->format('d M Y') : '' }}</small>
+            </div>
+            @elseif($currentClaim->status === 'manager_approved')
+            <div class="text-center mt-2">
+                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting HR approval{{ $currentClaim->manager_approved_at ? ' — manager approved ' . $currentClaim->manager_approved_at->format('d M Y') : '' }}</small>
+            </div>
+            @elseif($currentClaim->status === 'hr_approved')
+            <div class="text-center mt-2">
+                <small class="text-success"><i class="bi bi-check-circle me-1"></i>Approved — pending payment processing</small>
+            </div>
+            @elseif($currentClaim->status === 'paid')
+            <div class="text-center mt-2">
+                <small class="text-success"><i class="bi bi-check-all me-1"></i>Payment completed</small>
+            </div>
+            @endif
+        </div>
+        <hr class="mx-3 mt-0 mb-0">
+        @endif
+
         <div class="card-body">
             {{-- Add New Item Form --}}
             @if($canEdit)
