@@ -232,10 +232,10 @@
         </p>
         <div class="d-flex flex-wrap gap-3">
             <span class="stat-pill"><span class="num">{{ \App\Models\Employee::count() }}</span> Employees</span>
-            <span class="stat-pill"><span class="num">10</span> Modules</span>
-            <span class="stat-pill"><span class="num">87</span> Database Tables</span>
-            <span class="stat-pill"><span class="num">310+</span> Endpoints</span>
-            <span class="stat-pill"><span class="num">24</span> Automated Emails</span>
+            <span class="stat-pill"><span class="num">{{ $meta['module_count'] }}</span> Modules</span>
+            <span class="stat-pill"><span class="num">{{ $meta['tables'] }}</span> Database Tables</span>
+            <span class="stat-pill"><span class="num">{{ $meta['endpoints'] }}</span> Endpoints</span>
+            <span class="stat-pill"><span class="num">{{ $meta['mail_classes'] }}</span> Automated Emails</span>
             <span class="stat-pill"><span class="num">94/100</span> Security Score</span>
         </div>
     </div>
@@ -720,69 +720,20 @@
 {{-- EMAIL AUTOMATION --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <div class="flow-section">
-    <h3><i class="bi bi-envelope-open me-2"></i>Automated Email System — 24 Workflows</h3>
+    <h3><i class="bi bi-envelope-open me-2"></i>Automated Email System — {{ $meta['mail_classes'] }} Workflows</h3>
     <div class="row g-4">
-        <div class="col-md-4">
-            <h6 class="fw-bold text-primary mb-3">Onboarding & Employee</h6>
-            @php
-                $onb_mails = [
-                    'Onboarding Invite (token link)',
-                    'Welcome New Hire (start date)',
-                    'Edit Notification (HR changes)',
-                    'Consent Request (re-acknowledgement)',
-                    'Employee Consent (profile edits)',
-                    'Announcement Broadcast',
-                ];
-            @endphp
-            @foreach($onb_mails as $i => $mail)
+        @php $counter = 0; @endphp
+        @foreach($meta['email_groups'] as $groupName => $group)
+        <div class="col-md-{{ count($meta['email_groups']) <= 3 ? '4' : '3' }}">
+            <h6 class="fw-bold mb-3" style="color:{{ $group['color'] }};">{{ $groupName }}</h6>
+            @foreach($group['items'] as $i => $mail)
             <div class="email-flow-item">
-                <span class="email-count">{{ $i + 1 }}</span>
+                <span class="email-count" style="background:{{ $group['color'] }};">{{ ++$counter }}</span>
                 <span style="font-size:0.85rem;">{{ $mail }}</span>
             </div>
             @endforeach
         </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold text-danger mb-3">Offboarding & Assets</h6>
-            @php
-                $off_mails = [
-                    'Offboarding Notice (1 month)',
-                    'Offboarding Reminder (3 days)',
-                    'Week Reminder (1 week)',
-                    'Sendoff Email (exit day)',
-                    'Calendar Invite (ICS)',
-                    'AARF Acknowledgement (token)',
-                ];
-            @endphp
-            @foreach($off_mails as $i => $mail)
-            <div class="email-flow-item">
-                <span class="email-count" style="background:#dc3545;">{{ $i + 7 }}</span>
-                <span style="font-size:0.85rem;">{{ $mail }}</span>
-            </div>
-            @endforeach
-        </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold text-success mb-3">HRM Modules</h6>
-            @php
-                $hrm_mails = [
-                    'Leave Application Notify (manager)',
-                    'Leave Approval Notify (employee)',
-                    'Pending Leave Reminder (daily)',
-                    'Claim Submitted (manager + HR)',
-                    'Claim Approved / Rejected',
-                    'Claim Deadline Reminder',
-                    'Payslip Ready',
-                    'EA Form Ready',
-                    'Security Audit Report',
-                    'Suspicious Activity Alert',
-                ];
-            @endphp
-            @foreach($hrm_mails as $i => $mail)
-            <div class="email-flow-item">
-                <span class="email-count" style="background:#198754;">{{ $i + 13 }}</span>
-                <span style="font-size:0.85rem;">{{ $mail }}</span>
-            </div>
-            @endforeach
-        </div>
+        @endforeach
     </div>
 </div>
 
@@ -841,20 +792,9 @@
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <h3 class="fw-bold mb-3"><i class="bi bi-code-slash text-primary me-2"></i>Technology Stack</h3>
 <div class="d-flex flex-wrap gap-2 mb-5">
-    <span class="tech-badge"><i class="bi bi-filetype-php text-primary"></i> PHP 8.3</span>
-    <span class="tech-badge"><i class="bi bi-box text-danger"></i> Laravel 12</span>
-    <span class="tech-badge"><i class="bi bi-database text-warning"></i> MySQL 8.4</span>
-    <span class="tech-badge"><i class="bi bi-palette text-info"></i> Tailwind CSS v4</span>
-    <span class="tech-badge"><i class="bi bi-bootstrap text-purple" style="color:#6610f2 !important;"></i> Bootstrap 5.3</span>
-    <span class="tech-badge"><i class="bi bi-lightning text-success"></i> Vite 7</span>
-    <span class="tech-badge"><i class="bi bi-braces text-secondary"></i> Alpine.js</span>
-    <span class="tech-badge"><i class="bi bi-bar-chart-line text-primary"></i> Chart.js 4.4</span>
-    <span class="tech-badge"><i class="bi bi-robot text-success"></i> OpenAI GPT-4o (Vision + Chat)</span>
-    <span class="tech-badge"><i class="bi bi-envelope text-primary"></i> SMTP Mail (23 classes)</span>
-    <span class="tech-badge"><i class="bi bi-clock text-warning"></i> Task Scheduler (10 commands)</span>
-    <span class="tech-badge"><i class="bi bi-shield-check text-success"></i> OWASP Compliant</span>
-    <span class="tech-badge"><i class="bi bi-flag text-danger"></i> Malaysian Statutory (EPF/SOCSO/EIS/PCB)</span>
-    <span class="tech-badge"><i class="bi bi-journal-bookmark text-info"></i> Double-Entry Bookkeeping</span>
+    @foreach($meta['tech_stack'] as $tech)
+    <span class="tech-badge"><i class="bi {{ $tech['icon'] }} {{ $tech['color'] }}" @if($tech['color'] === 'text-purple') style="color:#6610f2 !important;" @endif></i> {{ $tech['label'] }}</span>
+    @endforeach
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
@@ -862,19 +802,7 @@
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <h3 class="fw-bold mb-3"><i class="bi bi-bar-chart text-primary me-2"></i>Live System Statistics</h3>
 <div class="row g-3 mb-4">
-    @php
-        $stats = [
-            ['icon' => 'bi-people-fill', 'color' => '#0d6efd', 'label' => 'Active Employees', 'value' => \App\Models\Employee::where('employment_status', 'active')->count()],
-            ['icon' => 'bi-person-plus-fill', 'color' => '#198754', 'label' => 'Onboarding', 'value' => \App\Models\Onboarding::where('status', 'in_progress')->count()],
-            ['icon' => 'bi-person-dash-fill', 'color' => '#dc3545', 'label' => 'Offboarding', 'value' => \App\Models\Offboarding::where('deactivation_status', '!=', 'done')->count()],
-            ['icon' => 'bi-laptop', 'color' => '#fd7e14', 'label' => 'Total Assets', 'value' => \App\Models\AssetInventory::count()],
-            ['icon' => 'bi-person-lock', 'color' => '#6610f2', 'label' => 'User Accounts', 'value' => \App\Models\User::count()],
-            ['icon' => 'bi-building', 'color' => '#0dcaf0', 'label' => 'Companies', 'value' => \App\Models\Company::count()],
-            ['icon' => 'bi-journal-text', 'color' => '#00695c', 'label' => 'Accounts (CoA)', 'value' => \App\Models\Accounting\ChartOfAccount::where('is_active', true)->count()],
-            ['icon' => 'bi-receipt', 'color' => '#ab47bc', 'label' => 'Invoices', 'value' => \App\Models\Accounting\SalesInvoice::count()],
-        ];
-    @endphp
-    @foreach($stats as $stat)
+    @foreach($meta['live_stats'] as $stat)
     <div class="col-6 col-md-4 col-lg-2">
         <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
             <i class="bi {{ $stat['icon'] }}" style="font-size:2rem; color:{{ $stat['color'] }};"></i>
@@ -970,7 +898,9 @@
 
 <div class="text-center text-muted py-4" style="font-size:0.8rem;">
     <i class="bi bi-info-circle me-1"></i>
-    HRM &amp; Finance System v3.0 &mdash; Architecture overview generated April 2026
+    HRM &amp; Finance System &mdash; Auto-updated {{ $meta['collected_at'] }}
+    &nbsp;|&nbsp; Commit <code>{{ $meta['git']['hash'] }}</code>
+    &nbsp;|&nbsp; {{ $meta['tables'] }} tables &middot; {{ $meta['endpoints'] }} endpoints &middot; {{ $meta['mail_classes'] }} emails &middot; {{ $meta['models'] }} models &middot; {{ $meta['views'] }} views
 </div>
 
 @endsection

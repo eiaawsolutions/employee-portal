@@ -44,9 +44,21 @@
     <div class="d-flex justify-content-between align-items-start">
         <div>
             <h1><i class="bi bi-book me-2"></i>System Knowledge Base</h1>
-            <p class="lead mb-0">
+            <p class="lead mb-2">
                 Complete process documentation with logic flows, data pipelines, and architecture wireframes for every module.
             </p>
+            <div class="d-flex flex-wrap gap-2 mt-2" style="font-size:0.78rem;">
+                <span class="badge bg-light text-dark"><i class="bi bi-database me-1"></i>{{ $meta['tables'] }} Tables</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-signpost-split me-1"></i>{{ $meta['endpoints'] }} Endpoints</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-envelope me-1"></i>{{ $meta['mail_classes'] }} Emails</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-box me-1"></i>{{ $meta['models'] }} Models</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-file-code me-1"></i>{{ $meta['views'] }} Views</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-clock-history me-1"></i>{{ $meta['scheduled_jobs'] }} Jobs</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-git me-1"></i>{{ $meta['git']['hash'] }}</span>
+            </div>
+            <div class="mt-2" style="font-size:0.72rem;opacity:0.65;">
+                <i class="bi bi-arrow-repeat me-1"></i>Auto-updated {{ $meta['collected_at'] }}
+            </div>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('superadmin.kb.password.change') }}" class="btn btn-sm btn-outline-light">
@@ -130,6 +142,7 @@ graph LR
         <p class="text-muted small mt-3 mb-0">
             <i class="bi bi-info-circle me-1"></i>
             Arrows show data flow direction. Click any topic card above for detailed logic, pipelines, and wireframes.
+            <span class="ms-2 text-secondary"><i class="bi bi-git me-1"></i>Commit <code>{{ $meta['git']['hash'] }}</code> — {{ $meta['git']['message'] }}</span>
         </p>
     </div>
 </div>

@@ -24,3 +24,6 @@ Schedule::command('backup:run --type=database --encrypt --keep=7')
 Schedule::command('log:verify-integrity')
     ->dailyAt('03:00')
     ->appendOutputTo(storage_path('logs/integrity-check.log'));
+
+// System metadata: auto-refresh cached metadata for System Overview & Knowledge Base
+Schedule::command('system:refresh-metadata')->hourly();

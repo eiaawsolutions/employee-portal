@@ -89,6 +89,15 @@
         </div>
 
         @yield('topic-content')
+
+        {{-- Auto-update footer --}}
+        @if(isset($meta))
+        <div class="text-muted small mt-4 pt-3 border-top" style="font-size:0.75rem;">
+            <i class="bi bi-arrow-repeat me-1"></i>Auto-updated {{ $meta['collected_at'] }}
+            &nbsp;|&nbsp; <i class="bi bi-git me-1"></i>{{ $meta['git']['hash'] }}
+            &nbsp;|&nbsp; {{ $meta['tables'] }} tables &middot; {{ $meta['endpoints'] }} endpoints &middot; {{ $meta['mail_classes'] }} emails
+        </div>
+        @endif
     </div>
 </div>
 

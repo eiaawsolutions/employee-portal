@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Services\SystemMetadataService;
 
 class KnowledgeBaseController extends Controller
 {
@@ -237,13 +238,14 @@ class KnowledgeBaseController extends Controller
     /**
      * Show the knowledge base index with all topics.
      */
-    public function index()
+    public function index(SystemMetadataService $meta)
     {
         $this->authorizeSuperadmin();
         $this->ensureAccess();
 
         return view('superadmin.knowledge-base.index', [
             'topics' => $this->getTopics(),
+            'meta'   => $meta->get(),
         ]);
     }
 
@@ -252,7 +254,7 @@ class KnowledgeBaseController extends Controller
     /**
      * Show a single topic.
      */
-    public function topic(string $slug)
+    public function topic(string $slug, SystemMetadataService $meta)
     {
         $this->authorizeSuperadmin();
         $this->ensureAccess();
@@ -273,6 +275,7 @@ class KnowledgeBaseController extends Controller
             'topic'  => $topics[$slug],
             'topics' => $topics,
             'slug'   => $slug,
+            'meta'   => $meta->get(),
         ]);
     }
 
