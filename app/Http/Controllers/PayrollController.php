@@ -116,11 +116,13 @@ class PayrollController extends Controller
         $employees = Employee::where('employment_status', 'active')->orderBy('full_name')->get();
         $payrollItems = PayrollItem::where('is_active', true)->where('is_recurring', true)->get();
 
-        // Bank info map for JS auto-fill on employee selection
+        // Employee data map for JS auto-fill on employee selection
         $employeeBankData = $employees->mapWithKeys(fn ($e) => [
             $e->id => [
                 'bank_name' => $e->bank_name ?? '',
                 'bank_account_number' => $e->bank_account_number ?? '',
+                'epf_category' => $e->epf_category ?? '1',
+                'is_resident' => $e->is_resident ? '1' : '0',
             ],
         ]);
 
@@ -136,6 +138,8 @@ class PayrollController extends Controller
             'payment_method' => 'required|in:bank_transfer,cheque,cash',
             'bank_name' => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:50',
+            'epf_category' => 'required|in:1,2,3',
+            'is_resident' => 'required|boolean',
             'effective_from' => 'required|date',
             'items' => 'nullable|array',
             'items.*.payroll_item_id' => 'required|exists:payroll_items,id',
@@ -181,13 +185,14 @@ class PayrollController extends Controller
             }
         }
 
-        // Sync bank info back to employee record if changed
-        if (!empty($data['bank_name']) || !empty($data['bank_account_number'])) {
-            Employee::where('id', $data['employee_id'])->update(array_filter([
-                'bank_name' => $data['bank_name'] ?? null,
-                'bank_account_number' => $data['bank_account_number'] ?? null,
-            ], fn ($v) => $v !== null));
-        }
+        // Sync bank info, EPF category, and residency status back to employee record
+        $syncData = array_filter([
+            'bank_name' => $data['bank_name'] ?? null,
+            'bank_account_number' => $data['bank_account_number'] ?? null,
+        ], fn ($v) => $v !== null);
+        $syncData['epf_category'] = $data['epf_category'];
+        $syncData['is_resident'] = $data['is_resident'];
+        Employee::where('id', $data['employee_id'])->update($syncData);
 
         return back()->with('success', 'Salary structure saved.');
     }

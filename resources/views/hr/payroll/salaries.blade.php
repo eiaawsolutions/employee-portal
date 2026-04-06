@@ -18,22 +18,33 @@
                         <th class="text-end">Basic Salary (RM)</th>
                         <th>Payment Method</th>
                         <th>Bank</th>
+                        <th>Citizenship</th>
+                        <th>Tax Residency</th>
                         <th>Effective From</th>
                         <th class="text-center">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($salaries as $salary)
+                    @php
+                        $epfCat = $salary->employee->epf_category ?? '1';
+                        $citizenLabel = match($epfCat) { '3' => 'Foreign Worker', '2' => 'Senior/Disabled', default => 'Malaysian' };
+                        $citizenBadge = match($epfCat) { '3' => 'warning', '2' => 'info', default => 'primary' };
+                        $residentLabel = ($salary->employee->is_resident ?? true) ? 'Resident' : 'Non-Resident';
+                        $residentBadge = ($salary->employee->is_resident ?? true) ? 'success' : 'danger';
+                    @endphp
                     <tr>
                         <td>{{ $salary->employee->full_name ?? '—' }}</td>
                         <td class="text-end fw-bold">{{ number_format($salary->basic_salary, 2) }}</td>
                         <td>{{ ucfirst($salary->payment_method) }}</td>
                         <td>{{ $salary->bank_name ?? '—' }}<br><small class="text-muted">{{ $salary->bank_account_number ?? '' }}</small></td>
+                        <td><span class="badge bg-{{ $citizenBadge }}">{{ $citizenLabel }}</span></td>
+                        <td><span class="badge bg-{{ $residentBadge }}">{{ $residentLabel }}</span></td>
                         <td>{{ \Carbon\Carbon::parse($salary->effective_from)->format('d M Y') }}</td>
                         <td class="text-center"><span class="badge bg-{{ $salary->is_active ? 'success' : 'secondary' }}">{{ $salary->is_active ? 'Active' : 'Inactive' }}</span></td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="text-center text-muted py-4">No salary records found.</td></tr>
+                    <tr><td colspan="8" class="text-center text-muted py-4">No salary records found.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -83,9 +94,28 @@
                             <input type="text" name="bank_account_number" id="salaryBankAccount" class="form-control">
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Effective From</label>
-                        <input type="date" name="effective_from" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Citizenship Status</label>
+                            <select name="epf_category" id="salaryEpfCategory" class="form-select" required>
+                                <option value="1">Malaysian Citizen</option>
+                                <option value="3">Foreign Worker</option>
+                                <option value="2">Senior (≥60) / Disabled / Pensionable</option>
+                            </select>
+                            <small class="text-muted">Determines EPF contribution tier &amp; EIS/SIP applicability</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tax Residency</label>
+                            <select name="is_resident" id="salaryIsResident" class="form-select" required>
+                                <option value="1">Resident</option>
+                                <option value="0">Non-Resident</option>
+                            </select>
+                            <small class="text-muted">Non-residents: flat PCB rate applies</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Effective From</label>
+                            <input type="date" name="effective_from" class="form-control" value="{{ now()->format('Y-m-d') }}" required>
+                        </div>
                     </div>
 
                     <hr>
@@ -110,9 +140,11 @@
 <script>
     const employeeBankData = @json($employeeBankData);
     document.getElementById('salaryEmployeeSelect')?.addEventListener('change', function () {
-        const data = employeeBankData[this.value] || { bank_name: '', bank_account_number: '' };
+        const data = employeeBankData[this.value] || { bank_name: '', bank_account_number: '', epf_category: '1', is_resident: '1' };
         document.getElementById('salaryBankName').value = data.bank_name;
         document.getElementById('salaryBankAccount').value = data.bank_account_number;
+        document.getElementById('salaryEpfCategory').value = data.epf_category;
+        document.getElementById('salaryIsResident').value = data.is_resident;
     });
 </script>
 @endpush
