@@ -44,7 +44,10 @@
                             @if($started && $day <= $daysInMonth)
                                 @php
                                     $currentDate = \Carbon\Carbon::create($year, $month, $day)->format('Y-m-d');
-                                    $dayLeaves = $leaves->filter(fn($l) => $currentDate >= $l->start_date && $currentDate <= $l->end_date);
+                                    $dayLeaves = $leaves->filter(fn($l) =>
+                                        $currentDate >= \Carbon\Carbon::parse($l->start_date)->format('Y-m-d') &&
+                                        $currentDate <= \Carbon\Carbon::parse($l->end_date)->format('Y-m-d')
+                                    );
                                     $isHoliday = $holidays->contains('date', $currentDate);
                                     $isToday = $currentDate === now()->format('Y-m-d');
                                 @endphp
