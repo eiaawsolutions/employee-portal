@@ -50,8 +50,8 @@
                             <option value="openai" {{ ($settings->ai_provider ?? 'openai') === 'openai' ? 'selected' : '' }}>OpenAI</option>
                         </select></div>
                     <div class="mb-2"><label class="form-label small">AI API Key</label>
-                        <input type="password" name="ai_api_key" class="form-control form-control-sm" value="" placeholder="{{ $settings && $settings->getAttributes()['ai_api_key'] ? 'sk-••••••••••••••••' : 'sk-...' }}">
-                        @if($settings && $settings->getAttributes()['ai_api_key'])
+                        <input type="password" name="ai_api_key" class="form-control form-control-sm" value="" placeholder="{{ $settings->exists && ($settings->getAttributes()['ai_api_key'] ?? null) ? 'sk-••••••••••••••••' : 'sk-...' }}">
+                        @if($settings->exists && ($settings->getAttributes()['ai_api_key'] ?? null))
                         <div class="form-text text-success"><i class="bi bi-check-circle me-1"></i>API key is configured. Leave blank to keep current key.</div>
                         @endif
                     </div>

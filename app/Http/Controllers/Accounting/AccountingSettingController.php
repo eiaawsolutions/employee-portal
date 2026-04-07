@@ -13,8 +13,9 @@ class AccountingSettingController extends Controller
     public function index(Request $request)
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
-        $company  = $request->get('company');
-        $settings = AccountingSetting::where('company', $company)->first();
+        $company  = $request->get('company') ?? Auth::user()->employee?->company;
+        $settings = AccountingSetting::where('company', $company)->first()
+                    ?? new AccountingSetting(['company' => $company]);
 
         $fiscalYears = FiscalYear::when($company, fn($q) => $q->where('company', $company))->orderByDesc('start_date')->get();
         $currencies  = Currency::when($company, fn($q) => $q->where('company', $company))->orderBy('code')->get();
@@ -46,6 +47,11 @@ class AccountingSettingController extends Controller
             'ai_api_key'               => ['nullable', 'string', 'max:255'],
             'ai_model'                 => 'nullable|string|max:100',
         ]);
+
+        // Ensure company is never null — fall back to authenticated user's company
+        if (empty($data['company'])) {
+            $data['company'] = Auth::user()->employee?->company;
+        }
 
         // If ai_api_key is blank, keep the existing value (don't wipe it)
         if (empty($data['ai_api_key'])) {
