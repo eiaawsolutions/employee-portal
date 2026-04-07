@@ -52,17 +52,26 @@ class AiAccountingService
                 $mimeType = 'application/pdf';
             }
 
-            // PDFs must be converted to an image first (OpenAI image_url only accepts images).
+            // PDFs must be converted to an image, or handled natively by the provider.
             // convertPdfToImage() tries Ghostscript → Imagick, catching policy errors.
-            // If conversion is truly unavailable, upload via Files API instead.
+            // If conversion is unavailable, fall back to a provider-native PDF path.
             if (str_contains($mimeType, 'pdf')) {
                 $converted = $this->convertPdfToImage($filePath);
                 if ($converted !== null) {
                     $filePath = $converted;
                     $mimeType = 'image/png';
-                } else {
-                    // Fall back: upload PDF via OpenAI Files API and reference by file_id
+                } elseif ($this->provider === 'anthropic') {
+                    // Anthropic natively supports PDF via the 'document' content block
+                    return $this->extractViaAnthropicPdf($scan, $filePath);
+                } elseif ($this->provider === 'openai') {
+                    // OpenAI: upload via Files API and reference by file_id
                     return $this->extractViaFilesApi($scan, $filePath);
+                } else {
+                    throw new \RuntimeException(
+                        'PDF processing requires image conversion (Ghostscript/ImageMagick), '
+                        . 'which is unavailable on this server. Please convert the PDF to an image and re-upload, '
+                        . 'or switch to OpenAI or Anthropic provider which support PDFs natively.'
+                    );
                 }
             }
 
@@ -438,14 +447,97 @@ EOT;
         }
 
         // No converter succeeded
-        Log::warning('PDF-to-image conversion unavailable. Will use OpenAI Files API fallback.', ['path' => $pdfPath]);
+        Log::warning('PDF-to-image conversion unavailable. Will use provider-native PDF fallback.', ['path' => $pdfPath]);
         return null;
     }
 
     /**
-     * Fallback for when PDF→image conversion is unavailable.
-     * Uploads the PDF to OpenAI Files API and uses GPT-4o's native PDF support
-     * via the Assistants-compatible message format.
+     * Anthropic-native PDF fallback: sends the PDF as a base64 document block.
+     * Anthropic Claude supports PDFs natively via the 'document' content type.
+     */
+    private function extractViaAnthropicPdf(AiInvoiceScan $scan, string $pdfPath): array
+    {
+        $prompt = <<<EOT
+Analyze this invoice/bill PDF and extract the following information in JSON format:
+{
+  "vendor_name": "string",
+  "vendor_address": "string or null",
+  "vendor_tax_id": "string or null",
+  "invoice_number": "string",
+  "date": "YYYY-MM-DD",
+  "due_date": "YYYY-MM-DD or null",
+  "currency": "3-letter code, default MYR",
+  "items": [
+    {
+      "description": "string",
+      "quantity": number,
+      "unit_price": number,
+      "tax_amount": number,
+      "line_total": number
+    }
+  ],
+  "subtotal": number,
+  "tax_total": number,
+  "total": number,
+  "payment_terms": "string or null",
+  "notes": "string or null"
+}
+Return ONLY valid JSON. If a field cannot be determined, use null for strings and 0 for numbers.
+EOT;
+
+        $base64Pdf = base64_encode(file_get_contents($pdfPath));
+
+        $response = Http::timeout(60)
+            ->withHeaders([
+                'x-api-key'         => $this->apiKey,
+                'anthropic-version' => '2023-06-01',
+                'anthropic-beta'    => 'pdfs-2024-09-25',
+                'Content-Type'      => 'application/json',
+            ])
+            ->post('https://api.anthropic.com/v1/messages', [
+                'model'      => $this->model,
+                'max_tokens' => 2000,
+                'messages'   => [[
+                    'role'    => 'user',
+                    'content' => [
+                        [
+                            'type'   => 'document',
+                            'source' => [
+                                'type'       => 'base64',
+                                'media_type' => 'application/pdf',
+                                'data'       => $base64Pdf,
+                            ],
+                        ],
+                        ['type' => 'text', 'text' => $prompt],
+                    ],
+                ]],
+            ]);
+
+        if (!$response->successful()) {
+            throw new \RuntimeException('Anthropic PDF extraction failed: ' . $response->body());
+        }
+
+        $content = $response->json('content.0.text', '');
+        $content = preg_replace('/```json\s*/', '', $content);
+        $content = preg_replace('/```\s*/', '', $content);
+        $extracted = json_decode(trim($content), true);
+
+        if (!$extracted) {
+            throw new \RuntimeException('Failed to parse Anthropic PDF response as JSON');
+        }
+
+        $scan->update([
+            'status'           => 'completed',
+            'extracted_data'   => $extracted,
+            'confidence_score' => 85.00,
+        ]);
+
+        return $extracted;
+    }
+
+    /**
+     * Fallback for when PDF→image conversion is unavailable (OpenAI only).
+     * Uploads the PDF to OpenAI Files API and uses GPT-4o's native PDF support.
      */
     private function extractViaFilesApi(AiInvoiceScan $scan, string $pdfPath): array
     {
