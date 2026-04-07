@@ -31,6 +31,35 @@ class AccountingSetting extends Model
     public function defaultSalesAccount()   { return $this->belongsTo(ChartOfAccount::class, 'default_sales_account_id'); }
     public function defaultPurchaseAccount(){ return $this->belongsTo(ChartOfAccount::class, 'default_purchase_account_id'); }
 
+    /**
+     * Resolve the best AccountingSetting to use for AI features.
+     * Priority: company-specific with key → any record with key → company-specific without key → first record
+     */
+    public static function resolveForAi(?string $company): ?self
+    {
+        if ($company) {
+            $specific = self::where('company', $company)->first();
+            if ($specific && ($specific->getAttributes()['ai_api_key'] ?? null)) {
+                return $specific;
+            }
+        }
+        // Fall back to any settings record that has an API key configured
+        $withKey = self::whereNotNull('ai_api_key')->first();
+        if ($withKey) {
+            return $withKey;
+        }
+        // Last resort: company-specific or first record (no key, but has other settings)
+        return $company
+            ? self::where('company', $company)->first()
+            : self::first();
+    }
+
+    /** True if an AI API key is stored (uses raw attribute, same as settings page check). */
+    public function hasAiApiKey(): bool
+    {
+        return (bool) ($this->getAttributes()['ai_api_key'] ?? null);
+    }
+
     public function getNextNumber(string $type): string
     {
         $prefixCol = $type . '_prefix';

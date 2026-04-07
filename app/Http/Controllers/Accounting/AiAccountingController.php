@@ -22,11 +22,8 @@ class AiAccountingController extends Controller
             ->paginate(25);
         $companies = \App\Models\Company::orderBy('name')->pluck('name', 'name');
 
-        // Check if AI API key is configured for the user's company
-        $settings = $company
-            ? \App\Models\Accounting\AccountingSetting::where('company', $company)->first()
-            : \App\Models\Accounting\AccountingSetting::first();
-        $hasApiKey = (bool) ($settings?->ai_api_key ?? config('services.openai.api_key'));
+        $settings  = \App\Models\Accounting\AccountingSetting::resolveForAi($company);
+        $hasApiKey = ($settings?->hasAiApiKey()) || (bool) config('services.openai.api_key');
 
         return view('accounting.ai.invoice-scanner', compact('scans', 'company', 'companies', 'hasApiKey'));
     }
@@ -35,11 +32,9 @@ class AiAccountingController extends Controller
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
 
-        $company = $request->get('company') ?? Auth::user()->employee?->company;
-        $settings = $company
-            ? \App\Models\Accounting\AccountingSetting::where('company', $company)->first()
-            : \App\Models\Accounting\AccountingSetting::first();
-        if (!$settings?->ai_api_key && !config('services.openai.api_key')) {
+        $company  = $request->get('company') ?? Auth::user()->employee?->company;
+        $settings = \App\Models\Accounting\AccountingSetting::resolveForAi($company);
+        if (!$settings?->hasAiApiKey() && !config('services.openai.api_key')) {
             return back()->with('error', 'No AI API key configured. Go to Accounting Settings to add your OpenAI API key.');
         }
 

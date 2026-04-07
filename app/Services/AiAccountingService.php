@@ -26,9 +26,7 @@ class AiAccountingService
         if (!$company) {
             $company = Auth::user()?->employee?->company;
         }
-        $settings = $company
-            ? AccountingSetting::where('company', $company)->first()
-            : AccountingSetting::first();
+        $settings = AccountingSetting::resolveForAi($company);
         $this->provider = $settings?->ai_provider ?? 'openai';
         $this->apiKey   = $settings?->ai_api_key ?? config('services.openai.api_key');
         $this->model    = $settings?->ai_model ?? 'gpt-4o';
