@@ -255,7 +255,7 @@
                     <small class="text-muted d-block mt-1">PCB/MTD submission, EA forms</small>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <a href="https://i-akaun.kwsp.gov.my" target="_blank" rel="noopener" class="btn btn-outline-success w-100">
+                    <a href="https://www.kwsp.gov.my/employer/contribution" target="_blank" rel="noopener" class="btn btn-outline-success w-100">
                         <i class="bi bi-box-arrow-up-right me-1"></i>EPF i-Akaun
                     </a>
                     <small class="text-muted d-block mt-1">EPF contribution remittance</small>
