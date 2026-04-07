@@ -46,7 +46,7 @@
     </a>
     @endif
     @if($aarf?->acknowledgement_token)
-    <a href="{{ route('aarf.view', $aarf->acknowledgement_token) }}" target="_blank"
+    <a href="{{ route('aarf.view', $aarf->acknowledgement_token) }}?readonly=1" target="_blank"
        class="btn btn-sm btn-outline-primary">
         <i class="bi bi-file-earmark-check me-1"></i>View AARF
     </a>

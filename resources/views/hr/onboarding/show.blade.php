@@ -14,7 +14,7 @@
         </a>
     @endif
     @if($onboarding->aarf)
-        <a href="{{ route('aarf.view', $onboarding->aarf->acknowledgement_token) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+        <a href="{{ route('aarf.view', $onboarding->aarf->acknowledgement_token) }}?readonly=1" target="_blank" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-box-arrow-up-right me-1"></i>View AARF
         </a>
     @endif
