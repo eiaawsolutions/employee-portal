@@ -61,7 +61,8 @@ class AiAccountingController extends Controller
             $extracted = $ai->extractInvoiceData($scan);
 
             if (empty($extracted)) {
-                return back()->with('error', 'AI extraction failed. Check the AI API key in Accounting Settings.');
+                $errorDetail = $scan->fresh()->error_message ?? 'Unknown error';
+                return back()->with('error', 'AI extraction failed: ' . $errorDetail);
             }
         } catch (\Exception $e) {
             $scan->update([
