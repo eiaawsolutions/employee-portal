@@ -243,6 +243,7 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     Route::get('/hr/leave/types',                       [LeaveController::class, 'types'])->name('hr.leave.types');
     Route::post('/hr/leave/types',                      [LeaveController::class, 'storeType'])->name('hr.leave.types.store');
     Route::put('/hr/leave/types/{leaveType}',           [LeaveController::class, 'updateType'])->name('hr.leave.types.update');
+    Route::delete('/hr/leave/types/{leaveType}',        [LeaveController::class, 'destroyType'])->name('hr.leave.types.destroy');
 
     // HR: Entitlements
     Route::get('/hr/leave/entitlements',                [LeaveController::class, 'entitlements'])->name('hr.leave.entitlements');

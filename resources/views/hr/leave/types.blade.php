@@ -30,8 +30,15 @@
                         <td>{!! $type->is_paid ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-danger"></i>' !!}</td>
                         <td>{!! $type->requires_attachment ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-x-circle text-muted"></i>' !!}</td>
                         <td><span class="badge bg-{{ $type->is_active ? 'success' : 'secondary' }}">{{ $type->is_active ? 'Active' : 'Inactive' }}</span></td>
-                        <td>
+                        <td class="d-flex gap-1">
                             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTypeModal{{ $type->id }}"><i class="bi bi-pencil"></i></button>
+                            @if(Auth::user()->isSuperadmin() || Auth::user()->role === 'hr_manager')
+                            <form method="POST" action="{{ route('hr.leave.types.destroy', $type) }}"
+                                  onsubmit="return confirm('Delete leave type \'{{ addslashes($type->name) }}\'? This cannot be undone.')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                            </form>
+                            @endif
                             {{-- Edit Modal --}}
                             <div class="modal fade" id="editTypeModal{{ $type->id }}" tabindex="-1">
                                 <div class="modal-dialog">

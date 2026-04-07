@@ -81,6 +81,19 @@ class LeaveController extends Controller
         return back()->with('success', 'Leave type updated.');
     }
 
+    public function destroyType(LeaveType $leaveType)
+    {
+        $this->authorizeLeaveManager();
+
+        // Prevent deletion if any leave applications reference this type
+        if ($leaveType->applications()->exists()) {
+            return back()->with('error', 'Cannot delete "' . $leaveType->name . '" — it has existing leave applications. Deactivate it instead.');
+        }
+
+        $leaveType->delete();
+        return back()->with('success', 'Leave type "' . $leaveType->name . '" deleted.');
+    }
+
     // ── HR: Entitlements ───────────────────────────────────────────────
     public function entitlements()
     {
