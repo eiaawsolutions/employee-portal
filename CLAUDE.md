@@ -30,7 +30,12 @@ php artisan migrate:fresh --seed
 
 ## Architecture Overview
 
-This is a **multi-role HR onboarding/offboarding management system** built on Laravel 12 with Blade + Tailwind CSS v4.
+This is a **multi-role HR platform** built on Laravel 12 with Blade + Tailwind CSS v4. It covers the full employee lifecycle plus several parallel modules:
+- **Core:** Onboarding / Offboarding / Employee records
+- **HR Operations:** Leave management, payroll & payslips, attendance tracking, expense claims (eClaim), EA forms
+- **IT Operations:** Asset inventory, provisioning, AARF acknowledgements
+- **Finance:** Accounting module (Chart of Accounts, AR/AP, GL, invoices, purchase orders, budgeting, tax returns) under `app/Http/Controllers/Accounting/`
+- **Admin:** Company management, knowledge base, system overview/reports, role/permission assignment
 
 ### Roles & Access
 Role groups with granular sub-roles:
@@ -70,19 +75,39 @@ AssetInventory → AssetAssignment (to employee) → AssetProvisioning → retur
 - `AssetInventory` — master asset records; `AssetAssignment` links them to employees
 
 ### Scheduled Commands (`routes/console.php`)
-Both run every minute:
-- `employees:activate` (`ActivateEmployees`) — transitions employees to active status on start date
-- `offboarding:notify` (`OffboardingNotifications`) — sends time-based offboarding email reminders
+- `employees:activate` — every minute; activates employees on start date + sends welcome email, flushes `invite_staging_json` via `populateFromOnboarding()`
+- `offboarding:notify` — every minute; time-based offboarding email reminders
+- `leave:remind-managers` / `claims:remind` — daily at 9 AM
+- `security:audit-report` — hourly
+- `log:verify-integrity` — daily at 3 AM via `LogIntegrity` service
+- `backup:run` — daily at 2 AM (full encrypted backup) + database snapshots every 6 hours; 30-day retention
+- `RefreshSystemMetadata` — hourly; caches dashboard/knowledge-base metadata (1-hour TTL) via `SystemMetadataService`
+
+### Security Architecture
+- **`EnforceSingleSession`** middleware — prevents concurrent logins by rotating session tokens; kicks prior session when a new login occurs
+- **`SecurityAuditMiddleware`** — logs 403s and rate anomalies to `SecurityAuditLog` model; plugs into `ThreatDetector` service for real-time threat analysis
+- **`SecurityHeaders`** / **`ForceHttps`** — additional hardening middleware (controlled via `FORCE_HTTPS` env var)
+- **`SecureFileController`** — serves private files with a `DIRECTORY_PERMISSIONS` map that enforces per-directory role checks; guards against path traversal
+- **File validation in `AppServiceProvider`:** `valid_file_content` rule checks magic bytes against declared MIME type; `sanitize_image` rule strips EXIF/metadata via `ImageSanitizer` service
+- Upload rate-limiting: `throttle:uploads` (10 uploads/minute per user/IP)
+
+### File Storage
+Two disks: `local` (private: `storage/app/private`, served via `SecureFileController`) and `public` (public: `storage/app/public`). Sensitive files (NRIC, contracts, certificates) go to the private disk and are served with role-gated access checks.
 
 ### Mail
-12 Mailable classes in `app/Mail/`, each with a corresponding Blade template in `resources/views/emails/`. The default sender is `hr@claritas.com` (configured via `MAIL_FROM_ADDRESS`).
+24 Mailable classes in `app/Mail/`, each with a corresponding Blade template in `resources/views/emails/`. The default sender is `hr@claritas.com` (configured via `MAIL_FROM_ADDRESS`).
 
 Notable mail classes:
 - `OnboardingEditNotificationMail` — plain notification sent when HR edits an onboarding record (no acknowledgement required)
 - `EmployeeConsentRequestMail` / `ConsentRequestMail` — full re-acknowledgement flow with token link, used for **employee listing and profile** edits only
+- `WelcomeNewHire` — sent by `ActivateEmployees` command on start date
+- `SuspiciousActivityAlert` / `SecurityAuditMail` — triggered by `ThreatDetector`
+- `ClaimApprovedMail`, `ClaimSubmittedMail`, `ClaimReminderMail` — eClaim workflow
+- `LeaveApplicationNotifyMail`, `LeaveApprovalNotifyMail`, `PendingLeaveReminderMail` — leave workflow
+- `EaFormReadyMail` — payroll EA form notification
 
 ### Frontend
-- Blade templates under `resources/views/` organized by role (`hr/`, `it/`, `user/`, `superadmin/`)
+- Blade templates under `resources/views/` organized by role (`hr/`, `it/`, `user/`, `superadmin/`) plus `accounting/` and `reports/`
 - Shared layout at `resources/views/layouts/app.blade.php`
 - Tailwind CSS v4 via `@tailwindcss/vite` plugin — no `tailwind.config.js`; config lives in `resources/css/app.css`
 - No JS framework; Alpine.js or vanilla JS where needed
@@ -121,6 +146,13 @@ There are two separate view paths for offboarding detail:
 - `it.offboarding-show` — accessed by IT staff via `it.offboarding.index`
 
 Both views display Sections F–I via `partials.employee-extra-sections-view`. The IT view is read-only and locks contract/handbook/orientation documents with an "HR only" badge.
+
+### Key Services (`app/Services/`)
+- `SystemMetadataService` — aggregates data for executive dashboards and knowledge base; results cached 1 hour
+- `ThreatDetector` — tracks login failures, rate anomalies, unauthorized access; configurable detection windows
+- `LogIntegrity` — verifies security audit log chain integrity (HMAC chaining via `LOG_INTEGRITY_KEY`)
+- `ImageSanitizer` — strips EXIF metadata from uploaded images
+- `AccountingService` / `AiAccountingService` — accounting module business logic and AI invoice scanning
 
 ### Pending Route Change
 `web.php.routes-to-add.txt` documents a planned registration route split. The routes in `routes/web.php` already reflect this update — the `.txt` file can be ignored.

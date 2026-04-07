@@ -690,6 +690,18 @@ class ReportController extends Controller
         $conditionBreakdown = AssetInventory::selectRaw("COALESCE(asset_condition, 'unknown') as cond, COUNT(*) as total")
             ->groupBy('cond')->orderByDesc('total')->get();
 
+        // Rental by Vendor & Brand
+        $rentalByVendorBrand = AssetInventory::where('ownership_type', 'rental')
+            ->selectRaw("COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, brand, COUNT(*) as total")
+            ->groupBy('vendor', 'brand')->orderBy('vendor')->orderByDesc('total')->get()
+            ->groupBy('vendor');
+
+        // Company-Owned by Company & Brand
+        $companyByEntityBrand = AssetInventory::where('ownership_type', 'company')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, brand, COUNT(*) as total")
+            ->groupBy('company', 'brand')->orderBy('company')->orderByDesc('total')->get()
+            ->groupBy('company');
+
         // Warranty expiring soon (next 90 days)
         $warrantyExpiring = AssetInventory::whereNotNull('warranty_expiry_date')
             ->where('warranty_expiry_date', '>=', now())
@@ -709,7 +721,8 @@ class ReportController extends Controller
             'companies',
             'statusBreakdown', 'byType', 'ownership',
             'byCompanyOwned', 'byRentalVendor', 'conditionBreakdown',
-            'warrantyExpiring', 'rentalExpiring'
+            'warrantyExpiring', 'rentalExpiring',
+            'rentalByVendorBrand', 'companyByEntityBrand'
         ));
     }
 }
