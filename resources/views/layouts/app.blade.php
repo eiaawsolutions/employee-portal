@@ -62,6 +62,7 @@
         .topbar {
             background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px;
             display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
         }
         .topbar h4 { margin: 0; font-weight: 600; color: #1e293b; font-size: 18px; }
         .content-area { padding: 22px 24px; }

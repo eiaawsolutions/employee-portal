@@ -11,7 +11,7 @@
 @endphp
 
 {{-- Report Navigation Tabs --}}
-<div class="card mb-4" style="border:none;background:linear-gradient(135deg,#0f172a,#1e3a5f);">
+<div class="card mb-4" style="border:none;background:linear-gradient(135deg,#0f172a,#1e3a5f);position:sticky;top:57px;z-index:40;">
     <div class="card-body py-3">
         <div class="d-flex align-items-center gap-2 mb-3">
             <i class="bi bi-graph-up-arrow text-white" style="font-size:22px;"></i>
