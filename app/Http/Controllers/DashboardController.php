@@ -30,11 +30,12 @@ class DashboardController extends Controller
         return 'Unspecified';
     }
 
-    private function groupedCompanyCollection($rows, string $companyField = 'company'): array
+    private function groupedCompanyCollection($rows, string $companyField = 'company', bool $normalizeAsCompany = true): array
     {
         $grouped = [];
         foreach ($rows as $row) {
-            $key = $this->groupCompanyName($row->$companyField ?? 'Unknown');
+            $raw = $row->$companyField ?? 'Unknown';
+            $key = $normalizeAsCompany ? $this->groupCompanyName($raw) : (trim($raw) ?: 'Unspecified');
             $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
         }
         return collect($grouped)->map(fn($t,$c) => (object)[$companyField=>$c,'total'=>$t])->values()->all();
@@ -154,7 +155,7 @@ class DashboardController extends Controller
         $rawRentalByVendor = AssetInventory::where('ownership_type', 'rental')
             ->selectRaw('COALESCE(NULLIF(TRIM(rental_vendor),""), "Unspecified") as vendor, count(*) as total')
             ->groupBy('vendor')->orderByDesc('total')->get();
-        $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor');
+        $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
         return view('hr.dashboard', compact(
             'stats','onboardingsByCompany','newJoinersByCompany','exitingByCompany',
@@ -198,7 +199,7 @@ class DashboardController extends Controller
             ->groupBy('vendor')
             ->orderByDesc('total')
             ->get();
-        $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor');
+        $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
         extract($this->getDashboardStats());
 
