@@ -4,6 +4,27 @@
 
 @section('content')
 @include('accounting.partials.nav')
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>{{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-1"></i>{{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if($errors->any())
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    @foreach($errors->all() as $err){{ $err }} @endforeach
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <div class="row g-4">
     <div class="col-md-5">
         <div class="card">
@@ -13,7 +34,7 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Invoice Image / PDF *</label>
-                        <input type="file" name="invoice_file" class="form-control" accept="image/*,.pdf" required>
+                        <input type="file" name="invoice" class="form-control" accept="image/*,.pdf" required>
                         <div class="form-text">Supported: JPG, PNG, PDF (max 10MB). AI will extract vendor, items, amounts.</div>
                     </div>
                     <div class="mb-3"><label class="form-label">Company</label>
@@ -39,12 +60,12 @@
                             <td>{{ $scan->extracted_data['vendor_name'] ?? 'Unknown' }}</td>
                             <td>RM {{ number_format($scan->extracted_data['total_amount'] ?? 0, 2) }}</td>
                             <td>
-                                <span class="badge bg-{{ $scan->status === 'confirmed' ? 'success' : ($scan->status === 'pending_review' ? 'warning' : ($scan->status === 'failed' ? 'danger' : 'secondary')) }}">
+                                <span class="badge bg-{{ $scan->status === 'reviewed' ? 'success' : ($scan->status === 'completed' ? 'warning' : ($scan->status === 'failed' ? 'danger' : ($scan->status === 'processing' ? 'info' : 'secondary'))) }}">
                                     {{ ucwords(str_replace('_', ' ', $scan->status)) }}
                                 </span>
                             </td>
                             <td>
-                                @if($scan->status === 'pending_review')
+                                @if($scan->status === 'completed')
                                 <a href="{{ route('accounting.ai.review-scan', $scan) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Review</a>
                                 @elseif($scan->bill_id)
                                 <a href="{{ route('accounting.bills.show', $scan->bill_id) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-receipt"></i> Bill</a>

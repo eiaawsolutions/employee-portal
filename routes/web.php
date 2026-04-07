@@ -518,6 +518,7 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     Route::get('/accounting/ai/invoice-scanner',                     [AiAccountingController::class, 'invoiceScanner'])->name('accounting.ai.invoice-scanner');
     Route::post('/accounting/ai/upload-invoice',                     [AiAccountingController::class, 'uploadInvoice'])->name('accounting.ai.upload-invoice')->middleware('throttle:10,1');
     Route::get('/accounting/ai/review-scan/{scan}',                  [AiAccountingController::class, 'reviewScan'])->name('accounting.ai.review-scan');
+    Route::get('/accounting/ai/scan-file/{scan}',                    [AiAccountingController::class, 'scanFile'])->name('accounting.ai.scan-file');
     Route::post('/accounting/ai/confirm-scan/{scan}',                [AiAccountingController::class, 'confirmScan'])->name('accounting.ai.confirm-scan')->middleware('throttle:10,1');
     Route::get('/accounting/ai/chatbot',                             [AiAccountingController::class, 'chatbot'])->name('accounting.ai.chatbot');
     Route::post('/accounting/ai/chat-new-session',                   [AiAccountingController::class, 'newChatSession'])->name('accounting.ai.chat-new-session')->middleware('throttle:10,1');

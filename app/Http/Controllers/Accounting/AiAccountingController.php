@@ -37,22 +37,23 @@ class AiAccountingController extends Controller
         $path = $file->store('accounting/invoice-scans', 'local');
 
         $scan = AiInvoiceScan::create([
-            'company'          => $request->get('company'),
-            'original_filename' => $file->getClientOriginalName(),
-            'file_path'        => $path,
-            'status'           => 'processing',
-            'uploaded_by'      => Auth::id(),
+            'company'    => $request->get('company'),
+            'file_name'  => $file->getClientOriginalName(),
+            'file_type'  => $file->getClientMimeType(),
+            'file_path'  => $path,
+            'status'     => 'processing',
+            'created_by' => Auth::id(),
         ]);
 
         try {
-            $extracted = $ai->extractInvoiceData(storage_path('app/' . $path));
-            $scan->update([
-                'extracted_data' => $extracted,
-                'status'         => 'extracted',
-            ]);
+            $extracted = $ai->extractInvoiceData($scan);
+
+            if (empty($extracted)) {
+                return back()->with('error', 'AI extraction failed. Check the AI API key in Accounting Settings.');
+            }
         } catch (\Exception $e) {
             $scan->update([
-                'status'       => 'failed',
+                'status'        => 'failed',
                 'error_message' => $e->getMessage(),
             ]);
             return back()->with('error', 'AI extraction failed: ' . $e->getMessage());
@@ -68,6 +69,14 @@ class AiAccountingController extends Controller
         $vendors  = Vendor::where('is_active', true)->orderBy('name')->get();
         $taxCodes = TaxCode::where('is_active', true)->orderBy('code')->get();
         return view('accounting.ai.review-scan', compact('scan', 'vendors', 'taxCodes'));
+    }
+
+    public function scanFile(AiInvoiceScan $scan)
+    {
+        if (!Auth::user()->canManageAccounting()) abort(403);
+        $path = storage_path('app/' . $scan->file_path);
+        if (!file_exists($path)) abort(404);
+        return response()->file($path, ['Content-Type' => $scan->file_type ?? mime_content_type($path)]);
     }
 
     public function confirmScan(Request $request, AiInvoiceScan $scan)
@@ -123,8 +132,10 @@ class AiAccountingController extends Controller
             $bill->recalculateTotals();
 
             $scan->update([
-                'status'  => 'confirmed',
-                'bill_id' => $bill->id,
+                'status'      => 'reviewed',
+                'bill_id'     => $bill->id,
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
             ]);
 
             AccountingAuditTrail::log('create', $bill, 'Created from AI invoice scan #' . $scan->id);
@@ -171,29 +182,11 @@ class AiAccountingController extends Controller
             if ($session->user_id !== Auth::id()) abort(403);
         }
 
-        AiChatMessage::create([
-            'chat_session_id' => $session->id,
-            'role'            => 'user',
-            'content'         => $data['message'],
-        ]);
-
         try {
-            $history = AiChatMessage::where('chat_session_id', $session->id)
-                ->orderBy('created_at')
-                ->get()
-                ->map(fn($m) => ['role' => $m->role, 'content' => $m->content])
-                ->toArray();
-
-            $response = $ai->chat($data['message'], $data['company'], $history);
+            $response = $ai->chat($session, $data['message']);
         } catch (\Exception $e) {
             $response = 'Sorry, I encountered an error processing your request. Please try again.';
         }
-
-        AiChatMessage::create([
-            'chat_session_id' => $session->id,
-            'role'            => 'assistant',
-            'content'         => $response,
-        ]);
 
         if ($request->expectsJson()) {
             return response()->json([
