@@ -5,6 +5,13 @@
 @section('content')
 @include('accounting.partials.nav')
 
+@if(!($hasApiKey ?? false))
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>No AI API key configured. <a href="{{ route('accounting.settings') }}" class="alert-link">Go to Accounting Settings</a> to add your OpenAI API key.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 @if(session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <i class="bi bi-exclamation-triangle me-1"></i>{{ session('error') }}
@@ -39,7 +46,7 @@
                     </div>
                     <div class="mb-3"><label class="form-label">Company</label>
                         <select name="company" class="form-select"><option value="">— Select —</option>
-                            @foreach($companies ?? [] as $key => $name)<option value="{{ $key }}">{{ $name }}</option>@endforeach
+                            @foreach($companies ?? [] as $key => $name)<option value="{{ $key }}" {{ ($company ?? '') === $key ? 'selected' : '' }}>{{ $name }}</option>@endforeach
                         </select></div>
                     <div class="mb-3"><label class="form-label">Notes</label><textarea name="notes" class="form-control" rows="2"></textarea></div>
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-cloud-upload me-1"></i>Scan Invoice</button>

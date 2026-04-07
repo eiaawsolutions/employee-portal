@@ -16,12 +16,19 @@ class AiAccountingController extends Controller
     public function invoiceScanner(Request $request)
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
-        $company = $request->get('company');
+        $company = $request->get('company') ?? Auth::user()->employee?->company;
         $scans = AiInvoiceScan::when($company, fn($q) => $q->where('company', $company))
             ->latest()
             ->paginate(25);
         $companies = \App\Models\Company::orderBy('name')->pluck('name', 'name');
-        return view('accounting.ai.invoice-scanner', compact('scans', 'company', 'companies'));
+
+        // Check if AI API key is configured for the user's company
+        $settings = $company
+            ? \App\Models\Accounting\AccountingSetting::where('company', $company)->first()
+            : \App\Models\Accounting\AccountingSetting::first();
+        $hasApiKey = (bool) ($settings?->ai_api_key ?? config('services.openai.api_key'));
+
+        return view('accounting.ai.invoice-scanner', compact('scans', 'company', 'companies', 'hasApiKey'));
     }
 
     public function uploadInvoice(Request $request)
