@@ -330,18 +330,12 @@ class AarfController extends Controller
             }
         }
 
-        // Determine viewer role for display purposes only.
-        // HR, superadmin, system_admin → read-only
-        // ?readonly=1 (e.g. from profile page) → read-only for everyone
-        // Everyone else (employee, guest, IT) → can acknowledge
+        // Determine viewer role for display purposes.
+        // ?readonly=1 (e.g. from HR view or profile page) → read-only
+        // All other access via token → can acknowledge (the token IS the authorization)
         $viewerRole = 'employee';
         if (request()->boolean('readonly')) {
             $viewerRole = 'hr';
-        } elseif (auth()->check()) {
-            $authUser = auth()->user();
-            if ($authUser->isHr() || $authUser->isIt() || $authUser->isSuperadmin() || $authUser->isSystemAdmin()) {
-                $viewerRole = 'hr';
-            }
         }
 
         return view('aarf.view', compact('aarf', 'viewerRole'));
