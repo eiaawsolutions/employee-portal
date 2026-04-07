@@ -5,25 +5,13 @@
 @section('content')
 @include('accounting.partials.nav')
 
-@if(!($hasApiKey ?? false))
+@if(!($hasApiKey ?? false) && !session('error'))
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
     <i class="bi bi-exclamation-triangle me-1"></i>No AI API key configured. <a href="{{ route('accounting.settings') }}" class="alert-link">Go to Accounting Settings</a> to add your OpenAI API key.
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 @endif
 
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <i class="bi bi-exclamation-triangle me-1"></i>{{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="bi bi-check-circle me-1"></i>{{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
 @if($errors->any())
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <i class="bi bi-exclamation-triangle me-1"></i>
@@ -59,24 +47,29 @@
             <div class="card-header"><h6 class="mb-0">Scan History</h6></div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0" style="font-size:13px;">
-                    <thead><tr><th>Date</th><th>Vendor</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+                    <thead><tr><th>Date</th><th>Vendor</th><th>Amount</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
                     <tbody>
                     @forelse($scans ?? [] as $scan)
                         <tr>
                             <td>{{ $scan->created_at->format('d M Y H:i') }}</td>
                             <td>{{ $scan->extracted_data['vendor_name'] ?? 'Unknown' }}</td>
-                            <td>RM {{ number_format($scan->extracted_data['total_amount'] ?? 0, 2) }}</td>
+                            <td>RM {{ number_format($scan->extracted_data['total'] ?? 0, 2) }}</td>
                             <td>
                                 <span class="badge bg-{{ $scan->status === 'reviewed' ? 'success' : ($scan->status === 'completed' ? 'warning' : ($scan->status === 'failed' ? 'danger' : ($scan->status === 'processing' ? 'info' : 'secondary'))) }}">
                                     {{ ucwords(str_replace('_', ' ', $scan->status)) }}
                                 </span>
                             </td>
-                            <td>
-                                @if($scan->status === 'completed')
-                                <a href="{{ route('accounting.ai.review-scan', $scan) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> Review</a>
+                            <td class="text-end" style="white-space:nowrap;">
+                                @if($scan->status === 'completed' || $scan->status === 'failed')
+                                <a href="{{ route('accounting.ai.review-scan', $scan) }}" class="btn btn-sm btn-outline-primary" title="Review / Edit"><i class="bi bi-pencil"></i></a>
                                 @elseif($scan->bill_id)
-                                <a href="{{ route('accounting.bills.show', $scan->bill_id) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-receipt"></i> Bill</a>
+                                <a href="{{ route('accounting.bills.show', $scan->bill_id) }}" class="btn btn-sm btn-outline-success" title="View Bill"><i class="bi bi-receipt"></i></a>
+                                <a href="{{ route('accounting.ai.review-scan', $scan) }}" class="btn btn-sm btn-outline-primary" title="Edit Scan"><i class="bi bi-pencil"></i></a>
                                 @endif
+                                <form method="POST" action="{{ route('accounting.ai.destroy-scan', $scan) }}" class="d-inline" onsubmit="return confirm('Delete this scan record?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     @empty
@@ -85,6 +78,7 @@
                     </tbody>
                 </table>
             </div>
+            {{ $scans->links() }}
         </div>
     </div>
 </div>

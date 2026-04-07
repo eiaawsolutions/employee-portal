@@ -162,6 +162,16 @@ class AiAccountingController extends Controller
         });
     }
 
+    public function destroyScan(AiInvoiceScan $scan)
+    {
+        if (!Auth::user()->canManageAccounting()) abort(403);
+        if ($scan->file_path) {
+            Storage::disk('local')->delete($scan->file_path);
+        }
+        $scan->delete();
+        return back()->with('success', 'Scan record deleted.');
+    }
+
     // ── AI Chatbot ───────────────────────────────────────────────
     public function chatbot(Request $request)
     {
