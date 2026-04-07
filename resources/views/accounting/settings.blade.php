@@ -4,6 +4,27 @@
 
 @section('content')
 @include('accounting.partials.nav')
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-1"></i>{{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>{{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+@if($errors->any())
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    @foreach($errors->all() as $err){{ $err }} @endforeach
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 <div class="row g-4">
     {{-- General Settings --}}
     <div class="col-md-6">
@@ -12,23 +33,29 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('accounting.settings.update') }}">
                     @csrf @method('PUT')
-                    <div class="mb-3"><label class="form-label">Default Currency</label><input type="text" name="settings[default_currency]" class="form-control" value="{{ $settings['default_currency'] ?? 'MYR' }}"></div>
+                    <input type="hidden" name="company" value="{{ $company ?? '' }}">
+                    <div class="mb-3"><label class="form-label">Default Currency</label><input type="text" name="base_currency" class="form-control" value="{{ $settings->base_currency ?? 'MYR' }}"></div>
                     <h6 class="mt-3 mb-2" style="font-size:13px;">Document Number Prefixes</h6>
                     <div class="row g-2">
-                        <div class="col-md-6"><label class="form-label small">Invoice</label><input type="text" name="settings[invoice_prefix]" class="form-control form-control-sm" value="{{ $settings['invoice_prefix'] ?? 'INV-' }}"></div>
-                        <div class="col-md-6"><label class="form-label small">Bill</label><input type="text" name="settings[bill_prefix]" class="form-control form-control-sm" value="{{ $settings['bill_prefix'] ?? 'BILL-' }}"></div>
-                        <div class="col-md-6"><label class="form-label small">Journal Entry</label><input type="text" name="settings[journal_prefix]" class="form-control form-control-sm" value="{{ $settings['journal_prefix'] ?? 'JE-' }}"></div>
-                        <div class="col-md-6"><label class="form-label small">Payment</label><input type="text" name="settings[payment_prefix]" class="form-control form-control-sm" value="{{ $settings['payment_prefix'] ?? 'PAY-' }}"></div>
-                        <div class="col-md-6"><label class="form-label small">Credit Note</label><input type="text" name="settings[credit_note_prefix]" class="form-control form-control-sm" value="{{ $settings['credit_note_prefix'] ?? 'CN-' }}"></div>
-                        <div class="col-md-6"><label class="form-label small">Purchase Order</label><input type="text" name="settings[po_prefix]" class="form-control form-control-sm" value="{{ $settings['po_prefix'] ?? 'PO-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Invoice</label><input type="text" name="invoice_prefix" class="form-control form-control-sm" value="{{ $settings->invoice_prefix ?? 'INV-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Bill</label><input type="text" name="bill_prefix" class="form-control form-control-sm" value="{{ $settings->bill_prefix ?? 'BILL-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Journal Entry</label><input type="text" name="journal_prefix" class="form-control form-control-sm" value="{{ $settings->journal_prefix ?? 'JE-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Payment</label><input type="text" name="payment_prefix" class="form-control form-control-sm" value="{{ $settings->payment_prefix ?? 'PAY-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Credit Note</label><input type="text" name="credit_note_prefix" class="form-control form-control-sm" value="{{ $settings->credit_note_prefix ?? 'CN-' }}"></div>
+                        <div class="col-md-6"><label class="form-label small">Purchase Order</label><input type="text" name="po_prefix" class="form-control form-control-sm" value="{{ $settings->po_prefix ?? 'PO-' }}"></div>
                     </div>
                     <h6 class="mt-3 mb-2" style="font-size:13px;">AI Configuration</h6>
                     <div class="mb-2"><label class="form-label small">AI Provider</label>
-                        <select name="settings[ai_provider]" class="form-select form-select-sm">
-                            <option value="openai" {{ ($settings['ai_provider'] ?? 'openai') === 'openai' ? 'selected' : '' }}>OpenAI</option>
+                        <select name="ai_provider" class="form-select form-select-sm">
+                            <option value="openai" {{ ($settings->ai_provider ?? 'openai') === 'openai' ? 'selected' : '' }}>OpenAI</option>
                         </select></div>
-                    <div class="mb-2"><label class="form-label small">AI API Key</label><input type="password" name="settings[ai_api_key]" class="form-control form-control-sm" value="{{ $settings['ai_api_key'] ?? '' }}" placeholder="sk-..."></div>
-                    <div class="mb-2"><label class="form-label small">AI Model</label><input type="text" name="settings[ai_model]" class="form-control form-control-sm" value="{{ $settings['ai_model'] ?? 'gpt-4o' }}"></div>
+                    <div class="mb-2"><label class="form-label small">AI API Key</label>
+                        <input type="password" name="ai_api_key" class="form-control form-control-sm" value="" placeholder="{{ $settings && $settings->getAttributes()['ai_api_key'] ? 'sk-••••••••••••••••' : 'sk-...' }}">
+                        @if($settings && $settings->getAttributes()['ai_api_key'])
+                        <div class="form-text text-success"><i class="bi bi-check-circle me-1"></i>API key is configured. Leave blank to keep current key.</div>
+                        @endif
+                    </div>
+                    <div class="mb-2"><label class="form-label small">AI Model</label><input type="text" name="ai_model" class="form-control form-control-sm" value="{{ $settings->ai_model ?? 'gpt-4o' }}"></div>
                     <button type="submit" class="btn btn-primary btn-sm mt-3">Save Settings</button>
                 </form>
             </div>

@@ -39,11 +39,18 @@ class AccountingSettingController extends Controller
             'payment_next_number'      => 'nullable|integer|min:1',
             'journal_prefix'           => 'nullable|string|max:10',
             'journal_next_number'      => 'nullable|integer|min:1',
+            'credit_note_prefix'       => 'nullable|string|max:10',
+            'po_prefix'                => 'nullable|string|max:10',
             'default_payment_terms'    => 'nullable|integer|min:0|max:365',
             'ai_provider'              => 'nullable|in:openai,anthropic,local',
-            'ai_api_key'               => ['nullable', 'string', 'max:255', 'regex:/^sk-[a-zA-Z0-9_\-]+$/'],
+            'ai_api_key'               => ['nullable', 'string', 'max:255'],
             'ai_model'                 => 'nullable|string|max:100',
         ]);
+
+        // If ai_api_key is blank, keep the existing value (don't wipe it)
+        if (empty($data['ai_api_key'])) {
+            unset($data['ai_api_key']);
+        }
 
         $settings = AccountingSetting::updateOrCreate(
             ['company' => $data['company']],
