@@ -226,7 +226,7 @@ class AiAccountingController extends Controller
         if (!Auth::user()->canUseAiChat()) abort(403);
         if ($session->user_id !== Auth::id()) abort(403);
 
-        $messages = AiChatMessage::where('chat_session_id', $session->id)
+        $messages = AiChatMessage::where('session_id', $session->id)
             ->orderBy('created_at')
             ->get();
 
@@ -237,7 +237,8 @@ class AiAccountingController extends Controller
 
         $companies = \App\Models\Company::orderBy('name')->pluck('name', 'name');
         $company   = $session->company;
+        $currentSession = $session;
 
-        return view('accounting.ai.chatbot', compact('session', 'messages', 'sessions', 'company', 'companies'));
+        return view('accounting.ai.chatbot', compact('currentSession', 'messages', 'sessions', 'company', 'companies'));
     }
 }
