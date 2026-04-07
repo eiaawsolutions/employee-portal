@@ -46,6 +46,7 @@ class AccountingSettingController extends Controller
             'ai_provider'              => 'nullable|in:openai,anthropic,gemini,deepseek,groq,local',
             'ai_api_key'               => ['nullable', 'string', 'max:255'],
             'ai_model'                 => 'nullable|string|max:100',
+            'ollama_base_url'          => 'nullable|url|max:255',
         ]);
 
         // Ensure company is never null — fall back to authenticated user's company

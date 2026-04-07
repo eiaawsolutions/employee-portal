@@ -77,6 +77,14 @@
                         @endif
                     </div>
 
+                    <div class="mb-2" id="ollamaUrlRow" style="{{ $aiProvider !== 'local' ? 'display:none' : '' }}">
+                        <label class="form-label small">Ollama Base URL</label>
+                        <input type="url" name="ollama_base_url" id="ollamaBaseUrl" class="form-control form-control-sm"
+                               placeholder="http://192.168.1.100:11434"
+                               value="{{ $settings->ollama_base_url ?? '' }}">
+                        <div class="form-text text-muted" style="font-size:11px;">URL of your Ollama instance (e.g. on another machine on your network). Defaults to <code>http://localhost:11434</code> if blank.</div>
+                    </div>
+
                     <div class="mb-2">
                         <label class="form-label small">AI Model</label>
                         <div class="input-group input-group-sm">
@@ -112,16 +120,18 @@
                     };
 
                     function onProviderChange() {
-                        const prov     = document.getElementById('aiProvider').value;
-                        const meta     = AI_PROVIDERS[prov] || {};
-                        const keyRow   = document.getElementById('apiKeyRow');
-                        const keyInput = document.getElementById('aiApiKey');
-                        const selModel = document.getElementById('aiModelSelect');
-                        const custModel= document.getElementById('aiModelCustom');
-                        const hint     = document.getElementById('aiModelHint');
+                        const prov       = document.getElementById('aiProvider').value;
+                        const meta       = AI_PROVIDERS[prov] || {};
+                        const keyRow     = document.getElementById('apiKeyRow');
+                        const keyInput   = document.getElementById('aiApiKey');
+                        const selModel   = document.getElementById('aiModelSelect');
+                        const custModel  = document.getElementById('aiModelCustom');
+                        const hint       = document.getElementById('aiModelHint');
+                        const ollamaRow  = document.getElementById('ollamaUrlRow');
 
-                        // Show/hide key field for local provider
-                        keyRow.style.display = (prov === 'local') ? 'none' : '';
+                        // Show/hide key field and Ollama URL for local provider
+                        keyRow.style.display    = (prov === 'local') ? 'none' : '';
+                        ollamaRow.style.display = (prov === 'local') ? '' : 'none';
                         if (prov !== 'local') {
                             keyInput.placeholder = meta.placeholder || 'API key…';
                         }

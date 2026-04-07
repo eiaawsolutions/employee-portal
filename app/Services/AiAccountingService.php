@@ -20,6 +20,7 @@ class AiAccountingService
     private ?string $apiKey;
     private string $model;
     private string $provider;
+    private string $ollamaBaseUrl;
 
     public function __construct(?string $company = null)
     {
@@ -27,9 +28,10 @@ class AiAccountingService
             $company = Auth::user()?->employee?->company;
         }
         $settings = AccountingSetting::resolveForAi($company);
-        $this->provider = $settings?->ai_provider ?? 'openai';
-        $this->apiKey   = $settings?->ai_api_key ?? config('services.openai.api_key');
-        $this->model    = $settings?->ai_model ?? 'gpt-4o';
+        $this->provider      = $settings?->ai_provider ?? 'openai';
+        $this->apiKey        = $settings?->ai_api_key ?? config('services.openai.api_key');
+        $this->model         = $settings?->ai_model ?? 'gpt-4o';
+        $this->ollamaBaseUrl = rtrim($settings?->ollama_base_url ?? 'http://localhost:11434', '/');
     }
 
     /**
@@ -384,10 +386,10 @@ EOT;
                     ->post('https://api.groq.com/openai/v1/chat/completions', $body);
 
             case 'local':
-                // Ollama OpenAI-compatible endpoint
+                // Ollama OpenAI-compatible endpoint (configurable base URL)
                 return Http::timeout(120)
                     ->withHeaders($headers)
-                    ->post('http://localhost:11434/v1/chat/completions', $body);
+                    ->post($this->ollamaBaseUrl . '/v1/chat/completions', $body);
 
             default: // openai
                 return Http::timeout(60)

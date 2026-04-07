@@ -17,7 +17,7 @@ class AccountingSetting extends Model
         'next_po_number', 'next_journal_number', 'next_payment_number', 'next_receipt_number',
         'default_payment_terms_days', 'default_tax_code_id',
         'default_sales_account_id', 'default_purchase_account_id', 'retained_earnings_account_id',
-        'enable_multi_currency', 'ai_provider', 'ai_api_key', 'ai_model',
+        'enable_multi_currency', 'ai_provider', 'ai_api_key', 'ai_model', 'ollama_base_url',
     ];
 
     protected $casts = [
