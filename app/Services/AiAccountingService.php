@@ -24,9 +24,9 @@ class AiAccountingService
     public function __construct()
     {
         $settings = AccountingSetting::first();
-        $this->provider = $settings->ai_provider ?? 'openai';
-        $this->apiKey   = $settings->ai_api_key ?? config('services.openai.api_key');
-        $this->model    = $settings->ai_model ?? 'gpt-4o';
+        $this->provider = $settings?->ai_provider ?? 'openai';
+        $this->apiKey   = $settings?->ai_api_key ?? config('services.openai.api_key');
+        $this->model    = $settings?->ai_model ?? 'gpt-4o';
     }
 
     /**
@@ -37,14 +37,21 @@ class AiAccountingService
         $scan->update(['status' => 'processing']);
 
         try {
-            $filePath = storage_path('app/' . $scan->file_path);
+            $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($scan->file_path);
 
             if (!file_exists($filePath)) {
                 throw new \RuntimeException('File not found: ' . $scan->file_path);
             }
 
-            $base64 = base64_encode(file_get_contents($filePath));
             $mimeType = mime_content_type($filePath);
+
+            // PDFs: convert first page to image since OpenAI vision only accepts images
+            if (str_contains($mimeType, 'pdf')) {
+                $filePath = $this->convertPdfToImage($filePath);
+                $mimeType = 'image/png';
+            }
+
+            $base64 = base64_encode(file_get_contents($filePath));
 
             $prompt = <<<EOT
 Analyze this invoice/bill image and extract the following information in JSON format:
@@ -338,5 +345,41 @@ EOT;
             'role'    => $msg->role,
             'content' => $msg->content,
         ])->values()->toArray();
+    }
+
+    /**
+     * Convert a PDF's first page to a PNG image for OpenAI vision processing.
+     * Falls back to returning the original path if Imagick is unavailable.
+     */
+    private function convertPdfToImage(string $pdfPath): string
+    {
+        $outputPath = preg_replace('/\.pdf$/i', '', $pdfPath) . '_page1.png';
+
+        // Try Imagick (most reliable)
+        if (extension_loaded('imagick')) {
+            $im = new \Imagick();
+            $im->setResolution(200, 200);
+            $im->readImage($pdfPath . '[0]'); // first page only
+            $im->setImageFormat('png');
+            $im->writeImage($outputPath);
+            $im->destroy();
+            return $outputPath;
+        }
+
+        // Try Ghostscript CLI (available on most Linux/Synology)
+        $gs = collect(['/usr/bin/gs', '/usr/local/bin/gs', '/opt/bin/gs'])
+            ->first(fn ($p) => is_executable($p));
+
+        if ($gs) {
+            $escaped = [escapeshellarg($outputPath), escapeshellarg($pdfPath)];
+            exec("{$gs} -dBATCH -dNOPAUSE -dFirstPage=1 -dLastPage=1 -sDEVICE=png16m -r200 -sOutputFile={$escaped[0]} {$escaped[1]} 2>&1", $out, $code);
+            if ($code === 0 && file_exists($outputPath)) {
+                return $outputPath;
+            }
+        }
+
+        // No converter available — return original and let the API handle it
+        Log::warning('PDF-to-image conversion not available (no Imagick or Ghostscript). Sending PDF directly to API.');
+        return $pdfPath;
     }
 }

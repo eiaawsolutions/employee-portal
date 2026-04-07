@@ -28,6 +28,11 @@ class AiAccountingController extends Controller
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
 
+        $settings = \App\Models\Accounting\AccountingSetting::first();
+        if (!$settings?->ai_api_key && !config('services.openai.api_key')) {
+            return back()->with('error', 'No AI API key configured. Go to Accounting Settings to add your OpenAI API key.');
+        }
+
         $request->validate([
             'company'  => 'nullable|string|max:255',
             'invoice'  => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
@@ -74,7 +79,7 @@ class AiAccountingController extends Controller
     public function scanFile(AiInvoiceScan $scan)
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
-        $path = storage_path('app/' . $scan->file_path);
+        $path = Storage::disk('local')->path($scan->file_path);
         if (!file_exists($path)) abort(404);
         return response()->file($path, ['Content-Type' => $scan->file_type ?? mime_content_type($path)]);
     }
