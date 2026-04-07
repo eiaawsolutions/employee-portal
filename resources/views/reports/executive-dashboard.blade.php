@@ -276,10 +276,10 @@
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 {{-- ROW 5: Statutory + Onboarding Pipeline + Asset Summary --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
-<div class="row g-3 mb-4">
+<div class="row g-3 mb-4 align-items-start">
     {{-- Statutory Contributions --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
+        <div class="card chart-card">
             <div class="card-header py-2"><i class="bi bi-bank me-1"></i>Statutory Contributions YTD</div>
             <div class="card-body">
                 @php $st = $statutoryTotals; @endphp
@@ -305,7 +305,7 @@
     </div>
     {{-- Onboarding Pipeline --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
+        <div class="card chart-card">
             <div class="card-header py-2"><i class="bi bi-funnel me-1"></i>Onboarding Pipeline</div>
             <div class="card-body">
                 <div class="d-flex flex-column gap-3">
@@ -342,7 +342,7 @@
     </div>
     {{-- Asset Summary --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
+        <div class="card chart-card">
             <div class="card-header py-2"><i class="bi bi-laptop me-1"></i>Asset Portfolio</div>
             <div class="card-body">
                 <canvas id="assetStatusChart" height="180"></canvas>
