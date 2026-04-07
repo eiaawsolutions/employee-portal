@@ -30,17 +30,10 @@
 {{-- ── Profile Header ────────────────────────────────────────────────────── --}}
 <div class="card mb-4">
     <div class="card-body d-flex align-items-center gap-4 py-3">
-        @if($user->profile_picture)
-            <img src="{{ asset('storage/' . $user->profile_picture) }}"
-                 alt="Profile Photo"
-                 class="rounded-circle border shadow-sm flex-shrink-0"
-                 style="width:80px;height:80px;object-fit:cover;">
-        @else
-            <img src="https://ui-avatars.com/api/?name={{ urlencode($emp?->full_name ?? $user->name) }}&background=2563eb&color=fff&size=200"
-                 alt="Avatar"
-                 class="rounded-circle border shadow-sm flex-shrink-0"
-                 style="width:80px;height:80px;object-fit:cover;">
-        @endif
+        <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : \App\Models\User::defaultAvatarUrl($emp?->sex) }}"
+             alt="Profile Photo"
+             class="rounded-circle border shadow-sm flex-shrink-0"
+             style="width:80px;height:80px;object-fit:cover;">
         <div class="flex-fill">
             <h5 class="fw-bold mb-1">{{ $emp?->full_name ?? $user->name }}</h5>
             @if($emp?->preferred_name && $emp->preferred_name !== $emp->full_name)

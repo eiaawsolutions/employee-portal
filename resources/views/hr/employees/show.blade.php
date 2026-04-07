@@ -18,7 +18,7 @@
 
     $empName       = $employee->full_name ?? $employee->user?->name ?? 'Employee';
     $profilePicUrl = $employee->user?->profile_picture_url
-                   ?? 'https://ui-avatars.com/api/?name=' . urlencode($empName) . '&background=2563eb&color=fff&size=200';
+                   ?? \App\Models\User::defaultAvatarUrl($employee->sex);
 
     $statusColors = ['active'=>'success','resigned'=>'danger','terminated'=>'danger','contract_ended'=>'secondary'];
 

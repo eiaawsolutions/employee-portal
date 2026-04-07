@@ -27,7 +27,13 @@ class User extends Authenticatable
         if ($this->profile_picture) {
             return asset('storage/' . $this->profile_picture);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=2563eb&color=fff&size=128';
+        return self::defaultAvatarUrl($this->employee?->sex);
+    }
+
+    public static function defaultAvatarUrl(?string $sex = null): string
+    {
+        $file = ($sex === 'female') ? 'default-avatar-female.svg' : 'default-avatar-male.svg';
+        return asset('images/' . $file);
     }
 
     // ── Role checks ───────────────────────────────────────────────────────

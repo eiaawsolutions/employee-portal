@@ -923,9 +923,8 @@
 
     <div class="sidebar-footer">
         <div class="user-chip d-flex align-items-center gap-2">
-            <div class="user-avatar">
-                <i class="bi bi-person-fill" style="color:#fff;font-size:16px;"></i>
-            </div>
+            <img src="{{ Auth::user()->profile_picture_url }}" alt="Avatar"
+                 class="rounded-circle flex-shrink-0" style="width:34px;height:34px;object-fit:cover;">
             <div style="overflow:hidden;flex:1;">
                 <div style="color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                     {{ Auth::user()->name }}

@@ -18,7 +18,7 @@ $a = $onboarding->assetProvisioning;
 $canEditAll = Auth::user()->canEditAllOnboardingSections();
 $obEditName      = $p?->full_name ?? $onboarding->employee?->full_name ?? 'New Employee';
 $obEditPicUrl    = $onboarding->employee?->user?->profile_picture_url
-                 ?? 'https://ui-avatars.com/api/?name=' . urlencode($obEditName) . '&background=2563eb&color=fff&size=200';
+                 ?? \App\Models\User::defaultAvatarUrl($p?->sex ?? $onboarding->employee?->sex);
 $obEditCanPhoto  = Auth::user()->canEditOnboarding() && $onboarding->employee?->user;
 $obEditStatus    = $onboarding->employee?->employment_status ?? 'pending';
 $obEditStatusBg  = match($obEditStatus) {

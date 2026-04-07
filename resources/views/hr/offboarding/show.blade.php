@@ -10,7 +10,7 @@
     $statusColors = ['active'=>'success','resigned'=>'danger','terminated'=>'danger','contract_ended'=>'secondary'];
     $empName = $employee?->full_name ?? $offboarding->full_name ?? 'Employee';
     $profilePicUrl = $employee?->user?->profile_picture_url
-        ?? 'https://ui-avatars.com/api/?name='.urlencode($empName).'&background=dc2626&color=fff&size=200';
+        ?? \App\Models\User::defaultAvatarUrl($employee?->sex);
 @endphp
 
 <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">

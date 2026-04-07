@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <clipPath id="circle-clip-f">
+      <circle cx="100" cy="100" r="90"/>
+    </clipPath>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="#d1d5db"/>
+  <g clip-path="url(#circle-clip-f)">
+    <!-- Body / Suit -->
+    <ellipse cx="100" cy="230" rx="80" ry="70" fill="#1f2937"/>
+    <!-- Shirt collar -->
+    <path d="M80 165 L100 180 L120 165" fill="#f3f4f6" stroke="#e5e7eb" stroke-width="1"/>
+    <!-- Neck -->
+    <rect x="88" y="140" width="24" height="30" rx="6" fill="#d4a574"/>
+    <!-- Head -->
+    <ellipse cx="100" cy="110" rx="38" ry="44" fill="#d4a574"/>
+    <!-- Hair back -->
+    <ellipse cx="100" cy="85" rx="44" ry="38" fill="#3d2b1f"/>
+    <!-- Hair left side -->
+    <path d="M56 85 Q56 130 64 140 Q60 110 60 95 Z" fill="#3d2b1f"/>
+    <!-- Hair right side -->
+    <path d="M144 85 Q144 130 136 140 Q140 110 140 95 Z" fill="#3d2b1f"/>
+    <!-- Hair fringe -->
+    <path d="M62 90 Q70 65 100 60 Q130 65 138 90 Q130 75 100 72 Q70 75 62 90 Z" fill="#3d2b1f"/>
+    <!-- Eyes -->
+    <ellipse cx="84" cy="112" rx="4" ry="4.5" fill="#3d2b1f"/>
+    <ellipse cx="116" cy="112" rx="4" ry="4.5" fill="#3d2b1f"/>
+    <!-- Eyebrows -->
+    <path d="M76 104 Q84 100 92 103" fill="none" stroke="#3d2b1f" stroke-width="2" stroke-linecap="round"/>
+    <path d="M108 103 Q116 100 124 104" fill="none" stroke="#3d2b1f" stroke-width="2" stroke-linecap="round"/>
+    <!-- Nose -->
+    <path d="M100 116 Q96 124 98 126 Q100 128 102 126 Q104 124 100 116" fill="#c49a6c" opacity="0.5"/>
+    <!-- Mouth -->
+    <path d="M92 134 Q100 139 108 134" fill="none" stroke="#b07850" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Blush -->
+    <ellipse cx="78" cy="125" rx="8" ry="5" fill="#e8a0a0" opacity="0.3"/>
+    <ellipse cx="122" cy="125" rx="8" ry="5" fill="#e8a0a0" opacity="0.3"/>
+  </g>
+  <!-- Circle border -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+</svg>

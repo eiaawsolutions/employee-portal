@@ -30,7 +30,7 @@
 
     $obShowName       = $p?->full_name ?? $onboarding->employee?->full_name ?? 'New Employee';
     $obShowPicUrl     = $onboarding->employee?->user?->profile_picture_url
-                      ?? 'https://ui-avatars.com/api/?name=' . urlencode($obShowName) . '&background=2563eb&color=fff&size=200';
+                      ?? \App\Models\User::defaultAvatarUrl($p?->sex ?? $onboarding->employee?->sex);
     $obStatusColors   = ['active'=>'success','resigned'=>'danger','terminated'=>'danger','contract_ended'=>'secondary'];
     $obStatus         = $onboarding->employee?->employment_status ?? 'pending';
     $obStatusBg       = match($obStatus) {

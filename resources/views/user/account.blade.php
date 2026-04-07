@@ -18,11 +18,7 @@
                     <div class="alert alert-success py-2"><i class="bi bi-check-circle me-2"></i>{{ session('avatar_success') }}</div>
                 @endif
                 <div class="mb-3">
-                    @if(Auth::user()->profile_picture)
-                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" alt="Profile" class="rounded-circle border shadow-sm" style="width:100px;height:100px;object-fit:cover;">
-                    @else
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=2684FE&color=fff&size=200" alt="Avatar" class="rounded-circle border shadow-sm" style="width:100px;height:100px;object-fit:cover;">
-                    @endif
+                    <img src="{{ Auth::user()->profile_picture_url }}" alt="Profile" class="rounded-circle border shadow-sm" style="width:100px;height:100px;object-fit:cover;">
                 </div>
                 <form action="{{ route('account.avatar') }}" method="POST" enctype="multipart/form-data">
                     @csrf

@@ -14,7 +14,7 @@
 @php
     $editEmpName       = $employee->full_name ?? $employee->user?->name ?? 'Employee';
     $editProfilePicUrl = $employee->user?->profile_picture_url
-                       ?? 'https://ui-avatars.com/api/?name=' . urlencode($editEmpName) . '&background=2563eb&color=fff&size=200';
+                       ?? \App\Models\User::defaultAvatarUrl($employee->sex);
     $editStatusColors  = ['active'=>'success','resigned'=>'danger','terminated'=>'danger','contract_ended'=>'secondary'];
     $editCanPhoto      = in_array(Auth::user()->role, ['hr_manager','superadmin','system_admin']);
 @endphp
