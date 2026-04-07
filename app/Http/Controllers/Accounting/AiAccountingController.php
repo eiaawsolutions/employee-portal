@@ -24,14 +24,19 @@ class AiAccountingController extends Controller
         return view('accounting.ai.invoice-scanner', compact('scans', 'company', 'companies'));
     }
 
-    public function uploadInvoice(Request $request, AiAccountingService $ai)
+    public function uploadInvoice(Request $request)
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
 
-        $settings = \App\Models\Accounting\AccountingSetting::first();
+        $company = $request->get('company') ?? Auth::user()->employee?->company;
+        $settings = $company
+            ? \App\Models\Accounting\AccountingSetting::where('company', $company)->first()
+            : \App\Models\Accounting\AccountingSetting::first();
         if (!$settings?->ai_api_key && !config('services.openai.api_key')) {
             return back()->with('error', 'No AI API key configured. Go to Accounting Settings to add your OpenAI API key.');
         }
+
+        $ai = new AiAccountingService($company);
 
         $request->validate([
             'company'  => 'nullable|string|max:255',
@@ -166,7 +171,7 @@ class AiAccountingController extends Controller
         return view('accounting.ai.chatbot', compact('sessions', 'company', 'companies'));
     }
 
-    public function chatSend(Request $request, AiAccountingService $ai)
+    public function chatSend(Request $request)
     {
         if (!Auth::user()->canUseAiChat()) abort(403);
 
@@ -175,6 +180,9 @@ class AiAccountingController extends Controller
             'session_id' => 'nullable|exists:acc_ai_chat_sessions,id',
             'message'    => 'required|string|max:2000',
         ]);
+
+        $company = $data['company'] ?? Auth::user()->employee?->company;
+        $ai = new AiAccountingService($company);
 
         if (!$data['session_id']) {
             $session = AiChatSession::create([

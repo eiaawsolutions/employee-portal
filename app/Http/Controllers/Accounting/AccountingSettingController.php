@@ -18,7 +18,7 @@ class AccountingSettingController extends Controller
                     ?? new AccountingSetting(['company' => $company]);
 
         $fiscalYears = FiscalYear::when($company, fn($q) => $q->where('company', $company))->orderByDesc('start_date')->get();
-        $currencies  = Currency::when($company, fn($q) => $q->where('company', $company))->orderBy('code')->get();
+        $currencies  = Currency::orderBy('code')->get();
         $companies   = \App\Models\Company::orderBy('name')->pluck('name', 'name');
 
         return view('accounting.settings', compact('settings', 'fiscalYears', 'currencies', 'company', 'companies'));
