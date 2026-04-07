@@ -45,18 +45,126 @@
                         <div class="col-md-6"><label class="form-label small">Purchase Order</label><input type="text" name="po_prefix" class="form-control form-control-sm" value="{{ $settings->po_prefix ?? 'PO-' }}"></div>
                     </div>
                     <h6 class="mt-3 mb-2" style="font-size:13px;">AI Configuration</h6>
-                    <div class="mb-2"><label class="form-label small">AI Provider</label>
-                        <select name="ai_provider" class="form-select form-select-sm">
-                            <option value="openai" {{ ($settings->ai_provider ?? 'openai') === 'openai' ? 'selected' : '' }}>OpenAI</option>
-                        </select></div>
-                    <div class="mb-2"><label class="form-label small">AI API Key</label>
-                        <input type="password" name="ai_api_key" class="form-control form-control-sm" value="" placeholder="{{ $settings->exists && ($settings->getAttributes()['ai_api_key'] ?? null) ? 'sk-••••••••••••••••' : 'sk-...' }}">
-                        @if($settings->exists && ($settings->getAttributes()['ai_api_key'] ?? null))
-                        <div class="form-text text-success"><i class="bi bi-check-circle me-1"></i>API key is configured. Leave blank to keep current key.</div>
+                    @php
+                        $aiProvider = $settings->ai_provider ?? 'openai';
+                        $aiModel    = $settings->ai_model    ?? 'gpt-4o';
+                        $hasKey     = $settings->exists && ($settings->getAttributes()['ai_api_key'] ?? null);
+                        $providers  = [
+                            'openai'    => ['label' => 'OpenAI (ChatGPT)',    'placeholder' => 'sk-…',        'models' => ['gpt-4o','gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo']],
+                            'anthropic' => ['label' => 'Anthropic (Claude)', 'placeholder' => 'sk-ant-…',    'models' => ['claude-opus-4-6','claude-sonnet-4-6','claude-haiku-4-5-20251001']],
+                            'gemini'    => ['label' => 'Google Gemini',      'placeholder' => 'AIza…',       'models' => ['gemini-2.0-flash','gemini-1.5-pro','gemini-1.5-flash']],
+                            'deepseek'  => ['label' => 'DeepSeek',           'placeholder' => 'sk-…',        'models' => ['deepseek-chat','deepseek-reasoner']],
+                            'groq'      => ['label' => 'Groq',               'placeholder' => 'gsk_…',       'models' => ['llama-3.3-70b-versatile','mixtral-8x7b-32768','gemma2-9b-it']],
+                            'local'     => ['label' => 'Local / Ollama',     'placeholder' => '(no key needed)', 'models' => ['llama3','mistral','phi3','gemma3']],
+                        ];
+                    @endphp
+
+                    <div class="mb-2">
+                        <label class="form-label small">AI Provider</label>
+                        <select name="ai_provider" id="aiProvider" class="form-select form-select-sm" onchange="onProviderChange()">
+                            @foreach($providers as $value => $meta)
+                            <option value="{{ $value }}" {{ $aiProvider === $value ? 'selected' : '' }}>{{ $meta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-2" id="apiKeyRow">
+                        <label class="form-label small">AI API Key</label>
+                        <input type="password" name="ai_api_key" id="aiApiKey" class="form-control form-control-sm" value=""
+                               placeholder="{{ $hasKey ? '••••••••••••••••' : ($providers[$aiProvider]['placeholder'] ?? 'API key…') }}">
+                        @if($hasKey)
+                        <div class="form-text text-success" id="keyConfigured"><i class="bi bi-check-circle me-1"></i>API key is configured. Leave blank to keep current key.</div>
                         @endif
                     </div>
-                    <div class="mb-2"><label class="form-label small">AI Model</label><input type="text" name="ai_model" class="form-control form-control-sm" value="{{ $settings->ai_model ?? 'gpt-4o' }}"></div>
+
+                    <div class="mb-2">
+                        <label class="form-label small">AI Model</label>
+                        <div class="input-group input-group-sm">
+                            <select name="ai_model" id="aiModelSelect" class="form-select form-select-sm" onchange="document.getElementById('aiModelCustom').value=this.value">
+                                @foreach($providers[$aiProvider]['models'] ?? [] as $m)
+                                <option value="{{ $m }}" {{ $aiModel === $m ? 'selected' : '' }}>{{ $m }}</option>
+                                @endforeach
+                                <option value="_custom" {{ !in_array($aiModel, $providers[$aiProvider]['models'] ?? []) ? 'selected' : '' }}>Custom…</option>
+                            </select>
+                            <input type="text" id="aiModelCustom" name="ai_model" class="form-control form-control-sm"
+                                   placeholder="e.g. gpt-4o-mini"
+                                   value="{{ $aiModel }}"
+                                   style="{{ in_array($aiModel, $providers[$aiProvider]['models'] ?? []) ? 'display:none' : '' }}">
+                        </div>
+                        <div class="form-text text-muted" id="aiModelHint" style="font-size:11px;"></div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-sm mt-3">Save Settings</button>
+
+                    @push('scripts')
+                    <script>
+                    const AI_PROVIDERS = @json($providers);
+                    const SAVED_PROVIDER = @json($aiProvider);
+                    const SAVED_MODEL    = @json($aiModel);
+
+                    const hints = {
+                        openai:    'Requires an OpenAI API key from platform.openai.com',
+                        anthropic: 'Requires an Anthropic API key from console.anthropic.com',
+                        gemini:    'Requires a Google AI Studio key from aistudio.google.com',
+                        deepseek:  'Requires a DeepSeek API key from platform.deepseek.com',
+                        groq:      'Requires a Groq API key from console.groq.com',
+                        local:     'No API key needed. Ensure Ollama is running on your server.',
+                    };
+
+                    function onProviderChange() {
+                        const prov     = document.getElementById('aiProvider').value;
+                        const meta     = AI_PROVIDERS[prov] || {};
+                        const keyRow   = document.getElementById('apiKeyRow');
+                        const keyInput = document.getElementById('aiApiKey');
+                        const selModel = document.getElementById('aiModelSelect');
+                        const custModel= document.getElementById('aiModelCustom');
+                        const hint     = document.getElementById('aiModelHint');
+
+                        // Show/hide key field for local provider
+                        keyRow.style.display = (prov === 'local') ? 'none' : '';
+                        if (prov !== 'local') {
+                            keyInput.placeholder = meta.placeholder || 'API key…';
+                        }
+
+                        // Rebuild model dropdown
+                        selModel.innerHTML = '';
+                        (meta.models || []).forEach(m => {
+                            const opt = new Option(m, m);
+                            selModel.add(opt);
+                        });
+                        const customOpt = new Option('Custom…', '_custom');
+                        selModel.add(customOpt);
+
+                        // Select first model by default when provider changes
+                        if (meta.models && meta.models.length) {
+                            selModel.value = meta.models[0];
+                            custModel.value = meta.models[0];
+                            custModel.style.display = 'none';
+                        }
+
+                        hint.textContent = hints[prov] || '';
+                    }
+
+                    document.getElementById('aiModelSelect').addEventListener('change', function() {
+                        const custModel = document.getElementById('aiModelCustom');
+                        if (this.value === '_custom') {
+                            custModel.style.display = '';
+                            custModel.focus();
+                        } else {
+                            custModel.value = this.value;
+                            custModel.style.display = 'none';
+                        }
+                    });
+
+                    // Set initial hint
+                    document.getElementById('aiModelHint').textContent = hints[SAVED_PROVIDER] || '';
+
+                    // Show local provider key row correctly on load
+                    if (SAVED_PROVIDER === 'local') {
+                        document.getElementById('apiKeyRow').style.display = 'none';
+                    }
+                    </script>
+                    @endpush
                 </form>
             </div>
         </div>

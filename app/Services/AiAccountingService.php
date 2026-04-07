@@ -96,31 +96,20 @@ Analyze this invoice/bill image and extract the following information in JSON fo
 Return ONLY valid JSON. If a field cannot be determined, use null for strings and 0 for numbers.
 EOT;
 
-            $response = Http::timeout(60)
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type'  => 'application/json',
-                ])
-                ->post('https://api.openai.com/v1/chat/completions', [
-                    'model'    => $this->model,
-                    'messages' => [
-                        [
-                            'role'    => 'user',
-                            'content' => [
-                                ['type' => 'text', 'text' => $prompt],
-                                ['type' => 'image_url', 'image_url' => ['url' => "data:{$mimeType};base64,{$base64}"]],
-                            ],
-                        ],
-                    ],
-                    'max_tokens'  => 2000,
-                    'temperature' => 0.1,
-                ]);
+            $messages = [[
+                'role'    => 'user',
+                'content' => [
+                    ['type' => 'text', 'text' => $prompt],
+                    ['type' => 'image_url', 'image_url' => ['url' => "data:{$mimeType};base64,{$base64}"]],
+                ],
+            ]];
+            $response = $this->callProviderApi($messages, 2000, 0.1);
 
             if (!$response->successful()) {
                 throw new \RuntimeException('AI API error: ' . $response->body());
             }
 
-            $content = $response->json('choices.0.message.content', '');
+            $content = $this->parseProviderResponse($response);
             $content = preg_replace('/```json\s*/', '', $content);
             $content = preg_replace('/```\s*/', '', $content);
             $extracted = json_decode(trim($content), true);
@@ -325,23 +314,13 @@ EOT;
 
         $messages[] = ['role' => 'user', 'content' => $userMessage];
 
-        $response = Http::timeout(30)
-            ->withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
-                'Content-Type'  => 'application/json',
-            ])
-            ->post('https://api.openai.com/v1/chat/completions', [
-                'model'       => $this->model,
-                'messages'    => $messages,
-                'max_tokens'  => 1500,
-                'temperature' => 0.3,
-            ]);
+        $response = $this->callProviderApi($messages, 1500, 0.3);
 
         if (!$response->successful()) {
             return "I'm unable to reach the AI service right now. Please try a specific query like 'show revenue this month' or 'outstanding invoices'.";
         }
 
-        return $response->json('choices.0.message.content', 'No response generated.');
+        return $this->parseProviderResponse($response) ?: 'No response generated.';
     }
 
     /**
@@ -355,6 +334,69 @@ EOT;
             'role'    => $msg->role,
             'content' => $msg->content,
         ])->values()->toArray();
+    }
+
+    /**
+     * Route a chat-completions request to the correct provider API.
+     * All providers expose an OpenAI-compatible messages array.
+     */
+    private function callProviderApi(array $messages, int $maxTokens = 1500, float $temperature = 0.3): \Illuminate\Http\Client\Response
+    {
+        $headers = ['Content-Type' => 'application/json'];
+        $body    = ['model' => $this->model, 'messages' => $messages, 'max_tokens' => $maxTokens, 'temperature' => $temperature];
+
+        switch ($this->provider) {
+            case 'anthropic':
+                // Anthropic uses a different auth header and API structure
+                $system   = collect($messages)->firstWhere('role', 'system');
+                $filtered = collect($messages)->reject(fn($m) => $m['role'] === 'system')->values()->toArray();
+                $payload  = array_merge($body, ['messages' => $filtered]);
+                if ($system) $payload['system'] = $system['content'];
+                unset($payload['max_tokens']);
+                $payload['max_tokens'] = $maxTokens;
+                return Http::timeout(60)
+                    ->withHeaders(['x-api-key' => $this->apiKey, 'anthropic-version' => '2023-06-01', 'Content-Type' => 'application/json'])
+                    ->post('https://api.anthropic.com/v1/messages', $payload);
+
+            case 'gemini':
+                // Gemini uses Google AI Studio endpoint (OpenAI-compatible via v1beta)
+                return Http::timeout(60)
+                    ->withHeaders($headers)
+                    ->post("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key={$this->apiKey}", $body);
+
+            case 'deepseek':
+                return Http::timeout(60)
+                    ->withHeaders(array_merge($headers, ['Authorization' => 'Bearer ' . $this->apiKey]))
+                    ->post('https://api.deepseek.com/v1/chat/completions', $body);
+
+            case 'groq':
+                return Http::timeout(60)
+                    ->withHeaders(array_merge($headers, ['Authorization' => 'Bearer ' . $this->apiKey]))
+                    ->post('https://api.groq.com/openai/v1/chat/completions', $body);
+
+            case 'local':
+                // Ollama OpenAI-compatible endpoint
+                return Http::timeout(120)
+                    ->withHeaders($headers)
+                    ->post('http://localhost:11434/v1/chat/completions', $body);
+
+            default: // openai
+                return Http::timeout(60)
+                    ->withHeaders(array_merge($headers, ['Authorization' => 'Bearer ' . $this->apiKey]))
+                    ->post('https://api.openai.com/v1/chat/completions', $body);
+        }
+    }
+
+    /**
+     * Normalise a provider API response to extract the text content.
+     * Anthropic returns choices differently from OpenAI-compatible providers.
+     */
+    private function parseProviderResponse(\Illuminate\Http\Client\Response $response): string
+    {
+        if ($this->provider === 'anthropic') {
+            return $response->json('content.0.text', '');
+        }
+        return $response->json('choices.0.message.content', '');
     }
 
     /**
@@ -475,7 +517,7 @@ EOT;
             throw new \RuntimeException('AI API error (Files API): ' . $response->body());
         }
 
-        $content = $response->json('choices.0.message.content', '');
+        $content = $this->parseProviderResponse($response);
         $content = preg_replace('/```json\s*/', '', $content);
         $content = preg_replace('/```\s*/', '', $content);
         $extracted = json_decode(trim($content), true);

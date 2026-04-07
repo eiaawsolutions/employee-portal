@@ -43,7 +43,7 @@ class AccountingSettingController extends Controller
             'credit_note_prefix'       => 'nullable|string|max:10',
             'po_prefix'                => 'nullable|string|max:10',
             'default_payment_terms'    => 'nullable|integer|min:0|max:365',
-            'ai_provider'              => 'nullable|in:openai,anthropic,local',
+            'ai_provider'              => 'nullable|in:openai,anthropic,gemini,deepseek,groq,local',
             'ai_api_key'               => ['nullable', 'string', 'max:255'],
             'ai_model'                 => 'nullable|string|max:100',
         ]);
