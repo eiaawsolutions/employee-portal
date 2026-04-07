@@ -261,7 +261,7 @@
                     <small class="text-muted d-block mt-1">EPF contribution remittance</small>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <a href="https://assist.perkeso.gov.my" target="_blank" rel="noopener" class="btn btn-outline-info w-100">
+                    <a href="https://www.perkeso.gov.my" target="_blank" rel="noopener" class="btn btn-outline-info w-100">
                         <i class="bi bi-box-arrow-up-right me-1"></i>SOCSO Portal
                     </a>
                     <small class="text-muted d-block mt-1">SOCSO/PERKESO contributions</small>
