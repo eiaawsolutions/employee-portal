@@ -47,11 +47,23 @@ class AiAccountingService
             }
 
             $mimeType = mime_content_type($filePath);
+            // Normalise: some systems misidentify PDFs
+            if (str_ends_with(strtolower($filePath), '.pdf')) {
+                $mimeType = 'application/pdf';
+            }
 
-            // PDFs: convert first page to image since OpenAI vision only accepts images
+            // PDFs must be converted to an image first (OpenAI image_url only accepts images).
+            // convertPdfToImage() tries Ghostscript → Imagick, catching policy errors.
+            // If conversion is truly unavailable, upload via Files API instead.
             if (str_contains($mimeType, 'pdf')) {
-                $filePath = $this->convertPdfToImage($filePath);
-                $mimeType = 'image/png';
+                $converted = $this->convertPdfToImage($filePath);
+                if ($converted !== null) {
+                    $filePath = $converted;
+                    $mimeType = 'image/png';
+                } else {
+                    // Fall back: upload PDF via OpenAI Files API and reference by file_id
+                    return $this->extractViaFilesApi($scan, $filePath);
+                }
             }
 
             $base64 = base64_encode(file_get_contents($filePath));
@@ -96,12 +108,7 @@ EOT;
                             'role'    => 'user',
                             'content' => [
                                 ['type' => 'text', 'text' => $prompt],
-                                [
-                                    'type'      => 'image_url',
-                                    'image_url' => [
-                                        'url' => "data:{$mimeType};base64,{$base64}",
-                                    ],
-                                ],
+                                ['type' => 'image_url', 'image_url' => ['url' => "data:{$mimeType};base64,{$base64}"]],
                             ],
                         ],
                     ],
@@ -351,26 +358,17 @@ EOT;
     }
 
     /**
-     * Convert a PDF's first page to a PNG image for OpenAI vision processing.
-     * Falls back to returning the original path if Imagick is unavailable.
+     * Convert a PDF's first page to a PNG image.
+     * Returns the PNG path on success, or null if no converter is available/allowed.
+     * Tries Ghostscript first (avoids ImageMagick policy restrictions on Synology),
+     * then falls back to Imagick (catching policy errors gracefully).
      */
-    private function convertPdfToImage(string $pdfPath): string
+    private function convertPdfToImage(string $pdfPath): ?string
     {
         $outputPath = preg_replace('/\.pdf$/i', '', $pdfPath) . '_page1.png';
 
-        // Try Imagick (most reliable)
-        if (extension_loaded('imagick')) {
-            $im = new \Imagick();
-            $im->setResolution(200, 200);
-            $im->readImage($pdfPath . '[0]'); // first page only
-            $im->setImageFormat('png');
-            $im->writeImage($outputPath);
-            $im->destroy();
-            return $outputPath;
-        }
-
-        // Try Ghostscript CLI (available on most Linux/Synology)
-        $gs = collect(['/usr/bin/gs', '/usr/local/bin/gs', '/opt/bin/gs'])
+        // 1. Try Ghostscript CLI — works on most Linux/Synology without policy issues
+        $gs = collect(['/usr/bin/gs', '/usr/local/bin/gs', '/opt/bin/gs', '/opt/local/bin/gs'])
             ->first(fn ($p) => is_executable($p));
 
         if ($gs) {
@@ -379,10 +377,119 @@ EOT;
             if ($code === 0 && file_exists($outputPath)) {
                 return $outputPath;
             }
+            Log::warning('Ghostscript PDF conversion failed', ['exit' => $code, 'output' => implode("\n", $out)]);
         }
 
-        // No converter available — return original and let the API handle it
-        Log::warning('PDF-to-image conversion not available (no Imagick or Ghostscript). Sending PDF directly to API.');
-        return $pdfPath;
+        // 2. Try Imagick — but catch ImageMagick policy errors (common on Synology)
+        if (extension_loaded('imagick')) {
+            try {
+                $im = new \Imagick();
+                $im->setResolution(200, 200);
+                $im->readImage($pdfPath . '[0]');
+                $im->setImageFormat('png');
+                $im->writeImage($outputPath);
+                $im->destroy();
+                return $outputPath;
+            } catch (\Throwable $e) {
+                Log::warning('Imagick PDF conversion failed (policy or extension error): ' . $e->getMessage());
+            }
+        }
+
+        // No converter succeeded
+        Log::warning('PDF-to-image conversion unavailable. Will use OpenAI Files API fallback.', ['path' => $pdfPath]);
+        return null;
+    }
+
+    /**
+     * Fallback for when PDF→image conversion is unavailable.
+     * Uploads the PDF to OpenAI Files API and uses GPT-4o's native PDF support
+     * via the Assistants-compatible message format.
+     */
+    private function extractViaFilesApi(AiInvoiceScan $scan, string $pdfPath): array
+    {
+        // Upload the file to OpenAI
+        $uploadResponse = Http::timeout(60)
+            ->withHeaders(['Authorization' => 'Bearer ' . $this->apiKey])
+            ->attach('file', file_get_contents($pdfPath), basename($pdfPath))
+            ->post('https://api.openai.com/v1/files', ['purpose' => 'assistants']);
+
+        if (!$uploadResponse->successful()) {
+            throw new \RuntimeException('OpenAI file upload failed: ' . $uploadResponse->body());
+        }
+
+        $fileId = $uploadResponse->json('id');
+
+        $prompt = <<<EOT
+Analyze this invoice/bill PDF and extract the following information in JSON format:
+{
+  "vendor_name": "string",
+  "vendor_address": "string or null",
+  "vendor_tax_id": "string or null",
+  "invoice_number": "string",
+  "date": "YYYY-MM-DD",
+  "due_date": "YYYY-MM-DD or null",
+  "currency": "3-letter code, default MYR",
+  "items": [
+    {
+      "description": "string",
+      "quantity": number,
+      "unit_price": number,
+      "tax_amount": number,
+      "line_total": number
+    }
+  ],
+  "subtotal": number,
+  "tax_total": number,
+  "total": number,
+  "payment_terms": "string or null",
+  "notes": "string or null"
+}
+Return ONLY valid JSON. If a field cannot be determined, use null for strings and 0 for numbers.
+EOT;
+
+        $response = Http::timeout(60)
+            ->withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type'  => 'application/json',
+            ])
+            ->post('https://api.openai.com/v1/chat/completions', [
+                'model'    => $this->model,
+                'messages' => [
+                    [
+                        'role'    => 'user',
+                        'content' => [
+                            ['type' => 'text', 'text' => $prompt],
+                            ['type' => 'image_url', 'image_url' => ['url' => "https://api.openai.com/v1/files/{$fileId}/content"]],
+                        ],
+                    ],
+                ],
+                'max_tokens'  => 2000,
+                'temperature' => 0.1,
+            ]);
+
+        // Clean up the uploaded file
+        Http::withHeaders(['Authorization' => 'Bearer ' . $this->apiKey])
+            ->delete("https://api.openai.com/v1/files/{$fileId}");
+
+        if (!$response->successful()) {
+            throw new \RuntimeException('AI API error (Files API): ' . $response->body());
+        }
+
+        $content = $response->json('choices.0.message.content', '');
+        $content = preg_replace('/```json\s*/', '', $content);
+        $content = preg_replace('/```\s*/', '', $content);
+        $extracted = json_decode(trim($content), true);
+
+        if (!$extracted) {
+            throw new \RuntimeException('Failed to parse AI response as JSON (Files API path)');
+        }
+
+        $scan->update([
+            'status'           => 'completed',
+            'extracted_data'   => $extracted,
+            'confidence_score' => 85.00,
+        ]);
+
+        return $extracted;
     }
 }
