@@ -550,15 +550,13 @@
                         <input type="date" name="last_maintenance_date" class="form-control" value="{{ old('last_maintenance_date') }}"></div>
                     <div class="col-12">
                         <label class="form-label fw-semibold">Asset Photos <span class="text-muted fw-normal">(up to 15 photos, JPG/PNG)</span></label>
-                        <div class="d-flex gap-2 mb-1" style="max-width:480px;">
-                            <input type="file" id="addPhotoNewFileInput" class="form-control" accept=".jpg,.jpeg,.png" style="max-width:340px;">
-                            <button type="button" class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="addFormPhotoFile()">
-                                <i class="bi bi-upload me-1"></i>Add
-                            </button>
+                        <div class="mb-2">
+                            <input type="file" id="addPhotoNewFileInput" class="form-control" accept=".jpg,.jpeg,.png" multiple style="max-width:480px;">
                         </div>
                         <div id="addPhotoNewList" class="d-flex flex-wrap gap-2 mb-1"></div>
                         <div id="addPhotoNewHidden"></div>
-                        <div class="form-text text-muted">Select a photo then click Add. Up to 15 photos.</div>
+                        <div id="addPhotoCompressStatus" class="text-muted small mb-1" style="display:none;"></div>
+                        <div class="form-text text-muted">Select one or more photos (max 15). Photos are auto-compressed before upload.</div>
                         @error('asset_photos')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         @error('asset_photos.*')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
@@ -670,16 +668,55 @@ function syncStatusFromConditionAdd(condition) {
     }
 }
 
+// ── Image compression utility ─────────────────────────────────────────────
+function compressImage(file, maxWidth = 1920, maxHeight = 1920, quality = 0.8) {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/')) { resolve(file); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                if (w > maxWidth || h > maxHeight) {
+                    const ratio = Math.min(maxWidth / w, maxHeight / h);
+                    w = Math.round(w * ratio);
+                    h = Math.round(h * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                canvas.toBlob((blob) => {
+                    const compressed = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
+                    resolve(compressed.size < file.size ? compressed : file);
+                }, 'image/jpeg', quality);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 // ── Add form photo management ─────────────────────────────────────────────
 let addFormPhotoFiles = [];
-function addFormPhotoFile() {
-    const input = document.getElementById('addPhotoNewFileInput');
-    if (!input.files.length) { alert('Please select a photo first.'); return; }
-    if (addFormPhotoFiles.length >= 15) { alert('Maximum 15 photos allowed.'); return; }
-    addFormPhotoFiles.push(input.files[0]);
+document.getElementById('addPhotoNewFileInput').addEventListener('change', async function() {
+    const files = Array.from(this.files);
+    if (!files.length) return;
+    const remaining = 15 - addFormPhotoFiles.length;
+    if (remaining <= 0) { alert('Maximum 15 photos allowed.'); this.value = ''; return; }
+    const toAdd = files.slice(0, remaining);
+    if (files.length > remaining) alert(`Only ${remaining} more photo(s) can be added. Extra files were skipped.`);
+    const status = document.getElementById('addPhotoCompressStatus');
+    status.style.display = '';
+    status.textContent = `Compressing ${toAdd.length} photo(s)...`;
+    for (let i = 0; i < toAdd.length; i++) {
+        status.textContent = `Compressing photo ${i + 1} of ${toAdd.length}...`;
+        const compressed = await compressImage(toAdd[i]);
+        addFormPhotoFiles.push(compressed);
+    }
+    status.style.display = 'none';
     renderAddFormPhotoList();
-    input.value = '';
-}
+    this.value = '';
+});
 function removeAddFormPhoto(i) {
     addFormPhotoFiles.splice(i, 1);
     renderAddFormPhotoList();
@@ -690,8 +727,10 @@ function renderAddFormPhotoList() {
     list.innerHTML = '';
     addFormPhotoFiles.forEach((f, i) => {
         const url = URL.createObjectURL(f);
+        const sizeKB = (f.size / 1024).toFixed(0);
         list.innerHTML += `<div class="d-flex flex-column align-items-center gap-1" style="width:80px;">
             <img src="${url}" style="width:80px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
+            <span class="text-muted" style="font-size:10px;">${sizeKB} KB</span>
             <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0"
                     style="font-size:11px;" onclick="removeAddFormPhoto(${i})">
                 <i class="bi bi-x me-1"></i>Remove
