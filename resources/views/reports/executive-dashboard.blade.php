@@ -345,7 +345,9 @@
         <div class="card chart-card">
             <div class="card-header py-2"><i class="bi bi-laptop me-1"></i>Asset Portfolio</div>
             <div class="card-body">
-                <canvas id="assetStatusChart" height="180"></canvas>
+                <div style="position:relative;height:220px;">
+                    <canvas id="assetStatusChart"></canvas>
+                </div>
                 <div class="d-flex justify-content-between mt-3 small">
                     <div><span class="text-muted">Total Value:</span> <strong>RM {{ number_format($assetCostTotal, 0) }}</strong></div>
                     <div><span class="text-muted">Monthly Rental:</span> <strong>RM {{ number_format($rentalCostMonthly, 0) }}</strong></div>
