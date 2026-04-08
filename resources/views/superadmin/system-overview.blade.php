@@ -236,7 +236,7 @@
             <span class="stat-pill"><span class="num">{{ $meta['tables'] }}</span> Database Tables</span>
             <span class="stat-pill"><span class="num">{{ $meta['endpoints'] }}</span> Endpoints</span>
             <span class="stat-pill"><span class="num">{{ $meta['mail_classes'] }}</span> Automated Emails</span>
-            <span class="stat-pill"><span class="num">94/100</span> Security Score</span>
+            <span class="stat-pill"><span class="num">96/100</span> Security Score</span>
         </div>
     </div>
 </div>
@@ -595,7 +595,7 @@
 <div class="row g-4 mb-5">
     <div class="col-lg-4">
         <div class="compliance-stamp h-100">
-            <div class="score">94<span style="font-size:2rem;">/100</span></div>
+            <div class="score">96<span style="font-size:2rem;">/100</span></div>
             <div class="score-label mt-2">OWASP Security Score</div>
             <hr style="border-color:rgba(255,255,255,0.2);">
             <div class="d-flex flex-column gap-2 text-start" style="font-size:0.85rem;">
@@ -607,6 +607,7 @@
                 <div><i class="bi bi-check-circle-fill me-2"></i>Encrypted Backups (AES-256)</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>HMAC Log Integrity Chain</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Real-time Threat Detection</div>
+                <div><i class="bi bi-check-circle-fill me-2"></i>Weekly Compliance Sweep</div>
             </div>
         </div>
     </div>
@@ -709,6 +710,15 @@
                     <div>
                         <div class="sb-title">TLS/HTTPS Enforcement</div>
                         <div class="sb-desc">Forced HTTPS redirect with HSTS headers, URL scheme enforcement</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="security-badge">
+                    <i class="bi bi-calendar-check text-info"></i>
+                    <div>
+                        <div class="sb-title">Weekly Compliance Sweep</div>
+                        <div class="sb-desc">Automated Wednesday audit of pending consents, AARF forms, leave & claim approvals</div>
                     </div>
                 </div>
             </div>
