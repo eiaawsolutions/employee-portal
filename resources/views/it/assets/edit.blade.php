@@ -123,6 +123,15 @@
                 <input type="text" name="rental_contract_reference" class="form-control" value="{{ old('rental_contract_reference',$asset->rental_contract_reference) }}" placeholder="Contract / PO number"></div>
             <div class="col-md-3"><label class="form-label fw-semibold">Invoice (PDF) {{ $asset->invoice_document ? '— current exists' : '' }}</label>
                 <input type="file" name="invoice_document" class="form-control" accept=".pdf"></div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Supplied To (Company)</label>
+                <select name="company_supplied_to" class="form-select">
+                    <option value="">— Select Company —</option>
+                    @foreach($registeredCompanies as $rc)
+                    <option value="{{ $rc->name }}" {{ old('company_supplied_to', $asset->company_supplied_to) == $rc->name ? 'selected' : '' }}>
+                        {{ $rc->name }}
+                    </option>
+                    @endforeach
+                </select></div>
         </div>
     </div>
 </div>

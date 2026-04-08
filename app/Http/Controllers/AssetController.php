@@ -546,7 +546,7 @@ class AssetController extends Controller
             fputcsv($file, [
                 'Asset Tag', 'Type', 'Brand', 'Model', 'Serial Number',
                 'Status', 'Condition', 'Processor', 'RAM', 'Storage', 'OS',
-                'Ownership Type', 'Company Name', 'Purchase Date', 'Vendor', 'Cost (RM)', 'Warranty Expiry',
+                'Ownership Type', 'Company Name', 'Supplied To', 'Purchase Date', 'Vendor', 'Cost (RM)', 'Warranty Expiry',
                 'Rental Vendor', 'Rental Vendor Contact', 'Rental Cost/Month', 'Rental Start', 'Rental End', 'Contract Ref',
                 'Assigned To', 'Assigned Date', 'Expected Return',
                 'Maintenance Status', 'Last Maintenance', 'Remarks',
@@ -555,7 +555,7 @@ class AssetController extends Controller
                 fputcsv($file, [
                     $a->asset_tag, $a->asset_type, $a->brand, $a->model, $a->serial_number,
                     $a->status, $a->asset_condition, $a->processor, $a->ram_size, $a->storage, $a->operating_system,
-                    $a->ownership_type, $a->company_name,
+                    $a->ownership_type, $a->company_name, $a->company_supplied_to,
                     $a->purchase_date, $a->purchase_vendor, $a->purchase_cost, $a->warranty_expiry_date,
                     $a->rental_vendor, $a->rental_vendor_contact, $a->rental_cost_per_month,
                     $a->rental_start_date, $a->rental_end_date, $a->rental_contract_reference,
@@ -722,6 +722,7 @@ class AssetController extends Controller
                 // ── Section C: Ownership ──────────────────────────────────────────
                 'ownership_type',       // optional: company (default) / rental
                 'company_name',         // optional: owning company name
+                'company_supplied_to',  // optional: company the vendor supplied to
                 'purchase_vendor',      // optional
                 'purchase_cost',        // optional: numeric e.g. 4500.00
                 'purchase_date',        // optional: DD-MM-YYYY
@@ -760,6 +761,7 @@ class AssetController extends Controller
                 '',                                                // spec_others
                 'company',                                         // ownership_type
                 'Incite Innovation',                               // company_name
+                '',                                                // company_supplied_to
                 '',                                                // purchase_vendor
                 '',                                                // purchase_cost
                 '',                                                // purchase_date
@@ -782,7 +784,7 @@ class AssetController extends Controller
                 'New stock received 01-01-2025',
                 'HP', 'EliteBook 840 G9', 'SN-HP-001',
                 '', '', '', '', '', '',
-                'company', 'Claritas Asia Sdn. Bhd.',
+                'company', 'Claritas Asia Sdn. Bhd.', '',
                 'Dell Malaysia', '4500.00', '17-01-2024', '15-01-2027',
                 '', '', '', '', '', '',
                 '', '', '', 'HQ KL',
@@ -996,6 +998,7 @@ class AssetController extends Controller
                 'spec_others'          => $v('spec_others') ?: (!empty($specsRaw) ? 'Original: ' . $specsRaw : null),
                 'ownership_type'       => $ownershipType,
                 'company_name'         => $v('company_name') ?: null,
+                'company_supplied_to'  => $v('company_supplied_to') ?: null,
                 'purchase_vendor'      => $v('purchase_vendor') ?: null,
                 'purchase_cost'        => is_numeric($d['purchase_cost'] ?? '') ? $d['purchase_cost'] : null,
                 'purchase_date'        => $parseDate($d['purchase_date'] ?? ''),
@@ -1150,6 +1153,7 @@ class AssetController extends Controller
             $data['ownership_type'] = $validated['ownership_type'] ?? 'company';
             if ($data['ownership_type'] === 'rental') {
                 $data['company_name']              = null;
+                $data['company_supplied_to']       = $validated['company_supplied_to'] ?? null;
                 $data['rental_vendor']             = $validated['rental_vendor'] ?? null;
                 $data['rental_vendor_contact']     = $validated['rental_vendor_contact'] ?? null;
                 $data['rental_cost_per_month']     = $validated['rental_cost_per_month'] ?? null;
@@ -1158,6 +1162,7 @@ class AssetController extends Controller
                 $data['rental_contract_reference'] = $validated['rental_contract_reference'] ?? null;
             } else {
                 $data['company_name']              = $validated['company_name'] ?? null;
+                $data['company_supplied_to']       = null;
                 $data['rental_vendor']             = null;
                 $data['rental_vendor_contact']     = null;
                 $data['rental_cost_per_month']     = null;
@@ -1223,6 +1228,7 @@ class AssetController extends Controller
             $rules['invoice_document']          = 'nullable|file|mimes:pdf|max:5120|valid_file_content';
             $rules['ownership_type']            = 'required|in:company,rental';
             $rules['company_name']              = 'nullable|string|max:255';
+            $rules['company_supplied_to']       = 'nullable|string|max:255';
             $rules['rental_vendor']             = 'nullable|string|max:255';
             $rules['rental_vendor_contact']     = 'nullable|string|max:255';
             $rules['rental_cost_per_month']     = 'nullable|numeric|min:0';

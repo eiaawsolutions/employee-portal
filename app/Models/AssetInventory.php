@@ -16,7 +16,7 @@ class AssetInventory extends Model
         // Section C – Procurement
         'purchase_date', 'purchase_vendor', 'purchase_cost', 'warranty_expiry_date', 'invoice_document',
         // Section C – Ownership
-        'ownership_type', 'company_name',
+        'ownership_type', 'company_name', 'company_supplied_to',
         'rental_vendor', 'rental_vendor_contact', 'rental_cost_per_month',
         'rental_start_date', 'rental_end_date', 'rental_contract_reference',
         // Section D – Assignment
