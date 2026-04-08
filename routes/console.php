@@ -7,6 +7,7 @@ Schedule::command('offboarding:notify')->everyMinute();
 Schedule::command('security:audit-report')->hourly();
 Schedule::command('leave:remind-managers')->dailyAt('09:00');
 Schedule::command('claims:remind')->dailyAt('09:00');
+Schedule::command('sweep:pending-weekly')->weeklyOn(3, '00:00'); // Wednesday midnight
 
 // Backup: daily encrypted full backup at 2 AM, retain 30 days
 Schedule::command('backup:run --type=full --encrypt --keep=30')
