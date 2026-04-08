@@ -292,7 +292,7 @@ class SystemMetadataService
             'Onboarding & Employee' => ['OnboardingInviteMail', 'WelcomeNewHire', 'OnboardingEditNotificationMail', 'ConsentRequestMail', 'OnboardingConsentRequestMail', 'EmployeeConsentRequestMail', 'AnnouncementMail'],
             'Offboarding & Assets'  => ['OffboardingNoticeMail', 'OffboardingReminderMail', 'OffboardingWeekReminderMail', 'OffboardingSendoffMail', 'CalendarInvite', 'AarfAcknowledgementMail'],
             'HRM Modules'           => ['LeaveApplicationNotifyMail', 'LeaveApprovalNotifyMail', 'PendingLeaveReminderMail', 'ClaimSubmittedMail', 'ClaimApprovedMail', 'ClaimRejectedMail', 'ClaimReminderMail', 'PayslipReadyMail', 'EaFormReadyMail'],
-            'Security & System'     => ['SecurityAuditMail', 'SuspiciousActivityAlert'],
+            'Security & System'     => ['SecurityAuditMail', 'SuspiciousActivityAlert', 'WeeklyPendingSweepMail'],
         ];
 
         $assigned = [];

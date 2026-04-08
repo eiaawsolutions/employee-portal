@@ -15,11 +15,16 @@ flowchart TD
 
     subgraph HOURLY["Hourly"]
         C["security:audit-report\nGenerate security summary"]
+        R["system:refresh-metadata\nCache system overview data"]
     end
 
     subgraph DAILY["Daily at 09:00"]
         D["leave:remind-managers\nPending leave reminders"]
         E["claims:remind\nPending claim reminders"]
+    end
+
+    subgraph WEEKLY["Wednesday at Midnight"]
+        W["sweep:pending-weekly\nConsents, AARF, Leave, Claims"]
     end
 
     subgraph BACKUP["Backup Schedule"]
@@ -85,6 +90,24 @@ flowchart TD
                     <td><code>log:verify-integrity</code></td>
                     <td>Daily 03:00</td>
                     <td>Validates audit log chain integrity using hash verification. Alerts on tampering.</td>
+                </tr>
+                <tr>
+                    <td><code>sweep:pending-weekly</code></td>
+                    <td>Wednesday 00:00</td>
+                    <td>
+                        Weekly sweep of all pending acknowledgements and approvals. Sends <code>WeeklyPendingSweepMail</code> reminders to the responsible party:<br>
+                        • Employee profile consents → employee<br>
+                        • AARF forms (employee) → employee<br>
+                        • AARF forms (IT) → IT managers<br>
+                        • Pending leave → reporting manager<br>
+                        • Expense claims (submitted) → assigned manager<br>
+                        • Expense claims (manager_approved) → HR managers
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>system:refresh-metadata</code></td>
+                    <td>Hourly</td>
+                    <td>Refreshes cached system metadata for System Overview and Knowledge Base pages (1-hour TTL).</td>
                 </tr>
             </tbody>
         </table>

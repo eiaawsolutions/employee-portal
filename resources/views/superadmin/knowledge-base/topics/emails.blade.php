@@ -5,7 +5,7 @@
 <div class="kb-section card" id="overview">
     <div class="card-body">
         <h4><i class="bi bi-envelope me-2"></i>All Email Classes by Module</h4>
-        <p class="text-muted small">The system has 20+ mail classes. All use the default sender <code>hr@claritas.com</code> (MAIL_FROM_ADDRESS).</p>
+        <p class="text-muted small">The system has 25 mail classes. All use the default sender <code>hr@claritas.com</code> (MAIL_FROM_ADDRESS).</p>
         <div class="diagram-container">
             <div class="mermaid">
 flowchart TD
@@ -33,9 +33,10 @@ flowchart TD
         M12["EaFormReadyMail"]
     end
 
-    subgraph LEAVE_MAIL["Leave (2)"]
+    subgraph LEAVE_MAIL["Leave (3)"]
         M13["LeaveApplicationNotifyMail"]
         M14["LeaveApprovalNotifyMail"]
+        M22["PendingLeaveReminderMail"]
     end
 
     subgraph CLAIM_MAIL["Claims (4)"]
@@ -48,6 +49,12 @@ flowchart TD
     subgraph EMP_MAIL["Employee Edits (2)"]
         M19["EmployeeConsentRequestMail"]
         M20["OnboardingConsentRequestMail"]
+    end
+
+    subgraph SEC_MAIL["Security & System (3)"]
+        M23["SecurityAuditMail"]
+        M24["SuspiciousActivityAlert"]
+        M25["WeeklyPendingSweepMail"]
     end
 
     subgraph OTHER["Other (1)"]
@@ -94,6 +101,7 @@ flowchart TD
                     <tr class="table-light"><td colspan="5" class="fw-bold">Leave</td></tr>
                     <tr><td></td><td><code>LeaveApplicationNotifyMail</code></td><td>Employee applies</td><td>HR</td><td>Action required</td></tr>
                     <tr><td></td><td><code>LeaveApprovalNotifyMail</code></td><td>HR approves/rejects</td><td>Employee</td><td>Info</td></tr>
+                    <tr><td></td><td><code>PendingLeaveReminderMail</code></td><td>Daily 09:00 cron</td><td>Reporting managers with pending requests</td><td>Scheduled</td></tr>
 
                     {{-- Claims --}}
                     <tr class="table-light"><td colspan="5" class="fw-bold">Expense Claims</td></tr>
@@ -106,6 +114,12 @@ flowchart TD
                     <tr class="table-light"><td colspan="5" class="fw-bold">Employee Edits</td></tr>
                     <tr><td></td><td><code>EmployeeConsentRequestMail</code></td><td>HR edits active employee</td><td>Employee (token link)</td><td>Action required</td></tr>
                     <tr><td></td><td><code>OnboardingConsentRequestMail</code></td><td>Specific onboarding consent</td><td>New hire</td><td>Action required</td></tr>
+
+                    {{-- Security & System --}}
+                    <tr class="table-light"><td colspan="5" class="fw-bold">Security & System</td></tr>
+                    <tr><td></td><td><code>SecurityAuditMail</code></td><td>Hourly cron</td><td>System administrators</td><td>Scheduled</td></tr>
+                    <tr><td></td><td><code>SuspiciousActivityAlert</code></td><td>Threat detected in real-time</td><td>System administrators</td><td>Action required</td></tr>
+                    <tr><td></td><td><code>WeeklyPendingSweepMail</code></td><td>Wednesday midnight cron</td><td>Employee / Manager / HR / IT (per item type)</td><td>Scheduled</td></tr>
 
                     {{-- Other --}}
                     <tr class="table-light"><td colspan="5" class="fw-bold">Other</td></tr>

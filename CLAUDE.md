@@ -78,6 +78,7 @@ AssetInventory → AssetAssignment (to employee) → AssetProvisioning → retur
 - `employees:activate` — every minute; activates employees on start date + sends welcome email, flushes `invite_staging_json` via `populateFromOnboarding()`
 - `offboarding:notify` — every minute; time-based offboarding email reminders
 - `leave:remind-managers` / `claims:remind` — daily at 9 AM
+- `sweep:pending-weekly` — Wednesday midnight; scans all pending acknowledgements (employee profile consents, AARF forms, leave approvals, expense claim approvals) and sends targeted reminder emails to the responsible person
 - `security:audit-report` — hourly
 - `log:verify-integrity` — daily at 3 AM via `LogIntegrity` service
 - `backup:run` — daily at 2 AM (full encrypted backup) + database snapshots every 6 hours; 30-day retention
@@ -95,7 +96,7 @@ AssetInventory → AssetAssignment (to employee) → AssetProvisioning → retur
 Two disks: `local` (private: `storage/app/private`, served via `SecureFileController`) and `public` (public: `storage/app/public`). Sensitive files (NRIC, contracts, certificates) go to the private disk and are served with role-gated access checks.
 
 ### Mail
-24 Mailable classes in `app/Mail/`, each with a corresponding Blade template in `resources/views/emails/`. The default sender is `hr@claritas.com` (configured via `MAIL_FROM_ADDRESS`).
+25 Mailable classes in `app/Mail/`, each with a corresponding Blade template in `resources/views/emails/`. The default sender is `hr@claritas.com` (configured via `MAIL_FROM_ADDRESS`).
 
 Notable mail classes:
 - `OnboardingEditNotificationMail` — plain notification sent when HR edits an onboarding record (no acknowledgement required)
@@ -105,6 +106,7 @@ Notable mail classes:
 - `ClaimApprovedMail`, `ClaimSubmittedMail`, `ClaimReminderMail` — eClaim workflow
 - `LeaveApplicationNotifyMail`, `LeaveApprovalNotifyMail`, `PendingLeaveReminderMail` — leave workflow
 - `EaFormReadyMail` — payroll EA form notification
+- `WeeklyPendingSweepMail` — weekly sweep reminder for all pending acknowledgements/approvals (consent, AARF, leave, claims); sent by `sweep:pending-weekly` on Wednesdays
 
 ### Frontend
 - Blade templates under `resources/views/` organized by role (`hr/`, `it/`, `user/`, `superadmin/`) plus `accounting/` and `reports/`
