@@ -1238,7 +1238,7 @@ class AssetController extends Controller
             $rules['last_maintenance_date']     = 'nullable|date';
             $rules['remarks']                   = 'nullable|string';
             $rules['asset_photos']              = 'nullable|array|min:1|max:15';
-            $rules['asset_photos.*']            = 'image|max:5120';
+            $rules['asset_photos.*']            = 'image|max:5120|valid_file_content';
             $rules['decommission_reason']       = 'nullable|string|max:500';
         }
 

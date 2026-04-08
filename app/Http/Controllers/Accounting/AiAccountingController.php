@@ -42,7 +42,7 @@ class AiAccountingController extends Controller
 
         $request->validate([
             'company'  => 'nullable|string|max:255',
-            'invoice'  => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'invoice'  => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240|valid_file_content',
         ]);
 
         $file = $request->file('invoice');

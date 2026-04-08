@@ -34,7 +34,7 @@ class AccountController extends Controller
     public function uploadProfilePicture(Request $request)
     {
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048|valid_file_content',
         ]);
 
         $user = Auth::user();

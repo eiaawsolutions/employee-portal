@@ -160,26 +160,33 @@
     </div>
 </div>
 
-{{-- New: Rental by Vendor & Brand --}}
+{{-- Rental by Company / Vendor / Brand --}}
 <div class="row g-3 mb-4">
     <div class="col-lg-6">
         <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-truck me-1"></i>Rental by Vendor & Brand</div>
-            <div class="card-body">
-                @forelse($rentalByVendorBrand as $vendor => $brands)
+            <div class="card-header py-2"><i class="bi bi-truck me-1"></i>Rental by Company, Vendor & Brand</div>
+            <div class="card-body" style="max-height:400px;overflow-y:auto;">
+                @forelse($rentalByVendorBrand as $company => $vendors)
                 <div class="mb-3">
-                    <div class="fw-semibold mb-1">{{ $vendor }}</div>
-                    <table class="table table-sm mini-table mb-0 ms-2">
-                        <thead><tr><th>Brand</th><th class="text-end">Count</th></tr></thead>
-                        <tbody>
-                        @foreach($brands as $row)
-                        <tr>
-                            <td>{{ $row->brand ?: 'Unspecified' }}</td>
-                            <td class="text-end">{{ $row->total }}</td>
-                        </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge bg-primary" style="font-size:11px;">{{ $company }}</span>
+                    </div>
+                    @foreach($vendors as $vendor => $brands)
+                    <div class="ms-2 mb-2">
+                        <div class="fw-semibold text-muted mb-1" style="font-size:12px;"><i class="bi bi-building me-1"></i>{{ $vendor }}</div>
+                        <table class="table table-sm mini-table mb-0 ms-3">
+                            <thead><tr><th>Brand</th><th class="text-end">Count</th></tr></thead>
+                            <tbody>
+                            @foreach($brands as $row)
+                            <tr>
+                                <td>{{ $row->brand ?: 'Unspecified' }}</td>
+                                <td class="text-end">{{ $row->total }}</td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @endforeach
                 </div>
                 @empty
                 <div class="text-muted text-center">No rental assets</div>

@@ -425,7 +425,7 @@
                     <div class="col-md-4"><label class="form-label fw-semibold">Warranty Expiry</label>
                         <input type="date" name="warranty_expiry_date" class="form-control" value="{{ old('warranty_expiry_date') }}"></div>
                     <div class="col-md-4"><label class="form-label fw-semibold">Invoice (PDF)</label>
-                        <input type="file" name="invoice_document" class="form-control" accept=".pdf"></div>
+                        <input type="file" name="invoice_document" id="companyInvoiceInput" class="form-control" accept=".pdf"></div>
                 </div>
 
                 {{-- Rental fields --}}
@@ -443,7 +443,7 @@
                     <div class="col-md-3"><label class="form-label fw-semibold">Contract Reference</label>
                         <input type="text" name="rental_contract_reference" class="form-control" value="{{ old('rental_contract_reference') }}" placeholder="Contract / PO number"></div>
                     <div class="col-md-3"><label class="form-label fw-semibold">Invoice (PDF)</label>
-                        <input type="file" name="invoice_document" class="form-control" accept=".pdf"></div>
+                        <input type="file" name="invoice_document" id="rentalInvoiceInput" class="form-control" accept=".pdf" disabled></div>
                 </div>
 
                 {{-- Sections D & E (IT Manager only) --}}
@@ -610,6 +610,11 @@ function toggleOwnership(value) {
     const companyFields = document.getElementById('companyFields');
     if (rentalFields)  rentalFields.style.display  = value === 'rental'  ? '' : 'none';
     if (companyFields) companyFields.style.display = value === 'company' ? '' : 'none';
+    // Disable the hidden section's invoice input so duplicate name doesn't override the active one
+    const companyInvoice = document.getElementById('companyInvoiceInput');
+    const rentalInvoice  = document.getElementById('rentalInvoiceInput');
+    if (companyInvoice) companyInvoice.disabled = (value !== 'company');
+    if (rentalInvoice)  rentalInvoice.disabled  = (value !== 'rental');
 }
 
 function syncAssignmentStatus() {

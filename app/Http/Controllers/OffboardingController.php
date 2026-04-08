@@ -175,7 +175,7 @@ class OffboardingController extends Controller
             'residential_address'    => 'nullable|string',
             // NRIC files
             'nric_files'             => 'nullable|array',
-            'nric_files.*'           => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'nric_files.*'           => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120|valid_file_content',
             'nric_keep_paths'        => 'nullable|array',
             // Work
             'employment_type'        => 'nullable|in:permanent,intern,contract',
@@ -198,7 +198,7 @@ class OffboardingController extends Controller
             'edu_qualification.*'    => 'nullable|string|max:255',
             'edu_institution.*'      => 'nullable|string|max:255',
             'edu_year.*'             => 'nullable|integer|min:1950|max:2099',
-            'edu_certificate.*.*'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'edu_certificate.*.*'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120|valid_file_content',
             'edu_cert_keep.*.*'      => 'nullable|string',
             'edu_delete_ids'         => 'nullable|string',
         ]);
