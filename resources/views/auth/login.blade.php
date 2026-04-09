@@ -48,6 +48,9 @@
             @if(session('success'))
                 <div class="alert alert-success py-2">{{ session('success') }}</div>
             @endif
+            @if(session('warning'))
+                <div class="alert alert-warning py-2"><i class="bi bi-clock-history me-1"></i>{{ session('warning') }}</div>
+            @endif
             @if(session('status'))
                 <div class="alert alert-info py-2">{{ session('status') }}</div>
             @endif
