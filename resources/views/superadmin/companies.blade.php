@@ -41,6 +41,24 @@
                         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">KWSP Number</label>
+                        <input type="text" name="kwsp_number" class="form-control @error('kwsp_number') is-invalid @enderror"
+                               value="{{ old('kwsp_number') }}" placeholder="e.g. A1234567">
+                        @error('kwsp_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">TIN Number</label>
+                        <input type="text" name="tin_number" class="form-control @error('tin_number') is-invalid @enderror"
+                               value="{{ old('tin_number') }}" placeholder="e.g. C12345678">
+                        @error('tin_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">SOCSO Number</label>
+                        <input type="text" name="socso_number" class="form-control @error('socso_number') is-invalid @enderror"
+                               value="{{ old('socso_number') }}" placeholder="e.g. S1234567">
+                        @error('socso_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Company Logo</label>
                         <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror"
                                accept="image/*">
@@ -79,6 +97,9 @@
                                 <th>Company Name</th>
                                 <th>Registration No.</th>
                                 <th>Phone</th>
+                                <th>KWSP No.</th>
+                                <th>TIN No.</th>
+                                <th>SOCSO No.</th>
                                 <th>Address</th>
                                 <th class="text-end pe-3">Actions</th>
                             </tr>
@@ -99,6 +120,9 @@
                                 <td class="fw-semibold">{{ $company->name }}</td>
                                 <td>{{ $company->registration_number ?? '—' }}</td>
                                 <td>{{ $company->phone ?? '—' }}</td>
+                                <td>{{ $company->kwsp_number ?? '—' }}</td>
+                                <td>{{ $company->tin_number ?? '—' }}</td>
+                                <td>{{ $company->socso_number ?? '—' }}</td>
                                 <td class="text-muted" style="max-width:220px;">
                                     <span title="{{ $company->address }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                         {{ $company->address ?? '—' }}
@@ -164,6 +188,21 @@
                         <label class="form-label fw-semibold">Company Phone Number</label>
                         <input type="text" name="phone" class="form-control"
                                value="{{ old('phone', $company->phone) }}" placeholder="e.g. +603-1234 5678">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">KWSP Number</label>
+                        <input type="text" name="kwsp_number" class="form-control"
+                               value="{{ old('kwsp_number', $company->kwsp_number) }}" placeholder="e.g. A1234567">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">TIN Number</label>
+                        <input type="text" name="tin_number" class="form-control"
+                               value="{{ old('tin_number', $company->tin_number) }}" placeholder="e.g. C12345678">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">SOCSO Number</label>
+                        <input type="text" name="socso_number" class="form-control"
+                               value="{{ old('socso_number', $company->socso_number) }}" placeholder="e.g. S1234567">
                     </div>
                 </div>
                 <div class="modal-body pt-0">
