@@ -679,7 +679,7 @@
 <div class="row g-4 mb-5" id="security-section">
     <div class="col-lg-4">
         <div class="compliance-stamp {{ $scoreGradeClass }} h-100" id="score-card">
-            <button class="refresh-btn position-absolute" style="top:1rem;right:1rem;" onclick="refreshSecurityScore()" id="btn-refresh-score">
+            <button class="refresh-btn position-absolute" style="top:1rem;right:1rem;" id="btn-refresh-score">
                 <i class="bi bi-arrow-clockwise" id="score-refresh-icon"></i> Scan
             </button>
 
@@ -766,7 +766,7 @@
             <h3 style="color:#1e40af;"><i class="bi bi-arrow-repeat me-2"></i>Dependency Update Checker</h3>
             <p class="text-muted mb-0">Package versions compared against Packagist and npm registries. Auto-checked daily at 6:00 AM.</p>
         </div>
-        <button class="refresh-btn dark" onclick="refreshUpdateCheck()" id="btn-refresh-updates">
+        <button class="refresh-btn dark" id="btn-refresh-updates">
             <i class="bi bi-arrow-clockwise" id="update-refresh-icon"></i> Check Now
         </button>
     </div>
@@ -1033,10 +1033,42 @@
     </div>
 </div>
 
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- RECENT CHANGES / GIT CHANGELOG --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+@if(!empty($meta['git']['recent_commits']))
+<div class="flow-section" style="background: linear-gradient(135deg, #f5f3ff 0%, #fff 100%); border: 1px solid #ddd6fe;">
+    <h3 style="color:#5b21b6;"><i class="bi bi-clock-history me-2"></i>Recent System Changes</h3>
+    <p class="text-muted mb-3">Latest commits on <code>{{ $meta['git']['branch'] }}</code> branch.</p>
+    <div class="table-responsive">
+        <table class="table table-sm mb-0" style="font-size:0.82rem;">
+            <thead>
+                <tr style="background:#ede9fe;">
+                    <th style="width:80px;font-weight:700;color:#5b21b6;">Commit</th>
+                    <th style="font-weight:700;color:#5b21b6;">Description</th>
+                    <th style="width:150px;font-weight:700;color:#5b21b6;">Date</th>
+                    <th style="width:140px;font-weight:700;color:#5b21b6;">Author</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($meta['git']['recent_commits'] as $commit)
+                <tr @if($loop->first) style="background:#f5f3ff;font-weight:600;" @endif>
+                    <td><code style="font-size:0.75rem;background:#ede9fe;padding:0.15rem 0.4rem;border-radius:0.25rem;">{{ $commit['hash'] }}</code></td>
+                    <td>{{ $commit['message'] }}</td>
+                    <td class="text-muted">{{ \Carbon\Carbon::parse($commit['date'])->format('d/m/Y H:i') }}</td>
+                    <td class="text-muted">{{ $commit['author'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
+
 <div class="text-center text-muted py-4" style="font-size:0.8rem;">
     <i class="bi bi-info-circle me-1"></i>
     HRM &amp; Finance System &mdash; Auto-updated {{ $meta['collected_at'] }}
-    &nbsp;|&nbsp; Commit <code>{{ $meta['git']['hash'] }}</code>
+    &nbsp;|&nbsp; Branch <code>{{ $meta['git']['branch'] }}</code> @ <code>{{ $meta['git']['hash'] }}</code>
     &nbsp;|&nbsp; {{ $meta['tables'] }} tables &middot; {{ $meta['endpoints'] }} endpoints &middot; {{ $meta['mail_classes'] }} emails &middot; {{ $meta['models'] }} models &middot; {{ $meta['views'] }} views
 </div>
 
@@ -1171,6 +1203,10 @@
             btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check Now';
         });
     }
+
+    // Bind refresh buttons via addEventListener (CSP nonce-compatible)
+    document.getElementById('btn-refresh-score').addEventListener('click', refreshSecurityScore);
+    document.getElementById('btn-refresh-updates').addEventListener('click', refreshUpdateCheck);
 </script>
 
 @endsection

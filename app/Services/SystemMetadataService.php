@@ -213,18 +213,32 @@ class SystemMetadataService
             ['label' => 'PHP ' . PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION, 'icon' => 'bi-filetype-php', 'color' => 'text-primary'],
             ['label' => 'Laravel ' . app()->version(), 'icon' => 'bi-box', 'color' => 'text-danger'],
             ['label' => $this->getDbVersion(), 'icon' => 'bi-database', 'color' => 'text-warning'],
-            ['label' => 'Tailwind CSS v4', 'icon' => 'bi-palette', 'color' => 'text-info'],
             ['label' => 'Bootstrap 5.3', 'icon' => 'bi-bootstrap', 'color' => 'text-purple'],
-            ['label' => 'Vite', 'icon' => 'bi-lightning', 'color' => 'text-success'],
-            ['label' => 'Alpine.js', 'icon' => 'bi-braces', 'color' => 'text-secondary'],
+            ['label' => 'Tailwind CSS v4', 'icon' => 'bi-palette', 'color' => 'text-info'],
+            ['label' => 'Vite ' . $this->getViteVersion(), 'icon' => 'bi-lightning', 'color' => 'text-success'],
             ['label' => 'Chart.js', 'icon' => 'bi-bar-chart-line', 'color' => 'text-primary'],
+            ['label' => 'Google2FA (TOTP)', 'icon' => 'bi-shield-lock', 'color' => 'text-success'],
             ['label' => 'OpenAI GPT-4o (Vision + Chat)', 'icon' => 'bi-robot', 'color' => 'text-success'],
             ['label' => $this->countMailClasses() . ' Mail Classes', 'icon' => 'bi-envelope', 'color' => 'text-primary'],
             ['label' => $this->countScheduledJobs() . ' Scheduled Jobs', 'icon' => 'bi-clock', 'color' => 'text-warning'],
+            ['label' => $this->countControllers() . ' Controllers', 'icon' => 'bi-code-slash', 'color' => 'text-secondary'],
+            ['label' => $this->countModels() . ' Models', 'icon' => 'bi-diagram-3', 'color' => 'text-info'],
+            ['label' => $this->countViews() . ' Blade Views', 'icon' => 'bi-file-earmark-code', 'color' => 'text-primary'],
             ['label' => 'OWASP Compliant', 'icon' => 'bi-shield-check', 'color' => 'text-success'],
             ['label' => 'Malaysian Statutory (EPF/SOCSO/EIS/PCB)', 'icon' => 'bi-flag', 'color' => 'text-danger'],
             ['label' => 'Double-Entry Bookkeeping', 'icon' => 'bi-journal-bookmark', 'color' => 'text-info'],
+            ['label' => 'CSP Nonce Security', 'icon' => 'bi-lock', 'color' => 'text-warning'],
         ];
+    }
+
+    private function getViteVersion(): string
+    {
+        try {
+            $pkg = json_decode(File::get(base_path('package.json')), true);
+            return ltrim($pkg['devDependencies']['vite'] ?? '?', '^~>=');
+        } catch (\Throwable) {
+            return '?';
+        }
     }
 
     private function getDbVersion(): string
@@ -243,17 +257,36 @@ class SystemMetadataService
     private function getGitInfo(): array
     {
         try {
-            $hash    = trim(shell_exec('git -C ' . escapeshellarg(base_path()) . ' rev-parse --short HEAD 2>&1') ?? '');
-            $message = trim(shell_exec('git -C ' . escapeshellarg(base_path()) . ' log -1 --pretty=%s 2>&1') ?? '');
-            $date    = trim(shell_exec('git -C ' . escapeshellarg(base_path()) . ' log -1 --pretty=%ci 2>&1') ?? '');
+            $base = escapeshellarg(base_path());
+            $hash    = trim(shell_exec("git -C {$base} rev-parse --short HEAD 2>&1") ?? '');
+            $message = trim(shell_exec("git -C {$base} log -1 --pretty=%s 2>&1") ?? '');
+            $date    = trim(shell_exec("git -C {$base} log -1 --pretty=%ci 2>&1") ?? '');
+            $branch  = trim(shell_exec("git -C {$base} rev-parse --abbrev-ref HEAD 2>&1") ?? '');
+
+            // Recent commits (last 15)
+            $logRaw = shell_exec("git -C {$base} log -15 --pretty=format:'%h|%s|%ci|%an' 2>&1") ?? '';
+            $recentCommits = [];
+            foreach (explode("\n", trim($logRaw)) as $line) {
+                $parts = explode('|', $line, 4);
+                if (count($parts) >= 3) {
+                    $recentCommits[] = [
+                        'hash'    => $parts[0],
+                        'message' => Str::limit($parts[1] ?? '', 100),
+                        'date'    => $parts[2] ?? '',
+                        'author'  => $parts[3] ?? '',
+                    ];
+                }
+            }
 
             return [
-                'hash'    => (strlen($hash) <= 12) ? $hash : 'unknown',
-                'message' => (strlen($message) <= 200) ? $message : Str::limit($message, 200),
-                'date'    => $date ?: now()->toDateTimeString(),
+                'hash'           => (strlen($hash) <= 12) ? $hash : 'unknown',
+                'message'        => (strlen($message) <= 200) ? $message : Str::limit($message, 200),
+                'date'           => $date ?: now()->toDateTimeString(),
+                'branch'         => $branch ?: 'main',
+                'recent_commits' => $recentCommits,
             ];
         } catch (\Throwable) {
-            return ['hash' => 'unknown', 'message' => '', 'date' => ''];
+            return ['hash' => 'unknown', 'message' => '', 'date' => '', 'branch' => 'main', 'recent_commits' => []];
         }
     }
 
@@ -261,11 +294,11 @@ class SystemMetadataService
     {
         try {
             return [
-                ['icon' => 'bi-people-fill',       'color' => '#0d6efd', 'label' => 'Active Employees',  'value' => \App\Models\Employee::where('employment_status', 'active')->count()],
-                ['icon' => 'bi-person-plus-fill',   'color' => '#198754', 'label' => 'Onboarding',        'value' => \App\Models\Onboarding::where('status', 'in_progress')->count()],
-                ['icon' => 'bi-person-dash-fill',   'color' => '#dc3545', 'label' => 'Offboarding',       'value' => \App\Models\Offboarding::where('deactivation_status', '!=', 'done')->count()],
+                ['icon' => 'bi-people-fill',       'color' => '#0d6efd', 'label' => 'Active Employees',  'value' => \App\Models\Employee::whereNull('active_until')->count()],
+                ['icon' => 'bi-person-plus-fill',   'color' => '#198754', 'label' => 'Onboarding',        'value' => \App\Models\Onboarding::whereIn('status', ['pending', 'active'])->count()],
+                ['icon' => 'bi-person-dash-fill',   'color' => '#dc3545', 'label' => 'Offboarding',       'value' => \App\Models\Offboarding::where('deactivation_status', '!=', 'done')->orWhereNull('deactivation_status')->count()],
                 ['icon' => 'bi-laptop',             'color' => '#fd7e14', 'label' => 'Total Assets',      'value' => \App\Models\AssetInventory::count()],
-                ['icon' => 'bi-person-lock',        'color' => '#6610f2', 'label' => 'User Accounts',     'value' => \App\Models\User::count()],
+                ['icon' => 'bi-person-lock',        'color' => '#6610f2', 'label' => 'User Accounts',     'value' => \App\Models\User::where('is_active', true)->count()],
                 ['icon' => 'bi-building',           'color' => '#0dcaf0', 'label' => 'Companies',         'value' => \App\Models\Company::count()],
                 ['icon' => 'bi-journal-text',       'color' => '#00695c', 'label' => 'Accounts (CoA)',    'value' => \App\Models\Accounting\ChartOfAccount::where('is_active', true)->count()],
                 ['icon' => 'bi-receipt',            'color' => '#ab47bc', 'label' => 'Invoices',          'value' => \App\Models\Accounting\SalesInvoice::count()],
