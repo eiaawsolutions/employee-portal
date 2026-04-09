@@ -35,12 +35,12 @@
                     <option value="{{ $v }}" {{ old('asset_type',$asset->asset_type)==$v?'selected':'' }}>{{ $l }}</option>
                 @endforeach
             </select></div>
-        <div class="col-md-2"><label class="form-label fw-semibold">Brand <span class="text-danger">*</span></label>
-            <select name="brand" class="form-select" required>
-                @foreach(['Dell','HP','Lenovo','Apple','Asus','Acer','Maxis','Internal','Anker','Petty Cash','Accessories','Furniture','Equipment','Access Card','Office Keys','Other'] as $b)
-                    <option value="{{ $b }}" {{ old('brand',$asset->brand)==$b?'selected':'' }}>{{ $b }}</option>
-                @endforeach
-            </select></div>
+        <div class="col-md-2" id="editBrandContainer"><label class="form-label fw-semibold">Brand <span class="text-danger">*</span></label>
+            <select name="brand" id="editBrandSelect" class="form-select" required>
+                <option value="">Select...</option>
+            </select>
+            <input type="text" name="brand" id="editBrandText" class="form-control"
+                   placeholder="Enter brand" style="display:none" disabled></div>
         <div class="col-md-3"><label class="form-label fw-semibold">Model <span class="text-danger">*</span></label>
             <input type="text" name="model" class="form-control" value="{{ old('model',$asset->model) }}" required></div>
         <div class="col-md-3"><label class="form-label fw-semibold">Asset Name</label>
@@ -359,6 +359,91 @@
 
 @push('scripts')
 <script>
+/* ── Asset-Type → Brand mapping ─────────────────────────────────────── */
+const brandsByType = {
+    laptop:      ['Dell','HP','Lenovo','Apple','Asus','Acer','MSI','Samsung','Microsoft','Huawei','Other'],
+    monitor:     ['Dell','HP','Lenovo','LG','Samsung','Asus','Acer','BenQ','AOC','ViewSonic','Philips','Other'],
+    converter:   ['Anker','Ugreen','Baseus','Belkin','HyperDrive','Satechi','Other'],
+    phone:       ['Apple','Samsung','Huawei','Xiaomi','Oppo','Vivo','OnePlus','Google','Sony','Nokia','Other'],
+    sim_card:    ['Maxis','Digi','Celcom','U Mobile','Yes 4G','Unifi Mobile','Other'],
+    access_card: ['HID','Suprema','ZKTeco','Keri Systems','Other'],
+    petty_cash:  ['Internal'],
+    accessories: ['Logitech','Jabra','Anker','Microsoft','Apple','Baseus','Targus','Kensington','Other'],
+    furniture:   ['Herman Miller','Steelcase','Ikea','Haworth','Secretlab','Other'],
+    equipment:   ['Brother','Canon','Epson','Dyson','APC','CyberPower','Other'],
+};
+
+function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
+    const type = typeSelect.value;
+    const brands = brandsByType[type];
+
+    if (!type) {
+        brandSelect.innerHTML = '<option value="">Select...</option>';
+        brandSelect.style.display = '';
+        brandSelect.disabled = false;
+        brandSelect.required = true;
+        brandText.style.display = 'none';
+        brandText.disabled = true;
+        brandText.required = false;
+        brandText.value = '';
+        return;
+    }
+
+    if (type === 'other' || !brands) {
+        brandSelect.style.display = 'none';
+        brandSelect.disabled = true;
+        brandSelect.required = false;
+        brandText.style.display = '';
+        brandText.disabled = false;
+        brandText.required = true;
+        if (preselected && !brandText.value) brandText.value = preselected;
+        return;
+    }
+
+    brandSelect.style.display = '';
+    brandSelect.disabled = false;
+    brandSelect.required = true;
+    brandText.style.display = 'none';
+    brandText.disabled = true;
+    brandText.required = false;
+    brandText.value = '';
+
+    let html = '<option value="">Select...</option>';
+    brands.forEach(b => {
+        const sel = (b === preselected) ? ' selected' : '';
+        html += `<option value="${b}"${sel}>${b}</option>`;
+    });
+    brandSelect.innerHTML = html;
+}
+
+// ── Edit-Asset page ──
+(function () {
+    const typeSelect  = document.getElementById('editBrandContainer')?.closest('.row')?.querySelector('select[name="asset_type"]');
+    const brandSelect = document.getElementById('editBrandSelect');
+    const brandText   = document.getElementById('editBrandText');
+    if (!typeSelect || !brandSelect) return;
+
+    const savedBrand = @json(old('brand', $asset->brand ?? ''));
+
+    typeSelect.addEventListener('change', function () {
+        updateBrandField(typeSelect, brandSelect, brandText, null);
+    });
+
+    // Initialise with saved/old value
+    updateBrandField(typeSelect, brandSelect, brandText, savedBrand);
+
+    // If the saved brand isn't in the dropdown list (legacy data), show text input instead
+    if (brandSelect.style.display !== 'none' && savedBrand && !brandSelect.querySelector(`option[value="${savedBrand}"]`)) {
+        brandSelect.style.display = 'none';
+        brandSelect.disabled = true;
+        brandSelect.required = false;
+        brandText.style.display = '';
+        brandText.disabled = false;
+        brandText.required = true;
+        brandText.value = savedBrand;
+    }
+})();
+
 function toggleOwnership(value) {
     const rentalFields  = document.getElementById('rentalFields');
     const companyFields = document.getElementById('companyFields');

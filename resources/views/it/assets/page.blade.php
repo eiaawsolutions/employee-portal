@@ -328,14 +328,13 @@
                         </select>
                         @error('asset_type')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2" id="addBrandContainer">
                         <label class="form-label fw-semibold">Brand <span class="text-danger">*</span></label>
-                        <select name="brand" class="form-select @error('brand') is-invalid @enderror" required>
+                        <select name="brand" id="addBrandSelect" class="form-select @error('brand') is-invalid @enderror" required>
                             <option value="">Select...</option>
-                            @foreach(['Dell','HP','Lenovo','Apple','Asus','Acer','Maxis','Internal','Anker','Petty Cash','Accessories','Furniture','Equipment','Access Card','Office Keys','Other'] as $b)
-                                <option value="{{ $b }}" {{ old('brand')==$b?'selected':'' }}>{{ $b }}</option>
-                            @endforeach
                         </select>
+                        <input type="text" name="brand" id="addBrandText" class="form-control @error('brand') is-invalid @enderror"
+                               placeholder="Enter brand" style="display:none" disabled>
                         @error('brand')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-3">
@@ -763,6 +762,85 @@ function renderAddFormPhotoList() {
         hidden.appendChild(inp);
     }
 }
+
+/* ── Asset-Type → Brand mapping ─────────────────────────────────────── */
+const brandsByType = {
+    laptop:      ['Dell','HP','Lenovo','Apple','Asus','Acer','MSI','Samsung','Microsoft','Huawei','Other'],
+    monitor:     ['Dell','HP','Lenovo','LG','Samsung','Asus','Acer','BenQ','AOC','ViewSonic','Philips','Other'],
+    converter:   ['Anker','Ugreen','Baseus','Belkin','HyperDrive','Satechi','Other'],
+    phone:       ['Apple','Samsung','Huawei','Xiaomi','Oppo','Vivo','OnePlus','Google','Sony','Nokia','Other'],
+    sim_card:    ['Maxis','Digi','Celcom','U Mobile','Yes 4G','Unifi Mobile','Other'],
+    access_card: ['HID','Suprema','ZKTeco','Keri Systems','Other'],
+    petty_cash:  ['Internal'],
+    accessories: ['Logitech','Jabra','Anker','Microsoft','Apple','Baseus','Targus','Kensington','Other'],
+    furniture:   ['Herman Miller','Steelcase','Ikea','Haworth','Secretlab','Other'],
+    equipment:   ['Brother','Canon','Epson','Dyson','APC','CyberPower','Other'],
+};
+
+function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
+    const type = typeSelect.value;
+    const brands = brandsByType[type];
+
+    if (!type) {
+        // No type selected — show empty dropdown
+        brandSelect.innerHTML = '<option value="">Select...</option>';
+        brandSelect.style.display = '';
+        brandSelect.disabled = false;
+        brandSelect.required = true;
+        brandText.style.display = 'none';
+        brandText.disabled = true;
+        brandText.required = false;
+        brandText.value = '';
+        return;
+    }
+
+    if (type === 'other' || !brands) {
+        // "Other" type — switch to text input
+        brandSelect.style.display = 'none';
+        brandSelect.disabled = true;
+        brandSelect.required = false;
+        brandText.style.display = '';
+        brandText.disabled = false;
+        brandText.required = true;
+        if (preselected && !brandText.value) brandText.value = preselected;
+        return;
+    }
+
+    // Known type — populate dropdown with matching brands
+    brandSelect.style.display = '';
+    brandSelect.disabled = false;
+    brandSelect.required = true;
+    brandText.style.display = 'none';
+    brandText.disabled = true;
+    brandText.required = false;
+    brandText.value = '';
+
+    let html = '<option value="">Select...</option>';
+    brands.forEach(b => {
+        const sel = (b === preselected) ? ' selected' : '';
+        html += `<option value="${b}"${sel}>${b}</option>`;
+    });
+    brandSelect.innerHTML = html;
+}
+
+// ── Add-Asset modal ──
+(function () {
+    const typeSelect  = document.querySelector('#addAssetModal select[name="asset_type"]');
+    const brandSelect = document.getElementById('addBrandSelect');
+    const brandText   = document.getElementById('addBrandText');
+    if (!typeSelect || !brandSelect) return;
+
+    const oldBrand = @json(old('brand', ''));
+
+    typeSelect.addEventListener('change', function () {
+        updateBrandField(typeSelect, brandSelect, brandText, null);
+    });
+
+    // Initialise on load (handles old() repopulation after validation error)
+    if (typeSelect.value) {
+        updateBrandField(typeSelect, brandSelect, brandText, oldBrand);
+    }
+})();
 
 function syncAssetName(tagValue) {
     const nameInput = document.getElementById('assetNameInput');
