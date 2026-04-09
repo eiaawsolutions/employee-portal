@@ -58,7 +58,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     let idx = 1;
     const tbody = document.querySelector('#itemsTable tbody');

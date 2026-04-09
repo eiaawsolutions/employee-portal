@@ -85,7 +85,7 @@
 </template>
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     let idx = {{ count($existingLines) }};
     const body = document.getElementById('lineBody');

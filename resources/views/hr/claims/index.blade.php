@@ -162,7 +162,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.getElementById('checkAll')?.addEventListener('change', function() {
     document.querySelectorAll('.bulk-check').forEach(c => c.checked = this.checked);
 });

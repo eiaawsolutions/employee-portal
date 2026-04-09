@@ -596,7 +596,7 @@
 @endif
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 @if($errors->any())
 document.addEventListener('DOMContentLoaded', function () {
     new bootstrap.Modal(document.getElementById('addAssetModal')).show();

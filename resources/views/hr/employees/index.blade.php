@@ -548,7 +548,7 @@
 @endif
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function filterCard(type, company) {
     const selector = type === 'dept' ? '.dept-row' : '.type-row';
     const selected = company ? company.trim().toLowerCase() : '';

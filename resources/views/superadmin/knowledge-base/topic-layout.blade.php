@@ -103,7 +103,7 @@
 
 {{-- Mermaid JS --}}
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     mermaid.initialize({

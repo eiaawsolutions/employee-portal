@@ -147,7 +147,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function previewAvatar(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();

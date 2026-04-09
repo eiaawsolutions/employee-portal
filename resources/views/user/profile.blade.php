@@ -1075,7 +1075,7 @@
 @endif
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 // ── Bank Name Other toggle ─────────────────────────────────────────────────
 function toggleOtherBank(sel, otherId) {
     const el = document.getElementById(otherId);

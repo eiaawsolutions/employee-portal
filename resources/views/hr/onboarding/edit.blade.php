@@ -193,7 +193,7 @@ $obEditStatusBg  = match($obEditStatus) {
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function calcObAge(dob){
                             var el=document.getElementById('ob_age'); if(!el) return;
@@ -450,7 +450,7 @@ $obEditStatusBg  = match($obEditStatus) {
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('ob_sd_day').value,
@@ -491,7 +491,7 @@ $obEditStatusBg  = match($obEditStatus) {
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('ob_ed_day').value,
@@ -533,7 +533,7 @@ $obEditStatusBg  = match($obEditStatus) {
                                 @endfor
                             </select>
                         </div>
-                        <script>
+                        <script nonce="{{ $cspNonce ?? '' }}">
                         (function(){
                             function sync(){
                                 var d=document.getElementById('ob_lsd_day').value,
@@ -1104,7 +1104,7 @@ $obEditStatusBg  = match($obEditStatus) {
 @endif
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function autofillOfficeLocation(selectEl, targetId) {
     const selected = selectEl.options[selectEl.selectedIndex];
     const target   = document.getElementById(targetId);
@@ -1125,11 +1125,22 @@ function filterManagersByCompany(companyName, mgrSelectId) {
     if (chosen && chosen.value && chosen.hidden) sel.value = '';
 }
 
+function fetchManagerEmailEdit(selectedName) {
+    var sel = document.getElementById('edit_reporting_manager');
+    var emailInput = document.getElementById('edit_reporting_manager_email');
+    if (!sel || !emailInput) return;
+    var opt = sel.options[sel.selectedIndex];
+    emailInput.value = opt ? (opt.getAttribute('data-email') || '') : '';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var editCo = document.getElementById('editOBCompanySelect');
     if (editCo && editCo.value) filterManagersByCompany(editCo.value, 'edit_reporting_manager');
     var ms = document.getElementById('obEditMaritalStatus');
     if (ms) obEditToggleSpouse(ms.value);
+    // Pre-fill manager email on load
+    var mgrSel = document.getElementById('edit_reporting_manager');
+    if (mgrSel && mgrSel.value) fetchManagerEmailEdit(mgrSel.value);
 });
 
 // ── Section G spouse functions ────────────────────────────────────────────

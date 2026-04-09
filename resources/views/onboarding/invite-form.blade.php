@@ -132,7 +132,7 @@ body { background:#f1f5f9; min-height:100vh; }
                         @endfor
                     </select>
                 </div>
-                <script>
+                <script nonce="{{ $cspNonce ?? '' }}">
                 (function(){
                     function calcInvAge(dob){
                         var el=document.getElementById('inv_age'); if(!el) return;
@@ -551,7 +551,7 @@ body { background:#f1f5f9; min-height:100vh; }
 </div><!-- /container -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 const CONSENT_URL = "{{ isset($token) ? route('onboarding.invite.consent', $token ?? '') : '' }}";
 const CSRF_TOKEN  = "{{ csrf_token() }}";
 

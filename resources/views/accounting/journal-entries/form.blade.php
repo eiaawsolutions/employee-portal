@@ -84,7 +84,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     let lineIndex = 2;
     const tbody = document.querySelector('#linesTable tbody');

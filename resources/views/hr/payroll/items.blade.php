@@ -134,7 +134,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.querySelectorAll('.edit-item-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.getElementById('editItemForm').action = '{{ url("hr/payroll/items") }}/' + btn.dataset.id;

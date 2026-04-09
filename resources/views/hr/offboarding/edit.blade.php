@@ -77,7 +77,7 @@
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function calcOffAge(dob){
                             var el=document.getElementById('off_age'); if(!el) return;
@@ -351,7 +351,7 @@
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('off_sd_day').value,
@@ -393,7 +393,7 @@
                         </select>
                     </div>
                     <div class="form-text">Changing this resets pending notification emails.</div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('off_ed_day').value,
@@ -435,7 +435,7 @@
                                 @endfor
                             </select>
                         </div>
-                        <script>
+                        <script nonce="{{ $cspNonce ?? '' }}">
                         (function(){
                             function sync(){
                                 var d=document.getElementById('off_lsd_day').value,
@@ -1159,7 +1159,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function autofillOfficeLocation(selectEl, targetId) {
     const selected = selectEl.options[selectEl.selectedIndex];
     const target   = document.getElementById(targetId);

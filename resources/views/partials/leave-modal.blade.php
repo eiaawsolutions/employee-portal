@@ -38,7 +38,7 @@
     </div>
 </div>
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function calcLeave(){
     const s=new Date(document.getElementById('leaveStart').value),e=new Date(document.getElementById('leaveEnd').value);
     if(!s||!e||isNaN(s)||isNaN(e)){document.getElementById('leaveResult').textContent='Please select both dates.';return;}

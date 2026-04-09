@@ -168,7 +168,7 @@
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function calcEmpAge(dob){
                             var el=document.getElementById('emp_age'); if(!el) return;
@@ -473,7 +473,7 @@
                             @endfor
                         </select>
                     </div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('emp_sd_day').value,
@@ -515,7 +515,7 @@
                         </select>
                     </div>
                     <div class="form-text">Optional. Triggers offboarding on exit date.</div>
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     (function(){
                         function sync(){
                             var d=document.getElementById('emp_ed_day').value,
@@ -557,7 +557,7 @@
                                 @endfor
                             </select>
                         </div>
-                        <script>
+                        <script nonce="{{ $cspNonce ?? '' }}">
                         (function(){
                             function sync(){
                                 var d=document.getElementById('emp_lsd_day').value,
@@ -1459,7 +1459,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function toggleOtherBank(sel, otherId) {
     const el = document.getElementById(otherId);
     if (el) el.classList.toggle('d-none', sel.value !== 'Other');

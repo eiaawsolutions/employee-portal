@@ -208,7 +208,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function openPhotoLightbox(el) {
     document.getElementById('photoLightboxImg').src  = el.dataset.photoSrc;
     document.getElementById('photoLightboxLabel').textContent =

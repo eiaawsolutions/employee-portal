@@ -110,7 +110,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.getElementById('empSearch').addEventListener('input', function () {
     const q = this.value.toLowerCase();
     document.querySelectorAll('#balanceTable .emp-row').forEach(row => {

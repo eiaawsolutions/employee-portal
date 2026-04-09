@@ -243,7 +243,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
     const employeeBankData = @json($employeeBankData);
 
     // Add modal — auto-fill on employee selection

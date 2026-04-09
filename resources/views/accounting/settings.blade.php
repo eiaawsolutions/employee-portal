@@ -105,7 +105,7 @@
                     <button type="submit" class="btn btn-primary btn-sm mt-3">Save Settings</button>
 
                     @push('scripts')
-                    <script>
+                    <script nonce="{{ $cspNonce ?? '' }}">
                     const AI_PROVIDERS = @json($providers);
                     const SAVED_PROVIDER = @json($aiProvider);
                     const SAVED_MODEL    = @json($aiModel);

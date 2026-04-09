@@ -383,7 +383,7 @@ foreach ($fieldMap as $mKey => $mod) {
     </div>
 </div>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 (function () {
     const modal     = document.getElementById('accessModal');
     const form      = document.getElementById('permissionsForm');

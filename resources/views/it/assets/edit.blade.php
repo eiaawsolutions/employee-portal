@@ -358,7 +358,7 @@
 </form>
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 /* ── Asset-Type → Brand mapping ─────────────────────────────────────── */
 const brandsByType = {
     laptop:      ['Dell','HP','Lenovo','Apple','Asus','Acer','MSI','Samsung','Microsoft','Huawei','Other'],

@@ -288,7 +288,7 @@
 @endif
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     const COLORS = ['#10b981','#2563eb','#f59e0b','#ef4444','#8b5cf6','#94a3b8','#06b6d4','#ec4899'];
     const STATUS_COLORS = { available: '#10b981', assigned: '#2563eb', unavailable: '#6366f1', under_maintenance: '#f59e0b', disposed: '#94a3b8', returned: '#06b6d4' };

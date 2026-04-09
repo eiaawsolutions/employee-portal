@@ -425,7 +425,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.addEventListener('DOMContentLoaded', function() {
     const descInput = document.getElementById('expenseDescription');
     const categorySelect = document.getElementById('expenseCategory');

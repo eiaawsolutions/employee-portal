@@ -41,7 +41,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 document.getElementById('checkAll')?.addEventListener('change', function() {
     document.querySelectorAll('.recon-check').forEach(c => c.checked = this.checked);
 });
