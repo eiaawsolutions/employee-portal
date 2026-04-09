@@ -11,14 +11,19 @@
     $dashDesig = $dashUser->employee?->designation ?? ucwords(str_replace('_',' ',$dashUser->role));
     $dashCompany = $dashUser->employee?->company;
 @endphp
-<div class="card mb-4" style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border:none;">
-    <div class="card-body d-flex align-items-center gap-3 py-3">
-        <div style="width:52px;height:52px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+<div class="card mb-4" style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);border:none;border-radius:16px;overflow:hidden;position:relative;">
+    <div style="position:absolute;top:-40px;right:-20px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);"></div>
+    <div style="position:absolute;bottom:-30px;right:80px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);"></div>
+    <div class="card-body d-flex align-items-center gap-3 py-3" style="position:relative;z-index:1;">
+        <div style="width:52px;height:52px;background:rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
             <i class="bi bi-person-fill" style="font-size:26px;color:#fff;"></i>
         </div>
         <div>
             <h5 class="text-white mb-0 fw-bold">Welcome, {{ $dashName }}</h5>
-            <small style="color:rgba(255,255,255,0.75);">{{ $dashDesig }}{{ $dashCompany ? ' · '.$dashCompany : '' }}</small>
+            <small style="color:rgba(255,255,255,0.8);">{{ $dashDesig }}{{ $dashCompany ? ' · '.$dashCompany : '' }}</small>
+        </div>
+        <div class="ms-auto text-end d-none d-md-block">
+            <small style="color:rgba(255,255,255,.7);font-size:12px;">{{ now()->format('l, d/m/Y') }}</small>
         </div>
     </div>
 </div>
@@ -29,220 +34,272 @@
 
 @include('partials.on-leave-widget')
 
-{{-- ── ONBOARDING OVERVIEW CARDS ──────────────────────────────────────── --}}
-<div class="mb-2"><small class="text-muted fw-semibold" style="text-transform:uppercase;letter-spacing:.06em;"><i class="bi bi-person-plus me-1"></i>Onboarding Overview</small></div>
+@include('partials.dashboard-widgets-style')
+
+{{-- ── ONBOARDING OVERVIEW ──────────────────────────────────────────────── --}}
+<div class="section-header">
+    <div class="section-icon" style="background:#eff6ff;">
+        <i class="bi bi-person-plus" style="font-size:16px;color:#2563eb;"></i>
+    </div>
+    <h6>Onboarding Overview</h6>
+</div>
 <div class="row g-3 mb-4">
 
-    {{-- 1. Total Onboard YTD --}}
+    @php
+        $allCompanyNames = collect($newJoinersByCompany)->pluck('company')
+            ->merge(collect($exitingByCompany)->pluck('company'))
+            ->merge(collect($activeByCompany)->pluck('company'))
+            ->filter()->unique()->sort()->values();
+    @endphp
+
+    {{-- 1. Total Onboard Year to Date --}}
     <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #2563eb;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#dbeafe;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-person-plus" style="font-size:20px;color:#2563eb;"></i></div>
-                    <div><div style="font-size:28px;font-weight:700;line-height:1;">{{ $stats['total_onboardings_ytd'] }}</div><div class="text-muted small">Total Onboard YTD</div></div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-person-plus-fill"></i></div>
+                    <div>
+                        <div class="widget-number">{{ $stats['total_onboardings_ytd'] }}</div>
+                        <div class="widget-label">Onboarded YTD</div>
+                    </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Company</div>
-                    @forelse($onboardingsByCompany as $row)
-                    <div class="d-flex justify-content-between mb-1"><span style="font-size:12px;">{{ $row->company }}</span><span class="badge bg-primary" style="font-size:11px;">{{ $row->total }}</span></div>
-                    @empty<div class="text-muted small">No data</div>@endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
+                @forelse($onboardingsByCompany as $row)
+                <div class="breakdown-row">
+                    <span>{{ $row->company }}</span>
+                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2">No data yet</div>
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- 2. New Joiners --}}
+    {{-- 2. New Joiners This Month --}}
     <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#fef3c7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="bi bi-calendar-plus" style="font-size:20px;color:#f59e0b;"></i></div>
-                    <div><div style="font-size:28px;font-weight:700;line-height:1;">{{ $stats['new_joiners_this_month'] }}</div><div class="text-muted small">New Joiners This Month</div></div>
+        <div class="card dash-widget h-100" id="card-joiners">
+            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-calendar-plus-fill"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['new_joiners_this_month'] }}">{{ $stats['new_joiners_this_month'] }}</div>
+                        <div class="widget-label">New Joiners This Month</div>
+                    </div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('joiners', this.value)">
+                            <option value="">All</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Company</div>
-                    @forelse($newJoinersByCompany as $row)
-                    <div class="d-flex justify-content-between mb-1"><span style="font-size:12px;">{{ $row->company }}</span><span class="badge" style="background:#f59e0b;font-size:11px;">{{ $row->total }}</span></div>
-                    @empty<div class="text-muted small">No data</div>@endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
+                @forelse($newJoinersByCompany as $row)
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company }}">
+                    <span>{{ $row->company }}</span>
+                    <span class="breakdown-badge" style="background:#f59e0b;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2 dash-empty">No new joiners this month</div>
+                @endforelse
             </div>
         </div>
     </div>
 
     {{-- 3. Exiting This Month --}}
     <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #ef4444;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#fee2e2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-calendar-x" style="font-size:20px;color:#ef4444;"></i>
+        <div class="card dash-widget h-100" id="card-exiting">
+            <div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-calendar-x-fill"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['exiting_this_month'] }}">{{ $stats['exiting_this_month'] }}</div>
+                        <div class="widget-label">Exiting This Month</div>
                     </div>
-                    <div>
-                        <div style="font-size:28px;font-weight:700;color:#1e293b;line-height:1;">{{ $stats['exiting_this_month'] }}</div>
-                        <div class="text-muted small">Exiting This Month</div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('exiting', this.value)">
+                            <option value="">All</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Company</div>
-                    @forelse($exitingByCompany as $row)
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span style="font-size:12px;">{{ $row->company ?? 'Unknown' }}</span>
-                        <span class="badge bg-danger" style="font-size:11px;">{{ $row->total }}</span>
-                    </div>
-                    @empty
-                    <div class="text-muted small">No exits this month</div>
-                    @endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
+                @forelse($exitingByCompany as $row)
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company ?? 'Unknown' }}">
+                    <span>{{ $row->company ?? 'Unknown' }}</span>
+                    <span class="breakdown-badge" style="background:#ef4444;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2 dash-empty">No exits this month</div>
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- 4. Active Employees with breakdown filter --}}
+    {{-- 4. Active Employees --}}
     <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #16a34a;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-2">
-                    <div style="width:46px;height:46px;background:#dcfce7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-people" style="font-size:20px;color:#16a34a;"></i>
+        <div class="card dash-widget h-100" id="card-active">
+            <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-people-fill"></i></div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['active_employees'] }}">{{ $stats['active_employees'] }}</div>
+                        <div class="widget-label">Active Employees</div>
                     </div>
-                    <div>
-                        <div style="font-size:28px;font-weight:700;color:#1e293b;line-height:1;">{{ $stats['active_employees'] }}</div>
-                        <div class="text-muted small">Active Employees</div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('active', this.value)">
+                            <option value="">All</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                <div class="flex-fill overflow-auto" id="activeBreakdownHR">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Company</div>
-                    {{-- Populated by JS on load --}}
-                    @foreach($activeByCompany as $row)
-                    <div class="active-row d-flex justify-content-between mb-1" data-group="company" data-label="{{ $row->company }}" data-count="{{ $row->total }}">
-                        <span style="font-size:12px;">{{ $row->company }}</span>
-                        <span class="badge bg-success" style="font-size:11px;">{{ $row->total }}</span>
-                    </div>
-                    @endforeach
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
+                @forelse($activeByCompany as $row)
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company }}">
+                    <span>{{ $row->company }}</span>
+                    <span class="breakdown-badge" style="background:#22c55e;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2 dash-empty">No active employees</div>
+                @endforelse
             </div>
         </div>
     </div>
+
 </div>
 
-{{-- ── ASSET CARDS ──────────────────────────────────────────────────────── --}}
-<div class="mb-2"><small class="text-muted fw-semibold" style="text-transform:uppercase;letter-spacing:.06em;"><i class="bi bi-laptop me-1"></i>Asset Overview</small></div>
+{{-- ── ASSET OVERVIEW ──────────────────────────────────────────────────── --}}
+<div class="section-header mt-2">
+    <div class="section-icon" style="background:#f0fdf4;">
+        <i class="bi bi-laptop" style="font-size:16px;color:#16a34a;"></i>
+    </div>
+    <h6>Asset Overview</h6>
+</div>
 <div class="row g-3 mb-4">
 
-    {{-- Card 1: Overall Assets — breakdown by type --}}
+    {{-- Card 1: Overall Assets --}}
     <div class="col-md-4">
-        <div class="card h-100" style="border-left:4px solid #2563eb;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#dbeafe;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-laptop" style="font-size:20px;color:#2563eb;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#6366f1,#4338ca);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-laptop-fill"></i></div>
                     <div>
-                        <div style="font-size:28px;font-weight:700;line-height:1;">{{ $assetStats['total_assets'] }}</div>
-                        <div class="text-muted small">Overall Assets</div>
+                        <div class="widget-number">{{ $assetStats['total_assets'] }}</div>
+                        <div class="widget-label">Overall Assets</div>
                     </div>
-                    <div class="ms-auto text-end">
-                        <span class="badge bg-success">{{ $assetStats['available'] }} Available</span><br>
-                        <span class="badge bg-primary mt-1">{{ $assetStats['assigned'] }} Assigned</span>
+                    <div class="ms-auto status-pills">
+                        <span class="status-pill" style="background:rgba(255,255,255,.2);color:#fff;">{{ $assetStats['available'] }} Available</span>
+                        <span class="status-pill" style="background:rgba(255,255,255,.2);color:#fff;">{{ $assetStats['assigned'] }} Assigned</span>
                     </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Type</div>
-                    @forelse($assetsByType as $row)
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span style="font-size:12px;">{{ ucfirst(str_replace('_',' ', $row->asset_type)) }}</span>
-                        <span class="badge bg-primary" style="font-size:11px;">{{ $row->total }}</span>
-                    </div>
-                    @empty
-                    <div class="text-muted small">No assets</div>
-                    @endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Type</div>
+                @forelse($assetsByType as $row)
+                <div class="breakdown-row">
+                    <span>{{ ucfirst(str_replace('_',' ', $row->asset_type)) }}</span>
+                    <span class="breakdown-badge" style="background:#6366f1;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2">No assets</div>
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- Card 2: Company Owned — breakdown by company --}}
+    {{-- Card 2: Company Owned --}}
     <div class="col-md-4">
-        <div class="card h-100" style="border-left:4px solid #16a34a;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#dcfce7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-building" style="font-size:20px;color:#16a34a;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#14b8a6,#0f766e);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-building-fill"></i></div>
                     <div>
-                        <div style="font-size:28px;font-weight:700;line-height:1;">{{ $companyOwnedTotal }}</div>
-                        <div class="text-muted small">Company Owned</div>
+                        <div class="widget-number">{{ $companyOwnedTotal }}</div>
+                        <div class="widget-label">Company Owned</div>
                     </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Company</div>
-                    @forelse($companyOwnedByCompany as $row)
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span style="font-size:12px;">{{ $row->company }}</span>
-                        <span class="badge bg-success" style="font-size:11px;">{{ $row->total }}</span>
-                    </div>
-                    @empty
-                    <div class="text-muted small">No company-owned assets</div>
-                    @endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
+                @forelse($companyOwnedByCompany as $row)
+                <div class="breakdown-row">
+                    <span>{{ $row->company }}</span>
+                    <span class="breakdown-badge" style="background:#14b8a6;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2">No company-owned assets</div>
+                @endforelse
             </div>
         </div>
     </div>
 
-    {{-- Card 3: Rental — breakdown by vendor --}}
+    {{-- Card 3: Rental --}}
     <div class="col-md-4">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;min-height:210px;">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <div style="width:46px;height:46px;background:#fef3c7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i class="bi bi-truck" style="font-size:20px;color:#f59e0b;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#f97316,#c2410c);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-truck-front-fill"></i></div>
                     <div>
-                        <div style="font-size:28px;font-weight:700;line-height:1;">{{ $rentalTotal }}</div>
-                        <div class="text-muted small">Rental / Leased</div>
+                        <div class="widget-number">{{ $rentalTotal }}</div>
+                        <div class="widget-label">Rental / Leased</div>
                     </div>
                 </div>
-                <div class="flex-fill">
-                    <div class="text-muted mb-2" style="font-size:11px;font-weight:600;text-transform:uppercase;">By Vendor</div>
-                    @forelse($rentalByVendor as $row)
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span style="font-size:12px;">{{ $row->vendor }}</span>
-                        <span class="badge" style="background:#f59e0b;font-size:11px;">{{ $row->total }}</span>
-                    </div>
-                    @empty
-                    <div class="text-muted small">No rental assets</div>
-                    @endforelse
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Vendor</div>
+                @forelse($rentalByVendor as $row)
+                <div class="breakdown-row">
+                    <span>{{ $row->vendor }}</span>
+                    <span class="breakdown-badge" style="background:#f97316;">{{ $row->total }}</span>
                 </div>
+                @empty
+                <div class="text-muted small text-center py-2">No rental assets</div>
+                @endforelse
             </div>
         </div>
     </div>
 
 </div>
-
-
-{{-- Widgets --}}
-<!-- <div class="row g-3">
-    <div class="col-md-6"><div class="card h-100"><div class="card-body">
-        <div class="d-flex align-items-center gap-3 mb-3"><div style="width:48px;height:48px;background:#dbeafe;border-radius:12px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-receipt" style="font-size:24px;color:#2563eb;"></i></div><div><h6 class="mb-0 fw-bold">Claim Calculator</h6></div></div>
-        <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#claimModal"><i class="bi bi-plus-circle me-2"></i>Claim Calculator</button>
-    </div></div></div>
-    <div class="col-md-6"><div class="card h-100"><div class="card-body">
-        <div class="d-flex align-items-center gap-3 mb-3"><div style="width:48px;height:48px;background:#dcfce7;border-radius:12px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-calendar-check" style="font-size:24px;color:#16a34a;"></i></div><div><h6 class="mb-0 fw-bold">Leave Calculator</h6></div></div>
-        <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#leaveModal"><i class="bi bi-calendar3 me-2"></i>Leave Calculator</button>
-    </div></div></div>
-</div> -->
 
 @include('partials.claim-modal')
 @include('partials.leave-modal')
-@endsection
-@push('scripts')
-<script>
-function applyActiveFilter(suffix) {
-    const val = document.getElementById('activeFilter' + suffix).value;
-    const prefix = suffix === 'IT' ? 'active-row-it' : 'active-row';
-    document.querySelectorAll('.' + prefix).forEach(r => {
-        r.classList.toggle('d-none', r.dataset.group !== val);
+
+<script nonce="{{ $cspNonce ?? '' }}">
+function filterDashCard(cardKey, company) {
+    var card = document.getElementById('card-' + cardKey);
+    if (!card) return;
+    var numberEl = card.querySelector('.widget-number');
+    var rows = card.querySelectorAll('.dash-filter-row');
+    var selected = company ? company.trim() : '';
+    if (!selected) {
+        numberEl.textContent = numberEl.dataset.total;
+        rows.forEach(function(r) { r.style.display = ''; });
+        return;
+    }
+    var filteredTotal = 0;
+    rows.forEach(function(row) {
+        if (row.dataset.company === selected) {
+            row.style.display = '';
+            filteredTotal += parseInt(row.querySelector('.breakdown-badge').textContent, 10) || 0;
+        } else {
+            row.style.display = 'none';
+        }
     });
+    numberEl.textContent = filteredTotal;
 }
 </script>
-@endpush
+@endsection
