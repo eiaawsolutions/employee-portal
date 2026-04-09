@@ -269,6 +269,16 @@
                 @empty
                 <div class="text-muted small text-center py-2">No rental assets</div>
                 @endforelse
+
+                <div class="breakdown-title mt-3">By Company Supplied To</div>
+                @forelse($rentalBySuppliedTo as $row)
+                <div class="breakdown-row">
+                    <span>{{ $row->company }}</span>
+                    <span class="breakdown-badge" style="background:#ea580c;">{{ $row->total }}</span>
+                </div>
+                @empty
+                <div class="text-muted small text-center py-2">No data</div>
+                @endforelse
             </div>
         </div>
     </div>

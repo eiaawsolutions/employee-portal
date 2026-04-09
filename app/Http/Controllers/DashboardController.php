@@ -164,13 +164,18 @@ class DashboardController extends Controller
             ->groupBy('vendor')->orderByDesc('total')->get();
         $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
+        $rawRentalBySuppliedTo = AssetInventory::where('ownership_type', 'rental')
+            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, count(*) as total')
+            ->groupBy('company')->orderByDesc('total')->get();
+        $rentalBySuppliedTo = $this->groupedCompanyCollection($rawRentalBySuppliedTo);
+
         $registeredCompanies = \App\Models\Company::orderBy('name')->get();
 
         return view('hr.dashboard', compact(
             'stats','onboardingsByCompany','newJoinersByCompany','exitingByCompany',
             'activeByCompany','activeByDesignation','activeByRole','activeByDepartment',
             'assetStats','assetsByType','companyOwnedTotal','companyOwnedByCompany',
-            'rentalTotal','rentalByVendor','birthdayBabies','latestAnnouncements',
+            'rentalTotal','rentalByVendor','rentalBySuppliedTo','birthdayBabies','latestAnnouncements',
             'registeredCompanies'
         ));
     }
@@ -211,6 +216,11 @@ class DashboardController extends Controller
             ->get();
         $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
+        $rawRentalBySuppliedTo = AssetInventory::where('ownership_type', 'rental')
+            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, count(*) as total')
+            ->groupBy('company')->orderByDesc('total')->get();
+        $rentalBySuppliedTo = $this->groupedCompanyCollection($rawRentalBySuppliedTo);
+
         extract($this->getDashboardStats());
 
         // Recent onboarding records (pending/active, upcoming start dates)
@@ -225,7 +235,7 @@ class DashboardController extends Controller
         return view('it.dashboard', compact(
             'assetStats', 'assetsByType',
             'companyOwnedTotal', 'companyOwnedByCompany',
-            'rentalTotal', 'rentalByVendor',
+            'rentalTotal', 'rentalByVendor', 'rentalBySuppliedTo',
             'stats', 'onboardingsByCompany', 'newJoinersByCompany', 'exitingByCompany',
             'activeByCompany', 'activeByDesignation', 'activeByRole', 'activeByDepartment',
             'recentOnboardings', 'birthdayBabies', 'latestAnnouncements'
