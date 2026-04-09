@@ -24,13 +24,17 @@ class DashboardController extends Controller
         }
         $trimmed = trim($name);
         if ($trimmed === '') return 'Unspecified';
-        // Exact match (case-insensitive) against registered companies
+
+        // Normalize for comparison: strip periods, extra spaces, lowercase
+        $normalize = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
+        $normalizedInput = $normalize($trimmed);
+
         foreach ($registered as $r) {
-            if (strcasecmp($trimmed, $r) === 0) return $r;
+            if ($normalize($r) === $normalizedInput) return $r;
         }
         // If no registered companies exist, use the raw name as-is
         if (empty($registered)) return $trimmed;
-        return 'Unspecified';
+        return $trimmed;
     }
 
     private function groupedCompanyCollection($rows, string $companyField = 'company', bool $normalizeAsCompany = true): array
