@@ -23,10 +23,13 @@ class DashboardController extends Controller
             $registered = \App\Models\Company::orderBy('name')->pluck('name')->toArray();
         }
         $trimmed = trim($name);
-        // Exact match (case-insensitive)
+        if ($trimmed === '') return 'Unspecified';
+        // Exact match (case-insensitive) against registered companies
         foreach ($registered as $r) {
             if (strcasecmp($trimmed, $r) === 0) return $r;
         }
+        // If no registered companies exist, use the raw name as-is
+        if (empty($registered)) return $trimmed;
         return 'Unspecified';
     }
 

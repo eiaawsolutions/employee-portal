@@ -220,6 +220,14 @@
         </div>
     </div>
 
+    {{-- Collect all unique company names from the actual data for filter options --}}
+    @php
+        $allCompanyNames = collect($newJoinersByCompany)->pluck('company')
+            ->merge(collect($exitingByCompany)->pluck('company'))
+            ->merge(collect($activeByCompany)->pluck('company'))
+            ->filter()->unique()->sort()->values();
+    @endphp
+
     {{-- 2. New Joiners This Month --}}
     <div class="col-md-3">
         <div class="card dash-widget h-100" id="card-joiners">
@@ -233,8 +241,8 @@
                     <div class="widget-filter">
                         <select class="form-select form-select-sm" onchange="filterDashCard('joiners', this.value)">
                             <option value="">All</option>
-                            @foreach($registeredCompanies as $co)
-                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -267,8 +275,8 @@
                     <div class="widget-filter">
                         <select class="form-select form-select-sm" onchange="filterDashCard('exiting', this.value)">
                             <option value="">All</option>
-                            @foreach($registeredCompanies as $co)
-                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -301,8 +309,8 @@
                     <div class="widget-filter">
                         <select class="form-select form-select-sm" onchange="filterDashCard('active', this.value)">
                             <option value="">All</option>
-                            @foreach($registeredCompanies as $co)
-                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @foreach($allCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
