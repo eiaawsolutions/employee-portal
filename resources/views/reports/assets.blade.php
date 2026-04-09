@@ -171,20 +171,25 @@
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-primary" style="font-size:11px;">{{ $company }}</span>
                     </div>
-                    @foreach($vendors as $vendor => $brands)
+                    @foreach($vendors as $vendor => $assetTypes)
                     <div class="ms-2 mb-2">
                         <div class="fw-semibold text-muted mb-1" style="font-size:12px;"><i class="bi bi-building me-1"></i>{{ $vendor }}</div>
-                        <table class="table table-sm mini-table mb-0 ms-3">
-                            <thead><tr><th>Brand</th><th class="text-end">Count</th></tr></thead>
-                            <tbody>
-                            @foreach($brands as $row)
-                            <tr>
-                                <td>{{ $row->brand ?: 'Unspecified' }}</td>
-                                <td class="text-end">{{ $row->total }}</td>
-                            </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+                        @foreach($assetTypes as $assetType => $brands)
+                        <div class="ms-3 mb-2">
+                            <div class="fw-semibold mb-1" style="font-size:11px;"><i class="bi bi-laptop me-1"></i>{{ $assetType }}</div>
+                            <table class="table table-sm mini-table mb-0 ms-2">
+                                <thead><tr><th>Brand</th><th class="text-end">Count</th></tr></thead>
+                                <tbody>
+                                @foreach($brands as $row)
+                                <tr>
+                                    <td>{{ $row->brand ?: 'Unspecified' }}</td>
+                                    <td class="text-end">{{ $row->total }}</td>
+                                </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endforeach
                     </div>
                     @endforeach
                 </div>
