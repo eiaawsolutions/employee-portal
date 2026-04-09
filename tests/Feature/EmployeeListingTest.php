@@ -14,7 +14,7 @@ class EmployeeListingTest extends TestCase
 
     private function createHrUserWithEmployee(): User
     {
-        $user = User::factory()->hrManager()->create();
+        $user = User::factory()->hrManager()->withTwoFactor()->create();
         Employee::factory()->withUser($user)->create();
         return $user;
     }

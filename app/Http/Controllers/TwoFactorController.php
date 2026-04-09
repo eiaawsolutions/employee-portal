@@ -69,6 +69,10 @@ class TwoFactorController extends Controller
     // ── Disable 2FA ───────────────────────────────────────────────────────
     public function disable(Request $request)
     {
+        if ($request->user()->requiresTwoFactor()) {
+            return back()->withErrors(['password' => 'Two-factor authentication is required for your role and cannot be disabled.']);
+        }
+
         $request->validate(['password' => 'required']);
 
         if (!Auth::validate(['work_email' => $request->user()->work_email, 'password' => $request->password])) {

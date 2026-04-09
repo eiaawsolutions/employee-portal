@@ -87,19 +87,32 @@
                         <i class="bi bi-shield-fill-check me-1"></i>
                         Two-factor authentication is <strong>enabled</strong>.
                     </div>
-                    <form action="{{ route('two-factor.disable') }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small">Confirm Password to Disable</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your current password" required>
-                            @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    @if(Auth::user()->requiresTwoFactor())
+                        <div class="alert alert-info py-2 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Two-factor authentication is <strong>required</strong> for your role and cannot be disabled.
                         </div>
-                        <button type="submit" class="btn btn-outline-danger w-100">
-                            <i class="bi bi-shield-x me-2"></i>Disable Two-Factor Authentication
-                        </button>
-                    </form>
+                    @else
+                        <form action="{{ route('two-factor.disable') }}" method="POST">
+                            @csrf
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Confirm Password to Disable</label>
+                                <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your current password" required>
+                                @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-shield-x me-2"></i>Disable Two-Factor Authentication
+                            </button>
+                        </form>
+                    @endif
                 @else
                     <p class="text-muted small mb-3">Add an extra layer of security to your account using a TOTP authenticator app (e.g. Google Authenticator, Authy).</p>
+                    @if(Auth::user()->requiresTwoFactor())
+                        <div class="alert alert-warning py-2 mb-3">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Two-factor authentication is <strong>required</strong> for your role. You must enable it to continue using the system.
+                        </div>
+                    @endif
                     <a href="{{ route('two-factor.setup') }}" class="btn btn-primary w-100">
                         <i class="bi bi-shield-plus me-2"></i>Enable Two-Factor Authentication
                     </a>

@@ -74,7 +74,7 @@ Route::post('/onboarding-invite/{token}/consent', [OnboardingInviteController::c
 Route::post('/onboarding-invite/{token}/submit',  [OnboardingInviteController::class, 'submit'])->name('onboarding.invite.submit')->middleware('throttle:5,1');
 
 // ── Authenticated ──────────────────────────────────────────────────────────
-Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \App\Http\Middleware\SecurityAuditMiddleware::class])->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \App\Http\Middleware\SecurityAuditMiddleware::class, \App\Http\Middleware\EnforceTwoFactor::class])->group(function () {
 
     // Secure file serving — all sensitive documents (NRIC, contracts, certs) require auth
     Route::get('/secure-file/{path}', [SecureFileController::class, 'serve'])

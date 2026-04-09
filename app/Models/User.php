@@ -19,6 +19,21 @@ class User extends Authenticatable
         return !is_null($this->two_factor_secret) && !is_null($this->two_factor_confirmed_at);
     }
 
+    /** Roles that must have 2FA enabled to access the application. */
+    private const TWO_FACTOR_REQUIRED_ROLES = [
+        'superadmin', 'hr_manager', 'hr_executive', 'finance_manager', 'it_manager', 'it_executive',
+    ];
+
+    public function requiresTwoFactor(): bool
+    {
+        return in_array($this->role, self::TWO_FACTOR_REQUIRED_ROLES);
+    }
+
+    public function mustSetupTwoFactor(): bool
+    {
+        return $this->requiresTwoFactor() && !$this->hasTwoFactorEnabled();
+    }
+
     // Tell Laravel password broker to use work_email
     public function getEmailForPasswordReset(): string { return $this->work_email; }
     public function routeNotificationForMail(): string { return $this->work_email; }

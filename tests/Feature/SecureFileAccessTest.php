@@ -27,7 +27,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_hr_manager_can_access_nric_documents(): void
     {
-        $user = User::factory()->hrManager()->create();
+        $user = User::factory()->hrManager()->withTwoFactor()->create();
         Storage::disk('local')->put('nric_documents/test.pdf', 'fake-pdf-content');
 
         $response = $this->actingAs($user)->get('/secure-file/nric_documents/test.pdf');
@@ -58,7 +58,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_it_manager_can_access_aarf_files(): void
     {
-        $user = User::factory()->itManager()->create();
+        $user = User::factory()->itManager()->withTwoFactor()->create();
         Storage::disk('local')->put('aarfs/form.pdf', 'fake-pdf-content');
 
         $response = $this->actingAs($user)->get('/secure-file/aarfs/form.pdf');
@@ -76,7 +76,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_path_traversal_is_blocked(): void
     {
-        $user = User::factory()->hrManager()->create();
+        $user = User::factory()->hrManager()->withTwoFactor()->create();
         Storage::disk('local')->put('nric_documents/test.pdf', 'fake-pdf-content');
 
         $response = $this->actingAs($user)->get('/secure-file/nric_documents/../.env');
@@ -86,7 +86,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_unknown_directory_is_denied(): void
     {
-        $user = User::factory()->hrManager()->create();
+        $user = User::factory()->hrManager()->withTwoFactor()->create();
         Storage::disk('local')->put('secret_stuff/data.txt', 'content');
 
         $response = $this->actingAs($user)->get('/secure-file/secret_stuff/data.txt');
@@ -95,7 +95,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_hr_executive_can_access_education_certificates(): void
     {
-        $user = User::factory()->hrExecutive()->create();
+        $user = User::factory()->hrExecutive()->withTwoFactor()->create();
         Storage::disk('local')->put('education_certificates/cert.pdf', 'fake-content');
 
         $response = $this->actingAs($user)->get('/secure-file/education_certificates/cert.pdf');
@@ -104,7 +104,7 @@ class SecureFileAccessTest extends TestCase
 
     public function test_hr_manager_can_access_claim_receipts(): void
     {
-        $user = User::factory()->hrManager()->create();
+        $user = User::factory()->hrManager()->withTwoFactor()->create();
         Storage::disk('local')->put('claim_receipts/receipt.pdf', 'fake-content');
 
         $response = $this->actingAs($user)->get('/secure-file/claim_receipts/receipt.pdf');

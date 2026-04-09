@@ -25,6 +25,9 @@
             <p class="mb-0" style="opacity:0.8; font-size:14px;">Scan the QR code with your authenticator app</p>
         </div>
         <div class="auth-body">
+            @if(session('warning'))
+                <div class="alert alert-warning py-2"><i class="bi bi-shield-exclamation me-1"></i>{{ session('warning') }}</div>
+            @endif
             @if($errors->any())
                 <div class="alert alert-danger py-2">{{ $errors->first() }}</div>
             @endif
@@ -55,7 +58,11 @@
 
             <hr class="my-3">
             <div class="text-center">
-                <a href="{{ route('profile') }}" class="text-muted small">Cancel and return to profile</a>
+                @if(Auth::user()->mustSetupTwoFactor())
+                    <span class="text-muted small">Two-factor authentication is required for your role.</span>
+                @else
+                    <a href="{{ route('profile') }}" class="text-muted small">Cancel and return to profile</a>
+                @endif
             </div>
         </div>
     </div>

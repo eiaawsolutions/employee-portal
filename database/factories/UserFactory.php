@@ -66,6 +66,15 @@ class UserFactory extends Factory
         return $this->state(['role' => 'finance_manager']);
     }
 
+    public function withTwoFactor(): static
+    {
+        return $this->state([
+            'two_factor_secret'       => \Illuminate\Support\Facades\Crypt::encryptString('JBSWY3DPEHPK3PXP'),
+            'two_factor_recovery_codes' => \Illuminate\Support\Facades\Crypt::encryptString(json_encode(['code1', 'code2'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
+    }
+
     public function inactive(): static
     {
         return $this->state([
