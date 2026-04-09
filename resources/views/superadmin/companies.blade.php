@@ -35,6 +35,12 @@
                         @error('registration_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">Company Phone Number</label>
+                        <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
+                               value="{{ old('phone') }}" placeholder="e.g. +603-1234 5678">
+                        @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Company Logo</label>
                         <input type="file" name="logo" class="form-control @error('logo') is-invalid @enderror"
                                accept="image/*">
@@ -72,6 +78,7 @@
                                 <th>Logo</th>
                                 <th>Company Name</th>
                                 <th>Registration No.</th>
+                                <th>Phone</th>
                                 <th>Address</th>
                                 <th class="text-end pe-3">Actions</th>
                             </tr>
@@ -91,6 +98,7 @@
                                 </td>
                                 <td class="fw-semibold">{{ $company->name }}</td>
                                 <td>{{ $company->registration_number ?? '—' }}</td>
+                                <td>{{ $company->phone ?? '—' }}</td>
                                 <td class="text-muted" style="max-width:220px;">
                                     <span title="{{ $company->address }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                         {{ $company->address ?? '—' }}
@@ -151,6 +159,11 @@
                         <label class="form-label fw-semibold">Registration Number</label>
                         <input type="text" name="registration_number" class="form-control"
                                value="{{ old('registration_number', $company->registration_number) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Company Phone Number</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ old('phone', $company->phone) }}" placeholder="e.g. +603-1234 5678">
                     </div>
                 </div>
                 <div class="modal-body pt-0">

@@ -29,10 +29,11 @@ class CompanyController extends Controller
             'name'                => 'required|string|max:255|unique:companies,name',
             'address'             => 'nullable|string|max:1000',
             'registration_number' => 'nullable|string|max:100',
+            'phone'               => 'nullable|string|max:50',
             'logo'                => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048|valid_file_content',
         ]);
 
-        $data = $request->only('name', 'address', 'registration_number');
+        $data = $request->only('name', 'address', 'registration_number', 'phone');
 
         if ($request->hasFile('logo')) {
             $data['logo_path'] = $request->file('logo')->store('company-logos', 'public');
@@ -51,10 +52,11 @@ class CompanyController extends Controller
             'name'                => 'required|string|max:255|unique:companies,name,' . $company->id,
             'address'             => 'nullable|string|max:1000',
             'registration_number' => 'nullable|string|max:100',
+            'phone'               => 'nullable|string|max:50',
             'logo'                => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048|valid_file_content',
         ]);
 
-        $data = $request->only('name', 'address', 'registration_number');
+        $data = $request->only('name', 'address', 'registration_number', 'phone');
 
         if ($request->hasFile('logo')) {
             // Delete old logo if present
