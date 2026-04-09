@@ -9,7 +9,7 @@
         <div class="row align-items-center">
             <div class="col-md-4 text-center">
                 <h4 class="mb-1" id="liveClock">{{ now()->format('h:i:s A') }}</h4>
-                <p class="text-muted mb-0">{{ now()->format('l, d F Y') }}</p>
+                <p class="text-muted mb-0">{{ now()->format('l, d/m/Y') }}</p>
             </div>
             <div class="col-md-4 text-center">
                 @if($todayRecord && $todayRecord->clock_in && !$todayRecord->clock_out)
@@ -59,7 +59,7 @@
                 <tbody>
                     @forelse($records as $rec)
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($rec->date)->format('d M Y (D)') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($rec->date)->format('d/m/Y (D)') }}</td>
                         <td>{{ $rec->clock_in ? \Carbon\Carbon::parse($rec->clock_in)->format('h:i A') : '—' }}</td>
                         <td>{{ $rec->clock_out ? \Carbon\Carbon::parse($rec->clock_out)->format('h:i A') : '—' }}</td>
                         <td class="text-center">{{ $rec->work_hours ? number_format($rec->work_hours, 1) . 'h' : '—' }}</td>
@@ -93,7 +93,7 @@
                 <tbody>
                     @forelse($overtimeRequests as $ot)
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($ot->date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($ot->date)->format('d/m/Y') }}</td>
                         <td>{{ \Carbon\Carbon::parse($ot->start_time)->format('h:i A') }} — {{ \Carbon\Carbon::parse($ot->end_time)->format('h:i A') }}</td>
                         <td class="text-center">{{ number_format($ot->hours, 1) }}</td>
                         <td><small>{{ Str::limit($ot->reason, 40) }}</small></td>

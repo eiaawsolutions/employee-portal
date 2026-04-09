@@ -129,7 +129,7 @@
                                     <tr>
                                         <td><strong>{{ $row->asset->asset_tag }}</strong></td>
                                         <td>{{ ucfirst(str_replace('_',' ',$row->asset->asset_type ?? '')) }}</td>
-                                        <td style="color:#64748b;">{{ $row->returned_date ? \Carbon\Carbon::parse($row->returned_date)->format('d M Y') : '—' }}</td>
+                                        <td style="color:#64748b;">{{ $row->returned_date ? \Carbon\Carbon::parse($row->returned_date)->format('d/m/Y') : '—' }}</td>
                                     </tr>
                                     @endif
                                     @endforeach

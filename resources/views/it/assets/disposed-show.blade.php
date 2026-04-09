@@ -76,15 +76,15 @@
                     </td></tr>
                     @if(($asset->ownership_type ?? 'company') === 'company')
                         <tr><td class="text-muted">Company Name</td><td>{{ $asset->company_name ?? '—' }}</td></tr>
-                        <tr><td class="text-muted">Purchase Date</td><td>{{ $asset->purchase_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <tr><td class="text-muted">Purchase Date</td><td>{{ $asset->purchase_date?->format('d/m/Y') ?? '—' }}</td></tr>
                         <tr><td class="text-muted">Vendor</td><td>{{ $asset->purchase_vendor ?? '—' }}</td></tr>
                         <tr><td class="text-muted">Cost</td><td>{{ $asset->purchase_cost ? 'RM '.number_format($asset->purchase_cost,2) : '—' }}</td></tr>
-                        <tr><td class="text-muted">Warranty Expiry</td><td>{{ $asset->warranty_expiry_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <tr><td class="text-muted">Warranty Expiry</td><td>{{ $asset->warranty_expiry_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     @else
                         <tr><td class="text-muted">Rental Vendor</td><td>{{ $asset->rental_vendor ?? '—' }}</td></tr>
                         <tr><td class="text-muted">Monthly Cost</td><td>{{ $asset->rental_cost_per_month ? 'RM '.number_format($asset->rental_cost_per_month,2) : '—' }}</td></tr>
                         <tr><td class="text-muted">Rental Period</td><td>
-                            {{ $asset->rental_start_date?->format('d M Y') ?? '—' }} — {{ $asset->rental_end_date?->format('d M Y') ?? '—' }}
+                            {{ $asset->rental_start_date?->format('d/m/Y') ?? '—' }} — {{ $asset->rental_end_date?->format('d/m/Y') ?? '—' }}
                         </td></tr>
                         <tr><td class="text-muted">Contract Ref</td><td>{{ $asset->rental_contract_reference ?? '—' }}</td></tr>
                     @endif

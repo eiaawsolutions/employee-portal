@@ -13,7 +13,7 @@
                 <tr>
                     <td class="fw-semibold">{{ $o->po_number }}</td>
                     <td>{{ $o->vendor->name ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($o->date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($o->date)->format('d/m/Y') }}</td>
                     <td class="text-end">{{ number_format($o->total, 2) }}</td>
                     <td class="text-center"><span class="badge bg-{{ $o->status === 'approved' ? 'success' : ($o->status === 'draft' ? 'warning' : 'secondary') }}">{{ ucfirst($o->status) }}</span></td>
                 </tr>

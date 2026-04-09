@@ -15,7 +15,7 @@
         <h5 class="mt-3 fw-bold">Already Acknowledged</h5>
         <p class="text-muted">
             You acknowledged this consent on
-            <strong>{{ $editLog->acknowledged_at->format('d M Y, h:i A') }}</strong>.
+            <strong>{{ $editLog->acknowledged_at->format('d/m/Y, h:i A') }}</strong>.
         </p>
         <a href="{{ route('profile') }}" class="btn btn-outline-primary btn-sm">Go to My Profile</a>
     </div>
@@ -47,7 +47,7 @@
 <div class="card mb-3" style="border-left:4px solid #f59e0b;">
     <div class="card-body">
         <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2 text-warning"></i>Your information was updated by HR</h6>
-        <p class="text-muted small mb-2">The following sections were modified on <strong>{{ $editLog->created_at->format('d M Y, h:i A') }}</strong> by <strong>{{ $editLog->edited_by_name }}</strong>:</p>
+        <p class="text-muted small mb-2">The following sections were modified on <strong>{{ $editLog->created_at->format('d/m/Y, h:i A') }}</strong> by <strong>{{ $editLog->edited_by_name }}</strong>:</p>
         <ul class="mb-0" style="font-size:13.5px;">
             @foreach($editLog->sections_changed as $section)
             <li>{{ $section }}</li>
@@ -88,7 +88,7 @@
                 <small class="text-muted">
                     <i class="bi bi-clock me-1"></i>
                     @if($editLog->consent_token_expires_at)
-                    Link expires {{ $editLog->consent_token_expires_at->format('d M Y, h:i A') }}
+                    Link expires {{ $editLog->consent_token_expires_at->format('d/m/Y, h:i A') }}
                     @endif
                 </small>
                 <button type="submit" class="btn btn-primary px-4">

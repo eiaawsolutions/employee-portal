@@ -75,7 +75,7 @@ class Aarf extends Model
      */
     public function appendAssetChange(string $entry): void
     {
-        $timestamp  = Carbon::now()->format('d M Y, h:i A');
+        $timestamp  = Carbon::now()->format('d/m/Y, h:i A');
         $newLine    = "[{$timestamp}] {$entry}";
         $existing   = trim($this->asset_changes ?? '');
         $this->asset_changes = $existing ? $existing . "\n" . $newLine : $newLine;

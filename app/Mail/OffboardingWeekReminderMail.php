@@ -18,7 +18,7 @@ class OffboardingWeekReminderMail extends Mailable
     public function envelope(): Envelope
     {
         $name = $this->offboarding->full_name ?? 'Employee';
-        $date = $this->offboarding->exit_date?->format('d M Y') ?? '';
+        $date = $this->offboarding->exit_date?->format('d/m/Y') ?? '';
         return new Envelope(
             subject: "Reminder: Offboarding in 1 Week — {$name} — {$date}",
         );

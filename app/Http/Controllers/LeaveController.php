@@ -775,7 +775,7 @@ class LeaveController extends Controller
                 $days[] = [
                     'date' => $current->copy(),
                     'day_name' => $current->format('l'),
-                    'date_formatted' => $current->format('d M Y'),
+                    'date_formatted' => $current->format('d/m/Y'),
                     'is_today' => $current->isToday(),
                     'leaves' => $dayLeaves->map(fn($l) => [
                         'employee_name' => $l->employee->preferred_name ?? $l->employee->full_name,

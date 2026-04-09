@@ -38,7 +38,7 @@
                     @forelse($records as $rec)
                     <tr>
                         <td>{{ $rec->employee->full_name ?? '—' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($rec->date)->format('d M Y (D)') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($rec->date)->format('d/m/Y (D)') }}</td>
                         <td>{{ $rec->clock_in ? \Carbon\Carbon::parse($rec->clock_in)->format('h:i A') : '—' }}</td>
                         <td>{{ $rec->clock_out ? \Carbon\Carbon::parse($rec->clock_out)->format('h:i A') : '—' }}</td>
                         <td class="text-center">{{ $rec->work_hours ? number_format($rec->work_hours, 1) . 'h' : '—' }}</td>

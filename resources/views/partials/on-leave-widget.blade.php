@@ -15,7 +15,7 @@
         <div>
             <i class="bi bi-calendar2-week text-primary me-1"></i>
             <span class="fw-semibold">On Leave This Week</span>
-            <small class="text-muted ms-1">({{ $weekStart->format('d M') }} — {{ $weekEnd->format('d M Y') }})</small>
+            <small class="text-muted ms-1">({{ $weekStart->format('d M') }} — {{ $weekEnd->format('d/m/Y') }})</small>
         </div>
         @if(!$isAdmin && $companyFilter)
         <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:11px;">

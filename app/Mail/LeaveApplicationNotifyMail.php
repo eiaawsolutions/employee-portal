@@ -25,7 +25,7 @@ class LeaveApplicationNotifyMail extends Mailable
         $name = $this->employee->preferred_name ?? $this->employee->full_name;
         $type = $this->application->leaveType?->name ?? 'Leave';
         return new Envelope(
-            subject: "Leave Application: {$name} — {$type} ({$this->application->start_date->format('d M Y')})"
+            subject: "Leave Application: {$name} — {$type} ({$this->application->start_date->format('d/m/Y')})"
         );
     }
 

@@ -34,8 +34,8 @@
                 <tr>
                     <td class="fw-semibold">{{ $inv->invoice_number }}</td>
                     <td>{{ $inv->customer->name ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($inv->date)->format('d M Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($inv->due_date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($inv->date)->format('d/m/Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($inv->due_date)->format('d/m/Y') }}</td>
                     <td class="text-end">{{ number_format($inv->total, 2) }}</td>
                     <td class="text-end {{ $inv->balance_due > 0 ? 'text-danger' : '' }}">{{ number_format($inv->balance_due, 2) }}</td>
                     <td class="text-center">

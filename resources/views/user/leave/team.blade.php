@@ -80,8 +80,8 @@
                     <td>
                         <span class="badge bg-primary bg-opacity-10 text-primary">{{ $app->leaveType?->name ?? '—' }}</span>
                     </td>
-                    <td>{{ $app->start_date->format('d M Y') }}</td>
-                    <td>{{ $app->end_date->format('d M Y') }}</td>
+                    <td>{{ $app->start_date->format('d/m/Y') }}</td>
+                    <td>{{ $app->end_date->format('d/m/Y') }}</td>
                     <td class="text-center">
                         {{ $app->total_days }}
                         @if($app->is_half_day)
@@ -94,7 +94,7 @@
                         <br><small class="text-muted">Mgr: {{ ucfirst($app->manager_status) }}</small>
                         @endif
                     </td>
-                    <td><small class="text-muted">{{ $app->created_at->format('d M Y') }}</small></td>
+                    <td><small class="text-muted">{{ $app->created_at->format('d/m/Y') }}</small></td>
                     <td class="text-end">
                         @if($app->status === 'pending')
                         <div class="d-flex gap-1 justify-content-end">
@@ -127,7 +127,7 @@
                                         <div class="modal-body text-start">
                                             <div class="mb-3">
                                                 <p class="text-muted small mb-2">
-                                                    {{ $app->leaveType?->name }} · {{ $app->start_date->format('d M Y') }} to {{ $app->end_date->format('d M Y') }} ({{ $app->total_days }} days)
+                                                    {{ $app->leaveType?->name }} · {{ $app->start_date->format('d/m/Y') }} to {{ $app->end_date->format('d/m/Y') }} ({{ $app->total_days }} days)
                                                 </p>
                                                 @if($app->reason)
                                                 <p class="small"><strong>Employee's reason:</strong> {{ $app->reason }}</p>

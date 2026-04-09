@@ -249,7 +249,7 @@
             <div>
                 <div class="fw-semibold text-success small">Consent Acknowledged</div>
                 <div class="text-muted small">
-                    Submitted on {{ $consentAt->format('d M Y, h:i A') }}
+                    Submitted on {{ $consentAt->format('d/m/Y, h:i A') }}
                     @if($employee->consent_ip)
                         — IP: {{ $employee->consent_ip }}
                     @endif

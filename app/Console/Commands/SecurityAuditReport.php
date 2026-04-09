@@ -40,7 +40,7 @@ class SecurityAuditReport extends Command
             return;
         }
 
-        $periodLabel = $since->setTimezone('Asia/Kuala_Lumpur')->format('d M Y H:i')
+        $periodLabel = $since->setTimezone('Asia/Kuala_Lumpur')->format('d/m/Y H:i')
             . ' – ' . now()->setTimezone('Asia/Kuala_Lumpur')->format('H:i') . ' MYT';
 
         foreach ($recipients as $email) {

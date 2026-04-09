@@ -45,8 +45,8 @@
                         ? ($task->offboarding?->company ?? '—')
                         : ($task->onboarding?->workDetail?->company ?? '—');
                     $date = $isOffboarding
-                        ? ($task->offboarding?->exit_date?->format('d M Y') ?? '—')
-                        : ($task->onboarding?->workDetail?->start_date?->format('d M Y') ?? '—');
+                        ? ($task->offboarding?->exit_date?->format('d/m/Y') ?? '—')
+                        : ($task->onboarding?->workDetail?->start_date?->format('d/m/Y') ?? '—');
                     $typeColors = [
                         'asset_preparation' => '#2563eb',
                         'work_email'        => '#8b5cf6',
@@ -97,7 +97,7 @@
                             {{ ucfirst(str_replace('_',' ',$task->status)) }}
                         </span>
                         @if($task->completed_at)
-                            <div class="text-muted" style="font-size:10px;">{{ $task->completed_at->format('d M Y H:i') }}</div>
+                            <div class="text-muted" style="font-size:10px;">{{ $task->completed_at->format('d/m/Y H:i') }}</div>
                         @endif
                     </td>
                     <td style="min-width:140px;">

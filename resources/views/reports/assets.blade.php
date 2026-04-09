@@ -246,7 +246,7 @@
                         <td>{{ $asset->brand }} {{ $asset->model }}</td>
                         <td>
                             <span class="alert-badge" style="background:#fef3c7;color:#d97706;">
-                                {{ \Carbon\Carbon::parse($asset->warranty_expiry_date)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($asset->warranty_expiry_date)->format('d/m/Y') }}
                             </span>
                         </td>
                     </tr>
@@ -273,7 +273,7 @@
                         <td class="text-end">{{ number_format($asset->rental_cost_per_month, 0) }}</td>
                         <td>
                             <span class="alert-badge" style="background:#fee2e2;color:#dc2626;">
-                                {{ \Carbon\Carbon::parse($asset->rental_end_date)->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($asset->rental_end_date)->format('d/m/Y') }}
                             </span>
                         </td>
                     </tr>

@@ -158,7 +158,7 @@
             </div>
 
             <div class="text-muted mt-3" style="font-size:12px;">
-                Published: {{ $currentForm->finalized_at?->format('d M Y') ?? '—' }}
+                Published: {{ $currentForm->finalized_at?->format('d/m/Y') ?? '—' }}
             </div>
         </div>
     </div>

@@ -40,7 +40,7 @@
                     <td class="fw-semibold">{{ $a->asset_code }}</td>
                     <td>{{ $a->name }}</td>
                     <td>{{ $a->category->name ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($a->purchase_date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($a->purchase_date)->format('d/m/Y') }}</td>
                     <td class="text-end">{{ number_format($a->purchase_cost, 2) }}</td>
                     <td class="text-end">{{ number_format($a->current_value, 2) }}</td>
                     <td class="text-center"><span class="badge bg-{{ $a->status === 'active' ? 'success' : ($a->status === 'disposed' ? 'danger' : 'secondary') }}">{{ ucwords(str_replace('_',' ',$a->status)) }}</span></td>

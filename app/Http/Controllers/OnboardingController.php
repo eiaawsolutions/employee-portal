@@ -802,7 +802,7 @@ class OnboardingController extends Controller
             'company_phone'=>'phone','sim_card'=>'sim_card','access_card_request'=>'access_card',
         ];
         $employeeName = $onboarding->personalDetail?->full_name ?? "Onboarding #{$onboarding->id}";
-        $timestamp    = now()->format('d M Y, h:i A');
+        $timestamp    = now()->format('d/m/Y, h:i A');
 
         // Reload AARF fresh — createAarf() is called before this method now
         $aarf = \App\Models\Aarf::where('onboarding_id', $onboarding->id)->first();

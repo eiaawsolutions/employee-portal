@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="text-muted small">Submitted</label>
-                    <div>{{ $claim->submitted_at?->format('d M Y H:i') ?? '—' }}</div>
+                    <div>{{ $claim->submitted_at?->format('d/m/Y H:i') ?? '—' }}</div>
                 </div>
                 <div class="col-md-2">
                     <label class="text-muted small">Manager</label>
@@ -50,7 +50,7 @@
                             {{ in_array($claim->status, ['manager_approved','hr_approved','hr_rejected','paid']) ? 'Approved' : 'Rejected' }}
                         </span>
                         by {{ $claim->managerApprover->name ?? '—' }}
-                        on {{ $claim->manager_approved_at->format('d M Y') }}
+                        on {{ $claim->manager_approved_at->format('d/m/Y') }}
                     </div>
                     @if($claim->manager_remarks)
                     <small class="text-muted">{{ $claim->manager_remarks }}</small>
@@ -65,7 +65,7 @@
                             {{ in_array($claim->status, ['hr_approved','paid']) ? 'Approved' : 'Rejected' }}
                         </span>
                         by {{ $claim->hrApprover->name ?? '—' }}
-                        on {{ $claim->hr_approved_at->format('d M Y') }}
+                        on {{ $claim->hr_approved_at->format('d/m/Y') }}
                     </div>
                     @if($claim->hr_remarks)
                     <small class="text-muted">{{ $claim->hr_remarks }}</small>

@@ -30,7 +30,7 @@
     $empName       = $offboarding->full_name ?? 'the employee';
     $exitDate      = $offboarding->exit_date;
     $exitDayName   = $exitDate ? $exitDate->format('l') : 'the exit day';
-    $exitFormatted = $exitDate ? $exitDate->format('d M Y') : '(date to be confirmed)';
+    $exitFormatted = $exitDate ? $exitDate->format('d/m/Y') : '(date to be confirmed)';
     $company       = $offboarding->company ?? 'the company';
     $reportingMgr  = $offboarding->employee?->reporting_manager ?? 'Reporting Manager';
     $mgrFirstName  = explode(' ', trim($reportingMgr))[0];

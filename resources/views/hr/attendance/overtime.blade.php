@@ -24,7 +24,7 @@
                     @forelse($requests as $req)
                     <tr>
                         <td>{{ $req->employee->full_name ?? '—' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($req->date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($req->date)->format('d/m/Y') }}</td>
                         <td>{{ \Carbon\Carbon::parse($req->start_time)->format('h:i A') }} — {{ \Carbon\Carbon::parse($req->end_time)->format('h:i A') }}</td>
                         <td class="text-center fw-bold">{{ number_format($req->hours, 1) }}</td>
                         <td class="text-center">{{ $req->multiplier }}x</td>

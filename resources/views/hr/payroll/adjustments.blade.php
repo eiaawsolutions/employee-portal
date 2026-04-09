@@ -25,7 +25,7 @@
                 <tbody>
                     @forelse($adjustments as $adj)
                     <tr>
-                        <td>{{ $adj->effective_date->format('d M Y') }}</td>
+                        <td>{{ $adj->effective_date->format('d/m/Y') }}</td>
                         <td><span class="badge bg-info">{{ ucfirst($adj->type) }}</span></td>
                         <td class="text-end">{{ number_format($adj->previous_salary, 2) }}</td>
                         <td class="text-end">{{ number_format($adj->new_salary, 2) }}</td>

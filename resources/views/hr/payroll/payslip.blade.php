@@ -18,8 +18,8 @@
             </div>
             <div class="col-md-6 text-md-end">
                 <h6 class="text-muted">Pay Period</h6>
-                <p class="mb-1">{{ \Carbon\Carbon::parse($payslip->payRun->period_start)->format('d M Y') }} — {{ \Carbon\Carbon::parse($payslip->payRun->period_end)->format('d M Y') }}</p>
-                <p class="mb-0 text-muted">Pay Date: {{ \Carbon\Carbon::parse($payslip->payRun->pay_date)->format('d M Y') }}</p>
+                <p class="mb-1">{{ \Carbon\Carbon::parse($payslip->payRun->period_start)->format('d/m/Y') }} — {{ \Carbon\Carbon::parse($payslip->payRun->period_end)->format('d/m/Y') }}</p>
+                <p class="mb-0 text-muted">Pay Date: {{ \Carbon\Carbon::parse($payslip->payRun->pay_date)->format('d/m/Y') }}</p>
             </div>
         </div>
 

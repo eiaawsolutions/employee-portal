@@ -27,7 +27,7 @@ class LeaveApprovalNotifyMail extends Mailable
         $type = $this->application->leaveType?->name ?? 'Leave';
         $status = ucfirst($this->action);
         return new Envelope(
-            subject: "Leave {$status}: Your {$type} Request ({$this->application->start_date->format('d M Y')})"
+            subject: "Leave {$status}: Your {$type} Request ({$this->application->start_date->format('d/m/Y')})"
         );
     }
 

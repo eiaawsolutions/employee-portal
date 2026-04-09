@@ -9,7 +9,7 @@
     <div class="card-body">
         <div class="row mb-3">
             <div class="col-md-2"><strong>Entry #</strong><br>{{ $entry->entry_number }}</div>
-            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($entry->date)->format('d M Y') }}</div>
+            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($entry->date)->format('d/m/Y') }}</div>
             <div class="col-md-2"><strong>Status</strong><br>
                 @if($entry->status === 'posted')<span class="badge bg-success">Posted</span>
                 @elseif($entry->status === 'voided')<span class="badge bg-danger">Voided</span>

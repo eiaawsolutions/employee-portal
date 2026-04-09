@@ -491,7 +491,7 @@ class AssetController extends Controller
 
         $oldName    = $oldEmployee?->full_name ?? 'previous assignee';
         $assetLabel = trim("{$asset->brand} {$asset->model}") ?: $asset->asset_tag;
-        $today      = now()->format('d M Y');
+        $today      = now()->format('d/m/Y');
 
         AssetAssignment::where('asset_inventory_id', $asset->id)
             ->where('status', 'assigned')

@@ -89,7 +89,7 @@
                         <td>{{ $ob->company ?? '—' }}</td>
                         <td>{{ $ob->department ?? '—' }}</td>
                         <td>{{ $ob->designation ?? '—' }}</td>
-                        <td>{{ $ob->exit_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $ob->exit_date?->format('d/m/Y') ?? '—' }}</td>
                         <td><span class="badge bg-{{ $sc[$ob->notice_email_status ?? 'pending'] ?? 'secondary' }}">{{ ucfirst($ob->notice_email_status ?? 'pending') }}</span></td>
                         <td><span class="badge bg-{{ $sc[$ob->calendar_reminder_status ?? 'pending'] ?? 'secondary' }}">{{ ucfirst($ob->calendar_reminder_status ?? 'pending') }}</span></td>
                         <td><span class="badge bg-{{ $sc[$ob->week_reminder_email_status ?? 'pending'] ?? 'secondary' }}">{{ ucfirst($ob->week_reminder_email_status ?? 'pending') }}</span></td>

@@ -30,8 +30,8 @@
                 <tr>
                     <td class="fw-semibold">{{ $b->bill_number }}</td>
                     <td>{{ $b->vendor->name ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($b->date)->format('d M Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($b->due_date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($b->date)->format('d/m/Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($b->due_date)->format('d/m/Y') }}</td>
                     <td class="text-end">{{ number_format($b->total, 2) }}</td>
                     <td class="text-end {{ $b->balance_due > 0 ? 'text-danger' : '' }}">{{ number_format($b->balance_due, 2) }}</td>
                     <td class="text-center">

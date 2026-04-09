@@ -95,7 +95,7 @@
                 <div><i class="bi bi-envelope me-1"></i>{{ $employee->company_email }}</div>
             @endif
             @if($employee->start_date)
-                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Since {{ $employee->start_date->format('d M Y') }}</div>
+                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Since {{ $employee->start_date->format('d/m/Y') }}</div>
             @endif
         </div>
     </div>
@@ -121,7 +121,7 @@
                     <tr><td class="text-muted py-2">NRIC / Passport Number</td>
                         <td class="py-2">{{ $employee->official_document_id ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Date of Birth</td>
-                        <td class="py-2">{{ $employee->date_of_birth?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $employee->date_of_birth?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Age</td>
                         <td class="py-2">{{ $employee->date_of_birth ? now()->year - $employee->date_of_birth->year : '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Sex</td>
@@ -217,11 +217,11 @@
                             @endif
                         </td></tr>
                     <tr><td class="text-muted py-2">Start Date</td>
-                        <td class="py-2">{{ $employee->start_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $employee->start_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Exit Date</td>
-                        <td class="py-2">{{ $employee->exit_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $employee->exit_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Last Salary Date</td>
-                        <td class="py-2">{{ $employee->last_salary_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $employee->last_salary_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Company Email</td>
                         <td class="py-2">{{ $employee->company_email ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Google ID</td>
@@ -284,7 +284,7 @@
                             @if(!$asset->processor && !$asset->ram_size && !$asset->storage && !$asset->operating_system)—@endif
                         </td>
                         <td class="text-muted small">{{ $asset->serial_number ?? '—' }}</td>
-                        <td>{{ $asset->asset_assigned_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $asset->asset_assigned_date?->format('d/m/Y') ?? '—' }}</td>
                         <td>
                             @php $cc = ['new'=>'success','good'=>'primary','fair'=>'warning','damaged'=>'danger'][$asset->asset_condition ?? ''] ?? 'secondary'; @endphp
                             <span class="badge bg-{{ $cc }}">{{ ucfirst($asset->asset_condition ?? '—') }}</span>
@@ -418,7 +418,7 @@
                                 <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
                                 <span title="{{ $contract->original_filename }}">{{ $contract->original_filename }}</span>
                                 <div class="text-muted" style="font-size:11px;">
-                                    {{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d M Y') }}
+                                    {{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d/m/Y') }}
                                     @if($contract->notes)<br>{{ $contract->notes }}@endif
                                 </div>
                             </div>
@@ -583,7 +583,7 @@
                 <tbody>
                     @foreach($employee->editLogs as $log)
                     <tr>
-                        <td class="ps-3 text-muted">{{ $log->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="ps-3 text-muted">{{ $log->created_at->format('d/m/Y, h:i A') }}</td>
                         <td>
                             <div class="fw-semibold">{{ $log->edited_by_name ?? '—' }}</div>
                             <div class="text-muted" style="font-size:11px;">{{ ucfirst(str_replace('_',' ',$log->edited_by_role ?? '')) }}</div>
@@ -627,7 +627,7 @@
                         </td>
                         <td>{{ $log->acknowledged_by_name ?? '—' }}</td>
                         <td class="pe-3 text-muted">
-                            {{ $log->acknowledged_at?->format('d M Y, h:i A') ?? '—' }}
+                            {{ $log->acknowledged_at?->format('d/m/Y, h:i A') ?? '—' }}
                             @if($log->acknowledgement_notes)
                             <div style="font-size:11px;color:#64748b;"><i class="bi bi-chat-left-text me-1"></i>{{ $log->acknowledgement_notes }}</div>
                             @endif

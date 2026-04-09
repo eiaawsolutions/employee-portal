@@ -295,11 +295,11 @@
                     <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Reporting Manager</td>
                         <td class="py-2">{{ $emp->reporting_manager ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Start Date</td>
-                        <td class="py-2">{{ $emp->start_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $emp->start_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Exit Date</td>
-                        <td class="py-2">{{ $emp->exit_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $emp->exit_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Last Salary Date</td>
-                        <td class="py-2">{{ $emp->last_salary_date?->format('d M Y') ?? '—' }}</td></tr>
+                        <td class="py-2">{{ $emp->last_salary_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Company Email</td>
                         <td class="py-2">{{ $emp->company_email ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Google ID</td>
@@ -367,7 +367,7 @@
                             <code>{{ $a?->serial_number ?? $a?->asset_tag ?? '—' }}</code>
                         </td>
                         <td class="text-muted small">
-                            {{ $assignment->assigned_date ? \Carbon\Carbon::parse($assignment->assigned_date)->format('d M Y') : '—' }}
+                            {{ $assignment->assigned_date ? \Carbon\Carbon::parse($assignment->assigned_date)->format('d/m/Y') : '—' }}
                         </td>
                         <td>
                             @if($a && $a->asset_photos && count($a->asset_photos))
@@ -481,7 +481,7 @@
                                 <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
                                 <span title="{{ $contract->original_filename }}">{{ $contract->original_filename }}</span>
                                 <div class="text-muted" style="font-size:11px;">
-                                    {{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d M Y') }}
+                                    {{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d/m/Y') }}
                                     @if($contract->notes)<br>{{ $contract->notes }}@endif
                                 </div>
                             </div>
@@ -980,7 +980,7 @@
             @if(!empty($pendingConsentLog) && !empty($pendingConsentLog->sections_changed))
             <div class="alert alert-warning py-2 px-3 mb-3" style="font-size:13px;">
                 <i class="bi bi-info-circle me-2"></i>
-                Your information was updated by HR on <strong>{{ $pendingConsentLog->created_at->format('d M Y') }}</strong>.
+                Your information was updated by HR on <strong>{{ $pendingConsentLog->created_at->format('d/m/Y') }}</strong>.
                 Sections changed:
                 @foreach($pendingConsentLog->sections_changed as $sec)
                     <span class="badge bg-warning text-dark ms-1">{{ $sec }}</span>
@@ -1001,7 +1001,7 @@
                 <i class="bi bi-check-circle-fill text-success" style="font-size:22px;"></i>
                 <div>
                     <div class="fw-semibold text-success small">Consent Acknowledged</div>
-                    <div class="text-muted small">Submitted on {{ $emp->consent_given_at->format('d M Y, h:i A') }}</div>
+                    <div class="text-muted small">Submitted on {{ $emp->consent_given_at->format('d/m/Y, h:i A') }}</div>
                 </div>
             </div>
         @endif
@@ -1030,7 +1030,7 @@
             <tbody>
                 @foreach($editLogs as $log)
                 <tr>
-                        <td class="ps-3 text-muted">{{ $log->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="ps-3 text-muted">{{ $log->created_at->format('d/m/Y, h:i A') }}</td>
                         <td>
                             <div class="fw-semibold">{{ $log->edited_by_name ?? '—' }}</div>
                             <div class="text-muted" style="font-size:11px;">{{ ucfirst(str_replace('_',' ',$log->edited_by_role ?? '')) }}</div>
@@ -1061,7 +1061,7 @@
                         </td>
                         <td>{{ $log->acknowledged_by_name ?? '—' }}</td>
                         <td class="pe-3 text-muted">
-                            {{ $log->acknowledged_at?->format('d M Y, h:i A') ?? '—' }}
+                            {{ $log->acknowledged_at?->format('d/m/Y, h:i A') ?? '—' }}
                             @if($log->acknowledgement_notes)
                             <div style="font-size:11px;color:#64748b;"><i class="bi bi-chat-left-text me-1"></i>{{ $log->acknowledgement_notes }}</div>
                             @endif

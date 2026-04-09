@@ -101,7 +101,7 @@
                         <div>
                             <div class="fw-semibold small">Employee Acknowledgement</div>
                             @if($aarf->acknowledged)
-                                <small class="text-success">Acknowledged {{ $aarf->acknowledged_at?->format('d M Y') }}</small>
+                                <small class="text-success">Acknowledged {{ $aarf->acknowledged_at?->format('d/m/Y') }}</small>
                             @else
                                 <small class="text-muted">Pending acknowledgement</small>
                             @endif
@@ -125,7 +125,7 @@
             <div class="col-md-6">
                 <div class="d-flex gap-2 mb-2"><span class="info-label">Department:</span><span class="info-value">{{ $w?->department ?? '—' }}</span></div>
                 <div class="d-flex gap-2 mb-2"><span class="info-label">Company:</span><span class="info-value">{{ $w?->company ?? '—' }}</span></div>
-                <div class="d-flex gap-2 mb-2"><span class="info-label">Start Date:</span><span class="info-value">{{ $w?->start_date?->format('d M Y') ?? '—' }}</span></div>
+                <div class="d-flex gap-2 mb-2"><span class="info-label">Start Date:</span><span class="info-value">{{ $w?->start_date?->format('d/m/Y') ?? '—' }}</span></div>
             </div>
         </div>
 
@@ -157,7 +157,7 @@
                         <td>{{ trim(($a?->brand ?? '').' '.($a?->model ?? '')) ?: '—' }}</td>
                         <td>{{ ucfirst(str_replace('_',' ', $a?->asset_type ?? '—')) }}</td>
                         <td>{{ $a?->serial_number ?? '—' }}</td>
-                        <td>{{ $assign->assigned_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $assign->assigned_date?->format('d/m/Y') ?? '—' }}</td>
                         <td>
                             @if($a && $a->asset_photos && count($a->asset_photos))
                                 <a href="#assetSpec{{ $a->id }}" style="font-size:12px;">
@@ -271,7 +271,7 @@
             <div class="border rounded p-4 text-center bg-success bg-opacity-10 mb-4">
                 <i class="bi bi-patch-check-fill text-success" style="font-size:48px;"></i>
                 <h5 class="mt-2 text-success fw-bold">Acknowledged</h5>
-                <p class="text-muted mb-0">Acknowledged on {{ $aarf->acknowledged_at?->format('d M Y at h:i A') }}</p>
+                <p class="text-muted mb-0">Acknowledged on {{ $aarf->acknowledged_at?->format('d/m/Y, h:i A') }}</p>
             </div>
             @endif
 

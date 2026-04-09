@@ -23,7 +23,7 @@
             <small style="color:rgba(255,255,255,0.8);">{{ $dashDesig }}{{ $dashCompany ? ' · '.$dashCompany : '' }}</small>
         </div>
         <div class="ms-auto text-end d-none d-md-block">
-            <small style="color:rgba(255,255,255,.7);font-size:12px;">{{ now()->format('l, d M Y') }}</small>
+            <small style="color:rgba(255,255,255,.7);font-size:12px;">{{ now()->format('l, d/m/Y') }}</small>
         </div>
     </div>
 </div>

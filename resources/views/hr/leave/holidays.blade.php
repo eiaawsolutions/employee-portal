@@ -26,7 +26,7 @@
                 <tbody>
                     @forelse($holidays as $h)
                     <tr>
-                        <td>{{ $h->date->format('d M Y (l)') }}</td>
+                        <td>{{ $h->date->format('d/m/Y (l)') }}</td>
                         <td>{{ $h->name }}</td>
                         <td>{{ $h->company ?? 'All' }}</td>
                         <td>{!! $h->is_recurring ? '<i class="bi bi-check-circle text-success"></i>' : '' !!}</td>

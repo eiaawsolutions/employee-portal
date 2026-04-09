@@ -45,8 +45,8 @@
     <div class="card-body d-flex justify-content-between align-items-center">
         <div>
             <strong>{{ $payRun->reference }}</strong> &middot;
-            {{ \Carbon\Carbon::parse($payRun->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($payRun->period_end)->format('d M Y') }} &middot;
-            Pay Date: {{ \Carbon\Carbon::parse($payRun->pay_date)->format('d M Y') }}
+            {{ \Carbon\Carbon::parse($payRun->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($payRun->period_end)->format('d/m/Y') }} &middot;
+            Pay Date: {{ \Carbon\Carbon::parse($payRun->pay_date)->format('d/m/Y') }}
         </div>
         <div class="d-flex gap-2">
             @if($payRun->status === 'draft')

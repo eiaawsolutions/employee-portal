@@ -33,12 +33,12 @@
                 <h6 class="text-muted fw-semibold mb-2">Employee</h6>
                 <p class="mb-1"><strong>{{ $p?->full_name }}</strong></p>
                 <p class="mb-1 text-muted">{{ $w?->designation }} — {{ $w?->company }}</p>
-                <p class="mb-0 text-muted">Start: {{ $w?->start_date?->format('d M Y') }}</p>
+                <p class="mb-0 text-muted">Start: {{ $w?->start_date?->format('d/m/Y') }}</p>
             </div>
             <div class="col-md-6">
                 <h6 class="text-muted fw-semibold mb-2">Acknowledgement Status</h6>
                 @if($aarf->acknowledged)
-                    <p class="text-success mb-0"><i class="bi bi-check-circle-fill me-1"></i>Acknowledged on {{ $aarf->acknowledged_at?->format('d M Y, h:i A') }}</p>
+                    <p class="text-success mb-0"><i class="bi bi-check-circle-fill me-1"></i>Acknowledged on {{ $aarf->acknowledged_at?->format('d/m/Y, h:i A') }}</p>
                 @else
                     <p class="text-warning mb-0"><i class="bi bi-clock me-1"></i>Awaiting acknowledgement from new hire</p>
                     <small class="text-muted">Share the public link with the new hire via email</small>

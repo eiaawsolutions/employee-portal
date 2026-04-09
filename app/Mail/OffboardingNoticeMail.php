@@ -21,7 +21,7 @@ class OffboardingNoticeMail extends Mailable
     public function envelope(): Envelope
     {
         $name = $this->offboarding->full_name ?? 'Employee';
-        $date = $this->offboarding->exit_date?->format('d M Y') ?? '';
+        $date = $this->offboarding->exit_date?->format('d/m/Y') ?? '';
         return new Envelope(
             subject: "Offboarding Notice — {$name} — Exit Date: {$date}",
         );

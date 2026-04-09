@@ -10,8 +10,8 @@
         <div class="row mb-3">
             <div class="col-md-2"><strong>Bill #</strong><br>{{ $bill->bill_number }}</div>
             <div class="col-md-2"><strong>Vendor</strong><br>{{ $bill->vendor->name ?? '-' }}</div>
-            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($bill->date)->format('d M Y') }}</div>
-            <div class="col-md-2"><strong>Due Date</strong><br>{{ \Carbon\Carbon::parse($bill->due_date)->format('d M Y') }}</div>
+            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($bill->date)->format('d/m/Y') }}</div>
+            <div class="col-md-2"><strong>Due Date</strong><br>{{ \Carbon\Carbon::parse($bill->due_date)->format('d/m/Y') }}</div>
             <div class="col-md-2"><strong>Status</strong><br>
                 @if($bill->status === 'paid')<span class="badge bg-success">Paid</span>
                 @elseif($bill->status === 'received')<span class="badge bg-primary">Received</span>

@@ -10,8 +10,8 @@
         <div class="row mb-3">
             <div class="col-md-2"><strong>Invoice #</strong><br>{{ $invoice->invoice_number }}</div>
             <div class="col-md-2"><strong>Customer</strong><br>{{ $invoice->customer->name ?? '-' }}</div>
-            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($invoice->date)->format('d M Y') }}</div>
-            <div class="col-md-2"><strong>Due Date</strong><br>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d M Y') }}</div>
+            <div class="col-md-2"><strong>Date</strong><br>{{ \Carbon\Carbon::parse($invoice->date)->format('d/m/Y') }}</div>
+            <div class="col-md-2"><strong>Due Date</strong><br>{{ \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y') }}</div>
             <div class="col-md-2"><strong>Status</strong><br>
                 @if($invoice->status === 'paid')<span class="badge bg-success">Paid</span>
                 @elseif($invoice->status === 'overdue')<span class="badge bg-danger">Overdue</span>

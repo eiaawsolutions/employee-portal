@@ -156,7 +156,7 @@ class OnboardingInviteController extends Controller
 
         return response()->json([
             'success'    => true,
-            'timestamp'  => now()->format('d M Y, h:i A'),
+            'timestamp'  => now()->format('d/m/Y, h:i A'),
         ]);
     }
 

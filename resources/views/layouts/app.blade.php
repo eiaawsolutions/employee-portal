@@ -947,7 +947,7 @@
             <h4>@yield('page-title', 'Dashboard')</h4>
         </div>
         <span class="text-muted small">
-            <i class="bi bi-calendar3 me-1"></i>{{ now()->format('d M Y') }}
+            <i class="bi bi-calendar3 me-1"></i>{{ now()->format('d/m/Y') }}
         </span>
     </div>
     <div class="content-area">

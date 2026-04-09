@@ -83,7 +83,7 @@ class AssetInventory extends Model
      */
     public function appendRemark(string $entry): void
     {
-        $timestamp   = Carbon::now()->format('d M Y, h:i A');
+        $timestamp   = Carbon::now()->format('d/m/Y, h:i A');
         $newLine     = "[{$timestamp}] {$entry}";
         $existing    = trim($this->remarks ?? '');
         $this->remarks = $existing ? $existing . "\n" . $newLine : $newLine;

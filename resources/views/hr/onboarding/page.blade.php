@@ -99,7 +99,7 @@
                         <td>{{ $ob->workDetail?->designation ?? '—' }}</td>
                         <td>{{ $ob->workDetail?->company ?? '—' }}</td>
                         <td>{{ $ob->workDetail?->department ?? '—' }}</td>
-                        <td>{{ $ob->workDetail?->start_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $ob->workDetail?->start_date?->format('d/m/Y') ?? '—' }}</td>
                         <td>
                             <span class="badge bg-{{ $ob->status==='active'?'success':($ob->status==='pending'?'warning text-dark':'secondary') }}">
                                 {{ ucfirst($ob->status) }}

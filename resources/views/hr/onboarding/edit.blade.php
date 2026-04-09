@@ -65,7 +65,7 @@ $obEditStatusBg  = match($obEditStatus) {
                 <div><i class="bi bi-envelope me-1"></i>{{ $p->personal_email }}</div>
             @endif
             @if($w?->start_date)
-                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Start: {{ \Carbon\Carbon::parse($w->start_date)->format('d M Y') }}</div>
+                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Start: {{ \Carbon\Carbon::parse($w->start_date)->format('d/m/Y') }}</div>
             @endif
         </div>
     </div>
@@ -547,7 +547,7 @@ $obEditStatusBg  = match($obEditStatus) {
                         })();
                         </script>
                     @else
-                        @php $lsdDisplay = $w?->last_salary_date?->format('d M Y'); @endphp
+                        @php $lsdDisplay = $w?->last_salary_date?->format('d/m/Y'); @endphp
                         <input type="text" class="form-control bg-light" readonly value="{{ $lsdDisplay ?: '—' }}">
                     @endif
                 </div>
@@ -1031,7 +1031,7 @@ $obEditStatusBg  = match($obEditStatus) {
                     <div class="fw-semibold text-success">Consent Given</div>
                     <div class="text-muted small">
                         Acknowledged by <strong>{{ $p->full_name }}</strong>
-                        on {{ $p->consent_given_at->format('d M Y, h:i A') }}
+                        on {{ $p->consent_given_at->format('d/m/Y, h:i A') }}
                     </div>
                 </div>
             </div>
@@ -1082,7 +1082,7 @@ $obEditStatusBg  = match($obEditStatus) {
             <tbody>
                 @foreach($editLogs as $log)
                 <tr>
-                    <td class="ps-3 text-muted">{{ $log->created_at->format('d M Y') }}<br><small>{{ $log->created_at->format('h:i A') }}</small></td>
+                    <td class="ps-3 text-muted">{{ $log->created_at->format('d/m/Y') }}<br><small>{{ $log->created_at->format('h:i A') }}</small></td>
                     <td>
                         <span class="fw-semibold">{{ $log->edited_by_name }}</span><br>
                         <small class="text-muted">{{ str_replace('_',' ',ucwords($log->edited_by_role ?? '')) }}</small>

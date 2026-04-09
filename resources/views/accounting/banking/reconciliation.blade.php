@@ -22,7 +22,7 @@
                 @forelse($unreconciled ?? [] as $tx)
                     <tr>
                         <td><input type="checkbox" name="reconciled_ids[]" value="{{ $tx->id }}" class="recon-check"></td>
-                        <td>{{ \Carbon\Carbon::parse($tx->date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($tx->date)->format('d/m/Y') }}</td>
                         <td>{{ $tx->description }}</td>
                         <td>{{ $tx->reference ?? '-' }}</td>
                         <td class="text-end">{{ $tx->debit > 0 ? number_format($tx->debit, 2) : '' }}</td>

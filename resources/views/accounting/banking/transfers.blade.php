@@ -12,7 +12,7 @@
             <tbody>
             @forelse($transfers ?? [] as $t)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($t->date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($t->date)->format('d/m/Y') }}</td>
                     <td>{{ $t->fromAccount->account_name ?? '-' }}</td>
                     <td>{{ $t->toAccount->account_name ?? '-' }}</td>
                     <td class="text-end">{{ number_format($t->amount, 2) }}</td>

@@ -63,11 +63,11 @@
       </div>
       <div class="detail-row">
         <span class="detail-label">From</span>
-        <span class="detail-value">{{ $application->start_date->format('d M Y (l)') }}</span>
+        <span class="detail-value">{{ $application->start_date->format('d/m/Y (l)') }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">To</span>
-        <span class="detail-value">{{ $application->end_date->format('d M Y (l)') }}</span>
+        <span class="detail-value">{{ $application->end_date->format('d/m/Y (l)') }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Duration</span>

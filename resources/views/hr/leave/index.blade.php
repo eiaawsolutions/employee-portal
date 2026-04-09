@@ -52,8 +52,8 @@
                     <tr>
                         <td>{{ $app->employee->full_name ?? '—' }}</td>
                         <td><span class="badge bg-info">{{ $app->leaveType->name ?? '—' }}</span></td>
-                        <td>{{ $app->start_date->format('d M Y') }}</td>
-                        <td>{{ $app->end_date->format('d M Y') }}</td>
+                        <td>{{ $app->start_date->format('d/m/Y') }}</td>
+                        <td>{{ $app->end_date->format('d/m/Y') }}</td>
                         <td>{{ $app->total_days }}{{ $app->is_half_day ? ' (½)' : '' }}</td>
                         <td>
                             <span class="badge bg-{{ $app->statusBadge() }}">{{ ucfirst($app->status) }}</span>
@@ -61,7 +61,7 @@
                             <br><small class="text-muted">Mgr: {{ ucfirst($app->manager_status) }}</small>
                             @endif
                         </td>
-                        <td>{{ $app->created_at->format('d M Y') }}</td>
+                        <td>{{ $app->created_at->format('d/m/Y') }}</td>
                         <td>
                             @if($app->status === 'pending')
                             <form action="{{ route('hr.leave.approve', $app) }}" method="POST" class="d-inline">

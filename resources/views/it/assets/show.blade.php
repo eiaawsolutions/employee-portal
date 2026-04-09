@@ -56,10 +56,10 @@
                     </td></tr>
                     @if(($asset->ownership_type ?? 'company') === 'company')
                     <tr><td class="text-muted">Company Name</td><td>{{ $asset->company_name ?? '—' }}</td></tr>
-                    <tr><td class="text-muted">Purchase Date</td><td>{{ $asset->purchase_date?->format('d M Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted">Purchase Date</td><td>{{ $asset->purchase_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Vendor / Supplier</td><td>{{ $asset->purchase_vendor ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Purchase Cost</td><td>{{ $asset->purchase_cost ? 'RM '.number_format($asset->purchase_cost,2) : '—' }}</td></tr>
-                    <tr><td class="text-muted">Warranty Expiry</td><td>{{ $asset->warranty_expiry_date?->format('d M Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted">Warranty Expiry</td><td>{{ $asset->warranty_expiry_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Invoice Doc</td><td>
                         @if($asset->invoice_document)
                             <a href="{{ secure_file_url($asset->invoice_document) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-pdf me-1"></i>View</a>
@@ -70,7 +70,7 @@
                     <tr><td class="text-muted">Vendor Contact</td><td>{{ $asset->rental_vendor_contact ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Monthly Cost</td><td>{{ $asset->rental_cost_per_month ? 'RM '.number_format($asset->rental_cost_per_month,2) : '—' }}</td></tr>
                     <tr><td class="text-muted">Rental Period</td><td>
-                        {{ $asset->rental_start_date?->format('d M Y') ?? '—' }} — {{ $asset->rental_end_date?->format('d M Y') ?? '—' }}
+                        {{ $asset->rental_start_date?->format('d/m/Y') ?? '—' }} — {{ $asset->rental_end_date?->format('d/m/Y') ?? '—' }}
                     </td></tr>
                     <tr><td class="text-muted">Contract Ref</td><td>{{ $asset->rental_contract_reference ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Supplied To</td><td>{{ $asset->company_supplied_to ?? '—' }}</td></tr>
@@ -90,8 +90,8 @@
             <div class="card-body">
                 <table class="table table-sm table-borderless mb-0">
                     <tr><td class="text-muted" style="width:45%">Assigned To</td><td><strong>{{ $asset->resolvedAssigneeName() }}</strong></td></tr>
-                    <tr><td class="text-muted">Assigned Date</td><td>{{ $asset->asset_assigned_date?->format('d M Y') ?? '—' }}</td></tr>
-                    <tr><td class="text-muted">Expected Return</td><td>{{ $asset->expected_return_date?->format('d M Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted">Assigned Date</td><td>{{ $asset->asset_assigned_date?->format('d/m/Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted">Expected Return</td><td>{{ $asset->expected_return_date?->format('d/m/Y') ?? '—' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -123,7 +123,7 @@
                     </div>
                     <div class="col-md-3">
                         <span class="text-muted small d-block mb-1">Last Maintenance</span>
-                        <strong>{{ $asset->last_maintenance_date?->format('d M Y') ?? '—' }}</strong>
+                        <strong>{{ $asset->last_maintenance_date?->format('d/m/Y') ?? '—' }}</strong>
                     </div>
                     @endif
                 </div>

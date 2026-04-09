@@ -94,7 +94,7 @@ class CalendarInvite extends Mailable
     {
         $w    = $this->onboarding->workDetail;
         $name = $this->onboarding->personalDetail?->full_name ?? 'New Hire';
-        $date = $w?->start_date ? $w->start_date->format('d M Y') : '';
+        $date = $w?->start_date ? $w->start_date->format('d/m/Y') : '';
         return new Envelope(subject: "Onboarding Calendar Invite — {$name} starts {$date}");
     }
 

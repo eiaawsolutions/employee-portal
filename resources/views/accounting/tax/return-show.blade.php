@@ -9,8 +9,8 @@
     <div class="card-body">
         <div class="row mb-3">
             <div class="col-md-2"><strong>Type</strong><br>{{ strtoupper($taxReturn->return_type) }}</div>
-            <div class="col-md-3"><strong>Period</strong><br>{{ \Carbon\Carbon::parse($taxReturn->period_start)->format('d M Y') }} — {{ \Carbon\Carbon::parse($taxReturn->period_end)->format('d M Y') }}</div>
-            <div class="col-md-2"><strong>Due</strong><br>{{ \Carbon\Carbon::parse($taxReturn->filing_due_date)->format('d M Y') }}</div>
+            <div class="col-md-3"><strong>Period</strong><br>{{ \Carbon\Carbon::parse($taxReturn->period_start)->format('d/m/Y') }} — {{ \Carbon\Carbon::parse($taxReturn->period_end)->format('d/m/Y') }}</div>
+            <div class="col-md-2"><strong>Due</strong><br>{{ \Carbon\Carbon::parse($taxReturn->filing_due_date)->format('d/m/Y') }}</div>
             <div class="col-md-2"><strong>Status</strong><br><span class="badge bg-{{ $taxReturn->status === 'filed' ? 'success' : 'warning' }}">{{ ucfirst($taxReturn->status) }}</span></div>
             <div class="col-md-3"><strong>Net Payable</strong><br><span class="fs-5 fw-bold {{ $taxReturn->net_tax_payable >= 0 ? 'text-danger' : 'text-success' }}">RM {{ number_format($taxReturn->net_tax_payable, 2) }}</span></div>
         </div>

@@ -13,7 +13,7 @@
                 <tr>
                     <td class="fw-semibold">{{ $p->payment_number }}</td>
                     <td>{{ $p->vendor->name ?? '-' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($p->date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($p->date)->format('d/m/Y') }}</td>
                     <td>{{ ucwords(str_replace('_',' ',$p->payment_method)) }}</td>
                     <td class="text-end">{{ number_format($p->amount, 2) }}</td>
                     <td>{{ $p->reference ?? '-' }}</td>

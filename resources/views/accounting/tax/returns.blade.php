@@ -21,7 +21,7 @@
                 <tr>
                     <td class="fw-semibold">{{ strtoupper($r->return_type) }}</td>
                     <td>{{ \Carbon\Carbon::parse($r->period_start)->format('M Y') }} - {{ \Carbon\Carbon::parse($r->period_end)->format('M Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($r->filing_due_date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($r->filing_due_date)->format('d/m/Y') }}</td>
                     <td class="text-end">{{ number_format($r->total_output_tax, 2) }}</td>
                     <td class="text-end">{{ number_format($r->total_input_tax, 2) }}</td>
                     <td class="text-end fw-semibold {{ $r->net_tax_payable >= 0 ? 'text-danger' : 'text-success' }}">{{ number_format($r->net_tax_payable, 2) }}</td>

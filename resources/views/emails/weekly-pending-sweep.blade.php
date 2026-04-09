@@ -22,7 +22,7 @@
             {{ $h['icon'] }} {{ $h['title'] }}
         </h1>
         <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px;">
-            Weekly Reminder &mdash; {{ now()->format('d M Y') }}
+            Weekly Reminder &mdash; {{ now()->format('d/m/Y') }}
         </p>
     </div>
 
@@ -55,7 +55,7 @@
                             Profile update
                         @endif
                     </td>
-                    <td style="padding:10px 12px;color:#1e293b;">{{ $log->created_at->format('d M Y') }}</td>
+                    <td style="padding:10px 12px;color:#1e293b;">{{ $log->created_at->format('d/m/Y') }}</td>
                     <td style="padding:10px 12px;color:#dc2626;font-weight:600;">{{ (int) $log->created_at->diffInDays(now()) }} day(s)</td>
                 </tr>
                 @endforeach
@@ -162,7 +162,7 @@
                         <strong>{{ $app->employee?->preferred_name ?? $app->employee?->full_name ?? '—' }}</strong>
                     </td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $app->leaveType?->name ?? 'Leave' }}</td>
-                    <td style="padding:10px 12px;color:#1e293b;">{{ $app->start_date->format('d M') }}–{{ $app->end_date->format('d M Y') }}</td>
+                    <td style="padding:10px 12px;color:#1e293b;">{{ $app->start_date->format('d M') }}–{{ $app->end_date->format('d/m/Y') }}</td>
                     <td style="padding:10px 12px;text-align:center;color:#1e293b;">
                         {{ $app->total_days }}@if($app->is_half_day) <small>(1/2)</small>@endif
                     </td>
@@ -207,7 +207,7 @@
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $claim->claim_number }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $claim->employee?->preferred_name ?? $claim->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;text-align:right;color:#1e293b;">{{ number_format($claim->total_with_gst ?? $claim->total_amount, 2) }}</td>
-                    <td style="padding:10px 12px;color:#64748b;">{{ $claim->submitted_at?->format('d M Y') ?? '—' }}</td>
+                    <td style="padding:10px 12px;color:#64748b;">{{ $claim->submitted_at?->format('d/m/Y') ?? '—' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -239,7 +239,7 @@
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $claim->claim_number }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $claim->employee?->preferred_name ?? $claim->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;text-align:right;color:#1e293b;">{{ number_format($claim->total_with_gst ?? $claim->total_amount, 2) }}</td>
-                    <td style="padding:10px 12px;color:#64748b;">{{ $claim->manager_approved_at?->format('d M Y') ?? '—' }}</td>
+                    <td style="padding:10px 12px;color:#64748b;">{{ $claim->manager_approved_at?->format('d/m/Y') ?? '—' }}</td>
                 </tr>
                 @endforeach
             </tbody>

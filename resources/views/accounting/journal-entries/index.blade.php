@@ -33,7 +33,7 @@
             @forelse($entries ?? [] as $je)
                 <tr>
                     <td class="fw-semibold">{{ $je->entry_number }}</td>
-                    <td>{{ \Carbon\Carbon::parse($je->date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($je->date)->format('d/m/Y') }}</td>
                     <td>{{ \Illuminate\Support\Str::limit($je->description, 50) }}</td>
                     <td class="text-end">{{ number_format($je->total_debit, 2) }}</td>
                     <td class="text-end">{{ number_format($je->total_credit, 2) }}</td>

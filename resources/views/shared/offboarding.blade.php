@@ -96,7 +96,7 @@
                         <td>{{ $ob->company ?? '—' }}</td>
                         <td>{{ $ob->department ?? '—' }}</td>
                         <td>{{ $ob->designation ?? '—' }}</td>
-                        <td>{{ $ob->exit_date?->format('d M Y') ?? '—' }}</td>
+                        <td>{{ $ob->exit_date?->format('d/m/Y') ?? '—' }}</td>
 
                         {{-- Calendar Reminder Status --}}
                         <td>

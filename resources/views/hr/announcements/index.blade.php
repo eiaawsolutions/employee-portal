@@ -44,7 +44,7 @@
                         </div>
                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
                             <span class="text-muted" style="font-size:12px;">
-                                {{ $a->created_at->format('d M Y, h:i A') }}
+                                {{ $a->created_at->format('d/m/Y, h:i A') }}
                             </span>
                             <a href="{{ route('announcements.edit', $a) }}"
                                class="btn btn-outline-warning btn-sm" style="padding:2px 8px;" title="Edit">

@@ -60,7 +60,7 @@
                     @endif
 
                     <div class="text-muted mt-1" style="font-size:11px;">
-                        {{ $ann->created_at->format('d M Y') }}
+                        {{ $ann->created_at->format('d/m/Y') }}
                         &bull; {{ $ann->creator?->employee?->full_name ?? $ann->creator?->name ?? 'HR' }}
                     </div>
 

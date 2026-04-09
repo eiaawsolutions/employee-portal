@@ -79,7 +79,7 @@
             <tbody>
             @foreach($events as $event)
             <tr>
-                <td style="white-space:nowrap;">{{ $event->created_at->setTimezone('Asia/Kuala_Lumpur')->format('d M Y H:i') }}</td>
+                <td style="white-space:nowrap;">{{ $event->created_at->setTimezone('Asia/Kuala_Lumpur')->format('d/m/Y H:i') }}</td>
                 <td>
                     @if($event->event_type === 'lockout')
                         <span class="badge badge-red">Lockout</span>
@@ -104,7 +104,7 @@
     </div>
     <div class="footer">
         This is an automated security report from the Employee Portal system. Do not reply to this email.
-        &bull; Generated at {{ now()->setTimezone('Asia/Kuala_Lumpur')->format('d M Y H:i') }} MYT
+        &bull; Generated at {{ now()->setTimezone('Asia/Kuala_Lumpur')->format('d/m/Y H:i') }} MYT
     </div>
 </div>
 </body>

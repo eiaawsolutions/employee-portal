@@ -51,7 +51,7 @@
                     <tbody>
                     @forelse($scans ?? [] as $scan)
                         <tr>
-                            <td>{{ $scan->created_at->format('d M Y H:i') }}</td>
+                            <td>{{ $scan->created_at->format('d/m/Y H:i') }}</td>
                             <td>{{ $scan->extracted_data['vendor_name'] ?? 'Unknown' }}</td>
                             <td>RM {{ number_format($scan->extracted_data['total'] ?? 0, 2) }}</td>
                             <td>

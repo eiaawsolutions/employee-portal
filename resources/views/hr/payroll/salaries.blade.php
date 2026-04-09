@@ -38,7 +38,7 @@
                         $citizenBadge = match($epfCat) { '3' => 'warning', '2' => 'info', default => 'primary' };
                         $residentLabel = ($salary->employee->is_resident ?? true) ? 'Resident' : 'Non-Resident';
                         $residentBadge = ($salary->employee->is_resident ?? true) ? 'success' : 'danger';
-                        $lastSalaryDate = $salary->employee->last_salary_date ? \Carbon\Carbon::parse($salary->employee->last_salary_date)->format('d M Y') : '—';
+                        $lastSalaryDate = $salary->employee->last_salary_date ? \Carbon\Carbon::parse($salary->employee->last_salary_date)->format('d/m/Y') : '—';
                     @endphp
                     <tr>
                         <td>{{ $salary->employee->full_name ?? '—' }}</td>
@@ -48,7 +48,7 @@
                         <td><span class="badge bg-{{ $citizenBadge }}">{{ $citizenLabel }}</span></td>
                         <td><span class="badge bg-{{ $residentBadge }}">{{ $residentLabel }}</span></td>
                         <td>{{ $lastSalaryDate }}</td>
-                        <td>{{ \Carbon\Carbon::parse($salary->effective_from)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($salary->effective_from)->format('d/m/Y') }}</td>
                         <td class="text-center"><span class="badge bg-{{ $salary->is_active ? 'success' : 'secondary' }}">{{ $salary->is_active ? 'Active' : 'Inactive' }}</span></td>
                         @if($canManage)
                         <td class="text-center text-nowrap">

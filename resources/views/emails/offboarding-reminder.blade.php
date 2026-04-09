@@ -66,7 +66,7 @@
                 <tr><td>Designation</td><td>{{ $offboarding->designation ?? '—' }}</td></tr>
                 <tr><td>Department</td><td>{{ $offboarding->department ?? '—' }}</td></tr>
                 <tr><td>Company</td><td>{{ $company }}</td></tr>
-                <tr><td>Exit Date</td><td><strong>{{ $offboarding->exit_date?->format('d M Y') ?? '—' }}</strong></td></tr>
+                <tr><td>Exit Date</td><td><strong>{{ $offboarding->exit_date?->format('d/m/Y') ?? '—' }}</strong></td></tr>
             </table>
         </div>
 

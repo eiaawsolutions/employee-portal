@@ -40,7 +40,7 @@ class BackfillOffboarding extends Command
 
             try {
                 Offboarding::createFromEmployee($emp);
-                $this->info("  Created offboarding record for: {$emp->full_name} (exit: {$emp->exit_date->format('d M Y')})");
+                $this->info("  Created offboarding record for: {$emp->full_name} (exit: {$emp->exit_date->format('d/m/Y')})");
                 $created++;
             } catch (\Throwable $e) {
                 $this->error("  FAILED for {$emp->full_name}: " . $e->getMessage());

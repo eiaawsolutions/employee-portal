@@ -341,7 +341,7 @@
                             @endif
                         </td>
                         <td><span class="badge bg-dark">{{ $alert->authority }}</span></td>
-                        <td>{{ $alert->effective_date->format('d M Y') }}</td>
+                        <td>{{ $alert->effective_date->format('d/m/Y') }}</td>
                         <td class="text-center">{!! $alert->severityBadge() !!}</td>
                         <td class="text-center">{!! $alert->statusBadge() !!}</td>
                         <td>
@@ -370,7 +370,7 @@
                             @else
                             <small class="text-muted">
                                 {{ $alert->acknowledgedByUser?->name ?? '—' }}<br>
-                                {{ $alert->acknowledged_at?->format('d M Y') }}
+                                {{ $alert->acknowledged_at?->format('d/m/Y') }}
                             </small>
                             @endif
                         </td>

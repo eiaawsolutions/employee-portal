@@ -39,7 +39,7 @@
                         <small class="text-muted">
                             {{ $claim->claim_number }} &mdash;
                             {{ \Carbon\Carbon::create($claim->year, $claim->month)->format('F Y') }}
-                            &mdash; Submitted {{ $claim->submitted_at?->format('d M Y') }}
+                            &mdash; Submitted {{ $claim->submitted_at?->format('d/m/Y') }}
                         </small>
                     </div>
                     <div class="text-end">
@@ -150,7 +150,7 @@
                             <td>{{ \Carbon\Carbon::create($hc->year, $hc->month)->format('M Y') }}</td>
                             <td class="text-end">RM {{ number_format($hc->total_with_gst, 2) }}</td>
                             <td><span class="badge bg-{{ $hc->statusBadge()['class'] }}">{{ $hc->statusBadge()['label'] }}</span></td>
-                            <td>{{ $hc->updated_at->format('d M Y') }}</td>
+                            <td>{{ $hc->updated_at->format('d/m/Y') }}</td>
                         </tr>
                         @endforeach
                     </tbody>

@@ -47,14 +47,14 @@
                         {{ $app->leaveType?->name ?? 'Leave' }}
                     </td>
                     <td style="padding:10px 12px;color:#1e293b;">
-                        {{ $app->start_date->format('d M') }}–{{ $app->end_date->format('d M Y') }}
+                        {{ $app->start_date->format('d M') }}–{{ $app->end_date->format('d/m/Y') }}
                     </td>
                     <td style="padding:10px 12px;text-align:center;color:#1e293b;">
                         {{ $app->total_days }}
                         @if($app->is_half_day) <small>(½)</small> @endif
                     </td>
                     <td style="padding:10px 12px;color:#64748b;font-size:12px;">
-                        {{ $app->created_at->format('d M Y') }}
+                        {{ $app->created_at->format('d/m/Y') }}
                         @php $daysWaiting = (int) $app->created_at->diffInDays(now()); @endphp
                         @if($daysWaiting >= 3)
                             <br><span style="color:#dc2626;font-weight:600;">{{ $daysWaiting }} days ago</span>

@@ -78,7 +78,7 @@ $sections = $editLog->sections_changed ?? [];
       <p style="font-size:13px;color:#475569;margin:0 0 14px;">
         Click the button below. You will be asked to log in with your work credentials, then brought directly to the acknowledgement page.
         @if($editLog->consent_token_expires_at)
-        This link expires on <strong>{{ $editLog->consent_token_expires_at->format('d M Y, h:i A') }}</strong>.
+        This link expires on <strong>{{ $editLog->consent_token_expires_at->format('d/m/Y, h:i A') }}</strong>.
         @endif
       </p>
       <a href="{{ $consentUrl }}" class="btn">Log In &amp; Acknowledge →</a>

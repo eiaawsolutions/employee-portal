@@ -136,7 +136,7 @@
                                 <td>{{ $claim->item_count }}</td>
                                 <td class="text-end fw-bold">RM {{ number_format($claim->total_with_gst, 2) }}</td>
                                 <td><span class="badge bg-{{ $claim->statusBadge()['class'] }}">{{ $claim->statusBadge()['label'] }}</span></td>
-                                <td>{{ $claim->submitted_at?->format('d M Y') ?? '—' }}</td>
+                                <td>{{ $claim->submitted_at?->format('d/m/Y') ?? '—' }}</td>
                                 <td>
                                     <a href="{{ route('hr.claims.show', $claim) }}" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
                                 </td>

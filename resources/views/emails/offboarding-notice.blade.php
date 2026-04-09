@@ -28,7 +28,7 @@
 @endphp
 @php
     $exitFormatted = $offboarding->exit_date
-        ? $offboarding->exit_date->format('l, d M Y')
+        ? $offboarding->exit_date->format('l, d/m/Y')
         : '—';
     $leavingName   = $offboarding->full_name ?? 'the employee';
     $company       = $offboarding->company ?? 'the company';

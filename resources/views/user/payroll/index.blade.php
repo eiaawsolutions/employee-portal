@@ -34,7 +34,7 @@
                     <tr>
                         <td><code>{{ $slip->payslip_number }}</code></td>
                         <td>{{ \Carbon\Carbon::create($slip->payRun->year, $slip->payRun->month)->format('F Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($slip->payRun->pay_date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($slip->payRun->pay_date)->format('d/m/Y') }}</td>
                         <td class="text-end">{{ number_format($slip->basic_salary, 2) }}</td>
                         <td class="text-end text-success">{{ number_format($slip->total_earnings, 2) }}</td>
                         <td class="text-end text-danger">{{ number_format($slip->total_deductions, 2) }}</td>

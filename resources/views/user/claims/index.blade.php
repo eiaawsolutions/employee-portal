@@ -176,11 +176,11 @@
             </div>
             @elseif($currentClaim->status === 'submitted')
             <div class="text-center mt-2">
-                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting manager approval{{ $currentClaim->submitted_at ? ' — submitted ' . $currentClaim->submitted_at->format('d M Y') : '' }}</small>
+                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting manager approval{{ $currentClaim->submitted_at ? ' — submitted ' . $currentClaim->submitted_at->format('d/m/Y') : '' }}</small>
             </div>
             @elseif($currentClaim->status === 'manager_approved')
             <div class="text-center mt-2">
-                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting HR approval{{ $currentClaim->manager_approved_at ? ' — manager approved ' . $currentClaim->manager_approved_at->format('d M Y') : '' }}</small>
+                <small class="text-muted"><i class="bi bi-hourglass-split me-1"></i>Awaiting HR approval{{ $currentClaim->manager_approved_at ? ' — manager approved ' . $currentClaim->manager_approved_at->format('d/m/Y') : '' }}</small>
             </div>
             @elseif($currentClaim->status === 'hr_approved')
             <div class="text-center mt-2">
@@ -299,7 +299,7 @@
                         @foreach($currentClaim->items as $i => $item)
                         <tr>
                             <td>{{ $i + 1 }}</td>
-                            <td>{{ $item->expense_date->format('d M Y') }}</td>
+                            <td>{{ $item->expense_date->format('d/m/Y') }}</td>
                             <td>{{ $item->description }}</td>
                             <td>{{ $item->project_client ?? '-' }}</td>
                             <td><span class="badge bg-secondary">{{ $item->category->name ?? '-' }}</span></td>
@@ -346,7 +346,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-1">
                         <div>
                             <strong>{{ $i + 1 }}. {{ $item->description }}</strong>
-                            <div class="small text-muted">{{ $item->expense_date->format('d M Y') }}@if($item->project_client) &middot; {{ $item->project_client }}@endif</div>
+                            <div class="small text-muted">{{ $item->expense_date->format('d/m/Y') }}@if($item->project_client) &middot; {{ $item->project_client }}@endif</div>
                         </div>
                         <div class="d-flex align-items-center gap-1">
                             @if($item->receipt_path)
@@ -412,7 +412,7 @@
                             <td>{{ $hc->item_count }}</td>
                             <td class="text-end fw-semibold">RM {{ number_format($hc->total_with_gst, 2) }}</td>
                             <td><span class="badge bg-{{ $hc->statusBadge()['class'] }}">{{ $hc->statusBadge()['label'] }}</span></td>
-                            <td>{{ $hc->submitted_at?->format('d M Y') ?? '-' }}</td>
+                            <td>{{ $hc->submitted_at?->format('d/m/Y') ?? '-' }}</td>
                         </tr>
                         @endforeach
                     </tbody>

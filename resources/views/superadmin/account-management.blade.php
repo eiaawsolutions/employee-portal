@@ -90,7 +90,7 @@
                     </td>
                     <td>
                         @if($user->deactivated_at)
-                            <span style="font-size:13px;">{{ $user->deactivated_at->format('d M Y') }}</span>
+                            <span style="font-size:13px;">{{ $user->deactivated_at->format('d/m/Y') }}</span>
                             <div class="text-muted" style="font-size:11px;">{{ $user->deactivated_at->format('H:i') }}</div>
                         @else
                             <span class="text-muted">—</span>

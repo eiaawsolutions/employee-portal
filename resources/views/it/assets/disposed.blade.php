@@ -54,7 +54,7 @@
                         <td class="text-muted">{{ $d->serial_number ?? '—' }}</td>
                         <td><span class="badge bg-danger">Not Good</span></td>
                         <td>{{ $d->disposed_by ?? '—' }}</td>
-                        <td>{{ $d->disposed_at?->format('d M Y, h:i A') ?? '—' }}</td>
+                        <td>{{ $d->disposed_at?->format('d/m/Y, h:i A') ?? '—' }}</td>
                         <td class="text-muted" style="max-width:220px;">
                             @if($d->remarks)
                                 <span title="{{ $d->remarks }}" style="display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:200px;">

@@ -67,7 +67,7 @@
                 <tr><td>Employee</td><td><strong>{{ $offboarding->full_name }}</strong></td></tr>
                 <tr><td>Designation</td><td>{{ $offboarding->designation ?? '—' }}</td></tr>
                 <tr><td>Department</td><td>{{ $offboarding->department ?? '—' }}</td></tr>
-                <tr><td>Last Working Day</td><td><strong>{{ $offboarding->exit_date?->format('d M Y') ?? '—' }}</strong></td></tr>
+                <tr><td>Last Working Day</td><td><strong>{{ $offboarding->exit_date?->format('d/m/Y') ?? '—' }}</strong></td></tr>
             </table>
         </div>
 

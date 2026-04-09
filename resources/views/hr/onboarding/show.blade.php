@@ -84,7 +84,7 @@
                 <div><i class="bi bi-envelope me-1"></i>{{ $p->personal_email }}</div>
             @endif
             @if($w?->start_date)
-                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Start: {{ \Carbon\Carbon::parse($w->start_date)->format('d M Y') }}</div>
+                <div class="mt-1"><i class="bi bi-calendar me-1"></i>Start: {{ \Carbon\Carbon::parse($w->start_date)->format('d/m/Y') }}</div>
             @endif
         </div>
     </div>
@@ -102,7 +102,7 @@
                 <table class="table table-sm table-borderless mb-0" style="font-size:13.5px;">
                     <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Full Name</td><td class="fw-semibold py-2">{{ $p->full_name }}</td></tr>
                     <tr><td class="text-muted py-2">NRIC / Passport No.</td><td class="py-2">{{ $p->official_document_id }}</td></tr>
-                    <tr><td class="text-muted py-2">Date of Birth</td><td class="py-2">{{ $p->date_of_birth?->format('d M Y') }}</td></tr>
+                    <tr><td class="text-muted py-2">Date of Birth</td><td class="py-2">{{ $p->date_of_birth?->format('d/m/Y') }}</td></tr>
                     <tr><td class="text-muted py-2">Age</td><td class="py-2">{{ $p->date_of_birth ? now()->year - $p->date_of_birth->year : '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Sex</td><td class="py-2">{{ ucfirst($p->sex ?? '') }}</td></tr>
                     <tr><td class="text-muted py-2">Marital Status</td><td class="py-2">{{ ucfirst($p->marital_status ?? '') }}</td></tr>
@@ -127,7 +127,7 @@
                     </td></tr>
                     @if($p->consent_given_at)
                     <tr><td class="text-muted py-2">Consent Given</td><td class="py-2">
-                        <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>{{ $p->consent_given_at->format('d M Y, h:i A') }}</span>
+                        <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>{{ $p->consent_given_at->format('d/m/Y, h:i A') }}</span>
                     </td></tr>
                     @endif
                     @php $allNric = $p->nric_file_paths ?? ($p->nric_file_path ? [$p->nric_file_path] : []); @endphp
@@ -334,9 +334,9 @@
                 <table class="table table-sm table-borderless mb-0" style="font-size:13.5px;">
                     <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Office Location</td><td class="py-2">{{ $w->office_location }}</td></tr>
                     <tr><td class="text-muted py-2">Reporting Manager</td><td class="py-2">{{ $w->reporting_manager }}</td></tr>
-                    <tr><td class="text-muted py-2">Start Date</td><td class="py-2">{{ $w->start_date?->format('d M Y') }}</td></tr>
-                    <tr><td class="text-muted py-2">Exit Date</td><td class="py-2">{{ $w->exit_date?->format('d M Y') ?? '—' }}</td></tr>
-                    <tr><td class="text-muted py-2">Last Salary Date</td><td class="py-2">{{ $w->last_salary_date?->format('d M Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Start Date</td><td class="py-2">{{ $w->start_date?->format('d/m/Y') }}</td></tr>
+                    <tr><td class="text-muted py-2">Exit Date</td><td class="py-2">{{ $w->exit_date?->format('d/m/Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Last Salary Date</td><td class="py-2">{{ $w->last_salary_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Company Email</td><td class="py-2">{{ $w->company_email ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Google ID</td><td class="py-2">{{ $w->google_id ?? '—' }}</td></tr>
                 </table>
@@ -399,7 +399,7 @@
                 <tr>
                     <td class="ps-3"><code>{{ $assign->asset?->asset_tag }}</code></td>
                     <td>{{ ucfirst(str_replace('_',' ',$assign->asset?->asset_type ?? '')) }}</td>
-                    <td>{{ $assign->assigned_date?->format('d M Y') }}</td>
+                    <td>{{ $assign->assigned_date?->format('d/m/Y') }}</td>
                     <td><span class="badge {{ $assign->status==='assigned'?'bg-success':'bg-secondary' }}">{{ ucfirst($assign->status) }}</span></td>
                 </tr>
                 @endforeach
@@ -429,7 +429,7 @@
                 <div class="fw-semibold text-success">Consent Given</div>
                 <div class="text-muted small">
                     Acknowledged by <strong>{{ $p->full_name }}</strong>
-                    on {{ $p->consent_given_at->format('d M Y, h:i A') }}
+                    on {{ $p->consent_given_at->format('d/m/Y, h:i A') }}
                 </div>
             </div>
         </div>
@@ -466,7 +466,7 @@
             <tbody>
                 @foreach($editLogs as $log)
                 <tr>
-                    <td class="ps-3 text-muted">{{ $log->created_at->format('d M Y') }}<br><small>{{ $log->created_at->format('h:i A') }}</small></td>
+                    <td class="ps-3 text-muted">{{ $log->created_at->format('d/m/Y') }}<br><small>{{ $log->created_at->format('h:i A') }}</small></td>
                     <td>
                         <span class="fw-semibold">{{ $log->edited_by_name }}</span><br>
                         <small class="text-muted">{{ str_replace('_',' ',ucwords($log->edited_by_role ?? '')) }}</small>
@@ -485,7 +485,7 @@
                     </td>
                     <td>
                         @if($log->acknowledged_at)
-                        {{ $log->acknowledged_at->format('d M Y') }}<br>
+                        {{ $log->acknowledged_at->format('d/m/Y') }}<br>
                         <small class="text-muted">{{ $log->acknowledged_at->format('h:i A') }}</small>
                         @else
                             <span class="text-muted">—</span>

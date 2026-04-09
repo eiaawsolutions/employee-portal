@@ -449,7 +449,7 @@
                         })();
                         </script>
                     @else
-                        @php $lsdDisplay = $employee?->last_salary_date?->format('d M Y'); @endphp
+                        @php $lsdDisplay = $employee?->last_salary_date?->format('d/m/Y'); @endphp
                         <input type="text" class="form-control bg-light" readonly value="{{ $lsdDisplay ?: '—' }}">
                     @endif
                 </div>
@@ -499,7 +499,7 @@
                             <td>{{ ucfirst(str_replace('_',' ',$ea->asset_type)) }}</td>
                             <td class="text-muted small">{{ trim(($ea->brand ?? '').' '.($ea->model ?? '')) ?: '—' }}</td>
                             <td class="text-muted small">{{ $ea->serial_number ?? '—' }}</td>
-                            <td>{{ $ea->asset_assigned_date?->format('d M Y') ?? '—' }}</td>
+                            <td>{{ $ea->asset_assigned_date?->format('d/m/Y') ?? '—' }}</td>
                             <td>
                                 @php $cc = ['new'=>'success','good'=>'primary','fair'=>'warning','damaged'=>'danger','not_good'=>'danger','under_maintenance'=>'warning'][$ea->asset_condition ?? ''] ?? 'secondary'; @endphp
                                 <span class="badge bg-{{ $cc }}">{{ ucfirst(str_replace('_',' ',$ea->asset_condition ?? '—')) }}</span>
@@ -588,7 +588,7 @@
                                 <div class="text-truncate" style="font-size:12px;">
                                     <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
                                     <span title="{{ $contract->original_filename }}">{{ $contract->original_filename }}</span>
-                                    <div class="text-muted" style="font-size:11px;">{{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d M Y') }}@if($contract->notes)<br>{{ $contract->notes }}@endif</div>
+                                    <div class="text-muted" style="font-size:11px;">{{ $contract->file_size_label }} &middot; {{ $contract->created_at->format('d/m/Y') }}@if($contract->notes)<br>{{ $contract->notes }}@endif</div>
                                 </div>
                                 <div class="d-flex gap-1 flex-shrink-0">
                                     <a href="{{ route('employees.contracts.download', [$employee, $contract]) }}" class="btn btn-outline-primary btn-sm" style="padding:2px 7px;" title="Download">
@@ -1069,7 +1069,7 @@
             <div>
                 <div class="fw-semibold text-success small">Consent Acknowledged</div>
                 <div class="text-muted small">
-                    Submitted on {{ $consentAt->format('d M Y, h:i A') }}
+                    Submitted on {{ $consentAt->format('d/m/Y, h:i A') }}
                     @if($employee->consent_ip) — IP: {{ $employee->consent_ip }} @endif
                 </div>
             </div>
@@ -1109,7 +1109,7 @@
                 <tbody>
                     @foreach($employee->editLogs as $log)
                     <tr>
-                        <td class="ps-3 text-muted" style="width:160px;">{{ $log->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="ps-3 text-muted" style="width:160px;">{{ $log->created_at->format('d/m/Y, h:i A') }}</td>
                         <td style="width:160px;">
                             <div class="fw-semibold">{{ $log->edited_by_name ?? '—' }}</div>
                             <div class="text-muted" style="font-size:11px;">{{ ucfirst(str_replace('_',' ',$log->edited_by_role ?? '')) }}</div>
@@ -1140,7 +1140,7 @@
                         </td>
                         <td>{{ $log->acknowledged_by_name ?? '—' }}</td>
                         <td class="pe-3 text-muted">
-                            {{ $log->acknowledged_at?->format('d M Y, h:i A') ?? '—' }}
+                            {{ $log->acknowledged_at?->format('d/m/Y, h:i A') ?? '—' }}
                             @if($log->acknowledgement_notes)
                             <div style="font-size:11px;color:#64748b;"><i class="bi bi-chat-left-text me-1"></i>{{ $log->acknowledgement_notes }}</div>
                             @endif

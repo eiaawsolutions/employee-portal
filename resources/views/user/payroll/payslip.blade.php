@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-6 text-md-end">
                 <h6 class="text-muted">Pay Date</h6>
-                <p class="mb-0">{{ \Carbon\Carbon::parse($payslip->payRun->pay_date)->format('d M Y') }}</p>
+                <p class="mb-0">{{ \Carbon\Carbon::parse($payslip->payRun->pay_date)->format('d/m/Y') }}</p>
             </div>
         </div>
 

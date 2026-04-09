@@ -81,7 +81,7 @@ if ($prov) {
         <tr><td style="color:#64748b;font-weight:600;">Designation:</td><td style="color:#1e293b;">{{ $w?->designation ?? '—' }}</td></tr>
         <tr><td style="color:#64748b;font-weight:600;">Reporting Manager:</td><td style="color:#1e293b;">{{ $w?->reporting_manager ?? '—' }}</td></tr>
         <tr><td style="color:#64748b;font-weight:600;">Manager Email:</td><td style="color:#1e293b;">{{ $w?->reporting_manager_email ?? '—' }}</td></tr>
-        <tr><td style="color:#64748b;font-weight:600;">Start Date:</td><td style="color:#1e293b;"><strong>{{ $w?->start_date?->format('d M Y') ?? '—' }}</strong></td></tr>
+        <tr><td style="color:#64748b;font-weight:600;">Start Date:</td><td style="color:#1e293b;"><strong>{{ $w?->start_date?->format('d/m/Y') ?? '—' }}</strong></td></tr>
         <tr><td style="color:#64748b;font-weight:600;">Office Location:</td><td style="color:#1e293b;">{{ $w?->office_location ?? '—' }}</td></tr>
         <tr><td style="color:#64748b;font-weight:600;">Work Email:</td><td style="color:#1e293b;">{{ $w?->company_email ?? '—' }}</td></tr>
         <tr><td style="color:#64748b;font-weight:600;">Google ID:</td><td style="color:#1e293b;">{{ $w?->google_id ?? '—' }}</td></tr>

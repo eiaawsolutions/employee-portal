@@ -29,8 +29,8 @@
                     <tr>
                         <td><code>{{ $pr->reference }}</code></td>
                         <td>{{ $pr->title }}</td>
-                        <td>{{ \Carbon\Carbon::parse($pr->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($pr->period_end)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($pr->pay_date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($pr->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($pr->period_end)->format('d/m/Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($pr->pay_date)->format('d/m/Y') }}</td>
                         <td class="text-end fw-bold">{{ number_format($pr->total_net_pay, 2) }}</td>
                         <td class="text-center"><span class="badge bg-secondary">{{ $pr->payslips_count ?? $pr->payslips->count() }}</span></td>
                         <td class="text-center">{!! $pr->statusBadge() !!}</td>

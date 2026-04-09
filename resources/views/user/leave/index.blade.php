@@ -226,8 +226,8 @@
                             <span class="badge text-bg-light border me-1">{{ $app->leaveType->code ?? '' }}</span>
                             {{ $app->leaveType->name ?? '—' }}
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($app->start_date)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($app->end_date)->format('d M Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($app->start_date)->format('d/m/Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($app->end_date)->format('d/m/Y') }}</td>
                         <td class="text-center">{{ $app->total_days }}{{ $app->is_half_day ? ' (½)' : '' }}</td>
                         <td class="text-center">{!! $app->statusBadge() !!}</td>
                         <td class="pe-4 text-end">

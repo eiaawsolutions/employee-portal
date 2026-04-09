@@ -235,7 +235,7 @@ class OffboardingNotifications extends Command
             "Department: {$dept}",
             "Company: {$company}",
             "Company Email: {$email}",
-            "Exit Date: " . ($ob->exit_date?->format('d M Y') ?? '—'),
+            "Exit Date: " . ($ob->exit_date?->format('d/m/Y') ?? '—'),
             " ",
             "ACTION REQUIRED: Complete offboarding checklist before exit date.",
             "- Deactivate accounts and system access",

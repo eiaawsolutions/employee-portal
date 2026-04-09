@@ -70,7 +70,7 @@
             </p>
             <p style="margin:0 0 16px;color:#475569;font-size:14px;line-height:1.7;">
                 {{ $updatedByLine }}
-                <strong>{{ $editLog->created_at->format('d M Y, h:i A') }}</strong>.
+                <strong>{{ $editLog->created_at->format('d/m/Y, h:i A') }}</strong>.
                 As required under our PDPA policy, you must log in to the Employee Portal and re-acknowledge the Declaration &amp; Consent on your profile page.
             </p>
 
@@ -123,7 +123,7 @@
             @endif
             @if($editLog->consent_token_expires_at)
             <p style="margin:8px 0 0;color:#94a3b8;font-size:12px;text-align:center;">
-                Please acknowledge before <strong>{{ $editLog->consent_token_expires_at->format('d M Y, h:i A') }}</strong>.
+                Please acknowledge before <strong>{{ $editLog->consent_token_expires_at->format('d/m/Y, h:i A') }}</strong>.
             </p>
             @endif
         </td>

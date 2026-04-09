@@ -46,11 +46,11 @@
     <div class="info-box">
       <div class="detail-row">
         <span class="detail-label">Pay Period</span>
-        <span class="detail-value">{{ $payRun->period_start?->format('d M Y') ?? '' }} — {{ $payRun->period_end?->format('d M Y') ?? '' }}</span>
+        <span class="detail-value">{{ $payRun->period_start?->format('d/m/Y') ?? '' }} — {{ $payRun->period_end?->format('d/m/Y') ?? '' }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Pay Date</span>
-        <span class="detail-value">{{ $payRun->pay_date?->format('d M Y') ?? '' }}</span>
+        <span class="detail-value">{{ $payRun->pay_date?->format('d/m/Y') ?? '' }}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Reference</span>
