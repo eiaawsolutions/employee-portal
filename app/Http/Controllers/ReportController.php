@@ -690,12 +690,12 @@ class ReportController extends Controller
         $conditionBreakdown = AssetInventory::selectRaw("COALESCE(asset_condition, 'unknown') as cond, COUNT(*) as total")
             ->groupBy('cond')->orderByDesc('total')->get();
 
-        // Rental by Vendor & Brand, split by company then asset type
+        // Rental by Vendor → Company Supplied To → Asset Type → Brand
         $rentalByVendorBrand = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, COALESCE(NULLIF(TRIM(asset_type),''), 'Unspecified') as asset_type, brand, COUNT(*) as total")
-            ->groupBy('company', 'vendor', 'asset_type', 'brand')->orderBy('company')->orderBy('vendor')->orderBy('asset_type')->orderByDesc('total')->get()
-            ->groupBy('company')
-            ->map(fn($rows) => $rows->groupBy('vendor')->map(fn($vRows) => $vRows->groupBy('asset_type')));
+            ->selectRaw("COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, COALESCE(NULLIF(TRIM(company_supplied_to),''), 'Unspecified') as supplied_to, COALESCE(NULLIF(TRIM(asset_type),''), 'Unspecified') as asset_type, brand, COUNT(*) as total")
+            ->groupBy('vendor', 'supplied_to', 'asset_type', 'brand')->orderBy('vendor')->orderBy('supplied_to')->orderBy('asset_type')->orderByDesc('total')->get()
+            ->groupBy('vendor')
+            ->map(fn($rows) => $rows->groupBy('supplied_to')->map(fn($cRows) => $cRows->groupBy('asset_type')));
 
         // Company-Owned by Company & Brand
         $companyByEntityBrand = AssetInventory::where('ownership_type', 'company')
