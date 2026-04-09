@@ -25,35 +25,176 @@
 </div>
 @endif
 
+{{-- ── Dashboard Widget Styles ──────────────────────────────────────────── --}}
+<style>
+    .dash-widget {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform .2s ease, box-shadow .2s ease;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        min-height: 220px;
+    }
+    .dash-widget:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,.1);
+    }
+    .dash-widget .widget-header {
+        padding: 20px 22px 14px;
+        position: relative;
+        overflow: hidden;
+    }
+    .dash-widget .widget-header::before {
+        content: '';
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+    }
+    .dash-widget .widget-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        right: 40px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.08);
+    }
+    .dash-widget .widget-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(255,255,255,.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        backdrop-filter: blur(4px);
+    }
+    .dash-widget .widget-icon i {
+        font-size: 22px;
+        color: #fff;
+    }
+    .dash-widget .widget-number {
+        font-size: 32px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        letter-spacing: -0.5px;
+    }
+    .dash-widget .widget-label {
+        font-size: 12px;
+        color: rgba(255,255,255,.85);
+        font-weight: 500;
+    }
+    .dash-widget .widget-body {
+        padding: 14px 22px 18px;
+        background: #fff;
+    }
+    .dash-widget .breakdown-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #94a3b8;
+        margin-bottom: 8px;
+    }
+    .dash-widget .breakdown-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 12.5px;
+        color: #334155;
+    }
+    .dash-widget .breakdown-row:last-child {
+        border-bottom: none;
+    }
+    .dash-widget .breakdown-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        color: #fff;
+    }
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .section-header .section-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .section-header h6 {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #475569;
+        margin: 0;
+    }
+    .dash-widget .widget-filter {
+        position: relative;
+        z-index: 1;
+    }
+    .dash-widget .widget-filter select {
+        background: rgba(255,255,255,.2);
+        border: 1px solid rgba(255,255,255,.3);
+        color: #fff;
+        font-size: 11px;
+        border-radius: 8px;
+        padding: 4px 24px 4px 10px;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+    }
+    .dash-widget .widget-filter select option {
+        color: #334155;
+        background: #fff;
+    }
+</style>
+
 {{-- ── Summary Cards ──────────────────────────────────────────────────── --}}
-<p class="text-uppercase fw-semibold mb-2" style="font-size:11px; letter-spacing:1px; color:#94a3b8;">
-    <i class="bi bi-people me-1"></i> Employee Overview
-</p>
+<div class="section-header">
+    <div class="section-icon" style="background:#eff6ff;">
+        <i class="bi bi-people-fill" style="font-size:16px;color:#2563eb;"></i>
+    </div>
+    <h6>Employee Overview</h6>
+</div>
 <div class="row g-3 mb-4">
 
     {{-- Card 1: By Company --}}
     @php $companyTotal = $statsByCompany->sum('total'); @endphp
     <div class="col-12 col-sm-6 col-md-4">
-        <div class="card h-100" style="border-left:4px solid #2563eb; border-top:none; border-right:none; border-bottom:none; box-shadow:0 1px 6px rgba(0,0,0,.06);">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-start gap-3 mb-3">
-                    <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;background:#eff6ff;">
-                        <i class="bi bi-building" style="font-size:20px;color:#2563eb;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-building-fill"></i></div>
                     <div>
-                        <div class="fw-bold" style="font-size:28px;line-height:1;">{{ $companyTotal }}</div>
-                        <div class="text-muted" style="font-size:13px;">Overall Active Employee</div>
+                        <div class="widget-number">{{ $companyTotal }}</div>
+                        <div class="widget-label">Overall Active Employee</div>
                     </div>
                 </div>
-                <div class="text-uppercase fw-semibold mb-2" style="font-size:10px;letter-spacing:.8px;color:#94a3b8;">By Company</div>
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Company</div>
                 @forelse($statsByCompany as $row)
-                <div class="d-flex justify-content-between align-items-center py-1" style="font-size:13px;">
+                <div class="breakdown-row">
                     <span>{{ $row->company }}</span>
-                    <span class="badge rounded-pill" style="background:#2563eb;min-width:26px;">{{ $row->total }}</span>
+                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small">No data</div>
+                <div class="text-muted small text-center py-2">No data</div>
                 @endforelse
             </div>
         </div>
@@ -62,42 +203,41 @@
     {{-- Card 2: By Department --}}
     @php $deptGroups = $statsByDept->groupBy('department'); $deptTotal = $statsByDept->sum('total'); @endphp
     <div class="col-12 col-sm-6 col-md-4">
-        <div class="card h-100" style="border-left:4px solid #10b981; border-top:none; border-right:none; border-bottom:none; box-shadow:0 1px 6px rgba(0,0,0,.06);">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-start gap-3 mb-3">
-                    <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;background:#f0fdf4;">
-                        <i class="bi bi-diagram-3" style="font-size:20px;color:#10b981;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#10b981,#047857);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-diagram-3-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="fw-bold" style="font-size:28px;line-height:1;">{{ $deptGroups->count() }}</div>
-                        <div class="text-muted" style="font-size:13px;">Overall Active Employee</div>
+                        <div class="widget-number">{{ $deptTotal }}</div>
+                        <div class="widget-label">Overall Active Employee</div>
                     </div>
-                    <select class="form-select form-select-sm ms-auto" style="font-size:11px;width:auto;max-width:130px;"
-                        onchange="filterCard('dept', this.value)">
-                        <option value="">All</option>
-                        @foreach($registeredCompanies as $co)
-                        <option value="{{ $co->name }}">{{ $co->name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterCard('dept', this.value)">
+                            <option value="">All</option>
+                            @foreach($registeredCompanies as $co)
+                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="text-uppercase fw-semibold mb-2" style="font-size:10px;letter-spacing:.8px;color:#94a3b8;">By Department</div>
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Department</div>
                 <div class="dept-scroll" style="max-height:160px;overflow-y:auto;">
                 @forelse($deptGroups as $dept => $rows)
                 @php
                     $dt = $rows->sum('total');
                     $deptCountStr = $rows->map(fn($r) => $r->company . ':' . $r->total)->implode('||');
                 @endphp
-                <div class="dept-row d-flex justify-content-between align-items-center py-1"
+                <div class="dept-row breakdown-row"
                      data-companies="{{ $rows->pluck('company')->implode('|') }}"
                      data-counts="{{ $deptCountStr }}"
-                     data-total="{{ $dt }}"
-                     style="font-size:13px;padding-right:20px;">
+                     data-total="{{ $dt }}">
                     <span>{{ $dept }}</span>
-                    <span class="badge rounded-pill dept-badge" style="background:#10b981;min-width:26px;">{{ $dt }}</span>
+                    <span class="breakdown-badge dept-badge" style="background:#10b981;">{{ $dt }}</span>
                 </div>
                 @empty
-                <div class="text-muted small">No data</div>
+                <div class="text-muted small text-center py-2">No data</div>
                 @endforelse
                 </div>
             </div>
@@ -108,55 +248,53 @@
     @php
         $typeGroups  = $statsByType->groupBy('employment_type');
         $typeConfig  = [
-            'permanent' => ['color'=>'#f59e0b','bg'=>'#fffbeb','icon'=>'bi-person-check'],
-            'contract'  => ['color'=>'#6366f1','bg'=>'#eef2ff','icon'=>'bi-file-earmark-person'],
-            'intern'    => ['color'=>'#ec4899','bg'=>'#fdf2f8','icon'=>'bi-mortarboard'],
+            'permanent' => ['color'=>'#f59e0b','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-person-check-fill'],
+            'contract'  => ['color'=>'#6366f1','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-file-earmark-person-fill'],
+            'intern'    => ['color'=>'#ec4899','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-mortarboard-fill'],
         ];
-        $borderColor = '#f59e0b';
     @endphp
     <div class="col-12 col-sm-6 col-md-4">
-        <div class="card h-100" style="border-left:4px solid {{ $borderColor }}; border-top:none; border-right:none; border-bottom:none; box-shadow:0 1px 6px rgba(0,0,0,.06);">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-start gap-3 mb-3">
-                    <div class="rounded-2 d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;background:#fffbeb;">
-                        <i class="bi bi-person-badge" style="font-size:20px;color:#f59e0b;"></i>
-                    </div>
+        <div class="card dash-widget h-100">
+            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-person-badge-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="fw-bold" style="font-size:28px;line-height:1;">{{ $statsByType->sum('total') }}</div>
-                        <div class="text-muted" style="font-size:13px;">Overall Active Employee</div>
+                        <div class="widget-number">{{ $statsByType->sum('total') }}</div>
+                        <div class="widget-label">Overall Active Employee</div>
                     </div>
-                    <select class="form-select form-select-sm ms-auto" style="font-size:11px;width:auto;max-width:130px;"
-                        onchange="filterCard('type', this.value)">
-                        <option value="">All</option>
-                        @foreach($registeredCompanies as $co)
-                        <option value="{{ $co->name }}">{{ $co->name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterCard('type', this.value)">
+                            <option value="">All</option>
+                            @foreach($registeredCompanies as $co)
+                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="text-uppercase fw-semibold mb-2" style="font-size:10px;letter-spacing:.8px;color:#94a3b8;">By Type</div>
+            </div>
+            <div class="widget-body flex-fill">
+                <div class="breakdown-title">By Type</div>
                 @forelse($typeGroups as $type => $rows)
                 @php
                     $tt  = $rows->sum('total');
-                    $cfg = $typeConfig[$type] ?? ['color'=>'#6b7280','bg'=>'#f3f4f6','icon'=>'bi-person'];
+                    $cfg = $typeConfig[$type] ?? ['color'=>'#6b7280','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-person-fill'];
                     $typeCountStr = $rows->map(fn($r) => $r->company . ':' . $r->total)->implode('||');
                 @endphp
-                <div class="type-row d-flex justify-content-between align-items-center py-1"
+                <div class="type-row breakdown-row"
                      data-companies="{{ $rows->pluck('company')->implode('|') }}"
                      data-counts="{{ $typeCountStr }}"
-                     data-total="{{ $tt }}"
-                     style="font-size:13px;">
+                     data-total="{{ $tt }}">
                     <div class="d-flex align-items-center gap-2">
                         <div class="rounded-2 d-flex align-items-center justify-content-center"
-                             style="width:26px;height:26px;background:{{ $cfg['bg'] }};">
+                             style="width:28px;height:28px;background:{{ $cfg['bg'] }};">
                             <i class="{{ $cfg['icon'] }}" style="font-size:13px;color:{{ $cfg['color'] }};"></i>
                         </div>
-                        <span>{{ ucfirst($type) }}</span>
+                        <span class="fw-medium">{{ ucfirst($type) }}</span>
                     </div>
-                    <span class="badge rounded-pill" style="background:{{ $cfg['color'] }};min-width:26px;">{{ $tt }}</span>
+                    <span class="breakdown-badge" style="background:{{ $cfg['color'] }};">{{ $tt }}</span>
                 </div>
                 @empty
-                <div class="text-muted small">No data</div>
+                <div class="text-muted small text-center py-2">No data</div>
                 @endforelse
             </div>
         </div>
@@ -416,7 +554,7 @@ function filterCard(type, company) {
     const selected = company ? company.trim().toLowerCase() : '';
 
     document.querySelectorAll(selector).forEach(row => {
-        const badge = row.querySelector('.badge');
+        const badge = row.querySelector('.breakdown-badge');
         if (!selected) {
             row.style.display = '';
             if (badge) badge.textContent = row.dataset.total;
