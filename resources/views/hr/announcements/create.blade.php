@@ -41,8 +41,7 @@
                     <label class="form-label fw-semibold">Message <span class="text-muted fw-normal small">(max 500 characters)</span></label>
                     <textarea name="body" id="createBodyField" rows="5" maxlength="500"
                               class="form-control @error('body') is-invalid @enderror"
-                              placeholder="Write your announcement here..."
-                              oninput="updateCounter('createBodyField','createBodyCounter')">{{ old('body') }}</textarea>
+                              placeholder="Write your announcement here...">{{ old('body') }}</textarea>
                     @error('body')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     <div class="d-flex justify-content-between mt-1">
                         <span class="form-text">Supports line breaks. Employees will receive this as an email notification.</span>
@@ -77,11 +76,7 @@
                     {{-- Drop zone display --}}
                     <div id="attachDropzone"
                          class="rounded-3 border-2 border-dashed p-4 text-center"
-                         style="border:2px dashed #cbd5e1;cursor:pointer;transition:border-color 0.2s;"
-                         onclick="document.getElementById('attachInput').click()"
-                         ondragover="event.preventDefault();this.style.borderColor='#2563eb';"
-                         ondragleave="this.style.borderColor='#cbd5e1';"
-                         ondrop="handleAttachDrop(event)">
+                         style="border:2px dashed #cbd5e1;cursor:pointer;transition:border-color 0.2s;">
                         <i class="bi bi-cloud-upload" style="font-size:28px;color:#94a3b8;"></i>
                         <div class="text-muted mt-1" style="font-size:13px;">Click or drag files here</div>
                         <div class="text-muted" style="font-size:11px;">PDF, JPG, PNG, GIF, WebP &middot; max 10 MB each</div>
@@ -90,8 +85,7 @@
                     {{-- Hidden real input --}}
                     <input type="file" id="attachInput" name="attachments[]"
                            accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
-                           multiple style="display:none"
-                           onchange="renderAttachPreviews(this.files)">
+                           multiple style="display:none">
 
                     @error('attachments')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     @error('attachments.*')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
@@ -124,7 +118,7 @@
 
 </form>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function updateCounter(fieldId, counterId) {
     var field = document.getElementById(fieldId);
     var counter = document.getElementById(counterId);
@@ -184,6 +178,15 @@ function handleAttachDrop(e) {
     document.getElementById('attachDropzone').style.borderColor = '#cbd5e1';
     renderAttachPreviews(e.dataTransfer.files);
 }
+
+// Bind event listeners (CSP nonce-compatible — no inline handlers)
+var dz = document.getElementById('attachDropzone');
+dz.addEventListener('click', function() { document.getElementById('attachInput').click(); });
+dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = '#2563eb'; });
+dz.addEventListener('dragleave', function() { dz.style.borderColor = '#cbd5e1'; });
+dz.addEventListener('drop', handleAttachDrop);
+document.getElementById('attachInput').addEventListener('change', function() { renderAttachPreviews(this.files); });
+document.getElementById('createBodyField').addEventListener('input', function() { updateCounter('createBodyField', 'createBodyCounter'); });
 </script>
 
 @endsection

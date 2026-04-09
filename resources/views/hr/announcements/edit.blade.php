@@ -40,8 +40,7 @@
                 <div class="col-12">
                     <label class="form-label fw-semibold">Message <span class="text-muted fw-normal small">(max 500 characters)</span></label>
                     <textarea name="body" id="editBodyField" rows="5" maxlength="500"
-                              class="form-control @error('body') is-invalid @enderror"
-                              oninput="updateCounter('editBodyField','editBodyCounter')">{{ old('body', $announcement->body) }}</textarea>
+                              class="form-control @error('body') is-invalid @enderror">{{ old('body', $announcement->body) }}</textarea>
                     @error('body')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     <div class="d-flex justify-content-end mt-1">
                         <span id="editBodyCounter" class="form-text">{{ strlen(old('body', $announcement->body ?? '')) }}/500</span>
@@ -86,9 +85,9 @@
                             {{-- Hidden keep input — disabled = removed --}}
                             <input type="hidden" name="keep_attachments[]" value="{{ $path }}"
                                    id="keepInput_{{ $i }}">
-                            <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-1"
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-1 remove-existing-btn"
                                     style="font-size:14px;line-height:1;"
-                                    onclick="removeExisting({{ $i }})" title="Remove">&times;</button>
+                                    data-index="{{ $i }}" title="Remove">&times;</button>
                         </div>
                         @endforeach
                     </div>
@@ -102,11 +101,7 @@
 
                     <div id="attachDropzone"
                          class="rounded-3 p-4 text-center"
-                         style="border:2px dashed #cbd5e1;cursor:pointer;transition:border-color 0.2s;"
-                         onclick="document.getElementById('attachInput').click()"
-                         ondragover="event.preventDefault();this.style.borderColor='#2563eb';"
-                         ondragleave="this.style.borderColor='#cbd5e1';"
-                         ondrop="handleAttachDrop(event)">
+                         style="border:2px dashed #cbd5e1;cursor:pointer;transition:border-color 0.2s;">
                         <i class="bi bi-cloud-upload" style="font-size:28px;color:#94a3b8;"></i>
                         <div class="text-muted mt-1" style="font-size:13px;">Click or drag files here</div>
                         <div class="text-muted" style="font-size:11px;">PDF, JPG, PNG, GIF, WebP &middot; max 10 MB each</div>
@@ -114,8 +109,7 @@
 
                     <input type="file" id="attachInput" name="attachments[]"
                            accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
-                           multiple style="display:none"
-                           onchange="renderAttachPreviews(this.files)">
+                           multiple style="display:none">
 
                     @error('attachments')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     @error('attachments.*')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
@@ -144,7 +138,7 @@
 
 </form>
 
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function updateCounter(fieldId, counterId) {
     var field = document.getElementById(fieldId);
     var counter = document.getElementById(counterId);
@@ -210,6 +204,18 @@ function handleAttachDrop(e) {
     document.getElementById('attachDropzone').style.borderColor = '#cbd5e1';
     renderAttachPreviews(e.dataTransfer.files);
 }
+
+// Bind event listeners (CSP nonce-compatible)
+var dz = document.getElementById('attachDropzone');
+dz.addEventListener('click', function() { document.getElementById('attachInput').click(); });
+dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = '#2563eb'; });
+dz.addEventListener('dragleave', function() { dz.style.borderColor = '#cbd5e1'; });
+dz.addEventListener('drop', handleAttachDrop);
+document.getElementById('attachInput').addEventListener('change', function() { renderAttachPreviews(this.files); });
+document.getElementById('editBodyField').addEventListener('input', function() { updateCounter('editBodyField', 'editBodyCounter'); });
+document.querySelectorAll('.remove-existing-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { removeExisting(parseInt(this.dataset.index)); });
+});
 </script>
 
 @endsection
