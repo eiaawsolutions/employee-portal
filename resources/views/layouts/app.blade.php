@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Employee Portal')</title>
     {{-- Apply saved theme before page renders to prevent flash --}}
-    <script>
+    <script nonce="{{ $cspNonce ?? '' }}">
         (function() {
             var t = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-bs-theme', t);
@@ -936,12 +936,12 @@
     </div>
 </nav>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <div class="main-content">
     <div class="topbar">
         <div class="d-flex align-items-center gap-2">
-            <button class="hamburger-btn" id="hamburgerBtn" onclick="openSidebar()" aria-label="Open menu">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu">
                 <i class="bi bi-list"></i>
             </button>
             <h4>@yield('page-title', 'Dashboard')</h4>
@@ -967,8 +967,8 @@
     @yield('content')
 @endauth
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script nonce="{{ $cspNonce ?? '' }}">
 function openSidebar() {
     document.querySelector('.sidebar')?.classList.add('sidebar-open');
     document.getElementById('sidebarOverlay')?.classList.add('active');
@@ -977,6 +977,9 @@ function closeSidebar() {
     document.querySelector('.sidebar')?.classList.remove('sidebar-open');
     document.getElementById('sidebarOverlay')?.classList.remove('active');
 }
+// Bind sidebar open/close via addEventListener (CSP nonce-compatible)
+document.getElementById('sidebarOverlay')?.addEventListener('click', closeSidebar);
+document.getElementById('hamburgerBtn')?.addEventListener('click', openSidebar);
 // Close sidebar when a nav link is clicked on mobile
 document.querySelectorAll('.sidebar-nav .nav-link').forEach(function(link) {
     link.addEventListener('click', function() {
@@ -1030,7 +1033,7 @@ function setTheme(theme) {
 <form id="idleLogoutForm" action="{{ route('logout') }}" method="POST" style="display:none;">
     @csrf
 </form>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}">
 (function () {
     // ── Configuration ─────────────────────────────────────────────────────
     var IDLE_TIMEOUT_MS  = 15 * 60 * 1000;  // 15 min of inactivity → trigger warning

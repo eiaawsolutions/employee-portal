@@ -112,8 +112,8 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script nonce="{{ $cspNonce ?? '' }}">
     const colors = ['#dc2626','#d97706','#2684FE','#059669'];
     const labels = ['Weak','Fair','Good','Strong'];
 

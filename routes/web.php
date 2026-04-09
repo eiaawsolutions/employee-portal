@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItTaskController;
 use App\Http\Controllers\EmployeeController;
@@ -56,6 +57,10 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// ── Two-Factor Authentication Challenge (pre-auth, session-gated) ─────────
+Route::get('/two-factor-challenge',  [TwoFactorController::class, 'challenge'])->name('two-factor.challenge');
+Route::post('/two-factor-challenge', [TwoFactorController::class, 'verify'])->name('two-factor.verify')->middleware('throttle:5,1');
+
 // ── Public AARF token link (for employee acknowledgement via email) ─────────
 Route::get('/aarf/{token}',              [AarfController::class, 'viewAarf'])->name('aarf.view');
 // Throttle: 10 per minute — CSRF-exempt but still rate-limited
@@ -85,6 +90,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::post('/it/tasks/{task}/status', [ItTaskController::class, 'updateStatus'])->name('it.tasks.status');
     Route::post('/it/onboarding/{onboarding}/assign-pic', [ItTaskController::class, 'assignPic'])->name('it.assign.pic');
     Route::post('/it/tasks/{task}/reassign', [ItTaskController::class, 'reassign'])->name('it.tasks.reassign');
+
+    // Two-Factor Authentication management
+    Route::get('/two-factor/setup',    [TwoFactorController::class, 'setup'])->name('two-factor.setup');
+    Route::post('/two-factor/confirm', [TwoFactorController::class, 'confirm'])->name('two-factor.confirm');
+    Route::post('/two-factor/disable', [TwoFactorController::class, 'disable'])->name('two-factor.disable');
 
     // Profile (all users)
     Route::get('/profile',                 [ProfileController::class, 'show'])->name('profile');

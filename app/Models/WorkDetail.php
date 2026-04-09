@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class WorkDetail extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'onboarding_id', 'employee_status', 'staff_status', 'employment_type',
         'designation', 'company', 'office_location', 'reporting_manager',

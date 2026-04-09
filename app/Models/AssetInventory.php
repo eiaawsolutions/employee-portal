@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class AssetInventory extends Model
 {
+    use HasFactory;
     protected $fillable = [
         // Section A – Identification
         'asset_tag', 'asset_type', 'brand', 'model', 'serial_number',

@@ -34,9 +34,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        // Rate-limit file uploads: 10 requests per minute per user/IP
+        // Rate-limit file uploads (configurable via SECURITY_UPLOAD_RATE_LIMIT)
         RateLimiter::for('uploads', function (Request $request) {
-            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute((int) config('security.upload_rate_limit', 10))
+                ->by($request->user()?->id ?: $request->ip());
         });
 
         // Magic-bytes validation: ensures uploaded file content matches its extension.

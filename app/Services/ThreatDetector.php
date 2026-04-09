@@ -24,12 +24,11 @@ use Illuminate\Support\Facades\Mail;
  */
 class ThreatDetector
 {
-    // Thresholds (configurable via env)
-    private const LOGIN_FAIL_THRESHOLD   = 5;  // failures per IP in window
-    private const LOGIN_FAIL_WINDOW      = 600; // seconds (10 min)
-    private const RAPID_REQUEST_THRESHOLD = 60; // requests per minute
-    private const OFF_HOURS_START         = 22; // 10 PM
-    private const OFF_HOURS_END           = 6;  // 6 AM
+    private static function loginFailThreshold(): int   { return (int) config('security.login_fail_threshold', 5); }
+    private static function loginFailWindow(): int      { return (int) config('security.login_fail_window', 600); }
+    private static function rapidRequestThreshold(): int { return (int) config('security.rapid_request_threshold', 60); }
+    private static function offHoursStart(): int        { return (int) config('security.off_hours_start', 22); }
+    private static function offHoursEnd(): int          { return (int) config('security.off_hours_end', 6); }
 
     /**
      * Check for suspicious patterns after a security event is logged.
@@ -92,20 +91,20 @@ class ThreatDetector
         $key   = "login_failures:{$ip}";
         $count = (int) Cache::get($key, 0);
         $count++;
-        Cache::put($key, $count, self::LOGIN_FAIL_WINDOW);
+        Cache::put($key, $count, self::loginFailWindow());
 
         $alerts = [];
 
-        if ($count === self::LOGIN_FAIL_THRESHOLD) {
+        if ($count === self::loginFailThreshold()) {
             $alerts[] = self::buildAlert(
                 'high',
                 'Brute-Force Attack Detected',
-                "IP {$ip} has had {$count} failed login attempts in the last " . (self::LOGIN_FAIL_WINDOW / 60) . " minutes.",
+                "IP {$ip} has had {$count} failed login attempts in the last " . (self::loginFailWindow() / 60) . " minutes.",
                 $context
             );
         }
 
-        if ($count === self::LOGIN_FAIL_THRESHOLD * 2) {
+        if ($count === self::loginFailThreshold() * 2) {
             $alerts[] = self::buildAlert(
                 'critical',
                 'Sustained Brute-Force Attack',
@@ -156,7 +155,7 @@ class ThreatDetector
         $count++;
         Cache::put($key, $count, 60);
 
-        if ($count === self::RAPID_REQUEST_THRESHOLD) {
+        if ($count === self::rapidRequestThreshold()) {
             return self::buildAlert(
                 'high',
                 'Automated Attack Suspected',
@@ -171,7 +170,7 @@ class ThreatDetector
     private static function isOffHours(): bool
     {
         $hour = (int) now()->setTimezone('Asia/Kuala_Lumpur')->format('G');
-        return $hour >= self::OFF_HOURS_START || $hour < self::OFF_HOURS_END;
+        return $hour >= self::offHoursStart() || $hour < self::offHoursEnd();
     }
 
     private static function isSensitiveUrl(string $url): bool

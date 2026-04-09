@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'onboarding_id', 'user_id', 'active_from', 'active_until',
         // Personal profile (official record, editable by user)

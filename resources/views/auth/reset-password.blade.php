@@ -99,8 +99,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+    <script nonce="{{ $cspNonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script nonce="{{ $cspNonce ?? '' }}">
         function togglePw(id) {
             const input = document.getElementById(id);
             const iconId = id === 'password' ? 'eyeIcon1' : 'eyeIcon2';

@@ -69,6 +69,44 @@
             </div>
         </div>
 
+        {{-- Two-Factor Authentication --}}
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2 text-primary"></i>Two-Factor Authentication</h6>
+            </div>
+            <div class="card-body">
+                @if(session('success'))
+                    <div class="alert alert-success py-2"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}</div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger py-2">{{ session('error') }}</div>
+                @endif
+
+                @if(Auth::user()->hasTwoFactorEnabled())
+                    <div class="alert alert-success py-2 mb-3">
+                        <i class="bi bi-shield-fill-check me-1"></i>
+                        Two-factor authentication is <strong>enabled</strong>.
+                    </div>
+                    <form action="{{ route('two-factor.disable') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Confirm Password to Disable</label>
+                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your current password" required>
+                            @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <button type="submit" class="btn btn-outline-danger w-100">
+                            <i class="bi bi-shield-x me-2"></i>Disable Two-Factor Authentication
+                        </button>
+                    </form>
+                @else
+                    <p class="text-muted small mb-3">Add an extra layer of security to your account using a TOTP authenticator app (e.g. Google Authenticator, Authy).</p>
+                    <a href="{{ route('two-factor.setup') }}" class="btn btn-primary w-100">
+                        <i class="bi bi-shield-plus me-2"></i>Enable Two-Factor Authentication
+                    </a>
+                @endif
+            </div>
+        </div>
+
         {{-- Language --}}
         <div class="card">
             <div class="card-header bg-white py-3">

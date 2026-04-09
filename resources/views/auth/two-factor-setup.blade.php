@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Two-Factor Authentication</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #E8F0FE; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 480px; overflow: hidden; }
+        .auth-header { background: linear-gradient(135deg, #2684FE, #60A5FA); padding: 30px; text-align: center; color: #fff; }
+        .auth-header h4 { font-weight: 700; margin: 0; }
+        .auth-body { padding: 30px; }
+        .form-control:focus { border-color: #2684FE; box-shadow: 0 0 0 3px rgba(38,132,254,0.15); }
+        .btn-primary { background: linear-gradient(135deg, #2684FE, #60A5FA); border: none; }
+        .secret-code { font-family: monospace; font-size: 1.1em; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; letter-spacing: 2px; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="bi bi-shield-lock" style="font-size:40px;"></i>
+            <h4 class="mt-2">Setup Two-Factor Authentication</h4>
+            <p class="mb-0" style="opacity:0.8; font-size:14px;">Scan the QR code with your authenticator app</p>
+        </div>
+        <div class="auth-body">
+            @if($errors->any())
+                <div class="alert alert-danger py-2">{{ $errors->first() }}</div>
+            @endif
+
+            <div class="text-center mb-3">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($qrCodeUrl) }}" alt="QR Code" class="img-fluid rounded" style="max-width:200px;">
+            </div>
+
+            <p class="text-muted small text-center">Or enter this key manually in your authenticator app:</p>
+            <div class="secret-code text-center mb-4">{{ $secret }}</div>
+
+            <form action="{{ route('two-factor.confirm') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Verification Code</label>
+                    <input type="text" name="code" class="form-control text-center @error('code') is-invalid @enderror"
+                           placeholder="000000" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                           autocomplete="one-time-code" required autofocus>
+                    @error('code')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="form-text">Enter the 6-digit code from your authenticator app to verify setup.</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-check-circle me-2"></i>Verify &amp; Enable
+                </button>
+            </form>
+
+            <hr class="my-3">
+            <div class="text-center">
+                <a href="{{ route('profile') }}" class="text-muted small">Cancel and return to profile</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

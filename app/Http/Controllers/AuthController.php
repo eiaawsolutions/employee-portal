@@ -112,7 +112,18 @@ class AuthController extends Controller
             ])->onlyInput('work_email');
         }
 
-        // Successful login — reset failed attempt counter
+        // Successful login — reset failed attempt counter (final reset after 2FA if enabled)
+
+        // If user has 2FA enabled, redirect to challenge page before completing login
+        if ($user->hasTwoFactorEnabled()) {
+            $request->session()->put('2fa_user_id', $user->id);
+            $request->session()->put('2fa_remember', $request->boolean('remember'));
+            if ($request->input('redirect') === 'profile-consent' || $request->session()->get('redirect_after_login') === 'profile-consent') {
+                $request->session()->put('2fa_redirect', route('profile'));
+            }
+            return redirect()->route('two-factor.challenge');
+        }
+
         $user->update(['login_attempts' => 0]);
 
         Auth::login($user, $request->boolean('remember'));

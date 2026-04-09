@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PersonalDetail extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'onboarding_id',
         'full_name', 'preferred_name', 'official_document_id', 'date_of_birth',
