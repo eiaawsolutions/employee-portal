@@ -33,10 +33,11 @@ class CompanyController extends Controller
             'kwsp_number'         => 'nullable|string|max:100',
             'tin_number'          => 'nullable|string|max:100',
             'socso_number'        => 'nullable|string|max:100',
+            'eis_number'          => 'nullable|string|max:100',
             'logo'                => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048|valid_file_content',
         ]);
 
-        $data = $request->only('name', 'address', 'registration_number', 'phone', 'kwsp_number', 'tin_number', 'socso_number');
+        $data = $request->only('name', 'address', 'registration_number', 'phone', 'kwsp_number', 'tin_number', 'socso_number', 'eis_number');
 
         if ($request->hasFile('logo')) {
             $data['logo_path'] = $request->file('logo')->store('company-logos', 'public');
@@ -59,10 +60,11 @@ class CompanyController extends Controller
             'kwsp_number'         => 'nullable|string|max:100',
             'tin_number'          => 'nullable|string|max:100',
             'socso_number'        => 'nullable|string|max:100',
+            'eis_number'          => 'nullable|string|max:100',
             'logo'                => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048|valid_file_content',
         ]);
 
-        $data = $request->only('name', 'address', 'registration_number', 'phone', 'kwsp_number', 'tin_number', 'socso_number');
+        $data = $request->only('name', 'address', 'registration_number', 'phone', 'kwsp_number', 'tin_number', 'socso_number', 'eis_number');
 
         if ($request->hasFile('logo')) {
             // Delete old logo if present

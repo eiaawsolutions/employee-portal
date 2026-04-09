@@ -567,7 +567,8 @@ class PayrollController extends Controller
         $config = PayrollConfig::forCompany();
         $alerts = PayrollRegulatoryAlert::orderByDesc('effective_date')->get();
         $pendingAlertCount = PayrollRegulatoryAlert::pending()->count();
-        return view('hr.payroll.config', compact('config', 'alerts', 'pendingAlertCount'));
+        $companies = \App\Models\Company::orderBy('name')->get();
+        return view('hr.payroll.config', compact('config', 'alerts', 'pendingAlertCount', 'companies'));
     }
 
     public function updateConfig(Request $request)

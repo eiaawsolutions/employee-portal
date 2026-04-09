@@ -201,28 +201,50 @@
         </div>
     </div>
 
-    <!-- Employer Registration Numbers -->
+    <!-- Employer Registration Numbers (pulled from Company Registration) -->
     <div class="card mb-4">
-        <div class="card-header"><h5 class="mb-0"><i class="bi bi-building me-2"></i>Employer Registration Numbers</h5></div>
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0"><i class="bi bi-building me-2"></i>Employer Registration Numbers</h5>
+            <span class="badge bg-info"><i class="bi bi-link-45deg me-1"></i>Auto-synced from Company Registration</span>
+        </div>
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">LHDN Employer No. (E Number)</label>
-                    <input type="text" name="lhdn_employer_no" class="form-control" value="{{ old('lhdn_employer_no', $config->lhdn_employer_no) }}" placeholder="E1234567890">
+            <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i>These fields are managed under <strong>Company Registration</strong>. To update, go to <a href="{{ route('superadmin.companies.index') }}">Company Registration</a>.</p>
+            @if($companies->isNotEmpty())
+                @foreach($companies as $regCompany)
+                <div class="mb-3 {{ !$loop->last ? 'border-bottom pb-3' : '' }}">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-building me-1"></i>{{ $regCompany->name }}</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">LHDN Employer No. (E Number)</label>
+                            <input type="text" class="form-control bg-light" value="{{ $config->lhdn_employer_no }}" readonly placeholder="—">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">KWSP (EPF) Number</label>
+                            <input type="text" class="form-control bg-light" value="{{ $regCompany->kwsp_number ?? '—' }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">TIN Number</label>
+                            <input type="text" class="form-control bg-light" value="{{ $regCompany->tin_number ?? '—' }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">SOCSO Number</label>
+                            <input type="text" class="form-control bg-light" value="{{ $regCompany->socso_number ?? '—' }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Employment Insurance Scheme (EIS/SIP) Number</label>
+                            <input type="text" class="form-control bg-light" value="{{ $regCompany->eis_number ?? '—' }}" readonly>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">EPF Employer No.</label>
-                    <input type="text" name="epf_employer_no" class="form-control" value="{{ old('epf_employer_no', $config->epf_employer_no) }}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">SOCSO Employer No.</label>
-                    <input type="text" name="socso_employer_no" class="form-control" value="{{ old('socso_employer_no', $config->socso_employer_no) }}">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">EIS Employer No.</label>
-                    <input type="text" name="eis_employer_no" class="form-control" value="{{ old('eis_employer_no', $config->eis_employer_no) }}">
-                </div>
-            </div>
+                @endforeach
+            @else
+                <div class="text-muted text-center py-3">No companies registered. <a href="{{ route('superadmin.companies.index') }}">Register a company</a> to populate these fields.</div>
+            @endif
+            {{-- Keep hidden inputs for LHDN which is still managed here --}}
+            <input type="hidden" name="lhdn_employer_no" value="{{ $config->lhdn_employer_no }}">
+            <input type="hidden" name="epf_employer_no" value="{{ $config->epf_employer_no }}">
+            <input type="hidden" name="socso_employer_no" value="{{ $config->socso_employer_no }}">
+            <input type="hidden" name="eis_employer_no" value="{{ $config->eis_employer_no }}">
         </div>
     </div>
 

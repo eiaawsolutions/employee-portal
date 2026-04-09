@@ -41,7 +41,7 @@
                         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">KWSP Number</label>
+                        <label class="form-label fw-semibold">KWSP (EPF) Number</label>
                         <input type="text" name="kwsp_number" class="form-control @error('kwsp_number') is-invalid @enderror"
                                value="{{ old('kwsp_number') }}" placeholder="e.g. A1234567">
                         @error('kwsp_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -57,6 +57,12 @@
                         <input type="text" name="socso_number" class="form-control @error('socso_number') is-invalid @enderror"
                                value="{{ old('socso_number') }}" placeholder="e.g. S1234567">
                         @error('socso_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Employment Insurance Scheme (EIS/SIP) Number</label>
+                        <input type="text" name="eis_number" class="form-control @error('eis_number') is-invalid @enderror"
+                               value="{{ old('eis_number') }}" placeholder="e.g. E1234567">
+                        @error('eis_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Company Logo</label>
@@ -97,9 +103,10 @@
                                 <th>Company Name</th>
                                 <th>Registration No.</th>
                                 <th>Phone</th>
-                                <th>KWSP No.</th>
+                                <th>KWSP (EPF) No.</th>
                                 <th>TIN No.</th>
                                 <th>SOCSO No.</th>
+                                <th>EIS/SIP No.</th>
                                 <th>Address</th>
                                 <th class="text-end pe-3">Actions</th>
                             </tr>
@@ -123,6 +130,7 @@
                                 <td>{{ $company->kwsp_number ?? '—' }}</td>
                                 <td>{{ $company->tin_number ?? '—' }}</td>
                                 <td>{{ $company->socso_number ?? '—' }}</td>
+                                <td>{{ $company->eis_number ?? '—' }}</td>
                                 <td class="text-muted" style="max-width:220px;">
                                     <span title="{{ $company->address }}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                         {{ $company->address ?? '—' }}
@@ -203,6 +211,11 @@
                         <label class="form-label fw-semibold">SOCSO Number</label>
                         <input type="text" name="socso_number" class="form-control"
                                value="{{ old('socso_number', $company->socso_number) }}" placeholder="e.g. S1234567">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Employment Insurance Scheme (EIS/SIP) Number</label>
+                        <input type="text" name="eis_number" class="form-control"
+                               value="{{ old('eis_number', $company->eis_number) }}" placeholder="e.g. E1234567">
                     </div>
                 </div>
                 <div class="modal-body pt-0">
