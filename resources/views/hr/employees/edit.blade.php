@@ -1682,11 +1682,13 @@ function autofillOfficeLocation(selectEl, targetId) {
 }
 
 function filterManagersByCompany(companyName, mgrSelectId) {
-    const sel = document.getElementById(mgrSelectId);
+    var norm = function(s) { return s.replace(/[.,]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); };
+    var sel = document.getElementById(mgrSelectId);
     if (!sel) return;
+    var target = companyName ? norm(companyName) : '';
     Array.from(sel.options).forEach(function(opt) {
         if (!opt.value || !opt.dataset.company) return;
-        var match = !companyName || opt.dataset.company === companyName;
+        var match = !target || norm(opt.dataset.company) === target;
         opt.hidden   = !match;
         opt.disabled = !match;
     });
