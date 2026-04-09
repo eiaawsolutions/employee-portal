@@ -296,10 +296,15 @@
             Built for Malaysian companies with full statutory compliance.
         </p>
         <div class="d-flex flex-wrap gap-3">
-            <span class="stat-pill"><span class="num">{{ \App\Models\Employee::count() }}</span> Employees</span>
+            <span class="stat-pill"><span class="num">{{ \App\Models\Employee::whereNull('active_until')->count() }}</span> Active Employees</span>
+            <span class="stat-pill"><span class="num">{{ \App\Models\User::where('is_active', true)->count() }}</span> User Accounts</span>
             <span class="stat-pill"><span class="num">{{ $meta['module_count'] }}</span> Modules</span>
-            <span class="stat-pill"><span class="num">{{ $meta['tables'] }}</span> Database Tables</span>
+            <span class="stat-pill"><span class="num">{{ $meta['controllers'] }}</span> Controllers</span>
+            <span class="stat-pill"><span class="num">{{ $meta['models'] }}</span> Models</span>
+            <span class="stat-pill"><span class="num">{{ $meta['views'] }}</span> Views</span>
+            <span class="stat-pill"><span class="num">{{ $meta['tables'] }}</span> DB Tables</span>
             <span class="stat-pill"><span class="num">{{ $meta['endpoints'] }}</span> Endpoints</span>
+            <span class="stat-pill"><span class="num">{{ $meta['migrations'] }}</span> Migrations</span>
             <span class="stat-pill"><span class="num">{{ $meta['mail_classes'] }}</span> Automated Emails</span>
             <span class="stat-pill"><span class="num" id="hero-security-score">{{ $securityScore['score'] }}/100</span> Security Score</span>
         </div>
