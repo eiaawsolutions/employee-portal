@@ -208,7 +208,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-diagram-3-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="widget-number">{{ $deptTotal }}</div>
+                        <div class="widget-number">{{ $deptGroups->count() }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                     <div class="widget-filter">
