@@ -89,7 +89,7 @@
                         <div class="widget-label">New Joiners This Month</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('joiners', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="joiners">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -123,7 +123,7 @@
                         <div class="widget-label">Exiting This Month</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('exiting', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="exiting">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -157,7 +157,7 @@
                         <div class="widget-label">Active Employees</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('active', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="active">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -301,5 +301,11 @@ function filterDashCard(cardKey, company) {
     });
     numberEl.textContent = filteredTotal;
 }
+
+document.querySelectorAll('.dash-card-filter').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+        filterDashCard(this.dataset.card, this.value);
+    });
+});
 </script>
 @endsection

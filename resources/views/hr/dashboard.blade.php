@@ -90,7 +90,7 @@
                         <div class="widget-label">New Joiners This Month</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('joiners', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="joiners">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -124,7 +124,7 @@
                         <div class="widget-label">Exiting This Month</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('exiting', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="exiting">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -158,7 +158,7 @@
                         <div class="widget-label">Active Employees</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterDashCard('active', this.value)">
+                        <select class="form-select form-select-sm dash-card-filter" data-card="active">
                             <option value="">All</option>
                             @foreach($allCompanyNames as $name)
                             <option value="{{ $name }}">{{ $name }}</option>
@@ -315,21 +315,20 @@
 
 <script nonce="{{ $cspNonce ?? '' }}">
 function filterDashCard(cardKey, company) {
-    const card = document.getElementById('card-' + cardKey);
+    var card = document.getElementById('card-' + cardKey);
     if (!card) return;
-    const numberEl = card.querySelector('.widget-number');
-    const rows = card.querySelectorAll('.dash-filter-row');
-    const selected = company ? company.trim() : '';
+    var numberEl = card.querySelector('.widget-number');
+    var rows = card.querySelectorAll('.dash-filter-row');
+    var selected = company ? company.trim() : '';
 
     if (!selected) {
-        // Show all — restore total
         numberEl.textContent = numberEl.dataset.total;
-        rows.forEach(r => r.style.display = '');
+        rows.forEach(function(r) { r.style.display = ''; });
         return;
     }
 
-    let filteredTotal = 0;
-    rows.forEach(row => {
+    var filteredTotal = 0;
+    rows.forEach(function(row) {
         if (row.dataset.company === selected) {
             row.style.display = '';
             filteredTotal += parseInt(row.querySelector('.breakdown-badge').textContent, 10) || 0;
@@ -339,5 +338,12 @@ function filterDashCard(cardKey, company) {
     });
     numberEl.textContent = filteredTotal;
 }
+
+// Bind filter dropdowns via addEventListener (CSP nonce-compatible)
+document.querySelectorAll('.dash-card-filter').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+        filterDashCard(this.dataset.card, this.value);
+    });
+});
 </script>
 @endsection
