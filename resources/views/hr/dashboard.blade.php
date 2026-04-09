@@ -153,6 +153,24 @@
         color: #475569;
         margin: 0;
     }
+    .dash-widget .widget-filter {
+        position: relative;
+        z-index: 1;
+    }
+    .dash-widget .widget-filter select {
+        background: rgba(255,255,255,.2);
+        border: 1px solid rgba(255,255,255,.3);
+        color: #fff;
+        font-size: 11px;
+        border-radius: 8px;
+        padding: 4px 24px 4px 10px;
+        backdrop-filter: blur(4px);
+        cursor: pointer;
+    }
+    .dash-widget .widget-filter select option {
+        color: #334155;
+        background: #fff;
+    }
     .dash-widget .status-pills {
         display: flex;
         gap: 6px;
@@ -204,25 +222,33 @@
 
     {{-- 2. New Joiners This Month --}}
     <div class="col-md-3">
-        <div class="card dash-widget h-100">
+        <div class="card dash-widget h-100" id="card-joiners">
             <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-calendar-plus-fill"></i></div>
-                    <div>
-                        <div class="widget-number">{{ $stats['new_joiners_this_month'] }}</div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['new_joiners_this_month'] }}">{{ $stats['new_joiners_this_month'] }}</div>
                         <div class="widget-label">New Joiners This Month</div>
+                    </div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('joiners', this.value)">
+                            <option value="">All</option>
+                            @foreach($registeredCompanies as $co)
+                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
             <div class="widget-body flex-fill">
                 <div class="breakdown-title">By Company</div>
                 @forelse($newJoinersByCompany as $row)
-                <div class="breakdown-row">
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
                     <span class="breakdown-badge" style="background:#f59e0b;">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No new joiners this month</div>
+                <div class="text-muted small text-center py-2 dash-empty">No new joiners this month</div>
                 @endforelse
             </div>
         </div>
@@ -230,25 +256,33 @@
 
     {{-- 3. Exiting This Month --}}
     <div class="col-md-3">
-        <div class="card dash-widget h-100">
+        <div class="card dash-widget h-100" id="card-exiting">
             <div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-calendar-x-fill"></i></div>
-                    <div>
-                        <div class="widget-number">{{ $stats['exiting_this_month'] }}</div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['exiting_this_month'] }}">{{ $stats['exiting_this_month'] }}</div>
                         <div class="widget-label">Exiting This Month</div>
+                    </div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('exiting', this.value)">
+                            <option value="">All</option>
+                            @foreach($registeredCompanies as $co)
+                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
             <div class="widget-body flex-fill">
                 <div class="breakdown-title">By Company</div>
                 @forelse($exitingByCompany as $row)
-                <div class="breakdown-row">
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company ?? 'Unknown' }}">
                     <span>{{ $row->company ?? 'Unknown' }}</span>
                     <span class="breakdown-badge" style="background:#ef4444;">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No exits this month</div>
+                <div class="text-muted small text-center py-2 dash-empty">No exits this month</div>
                 @endforelse
             </div>
         </div>
@@ -256,25 +290,33 @@
 
     {{-- 4. Active Employees --}}
     <div class="col-md-3">
-        <div class="card dash-widget h-100">
+        <div class="card dash-widget h-100" id="card-active">
             <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-people-fill"></i></div>
-                    <div>
-                        <div class="widget-number">{{ $stats['active_employees'] }}</div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $stats['active_employees'] }}">{{ $stats['active_employees'] }}</div>
                         <div class="widget-label">Active Employees</div>
+                    </div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm" onchange="filterDashCard('active', this.value)">
+                            <option value="">All</option>
+                            @foreach($registeredCompanies as $co)
+                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
             <div class="widget-body flex-fill">
                 <div class="breakdown-title">By Company</div>
                 @forelse($activeByCompany as $row)
-                <div class="breakdown-row">
+                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
                     <span class="breakdown-badge" style="background:#22c55e;">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No active employees</div>
+                <div class="text-muted small text-center py-2 dash-empty">No active employees</div>
                 @endforelse
             </div>
         </div>
@@ -411,4 +453,32 @@
 
 @include('partials.claim-modal')
 @include('partials.leave-modal')
+
+<script>
+function filterDashCard(cardKey, company) {
+    const card = document.getElementById('card-' + cardKey);
+    if (!card) return;
+    const numberEl = card.querySelector('.widget-number');
+    const rows = card.querySelectorAll('.dash-filter-row');
+    const selected = company ? company.trim() : '';
+
+    if (!selected) {
+        // Show all — restore total
+        numberEl.textContent = numberEl.dataset.total;
+        rows.forEach(r => r.style.display = '');
+        return;
+    }
+
+    let filteredTotal = 0;
+    rows.forEach(row => {
+        if (row.dataset.company === selected) {
+            row.style.display = '';
+            filteredTotal += parseInt(row.querySelector('.breakdown-badge').textContent, 10) || 0;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    numberEl.textContent = filteredTotal;
+}
+</script>
 @endsection

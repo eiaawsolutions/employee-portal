@@ -157,11 +157,14 @@ class DashboardController extends Controller
             ->groupBy('vendor')->orderByDesc('total')->get();
         $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
+        $registeredCompanies = \App\Models\Company::orderBy('name')->get();
+
         return view('hr.dashboard', compact(
             'stats','onboardingsByCompany','newJoinersByCompany','exitingByCompany',
             'activeByCompany','activeByDesignation','activeByRole','activeByDepartment',
             'assetStats','assetsByType','companyOwnedTotal','companyOwnedByCompany',
-            'rentalTotal','rentalByVendor','birthdayBabies','latestAnnouncements'
+            'rentalTotal','rentalByVendor','birthdayBabies','latestAnnouncements',
+            'registeredCompanies'
         ));
     }
 
