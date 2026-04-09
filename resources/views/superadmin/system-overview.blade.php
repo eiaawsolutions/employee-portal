@@ -166,6 +166,8 @@
         border-radius: 1rem;
         padding: 2rem;
         text-align: center;
+        position: relative;
+        overflow: hidden;
     }
     .compliance-stamp .score {
         font-size: 4rem;
@@ -176,6 +178,69 @@
         font-size: 1rem;
         opacity: 0.8;
     }
+    .compliance-stamp.grade-a { background: linear-gradient(135deg, #198754, #0f5132); }
+    .compliance-stamp.grade-b { background: linear-gradient(135deg, #0d6efd, #0a58ca); }
+    .compliance-stamp.grade-c { background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529; }
+    .compliance-stamp.grade-d { background: linear-gradient(135deg, #fd7e14, #dc6a10); }
+    .compliance-stamp.grade-f { background: linear-gradient(135deg, #dc3545, #b02a37); }
+
+    .score-ring {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        position: relative;
+    }
+    .score-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+    .score-ring .score-inner {
+        font-size: 2.5rem;
+        font-weight: 900;
+        line-height: 1;
+        z-index: 1;
+    }
+    .score-ring .score-inner small { font-size: 1rem; font-weight: 600; opacity: 0.7; }
+
+    .check-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; }
+    .check-item .check-dot {
+        width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .check-dot.pass { background: #198754; }
+    .check-dot.warn { background: #ffc107; }
+    .check-dot.fail { background: #dc3545; }
+
+    .update-card {
+        border-radius: 0.75rem;
+        border: 1px solid #e9ecef;
+        padding: 1rem 1.25rem;
+        transition: all 0.2s ease;
+    }
+    .update-card:hover { border-color: #0d6efd; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .severity-critical { border-left: 4px solid #dc3545; }
+    .severity-major { border-left: 4px solid #fd7e14; }
+    .severity-minor { border-left: 4px solid #ffc107; }
+    .severity-patch { border-left: 4px solid #0dcaf0; }
+    .severity-current { border-left: 4px solid #198754; }
+
+    .health-bar { height: 8px; border-radius: 4px; background: #e9ecef; overflow: hidden; }
+    .health-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+    .refresh-btn {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: inherit;
+        border-radius: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.25); }
+    .refresh-btn.dark { background: rgba(0,0,0,0.05); border-color: #dee2e6; color: #495057; }
+    .refresh-btn.dark:hover { background: rgba(0,0,0,0.1); }
+    .refresh-btn .spinner-border { width: 14px; height: 14px; border-width: 2px; }
 
     .email-flow-item {
         display: flex;
@@ -236,7 +301,7 @@
             <span class="stat-pill"><span class="num">{{ $meta['tables'] }}</span> Database Tables</span>
             <span class="stat-pill"><span class="num">{{ $meta['endpoints'] }}</span> Endpoints</span>
             <span class="stat-pill"><span class="num">{{ $meta['mail_classes'] }}</span> Automated Emails</span>
-            <span class="stat-pill"><span class="num">96/100</span> Security Score</span>
+            <span class="stat-pill"><span class="num" id="hero-security-score">{{ $securityScore['score'] }}/100</span> Security Score</span>
         </div>
     </div>
 </div>
@@ -590,139 +655,201 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
-{{-- SECURITY & COMPLIANCE --}}
+{{-- DYNAMIC SECURITY SCORE --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
-<div class="row g-4 mb-5">
+@php
+    $scoreGradeClass = match(true) {
+        $securityScore['score'] >= 85 => 'grade-a',
+        $securityScore['score'] >= 75 => 'grade-b',
+        $securityScore['score'] >= 60 => 'grade-c',
+        $securityScore['score'] >= 50 => 'grade-d',
+        default => 'grade-f',
+    };
+    $scoreColor = match(true) {
+        $securityScore['score'] >= 85 => '#198754',
+        $securityScore['score'] >= 75 => '#0d6efd',
+        $securityScore['score'] >= 60 => '#ffc107',
+        $securityScore['score'] >= 50 => '#fd7e14',
+        default => '#dc3545',
+    };
+    $circumference = 2 * 3.14159 * 60;
+    $offset = $circumference - ($securityScore['score'] / 100) * $circumference;
+@endphp
+
+<div class="row g-4 mb-5" id="security-section">
     <div class="col-lg-4">
-        <div class="compliance-stamp h-100">
-            <div class="score">96<span style="font-size:2rem;">/100</span></div>
-            <div class="score-label mt-2">OWASP Security Score</div>
+        <div class="compliance-stamp {{ $scoreGradeClass }} h-100" id="score-card">
+            <button class="refresh-btn position-absolute" style="top:1rem;right:1rem;" onclick="refreshSecurityScore()" id="btn-refresh-score">
+                <i class="bi bi-arrow-clockwise" id="score-refresh-icon"></i> Scan
+            </button>
+
+            <div class="score-ring">
+                <svg width="140" height="140">
+                    <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="10"/>
+                    <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="10"
+                            stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $offset }}"
+                            stroke-linecap="round" id="score-ring-progress"/>
+                </svg>
+                <div class="score-inner">
+                    <span id="score-value">{{ $securityScore['score'] }}</span><small>/100</small>
+                    <div style="font-size:0.7rem;font-weight:600;opacity:0.8;" id="score-grade">Grade {{ $securityScore['grade'] }}</div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mb-3" style="font-size:0.82rem;">
+                <span><i class="bi bi-check-circle-fill me-1"></i><span id="checks-passed">{{ $securityScore['passed'] }}</span> Passed</span>
+                <span><i class="bi bi-exclamation-circle-fill me-1"></i><span id="checks-warnings">{{ $securityScore['warnings'] }}</span> Warnings</span>
+                <span><i class="bi bi-x-circle-fill me-1"></i><span id="checks-failed">{{ $securityScore['failed'] }}</span> Failed</span>
+            </div>
+
             <hr style="border-color:rgba(255,255,255,0.2);">
+
             <div class="d-flex flex-column gap-2 text-start" style="font-size:0.85rem;">
                 <div><i class="bi bi-check-circle-fill me-2"></i>OWASP Top 10 Compliant</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>6-Layer Defense Architecture</div>
-                <div><i class="bi bi-check-circle-fill me-2"></i>Encrypted Secrets at Rest</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Malaysian PDPA Aligned</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Employment Act 1955 Compliant</div>
-                <div><i class="bi bi-check-circle-fill me-2"></i>Encrypted Backups (AES-256)</div>
-                <div><i class="bi bi-check-circle-fill me-2"></i>HMAC Log Integrity Chain</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Real-time Threat Detection</div>
+                <div><i class="bi bi-check-circle-fill me-2"></i>HMAC Log Integrity Chain</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Weekly Compliance Sweep</div>
+            </div>
+
+            <div class="mt-3" style="font-size:0.72rem;opacity:0.7;">
+                Last scanned: <span id="score-timestamp">{{ $securityScore['calculated_at'] }}</span>
             </div>
         </div>
     </div>
+
     <div class="col-lg-8">
-        <h4 class="fw-bold mb-3"><i class="bi bi-shield-fill-check text-success me-2"></i>Security Architecture</h4>
-        <div class="row g-2">
+        <h4 class="fw-bold mb-3"><i class="bi bi-shield-fill-check text-success me-2"></i>Security Architecture — Live Check Results</h4>
+        <div class="row g-2" id="security-checks-grid">
+            @foreach($securityScore['checks'] as $check)
             <div class="col-md-6">
                 <div class="security-badge">
-                    <i class="bi bi-lock-fill text-danger"></i>
-                    <div>
-                        <div class="sb-title">Security Headers</div>
-                        <div class="sb-desc">HSTS, CSP, X-Frame-Options, X-Content-Type, Permissions-Policy</div>
+                    <i class="bi {{ $check['icon'] }} text-{{ $check['color'] }}"></i>
+                    <div style="flex:1;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="sb-title">{{ $check['name'] }}</span>
+                            @if($check['passed'])
+                                <span class="badge bg-success" style="font-size:0.65rem;">PASS</span>
+                            @elseif(($check['partial'] ?? 0) > 0)
+                                <span class="badge bg-warning text-dark" style="font-size:0.65rem;">PARTIAL</span>
+                            @else
+                                <span class="badge bg-danger" style="font-size:0.65rem;">FAIL</span>
+                            @endif
+                        </div>
+                        <div class="sb-desc">{{ $check['detail'] }}</div>
+                        @if(!empty($check['items']))
+                        <div class="mt-1">
+                            @foreach($check['items'] as $item)
+                            <span class="check-item" style="display:inline-flex;margin-right:0.75rem;">
+                                <span class="check-dot {{ $item['ok'] ? 'pass' : 'fail' }}"></span>
+                                {{ $item['label'] }}
+                            </span>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-speedometer2 text-warning"></i>
-                    <div>
-                        <div class="sb-title">Rate Limiting</div>
-                        <div class="sb-desc">Login: 30/min, Uploads: 10/min, AI: 10-30/min, Password Reset: 5/min</div>
-                    </div>
-                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- DEPENDENCY UPDATE CHECKER --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+<div class="flow-section" style="background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%); border: 1px solid #c7d2fe;" id="update-section">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h3 style="color:#1e40af;"><i class="bi bi-arrow-repeat me-2"></i>Dependency Update Checker</h3>
+            <p class="text-muted mb-0">Package versions compared against Packagist and npm registries. Auto-checked daily at 6:00 AM.</p>
+        </div>
+        <button class="refresh-btn dark" onclick="refreshUpdateCheck()" id="btn-refresh-updates">
+            <i class="bi bi-arrow-clockwise" id="update-refresh-icon"></i> Check Now
+        </button>
+    </div>
+
+    {{-- Summary row --}}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
+                <div class="fw-bold fs-3 text-primary" id="pkg-total">{{ $updateCheck['total_packages'] }}</div>
+                <div class="text-muted" style="font-size:0.8rem;">Total Packages</div>
             </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-key-fill text-primary"></i>
-                    <div>
-                        <div class="sb-title">Custom Authentication</div>
-                        <div class="sb-desc">Work email provider, single-session enforcement, timing-safe hash</div>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
+                <div class="fw-bold fs-3 text-success" id="pkg-uptodate">{{ $updateCheck['up_to_date'] }}</div>
+                <div class="text-muted" style="font-size:0.8rem;">Up to Date</div>
             </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-eye-slash-fill text-success"></i>
-                    <div>
-                        <div class="sb-title">XSS / CSRF / SQLi Prevention</div>
-                        <div class="sb-desc">Blade escaping, CSRF tokens, Eloquent parameterized queries</div>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
+                <div class="fw-bold fs-3 text-warning" id="pkg-outdated">{{ $updateCheck['outdated'] }}</div>
+                <div class="text-muted" style="font-size:0.8rem;">Updates Available</div>
             </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-file-earmark-lock2 text-info"></i>
-                    <div>
-                        <div class="sb-title">Secure File Serving</div>
-                        <div class="sb-desc">MIME validation, role-based directory permissions, magic-byte checks</div>
-                    </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
+                <div class="text-muted mb-1" style="font-size:0.75rem;">Dependency Health</div>
+                <div class="health-bar mb-1">
+                    <div class="health-bar-fill" id="health-bar-fill" style="width:{{ $updateCheck['health'] }}%;background:{{ $updateCheck['health'] >= 80 ? '#198754' : ($updateCheck['health'] >= 60 ? '#ffc107' : '#dc3545') }};"></div>
                 </div>
+                <div class="fw-bold" id="health-value" style="color:{{ $updateCheck['health'] >= 80 ? '#198754' : ($updateCheck['health'] >= 60 ? '#ffc107' : '#dc3545') }};">{{ $updateCheck['health'] }}%</div>
             </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-journal-text text-secondary"></i>
-                    <div>
-                        <div class="sb-title">Audit Logging</div>
-                        <div class="sb-desc">SecurityAuditLog + AccountingAuditTrail: logins, lockouts, financial operations, IP tracking</div>
-                    </div>
+        </div>
+    </div>
+
+    {{-- Severity legend --}}
+    @if($updateCheck['outdated'] > 0)
+    <div class="d-flex gap-3 mb-3" style="font-size:0.78rem;">
+        @if($updateCheck['critical_count'] > 0)
+        <span class="badge bg-danger">{{ $updateCheck['critical_count'] }} Critical</span>
+        @endif
+        @if($updateCheck['major_count'] > 0)
+        <span class="badge" style="background:#fd7e14;">{{ $updateCheck['major_count'] }} Major</span>
+        @endif
+        @if($updateCheck['minor_count'] > 0)
+        <span class="badge bg-warning text-dark">{{ $updateCheck['minor_count'] }} Minor</span>
+        @endif
+        @if($updateCheck['patch_count'] > 0)
+        <span class="badge bg-info">{{ $updateCheck['patch_count'] }} Patch</span>
+        @endif
+    </div>
+    @endif
+
+    {{-- Package list --}}
+    <div class="row g-2" id="package-list">
+        @foreach($updateCheck['packages'] as $pkg)
+        <div class="col-md-6 col-lg-4">
+            <div class="update-card severity-{{ $pkg['severity'] }}">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="bi {{ $pkg['icon'] }} {{ $pkg['type'] === 'composer' ? 'text-primary' : 'text-warning' }}"></i>
+                    <span class="fw-bold" style="font-size:0.85rem;">{{ $pkg['name'] }}</span>
+                    @if($pkg['is_dev'])
+                    <span class="badge bg-secondary" style="font-size:0.6rem;">DEV</span>
+                    @endif
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-shield-lock-fill text-danger"></i>
-                    <div>
-                        <div class="sb-title">Encrypted Backups</div>
-                        <div class="sb-desc">AES-256-CBC encryption, HMAC integrity verification, automated daily/6-hourly snapshots</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-image text-info"></i>
-                    <div>
-                        <div class="sb-title">Image Metadata Stripping</div>
-                        <div class="sb-desc">GD pixel-copy reprocessing removes all EXIF/GPS data from uploads</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-fingerprint text-primary"></i>
-                    <div>
-                        <div class="sb-title">HMAC Log Integrity</div>
-                        <div class="sb-desc">SHA-256 chained entries with sequence numbers, tamper-evident audit trail</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-exclamation-triangle-fill text-warning"></i>
-                    <div>
-                        <div class="sb-title">Real-time Threat Detection</div>
-                        <div class="sb-desc">Brute force, privilege escalation, rate anomaly detection with instant email alerts</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-globe2 text-success"></i>
-                    <div>
-                        <div class="sb-title">TLS/HTTPS Enforcement</div>
-                        <div class="sb-desc">Forced HTTPS redirect with HSTS headers, URL scheme enforcement</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="security-badge">
-                    <i class="bi bi-calendar-check text-info"></i>
-                    <div>
-                        <div class="sb-title">Weekly Compliance Sweep</div>
-                        <div class="sb-desc">Automated Wednesday audit of pending consents, AARF forms, leave & claim approvals</div>
-                    </div>
+                <div class="d-flex align-items-center gap-2" style="font-size:0.8rem;">
+                    <code style="font-size:0.75rem;background:#f1f5f9;padding:0.15rem 0.4rem;border-radius:0.25rem;">v{{ $pkg['current_version'] }}</code>
+                    @if($pkg['update_available'])
+                    <i class="bi bi-arrow-right text-muted" style="font-size:0.7rem;"></i>
+                    <code style="font-size:0.75rem;background:#fef3c7;padding:0.15rem 0.4rem;border-radius:0.25rem;">v{{ $pkg['latest_version'] }}</code>
+                    <span class="badge {{ match($pkg['severity']) { 'critical' => 'bg-danger', 'major' => 'bg-warning text-dark', 'minor' => 'bg-info', default => 'bg-secondary' } }}" style="font-size:0.6rem;">{{ strtoupper($pkg['severity']) }}</span>
+                    @else
+                    <span class="text-success" style="font-size:0.75rem;"><i class="bi bi-check-circle-fill"></i> Latest</span>
+                    @endif
                 </div>
             </div>
         </div>
+        @endforeach
+    </div>
+
+    <div class="text-center mt-3" style="font-size:0.75rem;color:#6c757d;">
+        <i class="bi bi-clock me-1"></i>Last checked: <span id="update-timestamp">{{ $updateCheck['checked_at'] }}</span>
+        &nbsp;|&nbsp; Auto-updates: <code>composer update</code> &amp; <code>npm update</code>
     </div>
 </div>
 
@@ -912,5 +1039,138 @@
     &nbsp;|&nbsp; Commit <code>{{ $meta['git']['hash'] }}</code>
     &nbsp;|&nbsp; {{ $meta['tables'] }} tables &middot; {{ $meta['endpoints'] }} endpoints &middot; {{ $meta['mail_classes'] }} emails &middot; {{ $meta['models'] }} models &middot; {{ $meta['views'] }} views
 </div>
+
+<script nonce="{{ $cspNonce }}">
+    const CIRCUMFERENCE = 2 * Math.PI * 60;
+
+    function refreshSecurityScore() {
+        const btn = document.getElementById('btn-refresh-score');
+        const icon = document.getElementById('score-refresh-icon');
+        btn.disabled = true;
+        icon.className = 'spinner-border spinner-border-sm';
+
+        fetch('{{ route("superadmin.security-score.refresh") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(r => r.json())
+        .then(data => {
+            // Update score ring
+            document.getElementById('score-value').textContent = data.score;
+            document.getElementById('score-grade').textContent = 'Grade ' + data.grade;
+            document.getElementById('hero-security-score').textContent = data.score + '/100';
+            document.getElementById('checks-passed').textContent = data.passed;
+            document.getElementById('checks-warnings').textContent = data.warnings;
+            document.getElementById('checks-failed').textContent = data.failed;
+            document.getElementById('score-timestamp').textContent = data.calculated_at;
+
+            // Update ring progress
+            const offset = CIRCUMFERENCE - (data.score / 100) * CIRCUMFERENCE;
+            document.getElementById('score-ring-progress').setAttribute('stroke-dashoffset', offset);
+
+            // Update grade class
+            const card = document.getElementById('score-card');
+            card.className = card.className.replace(/grade-\w+/, '');
+            if (data.score >= 85) card.classList.add('grade-a');
+            else if (data.score >= 75) card.classList.add('grade-b');
+            else if (data.score >= 60) card.classList.add('grade-c');
+            else if (data.score >= 50) card.classList.add('grade-d');
+            else card.classList.add('grade-f');
+
+            // Rebuild checks grid
+            const grid = document.getElementById('security-checks-grid');
+            grid.innerHTML = data.checks.map(c => {
+                let badgeClass = c.passed ? 'bg-success' : ((c.partial || 0) > 0 ? 'bg-warning text-dark' : 'bg-danger');
+                let badgeLabel = c.passed ? 'PASS' : ((c.partial || 0) > 0 ? 'PARTIAL' : 'FAIL');
+                let items = '';
+                if (c.items) {
+                    items = '<div class="mt-1">' + c.items.map(i =>
+                        '<span class="check-item" style="display:inline-flex;margin-right:0.75rem;">' +
+                        '<span class="check-dot ' + (i.ok ? 'pass' : 'fail') + '"></span>' +
+                        i.label + '</span>'
+                    ).join('') + '</div>';
+                }
+                return '<div class="col-md-6"><div class="security-badge">' +
+                    '<i class="bi ' + c.icon + ' text-' + c.color + '"></i>' +
+                    '<div style="flex:1;">' +
+                    '<div class="d-flex align-items-center gap-2">' +
+                    '<span class="sb-title">' + c.name + '</span>' +
+                    '<span class="badge ' + badgeClass + '" style="font-size:0.65rem;">' + badgeLabel + '</span>' +
+                    '</div>' +
+                    '<div class="sb-desc">' + c.detail + '</div>' +
+                    items +
+                    '</div></div></div>';
+            }).join('');
+        })
+        .catch(e => console.error('Security score refresh failed:', e))
+        .finally(() => {
+            btn.disabled = false;
+            icon.className = 'bi bi-arrow-clockwise';
+        });
+    }
+
+    function refreshUpdateCheck() {
+        const btn = document.getElementById('btn-refresh-updates');
+        const icon = document.getElementById('update-refresh-icon');
+        btn.disabled = true;
+        icon.className = 'spinner-border spinner-border-sm';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Checking...';
+
+        fetch('{{ route("superadmin.update-check.refresh") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('pkg-total').textContent = data.total_packages;
+            document.getElementById('pkg-uptodate').textContent = data.up_to_date;
+            document.getElementById('pkg-outdated').textContent = data.outdated;
+            document.getElementById('health-value').textContent = data.health + '%';
+            document.getElementById('update-timestamp').textContent = data.checked_at;
+
+            const fill = document.getElementById('health-bar-fill');
+            fill.style.width = data.health + '%';
+            fill.style.background = data.health >= 80 ? '#198754' : (data.health >= 60 ? '#ffc107' : '#dc3545');
+
+            // Rebuild package list
+            const list = document.getElementById('package-list');
+            list.innerHTML = data.packages.map(p => {
+                const typeIcon = p.type === 'composer' ? 'text-primary' : 'text-warning';
+                const severityBadge = {
+                    critical: 'bg-danger', major: 'bg-warning text-dark', minor: 'bg-info', patch: 'bg-secondary'
+                };
+                let version = '<code style="font-size:0.75rem;background:#f1f5f9;padding:0.15rem 0.4rem;border-radius:0.25rem;">v' + p.current_version + '</code>';
+                if (p.update_available) {
+                    version += ' <i class="bi bi-arrow-right text-muted" style="font-size:0.7rem;"></i> ' +
+                        '<code style="font-size:0.75rem;background:#fef3c7;padding:0.15rem 0.4rem;border-radius:0.25rem;">v' + p.latest_version + '</code>' +
+                        ' <span class="badge ' + (severityBadge[p.severity] || 'bg-secondary') + '" style="font-size:0.6rem;">' + p.severity.toUpperCase() + '</span>';
+                } else {
+                    version += ' <span class="text-success" style="font-size:0.75rem;"><i class="bi bi-check-circle-fill"></i> Latest</span>';
+                }
+                return '<div class="col-md-6 col-lg-4"><div class="update-card severity-' + p.severity + '">' +
+                    '<div class="d-flex align-items-center gap-2 mb-1">' +
+                    '<i class="bi ' + p.icon + ' ' + typeIcon + '"></i>' +
+                    '<span class="fw-bold" style="font-size:0.85rem;">' + p.name + '</span>' +
+                    (p.is_dev ? '<span class="badge bg-secondary" style="font-size:0.6rem;">DEV</span>' : '') +
+                    '</div>' +
+                    '<div class="d-flex align-items-center gap-2" style="font-size:0.8rem;">' + version + '</div>' +
+                    '</div></div>';
+            }).join('');
+        })
+        .catch(e => console.error('Update check failed:', e))
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Check Now';
+        });
+    }
+</script>
 
 @endsection

@@ -28,3 +28,6 @@ Schedule::command('log:verify-integrity')
 
 // System metadata: auto-refresh cached metadata for System Overview & Knowledge Base
 Schedule::command('system:refresh-metadata')->hourly();
+
+// Update checker: daily package update scan + security score refresh
+Schedule::command('system:check-updates')->dailyAt('06:00');

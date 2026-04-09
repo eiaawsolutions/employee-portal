@@ -121,16 +121,47 @@ class DashboardController extends Controller
             ->get();
     }
 
-    public function systemOverview(\App\Services\SystemMetadataService $meta)
-    {
+    public function systemOverview(
+        \App\Services\SystemMetadataService $meta,
+        \App\Services\SecurityScoreService $security,
+        \App\Services\UpdateCheckerService $updates
+    ) {
         $user = Auth::user();
         if (!$user->isSuperadmin()) {
             abort(403);
         }
 
         return view('superadmin.system-overview', [
-            'meta' => $meta->get(),
+            'meta'          => $meta->get(),
+            'securityScore' => $security->get(),
+            'updateCheck'   => $updates->get(),
         ]);
+    }
+
+    /**
+     * AJAX: Refresh the dynamic security score.
+     */
+    public function refreshSecurityScore(\App\Services\SecurityScoreService $security)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperadmin()) {
+            abort(403);
+        }
+
+        return response()->json($security->refresh());
+    }
+
+    /**
+     * AJAX: Refresh the update checker.
+     */
+    public function refreshUpdateCheck(\App\Services\UpdateCheckerService $updates)
+    {
+        $user = Auth::user();
+        if (!$user->isSuperadmin()) {
+            abort(403);
+        }
+
+        return response()->json($updates->refresh());
     }
 
     public function hrDashboard()

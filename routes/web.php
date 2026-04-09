@@ -143,6 +143,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::post('/superadmin/account-management/{user}/activate', [AccountManagementController::class, 'activate'])->name('superadmin.accounts.activate');
 
     Route::get('/superadmin/system-overview',           [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
+    Route::post('/superadmin/system-overview/security-score', [DashboardController::class, 'refreshSecurityScore'])->name('superadmin.security-score.refresh');
+    Route::post('/superadmin/system-overview/update-check',   [DashboardController::class, 'refreshUpdateCheck'])->name('superadmin.update-check.refresh');
 
     // Knowledge Base (Superadmin only — separate password)
     Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
