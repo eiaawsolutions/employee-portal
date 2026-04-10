@@ -15,21 +15,8 @@ class OffboardingController extends Controller
     // ── Shared: determine month/year filtered query ──────────────────────
     private function baseQuery(Request $request)
     {
-        $month = $request->input('month');
-        $year  = $request->input('year');
-
         $query = Offboarding::with(['employee', 'picUser'])
             ->whereNotNull('exit_date');
-
-        if ($month && $year) {
-            // User has selected a specific month/year filter
-            $query->whereMonth('exit_date', $month)->whereYear('exit_date', $year);
-        } else {
-            // Default: show upcoming exits (today onwards) ordered soonest first
-            $query->where('exit_date', '>=', now()->toDateString());
-            $month = now()->month;
-            $year  = now()->year;
-        }
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -40,20 +27,12 @@ class OffboardingController extends Controller
                   ->orWhere('department', 'like', "%{$s}%")
             );
         }
-        if ($request->filled('company'))    $query->where('company', 'like', "%{$request->company}%");
-        if ($request->filled('department')) $query->where('department', 'like', "%{$request->department}%");
+        if ($request->filled('company'))       $query->where('company', 'like', "%{$request->company}%");
+        if ($request->filled('position'))      $query->where('designation', 'like', "%{$request->position}%");
+        if ($request->filled('exit_date_from')) $query->where('exit_date', '>=', $request->exit_date_from);
+        if ($request->filled('exit_date_to'))   $query->where('exit_date', '<=', $request->exit_date_to);
 
-        return [$query, $month, $year];
-    }
-
-    private function sharedCompact(): array
-    {
-        return [
-            'months' => ['1'=>'January','2'=>'February','3'=>'March','4'=>'April',
-                         '5'=>'May','6'=>'June','7'=>'July','8'=>'August',
-                         '9'=>'September','10'=>'October','11'=>'November','12'=>'December'],
-            'years'  => range(now()->year - 2, now()->year + 2),
-        ];
+        return $query;
     }
 
     // ── HR: offboarding index ────────────────────────────────────────────
@@ -62,7 +41,7 @@ class OffboardingController extends Controller
         $u = Auth::user();
         if (!$u->isHr() && !$u->isSuperadmin() && !$u->isSystemAdmin()) abort(403);
 
-        [$query, $month, $year] = $this->baseQuery($request);
+        $query = $this->baseQuery($request);
         $offboardings = $query->orderBy('exit_date')->paginate(20)->withQueryString();
         $companies    = Offboarding::distinct()->pluck('company')->filter()->sort()->values();
 
@@ -111,10 +90,9 @@ class OffboardingController extends Controller
                 ->whereYear('exit_date', $now->year)->count(),
         ];
 
-        return view('hr.offboarding.index', array_merge(
-            compact('offboardings', 'companies', 'month', 'year', 'itStaff', 'offboardStats', 'exitingByCompany', 'offboardedYtdByCompany'),
-            $this->sharedCompact()
-        ));
+        return view('hr.offboarding.index',
+            compact('offboardings', 'companies', 'itStaff', 'offboardStats', 'exitingByCompany', 'offboardedYtdByCompany')
+        );
     }
 
     // ── HR: show offboarding detail ──────────────────────────────────────
@@ -448,7 +426,7 @@ class OffboardingController extends Controller
         $u = Auth::user();
         if (!$u->isIt() && !$u->isSuperadmin()) abort(403);
 
-        [$query, $month, $year] = $this->baseQuery($request);
+        $query = $this->baseQuery($request);
         $offboardings = $query->orderBy('exit_date')->paginate(20)->withQueryString();
         $companies    = Offboarding::distinct()->pluck('company')->filter()->sort()->values();
 
@@ -464,10 +442,9 @@ class OffboardingController extends Controller
             ->with('employee')
             ->get();
 
-        return view('it.offboarding', array_merge(
-            compact('offboardings', 'companies', 'month', 'year', 'itStaff'),
-            $this->sharedCompact()
-        ));
+        return view('it.offboarding',
+            compact('offboardings', 'companies', 'itStaff')
+        );
     }
 
     // ── IT: view offboarding detail (read-only) ──────────────────────────

@@ -1619,19 +1619,15 @@ class EmployeeController extends Controller
                   ->orWhere('company','like',"%{$s}%")
             );
         }
-        if ($request->filled('company'))    $query->where('company','like',"%{$request->company}%");
-        if ($request->filled('department')) $query->where('department','like',"%{$request->department}%");
-        if ($request->filled('exit_date'))  $query->whereDate('exit_date', $request->exit_date);
+        if ($request->filled('company'))       $query->where('company','like',"%{$request->company}%");
+        if ($request->filled('position'))      $query->where('designation','like',"%{$request->position}%");
+        if ($request->filled('exit_date_from')) $query->where('exit_date', '>=', $request->exit_date_from);
+        if ($request->filled('exit_date_to'))   $query->where('exit_date', '<=', $request->exit_date_to);
 
         $offboardings = $query->orderByDesc('exit_date')->paginate(20)->withQueryString();
         $companies    = Offboarding::distinct()->pluck('company')->filter()->sort()->values();
-        $months       = ['1'=>'January','2'=>'February','3'=>'March','4'=>'April','5'=>'May','6'=>'June',
-                         '7'=>'July','8'=>'August','9'=>'September','10'=>'October','11'=>'November','12'=>'December'];
-        $years        = range(now()->year - 2, now()->year + 2);
 
-        $month = $request->input('month', now()->month);
-        $year  = $request->input('year',  now()->year);
-        return view('shared.offboarding', compact('offboardings','companies','months','years','month','year'));
+        return view('shared.offboarding', compact('offboardings','companies'));
     }
 
     // ── IT: update offboarding status ─────────────────────────────────────

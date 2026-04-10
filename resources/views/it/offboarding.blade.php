@@ -11,25 +11,9 @@
 
     <div class="card-body border-bottom pb-3">
         <form action="{{ route('it.offboarding.index') }}" method="GET" class="row g-2 align-items-end">
-            <div class="col-md-2">
-                <label class="form-label form-label-sm fw-semibold mb-1" style="font-size:11px;">Month</label>
-                <select name="month" class="form-select form-select-sm">
-                    @foreach($months as $num => $name)
-                        <option value="{{ $num }}" {{ $month == $num ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label form-label-sm fw-semibold mb-1" style="font-size:11px;">Year</label>
-                <select name="year" class="form-select form-select-sm">
-                    @foreach($years as $y)
-                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="col-md-3">
                 <input type="text" name="search" class="form-control form-control-sm"
-                    placeholder="Name, email, company..." value="{{ request('search') }}">
+                    placeholder="Search name, email, position..." value="{{ request('search') }}">
             </div>
             <div class="col-md-2">
                 <select name="company" class="form-select form-select-sm">
@@ -39,9 +23,21 @@
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-2">
+                <input type="text" name="position" class="form-control form-control-sm"
+                    placeholder="Position..." value="{{ request('position') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="exit_date_from" class="form-control form-control-sm"
+                    value="{{ request('exit_date_from') }}" title="Exit date from">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="exit_date_to" class="form-control form-control-sm"
+                    value="{{ request('exit_date_to') }}" title="Exit date to">
+            </div>
             <div class="col-auto d-flex gap-1">
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel"></i></button>
-                @if(request()->hasAny(['search','company','department']))
+                @if(request()->hasAny(['search','company','position','exit_date_from','exit_date_to']))
                     <a href="{{ route('it.offboarding.index') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-x"></i></a>
                 @endif
             </div>
@@ -49,12 +45,12 @@
     </div>
 
     <div class="card-body p-0">
-        <small class="text-muted px-3 pt-2 d-block">{{ $offboardings->total() }} record(s) for {{ $months[$month] }} {{ $year }}</small>
+        <small class="text-muted px-3 pt-2 d-block">{{ $offboardings->total() }} record(s)</small>
 
         @if($offboardings->isEmpty())
             <div class="text-center py-5 text-muted">
                 <i class="bi bi-inbox" style="font-size:40px;"></i>
-                <p class="mt-2">No offboarding records for {{ $months[$month] }} {{ $year }}</p>
+                <p class="mt-2">No offboarding records found</p>
             </div>
         @else
         <div class="table-responsive">
