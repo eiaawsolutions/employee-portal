@@ -174,7 +174,7 @@
 <div class="row g-3 mb-4">
 
     {{-- Card 1: By Company --}}
-    @php $companyTotal = $statsByCompany->sum('total'); @endphp
+    @php $companyTotal = $activeTotal; @endphp
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
             <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
@@ -208,7 +208,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-diagram-3-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="widget-number">{{ $deptGroups->count() }}</div>
+                        <div class="widget-number" id="deptTotalNumber">{{ $deptTotal }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                     <div class="widget-filter">
@@ -259,7 +259,7 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-badge-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="widget-number">{{ $statsByType->sum('total') }}</div>
+                        <div class="widget-number" id="typeTotalNumber">{{ $statsByType->sum('total') }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                     <div class="widget-filter">
@@ -551,13 +551,17 @@
 <script nonce="{{ $cspNonce ?? '' }}">
 function filterCard(type, company) {
     const selector = type === 'dept' ? '.dept-row' : '.type-row';
+    const totalEl  = document.getElementById(type === 'dept' ? 'deptTotalNumber' : 'typeTotalNumber');
     const selected = company ? company.trim().toLowerCase() : '';
+    let headerSum  = 0;
 
     document.querySelectorAll(selector).forEach(row => {
         const badge = row.querySelector('.breakdown-badge');
         if (!selected) {
             row.style.display = '';
-            if (badge) badge.textContent = row.dataset.total;
+            const t = parseInt(row.dataset.total, 10) || 0;
+            if (badge) badge.textContent = t;
+            headerSum += t;
             return;
         }
 
@@ -573,10 +577,13 @@ function filterCard(type, company) {
             if (name === selected) { count = isNaN(val) ? 0 : val; found = true; break; }
         }
 
-        // Always show the row — display 0 if company not in this row's data
+        const display = found ? count : 0;
         row.style.display = '';
-        if (badge) badge.textContent = found ? count : 0;
+        if (badge) badge.textContent = display;
+        headerSum += display;
     });
+
+    if (totalEl) totalEl.textContent = headerSum;
 }
 
 function updateImportLabel(input) {

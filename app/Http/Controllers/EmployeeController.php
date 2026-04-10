@@ -154,16 +154,29 @@ class EmployeeController extends Controller
 
         // Stats for summary cards (always based on ALL active employees, ignoring current filters)
         $allActive = Employee::whereNull('active_until');
+        $activeTotal = (clone $allActive)->count();
 
-        // Card 1: count per registered company — exact full name match
+        // Card 1: count per registered company — normalised match (trim + case-insensitive)
         $registeredCompanies = \App\Models\Company::orderBy('name')->get(['name']);
         $rawByCompany = (clone $allActive)->selectRaw('company, count(*) as total')
-            ->whereNotNull('company')->groupBy('company')->get()
-            ->keyBy('company');
+            ->whereNotNull('company')->where('company', '!=', '')
+            ->groupBy('company')->get()
+            ->keyBy(fn($r) => mb_strtolower(trim($r->company)));
+        $registeredKeys = $registeredCompanies->map(fn($c) => mb_strtolower(trim($c->name)));
         $statsByCompany = $registeredCompanies->map(fn($c) => (object)[
             'company' => $c->name,
-            'total'   => $rawByCompany->get($c->name)?->total ?? 0,
+            'total'   => $rawByCompany->get(mb_strtolower(trim($c->name)))?->total ?? 0,
         ]);
+        // Include employees whose company doesn't match any registered company
+        $unmatchedTotal = $rawByCompany->reject(fn($r, $key) => $registeredKeys->contains($key))->sum('total');
+        $noCompanyTotal = (clone $allActive)->where(fn($q) => $q->whereNull('company')->orWhere('company', ''))->count();
+        $otherTotal = $unmatchedTotal + $noCompanyTotal;
+        if ($otherTotal > 0) {
+            $statsByCompany = $statsByCompany->push((object)[
+                'company' => 'Other / Unassigned',
+                'total'   => $otherTotal,
+            ]);
+        }
 
         $statsByDept = (clone $allActive)->selectRaw('department, company, count(*) as total')
             ->whereNotNull('department')->groupBy('department','company')->orderByDesc('total')->get();
@@ -173,7 +186,7 @@ class EmployeeController extends Controller
 
         return view('hr.employees.index', compact(
             'employees','companies','departments','designations','workRoles',
-            'statsByCompany','statsByDept','statsByType','registeredCompanies'
+            'statsByCompany','statsByDept','statsByType','registeredCompanies','activeTotal'
         ));
     }
 
