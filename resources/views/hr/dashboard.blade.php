@@ -28,9 +28,9 @@
     </div>
 </div>
 
-@include('partials.birthday-babies-widget')
-
 @include('partials.announcements-widget')
+
+@include('partials.birthday-babies-widget')
 
 @include('partials.on-leave-widget')
 
