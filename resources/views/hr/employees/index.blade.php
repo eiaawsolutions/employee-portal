@@ -174,14 +174,13 @@
 <div class="row g-3 mb-4">
 
     {{-- Card 1: By Company --}}
-    @php $companyTotal = $activeTotal; @endphp
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
             <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-building-fill"></i></div>
                     <div>
-                        <div class="widget-number">{{ $companyTotal }}</div>
+                        <div class="widget-number">{{ $activeTotal }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                 </div>
@@ -214,8 +213,8 @@
                     <div class="widget-filter">
                         <select class="form-select form-select-sm" onchange="filterCard('dept', this.value)">
                             <option value="">All</option>
-                            @foreach($registeredCompanies as $co)
-                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @foreach($widgetCompanies as $co)
+                            <option value="{{ $co }}">{{ $co }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -265,8 +264,8 @@
                     <div class="widget-filter">
                         <select class="form-select form-select-sm" onchange="filterCard('type', this.value)">
                             <option value="">All</option>
-                            @foreach($registeredCompanies as $co)
-                            <option value="{{ $co->name }}">{{ $co->name }}</option>
+                            @foreach($widgetCompanies as $co)
+                            <option value="{{ $co }}">{{ $co }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -578,7 +577,7 @@ function filterCard(type, company) {
         }
 
         const display = found ? count : 0;
-        row.style.display = '';
+        row.style.display = display > 0 ? '' : 'none';
         if (badge) badge.textContent = display;
         headerSum += display;
     });
