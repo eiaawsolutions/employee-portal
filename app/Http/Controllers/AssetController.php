@@ -74,8 +74,52 @@ class AssetController extends Controller
         // Registered companies for Add Asset company_name dropdown
         $registeredCompanies = \App\Models\Company::orderBy('name')->get(['name']);
 
+        // Asset overview widget data
+        $normaliseCo = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
+        $canonMap = [];
+        foreach ($registeredCompanies as $co) $canonMap[$normaliseCo($co->name)] = $co->name;
+        $groupCo = function ($rows, string $field = 'company') use ($normaliseCo, $canonMap) {
+            $grouped = [];
+            foreach ($rows as $row) {
+                $raw = trim($row->$field ?? '') ?: 'Unspecified';
+                $key = $canonMap[$normaliseCo($raw)] ?? $raw;
+                $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
+            }
+            return collect($grouped)->map(fn($t, $c) => (object) [$field => $c, 'total' => $t])->values()->all();
+        };
+
+        $assetOverview = [
+            'total_assets' => AssetInventory::count(),
+            'available'    => AssetInventory::where('status', 'available')->count(),
+            'assigned'     => AssetInventory::whereIn('status', ['assigned', 'unavailable'])->count(),
+        ];
+        $assetsByType = AssetInventory::selectRaw('asset_type, count(*) as total')
+            ->groupBy('asset_type')->orderByDesc('total')->get();
+
+        $companyOwnedTotal = AssetInventory::where('ownership_type', 'company')->count();
+        $companyOwnedByCompany = $groupCo(
+            AssetInventory::where('ownership_type', 'company')
+                ->selectRaw('COALESCE(NULLIF(TRIM(company_name),""), "Unspecified") as company, count(*) as total')
+                ->groupBy('company')->orderByDesc('total')->get()
+        );
+
+        $rentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
+        $rentalByVendor = $groupCo(
+            AssetInventory::where('ownership_type', 'rental')
+                ->selectRaw('COALESCE(NULLIF(TRIM(rental_vendor),""), "Unspecified") as vendor, count(*) as total')
+                ->groupBy('vendor')->orderByDesc('total')->get(),
+            'vendor'
+        );
+        $rentalBySuppliedTo = $groupCo(
+            AssetInventory::where('ownership_type', 'rental')
+                ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, count(*) as total')
+                ->groupBy('company')->orderByDesc('total')->get()
+        );
+
         return view('it.assets.page', compact('assets', 'stats', 'employees', 'disposed', 'rentalVendors',
-            'registeredCompanies'
+            'registeredCompanies', 'assetOverview', 'assetsByType',
+            'companyOwnedTotal', 'companyOwnedByCompany',
+            'rentalTotal', 'rentalByVendor', 'rentalBySuppliedTo'
         ));
     }
 
