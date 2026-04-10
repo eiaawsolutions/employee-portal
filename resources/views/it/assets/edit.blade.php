@@ -241,7 +241,8 @@
             <select name="status" id="assetStatus" class="form-select" required>
                 @php
                     $currentStatus = old('status', $asset->status);
-                    $currentStatus = in_array($currentStatus, ['available','unavailable']) ? $currentStatus : 'available';
+                    // 'assigned' displays as 'unavailable' (asset is locked to employee)
+                    $currentStatus = ($currentStatus === 'assigned') ? 'unavailable' : (in_array($currentStatus, ['available','unavailable']) ? $currentStatus : 'available');
                 @endphp
                 <option value="available"   {{ $currentStatus === 'available'   ? 'selected' : '' }}>Available</option>
                 <option value="unavailable" {{ $currentStatus === 'unavailable' ? 'selected' : '' }}>Unavailable</option>
@@ -477,31 +478,47 @@ function toggleOwnership(value) {
  * Also show/hide the Maintenance Status dropdown.
  */
 function onEmployeeChange(employeeId) {
-    const dateField = document.getElementById('assignedDate');
-    if (!dateField) return;
+    const dateField    = document.getElementById('assignedDate');
+    const statusSelect = document.getElementById('assetStatus');
+    const condSelect   = document.getElementById('assetCondition');
+
     if (employeeId) {
-        if (!dateField.value) {
+        // Employee assigned → auto-fill date + set unavailable
+        if (dateField && !dateField.value) {
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm   = String(today.getMonth() + 1).padStart(2, '0');
             const dd   = String(today.getDate()).padStart(2, '0');
             dateField.value = `${yyyy}-${mm}-${dd}`;
         }
+        if (statusSelect) statusSelect.value = 'unavailable';
     } else {
-        const originalDate = '{{ $asset->asset_assigned_date?->format('Y-m-d') ?? '' }}';
-        if (!originalDate) dateField.value = '';
+        // Employee cleared → revert date + set status by condition
+        if (dateField) {
+            const originalDate = '{{ $asset->asset_assigned_date?->format('Y-m-d') ?? '' }}';
+            if (!originalDate) dateField.value = '';
+        }
+        if (statusSelect && condSelect) {
+            statusSelect.value = (condSelect.value === 'good') ? 'available' : 'unavailable';
+        }
     }
 }
 
 function syncStatusFromCondition(condition) {
     const statusSelect  = document.getElementById('assetStatus');
+    const empHidden     = document.getElementById('editAssignedEmployeeId');
     const maintWrap     = document.getElementById('maintenanceStatusWrap');
     const maintSelect   = document.getElementById('maintenanceStatus');
     const reasonWrap    = document.getElementById('decommissionReasonWrap');
     const reasonInput   = document.getElementById('decommissionReason');
 
     if (statusSelect) {
-        statusSelect.value = (condition === 'good') ? 'available' : 'unavailable';
+        // If employee is assigned, always unavailable; otherwise condition-driven
+        if (empHidden && empHidden.value !== '') {
+            statusSelect.value = 'unavailable';
+        } else {
+            statusSelect.value = (condition === 'good') ? 'available' : 'unavailable';
+        }
     }
 
     if (maintWrap) {

@@ -1245,12 +1245,13 @@ class AssetController extends Controller
             // Section D — assignment
             $newEmployeeId = $validated['assigned_employee_id'] ?? null;
             if ($newEmployeeId) {
+                // Employee assigned → 'assigned' internally (AARF logic depends on this value)
                 $data['status']               = 'assigned';
                 $data['assigned_employee_id'] = $newEmployeeId;
                 $data['asset_assigned_date']  = $validated['asset_assigned_date'] ?? now()->toDateString();
                 $data['expected_return_date'] = $validated['expected_return_date'] ?? null;
             } else {
-                // Status set by condition; only 'available' assets can be assigned
+                // No employee → status driven by condition
                 $data['status']               = ($condition === 'good') ? 'available' : 'unavailable';
                 $data['assigned_employee_id'] = null;
                 $data['asset_assigned_date']  = null;

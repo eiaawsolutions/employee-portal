@@ -637,12 +637,16 @@ function toggleOwnership(value) {
 function syncAssignmentStatus() {
     const empHidden    = document.getElementById('addAssignedEmployeeId');
     const statusSelect = document.getElementById('assetStatus');
+    const condSelect   = document.getElementById('addAssetCondition');
     if (!empHidden || !statusSelect) return;
-    const current = statusSelect.value;
+
     if (empHidden.value !== '') {
-        statusSelect.value = 'assigned';
-    } else if (current === 'assigned') {
-        statusSelect.value = 'available';
+        // Employee assigned → unavailable (locked to assignee)
+        statusSelect.value = 'unavailable';
+    } else {
+        // No employee → status driven by condition
+        const condition = condSelect ? condSelect.value : 'good';
+        statusSelect.value = (condition === 'good') ? 'available' : 'unavailable';
     }
 }
 
@@ -690,11 +694,17 @@ function syncAssignmentStatus() {
 
 function syncStatusFromConditionAdd(condition) {
     const statusSelect  = document.getElementById('assetStatus');
+    const empHidden     = document.getElementById('addAssignedEmployeeId');
     const maintWrap     = document.getElementById('addMaintenanceWrap');
     const reasonWrap    = document.getElementById('addDecommissionReasonWrap');
     const reasonInput   = document.getElementById('addDecommissionReason');
     if (statusSelect) {
-        statusSelect.value = (condition === 'good') ? 'available' : 'unavailable';
+        // If employee is assigned, always unavailable; otherwise condition-driven
+        if (empHidden && empHidden.value !== '') {
+            statusSelect.value = 'unavailable';
+        } else {
+            statusSelect.value = (condition === 'good') ? 'available' : 'unavailable';
+        }
     }
     if (maintWrap) {
         maintWrap.style.display = condition === 'under_maintenance' ? '' : 'none';
