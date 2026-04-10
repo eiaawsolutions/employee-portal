@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class OffboardingController extends Controller
 {
@@ -75,8 +76,30 @@ class OffboardingController extends Controller
             ->with('employee')
             ->get();
 
+        // Offboarding overview stats for widget
+        $now = now();
+        $normaliseCo = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
+        $registeredCos = Company::orderBy('name')->pluck('name');
+        $canonMap = [];
+        foreach ($registeredCos as $n) $canonMap[$normaliseCo($n)] = $n;
+        $rawExiting = Offboarding::select('company', DB::raw('count(*) as total'))
+            ->whereNotNull('exit_date')
+            ->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)
+            ->groupBy('company')->get();
+        $grouped = [];
+        foreach ($rawExiting as $row) {
+            $raw = trim($row->company ?? '') ?: 'Unknown';
+            $key = $canonMap[$normaliseCo($raw)] ?? $raw;
+            $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
+        }
+        $exitingByCompany = collect($grouped)->map(fn($t, $c) => (object) ['company' => $c, 'total' => $t])->values()->all();
+        $offboardStats = [
+            'exiting_this_month' => Offboarding::whereNotNull('exit_date')
+                ->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)->count(),
+        ];
+
         return view('hr.offboarding.index', array_merge(
-            compact('offboardings', 'companies', 'month', 'year', 'itStaff'),
+            compact('offboardings', 'companies', 'month', 'year', 'itStaff', 'offboardStats', 'exitingByCompany'),
             $this->sharedCompact()
         ));
     }

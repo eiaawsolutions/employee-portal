@@ -161,19 +161,14 @@ class OnboardingController extends Controller
             WorkDetail::select('company', DB::raw('count(*) as total'))
                 ->whereMonth('start_date', $now->month)->whereYear('start_date', $now->year)->groupBy('company')->get()
         );
-        $exitingByCompany = $groupCo(
-            Offboarding::select('company', DB::raw('count(*) as total'))
-                ->whereNotNull('exit_date')->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)->groupBy('company')->get()
-        );
         $onboardStats = [
             'total_onboardings_ytd'  => WorkDetail::whereYear('start_date', $now->year)->count(),
             'new_joiners_this_month' => WorkDetail::whereMonth('start_date', $now->month)->whereYear('start_date', $now->year)->count(),
-            'exiting_this_month'     => Offboarding::whereNotNull('exit_date')->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)->count(),
         ];
 
         return view('hr.onboarding.page', compact(
             'onboardings', 'companies', 'hrUsers', 'itUsers', 'managers', 'month', 'year', 'years', 'months', 'itStaff',
-            'onboardStats', 'onboardingsByCompany', 'newJoinersByCompany', 'exitingByCompany'
+            'onboardStats', 'onboardingsByCompany', 'newJoinersByCompany'
         ));
     }
 

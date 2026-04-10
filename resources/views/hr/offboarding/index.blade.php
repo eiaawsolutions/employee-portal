@@ -4,6 +4,8 @@
 
 @section('content')
 
+@include('partials.offboarding-overview-widget')
+
 <div class="card">
     <div class="card-header bg-white py-3">
         <h6 class="mb-0 fw-bold"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Offboarding Records</h6>
