@@ -9,7 +9,16 @@
     $totalOnLeave = collect($onLeaveData)->sum(fn($d) => count($d['leaves']));
 @endphp
 
-<div class="card mb-4 dash-widget" style="min-height:auto;">
+<div class="section-header">
+    <div class="section-icon" style="background:#ede9fe;">
+        <i class="bi bi-calendar2-week-fill" style="font-size:16px;color:#8b5cf6;"></i>
+    </div>
+    <h6>On Leave This Week</h6>
+</div>
+
+<div class="row g-3 mb-4">
+<div class="col-12">
+<div class="card dash-widget" style="min-height:auto;">
     <div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 22px 12px;">
         <div class="d-flex align-items-center gap-3">
             <div class="widget-icon"><i class="bi bi-calendar2-week-fill"></i></div>
@@ -79,4 +88,6 @@
         </div>
         @endif
     </div>
+</div>
+</div>
 </div>
