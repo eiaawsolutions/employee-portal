@@ -36,51 +36,6 @@
 
 @include('partials.dashboard-widgets-style')
 
-{{-- ── WORKFORCE OVERVIEW ─────────────────────────────────────────────── --}}
-@php
-    $allCompanyNames = collect($activeByCompany)->pluck('company')->filter()->unique()->sort()->values();
-@endphp
-<div class="section-header">
-    <div class="section-icon" style="background:#f0fdf4;">
-        <i class="bi bi-people-fill" style="font-size:16px;color:#16a34a;"></i>
-    </div>
-    <h6>Workforce Overview</h6>
-</div>
-<div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <div class="card dash-widget h-100" id="card-active">
-            <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon"><i class="bi bi-people-fill"></i></div>
-                    <div class="flex-grow-1">
-                        <div class="widget-number" data-total="{{ $stats['active_employees'] }}">{{ $stats['active_employees'] }}</div>
-                        <div class="widget-label">Active Employees</div>
-                    </div>
-                    <div class="widget-filter">
-                        <select class="form-select form-select-sm dash-card-filter" data-card="active">
-                            <option value="">All</option>
-                            @foreach($allCompanyNames as $name)
-                            <option value="{{ $name }}">{{ $name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="widget-body flex-fill">
-                <div class="breakdown-title">By Company</div>
-                @forelse($activeByCompany as $row)
-                <div class="breakdown-row dash-filter-row" data-company="{{ $row->company }}">
-                    <span>{{ $row->company }}</span>
-                    <span class="breakdown-badge" style="background:#22c55e;">{{ $row->total }}</span>
-                </div>
-                @empty
-                <div class="text-muted small text-center py-2 dash-empty">No active employees</div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-</div>
-
 
 {{-- ── CLAIM & LEAVE WIDGETS (hidden — do not remove, re-enable later) ──── --}}
 {{--
