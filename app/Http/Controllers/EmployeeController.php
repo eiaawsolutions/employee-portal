@@ -156,19 +156,19 @@ class EmployeeController extends Controller
         $allActive = Employee::whereNull('active_until');
         $activeTotal = (clone $allActive)->count();
 
-        // Card 1: count per actual company value from employee records
-        $statsByCompany = (clone $allActive)->selectRaw('company, count(*) as total')
+        // Card 1: count per actual company value from employee records (trimmed to avoid duplicates)
+        $statsByCompany = (clone $allActive)->selectRaw('TRIM(company) as company, count(*) as total')
             ->whereNotNull('company')->where('company', '!=', '')
-            ->groupBy('company')->orderBy('company')->get();
+            ->groupByRaw('TRIM(company)')->orderByRaw('TRIM(company)')->get();
 
         // Company list for filter dropdowns in Cards 2 & 3 (from actual employee data)
         $widgetCompanies = $statsByCompany->pluck('company');
 
-        $statsByDept = (clone $allActive)->selectRaw('department, company, count(*) as total')
-            ->whereNotNull('department')->groupBy('department','company')->orderByDesc('total')->get();
+        $statsByDept = (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
+            ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->orderByDesc('total')->get();
 
-        $statsByType = (clone $allActive)->selectRaw('employment_type, company, count(*) as total')
-            ->whereNotNull('employment_type')->groupBy('employment_type','company')->orderByDesc('total')->get();
+        $statsByType = (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
+            ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->orderByDesc('total')->get();
 
         return view('hr.employees.index', compact(
             'employees','companies','departments','designations','workRoles',
