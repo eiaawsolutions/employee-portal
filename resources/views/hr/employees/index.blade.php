@@ -573,7 +573,7 @@ function filterCard(type, company) {
             if (colonIdx === -1) continue;
             const name = pair.substring(0, colonIdx).trim().toLowerCase();
             const val  = parseInt(pair.substring(colonIdx + 1).trim(), 10);
-            if (name === selected) { count = isNaN(val) ? 0 : val; found = true; break; }
+            if (name === selected) { count += isNaN(val) ? 0 : val; found = true; }
         }
 
         const display = found ? count : 0;

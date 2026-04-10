@@ -186,22 +186,30 @@ class EmployeeController extends Controller
         // Company list for filter dropdowns in Cards 2 & 3
         $widgetCompanies = $statsByCompany->pluck('company');
 
-        // Dept & Type stats: normalise company names for consistent filter matching
-        $mapCompany = function ($rows) use ($normalise, $canonMap) {
-            return $rows->map(function ($row) use ($normalise, $canonMap) {
-                $row->company = $canonMap[$normalise($row->company ?? '')] ?? $row->company;
-                return $row;
-            });
+        // Dept & Type stats: normalise company names then re-aggregate duplicates
+        $mergeByGroup = function ($rows, string $groupField) use ($normalise, $canonMap) {
+            $merged = [];
+            foreach ($rows as $row) {
+                $normCo = $canonMap[$normalise($row->company ?? '')] ?? $row->company;
+                $key = $row->$groupField . '||' . $normCo;
+                if (!isset($merged[$key])) {
+                    $merged[$key] = (object) [$groupField => $row->$groupField, 'company' => $normCo, 'total' => 0];
+                }
+                $merged[$key]->total += $row->total;
+            }
+            return collect(array_values($merged))->sortByDesc('total')->values();
         };
 
-        $statsByDept = $mapCompany(
+        $statsByDept = $mergeByGroup(
             (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
-                ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->orderByDesc('total')->get()
+                ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->get(),
+            'department'
         );
 
-        $statsByType = $mapCompany(
+        $statsByType = $mergeByGroup(
             (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
-                ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->orderByDesc('total')->get()
+                ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->get(),
+            'employment_type'
         );
 
         return view('hr.employees.index', compact(
