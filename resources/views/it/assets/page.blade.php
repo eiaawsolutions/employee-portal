@@ -56,12 +56,29 @@
                 </select>
             </div>
             <div class="col-md-2">
+                @php $catCfgFilter = config('asset-categories.categories', []); @endphp
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">All Categories</option>
+                    @foreach($catCfgFilter as $k => $label)
+                        <option value="{{ $k }}" {{ request('category')==$k?'selected':'' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
                 <select name="type" class="form-select form-select-sm">
                     <option value="">All Types</option>
-                    @foreach(['laptop','monitor','converter','phone','sim_card','access_card','other'] as $t)
+                    @foreach(['laptop','monitor','converter','phone','sim_card','access_card','petty_cash','accessories','furniture','equipment','other'] as $t)
                         <option value="{{ $t }}" {{ request('type')==$t?'selected':'' }}>
                             {{ ucfirst(str_replace('_',' ',$t)) }}
                         </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="brand" class="form-select form-select-sm">
+                    <option value="">All Brands</option>
+                    @foreach($filterBrands as $b)
+                        <option value="{{ $b }}" {{ request('brand')==$b?'selected':'' }}>{{ $b }}</option>
                     @endforeach
                 </select>
             </div>
@@ -81,9 +98,17 @@
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-2">
+                <select name="company_name" class="form-select form-select-sm">
+                    <option value="">All Companies</option>
+                    @foreach($filterCompanyNames as $cn)
+                        <option value="{{ $cn }}" {{ request('company_name')==$cn?'selected':'' }}>{{ $cn }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="col-auto d-flex gap-1">
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-funnel"></i></button>
-                @if(request()->hasAny(['search','status','type','ownership','vendor']))
+                @if(request()->hasAny(['search','status','category','type','brand','ownership','vendor','company_name']))
                     <a href="{{ route('assets.index') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-x"></i></a>
                 @endif
                 <a href="{{ route('assets.export', request()->query()) }}"

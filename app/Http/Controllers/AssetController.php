@@ -34,9 +34,12 @@ class AssetController extends Controller
             });
         }
         if ($request->filled('status'))    $query->where('status', $request->status);
+        if ($request->filled('category')) $query->where('asset_category', $request->category);
         if ($request->filled('type'))      $query->where('asset_type', $request->type);
         if ($request->filled('ownership')) $query->where('ownership_type', $request->ownership);
         if ($request->filled('vendor'))    $query->where('rental_vendor', $request->vendor);
+        if ($request->filled('brand'))     $query->where('brand', $request->brand);
+        if ($request->filled('company_name')) $query->where('company_name', 'like', "%{$request->company_name}%");
 
         $assets = $query->latest()->paginate(15)->withQueryString();
 
@@ -65,11 +68,18 @@ class AssetController extends Controller
 
         $disposed = $disposedQuery->paginate(15, ['*'], 'disposed_page')->withQueryString();
 
-        // Distinct rental vendors for filter dropdowns
+        // Distinct values for filter dropdowns
         $rentalVendors = AssetInventory::where('ownership_type', 'rental')
             ->whereNotNull('rental_vendor')
             ->distinct()->orderBy('rental_vendor')
             ->pluck('rental_vendor');
+        $filterBrands = AssetInventory::where('asset_condition', '!=', 'not_good')
+            ->whereNotNull('brand')->where('brand', '!=', '')
+            ->distinct()->orderBy('brand')
+            ->pluck('brand');
+        $filterCompanyNames = AssetInventory::whereNotNull('company_name')->where('company_name', '!=', '')
+            ->distinct()->orderBy('company_name')
+            ->pluck('company_name');
 
         // Registered companies for Add Asset company_name dropdown
         $registeredCompanies = \App\Models\Company::orderBy('name')->get(['name']);
@@ -146,7 +156,7 @@ class AssetController extends Controller
         $overviewRentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
 
         return view('it.assets.page', compact('assets', 'stats', 'employees', 'disposed', 'rentalVendors',
-            'registeredCompanies',
+            'registeredCompanies', 'filterBrands', 'filterCompanyNames',
             'overviewAllTotal', 'overviewAllByType', 'overviewAllByCompany',
             'overviewCompanyTotal', 'overviewCompanyByType', 'overviewCompanyByCompany',
             'overviewRentalTotal', 'overviewRentalByCompany'
@@ -619,10 +629,13 @@ class AssetController extends Controller
             abort(403);
         }
         $query = AssetInventory::with('assignedEmployee.onboarding.personalDetail');
-        if ($request->filled('status'))    $query->where('status', $request->status);
-        if ($request->filled('type'))      $query->where('asset_type', $request->type);
-        if ($request->filled('ownership')) $query->where('ownership_type', $request->ownership);
-        if ($request->filled('vendor'))    $query->where('rental_vendor', $request->vendor);
+        if ($request->filled('status'))       $query->where('status', $request->status);
+        if ($request->filled('category'))     $query->where('asset_category', $request->category);
+        if ($request->filled('type'))         $query->where('asset_type', $request->type);
+        if ($request->filled('ownership'))    $query->where('ownership_type', $request->ownership);
+        if ($request->filled('vendor'))       $query->where('rental_vendor', $request->vendor);
+        if ($request->filled('brand'))        $query->where('brand', $request->brand);
+        if ($request->filled('company_name')) $query->where('company_name', 'like', "%{$request->company_name}%");
 
         $assets  = $query->latest()->get();
         $headers = [
@@ -633,23 +646,26 @@ class AssetController extends Controller
         $callback = function () use ($assets) {
             $file = fopen('php://output', 'w');
             fputcsv($file, [
-                'Asset Tag', 'Type', 'Brand', 'Model', 'Serial Number',
-                'Status', 'Condition', 'Processor', 'RAM', 'Storage', 'OS',
-                'Ownership Type', 'Company Name', 'Supplied To', 'Purchase Date', 'Vendor', 'Cost (RM)', 'Warranty Expiry',
+                'Asset Tag', 'Category', 'Type', 'Brand', 'Model', 'Serial Number',
+                'Status', 'Condition',
+                'Processor', 'RAM', 'Storage', 'OS', 'Screen Size', 'Other Specs',
+                'Ownership Type', 'Company Name', 'Supplied To',
+                'Purchase Date', 'Vendor', 'Cost (RM)', 'Warranty Expiry',
                 'Rental Vendor', 'Rental Vendor Contact', 'Rental Cost/Month', 'Rental Start', 'Rental End', 'Contract Ref',
                 'Assigned To', 'Assigned Date', 'Expected Return',
-                'Maintenance Status', 'Last Maintenance', 'Remarks',
+                'Maintenance Status', 'Last Maintenance', 'Notes', 'Remarks',
             ]);
             foreach ($assets as $a) {
                 fputcsv($file, [
-                    $a->asset_tag, $a->asset_type, $a->brand, $a->model, $a->serial_number,
-                    $a->status, $a->asset_condition, $a->processor, $a->ram_size, $a->storage, $a->operating_system,
+                    $a->asset_tag, $a->asset_category, $a->asset_type, $a->brand, $a->model, $a->serial_number,
+                    $a->status, $a->asset_condition,
+                    $a->processor, $a->ram_size, $a->storage, $a->operating_system, $a->screen_size, $a->spec_others,
                     $a->ownership_type, $a->company_name, $a->company_supplied_to,
-                    $a->purchase_date, $a->purchase_vendor, $a->purchase_cost, $a->warranty_expiry_date,
+                    $a->purchase_date?->format('d/m/Y'), $a->purchase_vendor, $a->purchase_cost, $a->warranty_expiry_date?->format('d/m/Y'),
                     $a->rental_vendor, $a->rental_vendor_contact, $a->rental_cost_per_month,
-                    $a->rental_start_date, $a->rental_end_date, $a->rental_contract_reference,
-                    $a->resolvedAssigneeName(), $a->asset_assigned_date, $a->expected_return_date,
-                    $a->maintenance_status, $a->last_maintenance_date, $a->remarks,
+                    $a->rental_start_date?->format('d/m/Y'), $a->rental_end_date?->format('d/m/Y'), $a->rental_contract_reference,
+                    $a->resolvedAssigneeName(), $a->asset_assigned_date?->format('d/m/Y'), $a->expected_return_date?->format('d/m/Y'),
+                    $a->maintenance_status, $a->last_maintenance_date?->format('d/m/Y'), $a->notes, $a->remarks,
                 ]);
             }
             fclose($file);
@@ -793,7 +809,8 @@ class AssetController extends Controller
             // Column headers — mirrors the Add Asset form fields exactly
             // Columns marked * are REQUIRED. All others are optional.
             fputcsv($handle, [
-                'asset_type',           // * REQUIRED: laptop / monitor / converter / phone / sim_card / access_card / other
+                'asset_category',       // * REQUIRED: office_furniture / it_equipment / office_equipment / software / office_supplies / leasehold / others
+                'asset_type',           // * REQUIRED: laptop / monitor / converter / phone / sim_card / access_card / desk / chair / etc.
                 'asset_tag',            // * REQUIRED: unique label / asset ID (e.g. FIX13872)
                 'specs',                // * REQUIRED: free-text specs — auto-parsed into brand/model/processor/ram/storage/os/screen
                 'remarks',              // * REQUIRED: existing remarks / audit history
@@ -835,7 +852,8 @@ class AssetController extends Controller
 
             // Example row 1 — laptop with assignment history
             fputcsv($handle, [
-                'Laptop',                                           // asset_type      *
+                'it_equipment',                                    // asset_category   *
+                'laptop',                                          // asset_type       *
                 'FIX13872',                                        // asset_tag        *
                 'DELL E7490 I7-8 16GB 512GB M.2 , win 11',        // specs            *
                 'Delivery to Group IT on 16/7/2024',              // remarks          *
@@ -867,7 +885,8 @@ class AssetController extends Controller
 
             // Example row 2 — available laptop, no assignment
             fputcsv($handle, [
-                'Laptop',
+                'it_equipment',
+                'laptop',
                 'CLR-LPT-001',
                 'HP EliteBook 840 G9 i5-1235U 8GB 256GB SSD Win 11 Pro',
                 'New stock received 01-01-2025',
@@ -1014,12 +1033,13 @@ class AssetController extends Controller
             $d = array_combine($headers, array_pad($row, count($headers), ''));
             $v = fn(string $k) => $sanitise(trim($d[$k] ?? ''));
 
-            // ── Only 4 fields are required ────────────────────────────────
+            // ── Required fields ───────────────────────────────────────────
             $missing = [];
-            if (empty($v('asset_type'))) $missing[] = 'asset_type';
-            if (empty($v('asset_tag')))  $missing[] = 'asset_tag';
+            if (empty($v('asset_category'))) $missing[] = 'asset_category';
+            if (empty($v('asset_type')))     $missing[] = 'asset_type';
+            if (empty($v('asset_tag')))      $missing[] = 'asset_tag';
             if (empty($v('specs')) && empty($v('brand')) && empty($v('model'))) $missing[] = 'specs (or brand+model)';
-            if (empty($v('remarks')))    $missing[] = 'remarks';
+            if (empty($v('remarks')))        $missing[] = 'remarks';
 
             if ($missing) {
                 $errors[] = "Row {$rowNumber}: Missing required field(s): " . implode(', ', $missing) . " — skipped.";
@@ -1075,6 +1095,7 @@ class AssetController extends Controller
             // ── Create asset record ───────────────────────────────────────
             $asset = AssetInventory::create([
                 'asset_tag'            => $assetTag,
+                'asset_category'       => $v('asset_category') ?: 'others',
                 'asset_type'           => $assetType,
                 'brand'                => $brand,
                 'model'                => $model,
