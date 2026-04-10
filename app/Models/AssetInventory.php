@@ -11,12 +11,12 @@ class AssetInventory extends Model
     use HasFactory;
     protected $fillable = [
         // Section A – Identification
-        'asset_tag', 'asset_type', 'brand', 'model', 'serial_number',
+        'asset_tag', 'asset_category', 'asset_type', 'brand', 'model', 'serial_number',
         'status', 'notes',
         // Section B – Specification
         'processor', 'ram_size', 'storage', 'operating_system', 'screen_size', 'spec_others',
         // Section C – Procurement
-        'purchase_date', 'purchase_vendor', 'purchase_cost', 'warranty_expiry_date', 'invoice_document',
+        'purchase_date', 'purchase_vendor', 'purchase_cost', 'warranty_expiry_date', 'invoice_document', 'invoice_documents',
         // Section C – Ownership
         'ownership_type', 'company_name', 'company_supplied_to',
         'rental_vendor', 'rental_vendor_contact', 'rental_cost_per_month',
@@ -39,6 +39,7 @@ class AssetInventory extends Model
         'purchase_cost'          => 'decimal:2',
         'rental_cost_per_month'  => 'decimal:2',
         'asset_photos'           => 'array',
+        'invoice_documents'      => 'array',
     ];
 
     public function assignments()      { return $this->hasMany(AssetAssignment::class); }

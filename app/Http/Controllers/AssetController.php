@@ -138,6 +138,13 @@ class AssetController extends Controller
         if ($request->hasFile('invoice_document')) {
             $data['invoice_document'] = $request->file('invoice_document')->store('invoices', 'local');
         }
+        if ($request->hasFile('invoice_documents')) {
+            $paths = [];
+            foreach ($request->file('invoice_documents') as $file) {
+                $paths[] = $file->store('invoices', 'local');
+            }
+            $data['invoice_documents'] = $paths;
+        }
 
         $asset = AssetInventory::create($data);
 
@@ -241,6 +248,14 @@ class AssetController extends Controller
 
         if ($request->hasFile('invoice_document')) {
             $data['invoice_document'] = $request->file('invoice_document')->store('invoices', 'local');
+        }
+        if ($request->hasFile('invoice_documents')) {
+            $existing = $asset->invoice_documents ?? [];
+            $paths = $existing;
+            foreach ($request->file('invoice_documents') as $file) {
+                $paths[] = $file->store('invoices', 'local');
+            }
+            $data['invoice_documents'] = $paths;
         }
 
         // Handle photo keep/remove + new uploads
@@ -1174,6 +1189,7 @@ class AssetController extends Controller
 
         $data = [
             'asset_tag'        => $validated['asset_tag'],
+            'asset_category'   => $validated['asset_category'],
             'asset_type'       => $validated['asset_type'],
             'brand'            => $validated['brand'],
             'model'            => $validated['model'],
@@ -1249,7 +1265,8 @@ class AssetController extends Controller
     {
         $rules = [
             'asset_tag'        => 'required|string|max:50' . ($isUpdate ? '' : '|unique:asset_inventories,asset_tag'),
-            'asset_type'       => 'required|in:laptop,monitor,converter,phone,sim_card,access_card,petty_cash,accessories,furniture,equipment,other',
+            'asset_category'   => 'required|string|max:100',
+            'asset_type'       => 'required|string|max:100',
             'brand'            => 'required|string|max:100',
             'model'            => 'required|string|max:100',
             'asset_name'       => 'nullable|string|max:255',
@@ -1270,6 +1287,8 @@ class AssetController extends Controller
             $rules['purchase_cost']             = 'nullable|numeric|min:0';
             $rules['warranty_expiry_date']      = 'nullable|date';
             $rules['invoice_document']          = 'nullable|file|mimes:pdf|max:5120|valid_file_content';
+            $rules['invoice_documents']         = 'nullable|array|max:10';
+            $rules['invoice_documents.*']       = 'file|mimes:pdf,jpg,jpeg,png|max:5120|valid_file_content';
             $rules['ownership_type']            = 'required|in:company,rental';
             $rules['company_name']              = 'nullable|string|max:255';
             $rules['company_supplied_to']       = 'nullable|string|max:255';
@@ -1285,7 +1304,7 @@ class AssetController extends Controller
             $rules['expected_return_date']      = 'nullable|date';
             $rules['asset_condition']           = 'required|in:good,not_good,under_maintenance';
             $rules['maintenance_status']        = 'nullable|in:pending,in_progress,done';
-            $rules['last_maintenance_date']     = 'nullable|date';
+            $rules['last_maintenance_date']     = 'required_if:asset_condition,under_maintenance|nullable|date';
             $rules['remarks']                   = 'nullable|string';
             $rules['asset_photos']              = 'nullable|array|min:1|max:15';
             $rules['asset_photos.*']            = 'image|max:5120|valid_file_content';

@@ -20,33 +20,41 @@
 @if(!$canAll)<div class="alert alert-info small"><i class="bi bi-info-circle me-1"></i>As IT Executive, you can edit Sections A, B, and C only.</div>@endif
 
 {{-- Section A --}}
+@php $catCfg = config('asset-categories'); @endphp
 <div class="card mb-3">
     <div class="card-header bg-white py-3"><div class="section-header mb-0"><h6><i class="bi bi-tag me-2 text-primary"></i>Section A — Asset Identification</h6></div></div>
     <div class="card-body"><div class="row g-3">
-        <div class="col-md-2"><label class="form-label fw-semibold">Asset Tag <span class="text-danger">*</span></label>
+        <div class="col-md-3"><label class="form-label fw-semibold">Asset Tag <span class="text-danger">*</span></label>
             <input type="text" name="asset_tag" id="editAssetTagInput"
                    class="form-control @error('asset_tag') is-invalid @enderror"
                    value="{{ old('asset_tag',$asset->asset_tag) }}"
                    required>
             @error('asset_tag')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-        <div class="col-md-2"><label class="form-label fw-semibold">Asset Type <span class="text-danger">*</span></label>
-            <select name="asset_type" class="form-select" required>
-                @foreach(['laptop'=>'Laptop','monitor'=>'Monitor','converter'=>'Converter','phone'=>'Company Phone','sim_card'=>'SIM Card','access_card'=>'Access Card','petty_cash'=>'Petty Cash','accessories'=>'Accessories','furniture'=>'Furniture','equipment'=>'Equipment','other'=>'Other'] as $v=>$l)
-                    <option value="{{ $v }}" {{ old('asset_type',$asset->asset_type)==$v?'selected':'' }}>{{ $l }}</option>
+        <div class="col-md-3"><label class="form-label fw-semibold">Asset Name</label>
+            <input type="text" name="asset_name" id="editAssetNameInput"
+                   class="form-control" value="{{ old('asset_name',$asset->asset_name) }}"
+                   placeholder="Auto-filled from Asset Tag"></div>
+        <div class="col-md-3"><label class="form-label fw-semibold">Asset Category <span class="text-danger">*</span></label>
+            <select name="asset_category" id="editAssetCategory" class="form-select @error('asset_category') is-invalid @enderror" required>
+                <option value="">Select category...</option>
+                @foreach($catCfg['categories'] as $k => $label)
+                    <option value="{{ $k }}" {{ old('asset_category',$asset->asset_category)==$k?'selected':'' }}>{{ $label }}</option>
                 @endforeach
-            </select></div>
-        <div class="col-md-2" id="editBrandContainer"><label class="form-label fw-semibold">Brand <span class="text-danger">*</span></label>
+            </select>
+            @error('asset_category')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        <div class="col-md-3"><label class="form-label fw-semibold">Asset Type <span class="text-danger">*</span></label>
+            <select name="asset_type" id="editAssetType" class="form-select @error('asset_type') is-invalid @enderror" required>
+                <option value="">Select category first...</option>
+            </select>
+            @error('asset_type')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+        <div class="col-md-3" id="editBrandContainer"><label class="form-label fw-semibold">Brand <span class="text-danger">*</span></label>
             <select name="brand" id="editBrandSelect" class="form-select" required>
-                <option value="">Select...</option>
+                <option value="">Select type first...</option>
             </select>
             <input type="text" name="brand" id="editBrandText" class="form-control"
                    placeholder="Enter brand" style="display:none" disabled></div>
         <div class="col-md-3"><label class="form-label fw-semibold">Model <span class="text-danger">*</span></label>
             <input type="text" name="model" class="form-control" value="{{ old('model',$asset->model) }}" required></div>
-        <div class="col-md-3"><label class="form-label fw-semibold">Asset Name</label>
-            <input type="text" name="asset_name" id="editAssetNameInput"
-                   class="form-control" value="{{ old('asset_name',$asset->asset_name) }}"
-                   placeholder="Auto-filled from Asset Tag"></div>
         <div class="col-md-3"><label class="form-label fw-semibold">Serial Number <span class="text-danger">*</span></label>
             <input type="text" name="serial_number" class="form-control @error('serial_number') is-invalid @enderror" value="{{ old('serial_number',$asset->serial_number) }}" required>
             @error('serial_number')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
@@ -105,8 +113,9 @@
                 <input type="date" name="purchase_date" class="form-control" value="{{ old('purchase_date',$asset->purchase_date?->format('Y-m-d')) }}"></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Warranty Expiry</label>
                 <input type="date" name="warranty_expiry_date" class="form-control" value="{{ old('warranty_expiry_date',$asset->warranty_expiry_date?->format('Y-m-d')) }}"></div>
-            <div class="col-md-4"><label class="form-label fw-semibold">Invoice (PDF) {{ $asset->invoice_document ? '— current file exists' : '' }}</label>
-                <input type="file" name="invoice_document" class="form-control" accept=".pdf"></div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Invoice(s) {{ $asset->invoice_documents ? '— '.count($asset->invoice_documents).' file(s)' : '' }}</label>
+                <input type="file" name="invoice_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <div class="form-text text-muted small">PDF or images. Multiple files allowed.</div></div>
         </div>
         <div id="rentalFields" class="row g-3" style="{{ old('ownership_type', $asset->ownership_type) === 'rental' ? '' : 'display:none;' }}">
             <div class="col-md-4"><label class="form-label fw-semibold">Rental Vendor</label>
@@ -121,8 +130,9 @@
                 <input type="date" name="rental_end_date" class="form-control" value="{{ old('rental_end_date',$asset->rental_end_date?->format('Y-m-d')) }}"></div>
             <div class="col-md-3"><label class="form-label fw-semibold">Contract Reference</label>
                 <input type="text" name="rental_contract_reference" class="form-control" value="{{ old('rental_contract_reference',$asset->rental_contract_reference) }}" placeholder="Contract / PO number"></div>
-            <div class="col-md-3"><label class="form-label fw-semibold">Invoice (PDF) {{ $asset->invoice_document ? '— current exists' : '' }}</label>
-                <input type="file" name="invoice_document" class="form-control" accept=".pdf"></div>
+            <div class="col-md-3"><label class="form-label fw-semibold">Invoice(s) {{ $asset->invoice_documents ? '— '.count($asset->invoice_documents).' file(s)' : '' }}</label>
+                <input type="file" name="invoice_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <div class="form-text text-muted small">PDF or images.</div></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Supplied To (Company)</label>
                 <select name="company_supplied_to" class="form-select">
                     <option value="">— Select Company —</option>
@@ -356,26 +366,25 @@
 
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
-/* ── Asset-Type → Brand mapping ─────────────────────────────────────── */
-const brandsByType = {
-    laptop:      ['Dell','HP','Lenovo','Apple','Asus','Acer','MSI','Samsung','Microsoft','Huawei','Other'],
-    monitor:     ['Dell','HP','Lenovo','LG','Samsung','Asus','Acer','BenQ','AOC','ViewSonic','Philips','Other'],
-    converter:   ['Anker','Ugreen','Baseus','Belkin','HyperDrive','Satechi','Other'],
-    phone:       ['Apple','Samsung','Huawei','Xiaomi','Oppo','Vivo','OnePlus','Google','Sony','Nokia','Other'],
-    sim_card:    ['Maxis','Digi','Celcom','U Mobile','Yes 4G','Unifi Mobile','Other'],
-    access_card: ['HID','Suprema','ZKTeco','Keri Systems','Other'],
-    petty_cash:  ['Internal'],
-    accessories: ['Logitech','Jabra','Anker','Microsoft','Apple','Baseus','Targus','Kensington','Other'],
-    furniture:   ['Herman Miller','Steelcase','Ikea','Haworth','Secretlab','Other'],
-    equipment:   ['Brother','Canon','Epson','Dyson','APC','CyberPower','Other'],
-};
+/* ── Cascading Category → Type → Brand ─────────────────────────────── */
+const assetCatConfig = @json(config('asset-categories'));
 
-function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
-    const type = typeSelect.value;
-    const brands = brandsByType[type];
+function updateTypeDropdown(categorySelect, typeSelect, preselected) {
+    const cat = categorySelect.value;
+    const types = assetCatConfig.types[cat] || {};
+    let html = '<option value="">Select type...</option>';
+    Object.entries(types).forEach(([k, v]) => {
+        const sel = (k === preselected) ? ' selected' : '';
+        html += `<option value="${k}"${sel}>${v}</option>`;
+    });
+    typeSelect.innerHTML = html;
+}
 
-    if (!type) {
-        brandSelect.innerHTML = '<option value="">Select...</option>';
+function updateBrandField(typeValue, brandSelect, brandText, preselected) {
+    const brands = assetCatConfig.brands[typeValue];
+
+    if (!typeValue) {
+        brandSelect.innerHTML = '<option value="">Select type first...</option>';
         brandSelect.style.display = '';
         brandSelect.disabled = false;
         brandSelect.required = true;
@@ -386,7 +395,7 @@ function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
         return;
     }
 
-    if (type === 'other' || !brands) {
+    if (!brands) {
         brandSelect.style.display = 'none';
         brandSelect.disabled = true;
         brandSelect.required = false;
@@ -405,7 +414,7 @@ function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
     brandText.required = false;
     brandText.value = '';
 
-    let html = '<option value="">Select...</option>';
+    let html = '<option value="">Select brand...</option>';
     brands.forEach(b => {
         const sel = (b === preselected) ? ' selected' : '';
         html += `<option value="${b}"${sel}>${b}</option>`;
@@ -413,23 +422,35 @@ function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
     brandSelect.innerHTML = html;
 }
 
-// ── Edit-Asset page ──
+// ── Edit-Asset page — cascading init ──
 (function () {
-    const typeSelect  = document.getElementById('editBrandContainer')?.closest('.row')?.querySelector('select[name="asset_type"]');
+    const catSelect   = document.getElementById('editAssetCategory');
+    const typeSelect  = document.getElementById('editAssetType');
     const brandSelect = document.getElementById('editBrandSelect');
     const brandText   = document.getElementById('editBrandText');
-    if (!typeSelect || !brandSelect) return;
+    if (!catSelect || !typeSelect || !brandSelect) return;
 
+    const savedType  = @json(old('asset_type', $asset->asset_type ?? ''));
     const savedBrand = @json(old('brand', $asset->brand ?? ''));
 
-    typeSelect.addEventListener('change', function () {
-        updateBrandField(typeSelect, brandSelect, brandText, null);
+    catSelect.addEventListener('change', function () {
+        updateTypeDropdown(catSelect, typeSelect, null);
+        updateBrandField('', brandSelect, brandText, null);
     });
 
-    // Initialise with saved/old value
-    updateBrandField(typeSelect, brandSelect, brandText, savedBrand);
+    typeSelect.addEventListener('change', function () {
+        updateBrandField(typeSelect.value, brandSelect, brandText, null);
+    });
 
-    // If the saved brand isn't in the dropdown list (legacy data), show text input instead
+    // Initialise on load with saved values
+    if (catSelect.value) {
+        updateTypeDropdown(catSelect, typeSelect, savedType);
+        if (typeSelect.value) {
+            updateBrandField(typeSelect.value, brandSelect, brandText, savedBrand);
+        }
+    }
+
+    // If the saved brand isn't in the dropdown list (legacy data), show text input
     if (brandSelect.style.display !== 'none' && savedBrand && !brandSelect.querySelector(`option[value="${savedBrand}"]`)) {
         brandSelect.style.display = 'none';
         brandSelect.disabled = true;
