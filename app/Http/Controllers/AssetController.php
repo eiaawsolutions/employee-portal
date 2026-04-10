@@ -74,59 +74,81 @@ class AssetController extends Controller
         // Registered companies for Add Asset company_name dropdown
         $registeredCompanies = \App\Models\Company::orderBy('name')->get(['name']);
 
-        // Asset overview widget data — grouped by company → asset type
+        // Asset overview widget data
         $normaliseCo = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
         $canonMap = [];
         foreach ($registeredCompanies as $co) $canonMap[$normaliseCo($co->name)] = $co->name;
         $resolveCo = fn(?string $raw) => $canonMap[$normaliseCo(trim($raw ?? ''))] ?? (trim($raw ?? '') ?: 'Unspecified');
 
-        // Helper: group rows by canonical company, each with asset_type breakdown
-        $groupByCompanyAndType = function ($rows, string $companyField = 'company') use ($resolveCo) {
-            $grouped = [];
+        // Card 1 & 2: asset_type counts grouped by company (for filter)
+        // Structure: [ 'CompanyName' => [ 'type' => count, ... ], ... ]
+        $buildCompanyTypeMap = function ($rows, string $companyField = 'company') use ($resolveCo) {
+            $map = [];
             foreach ($rows as $row) {
-                $company = $resolveCo($row->$companyField);
-                $type    = $row->asset_type;
-                if (!isset($grouped[$company])) $grouped[$company] = ['total' => 0, 'types' => []];
-                $grouped[$company]['total'] += $row->total;
-                $grouped[$company]['types'][$type] = ($grouped[$company]['types'][$type] ?? 0) + $row->total;
+                $co   = $resolveCo($row->$companyField);
+                $type = $row->asset_type;
+                $map[$co][$type] = ($map[$co][$type] ?? 0) + $row->total;
             }
-            // Sort companies by total desc, types by total desc within each
-            uasort($grouped, fn($a, $b) => $b['total'] <=> $a['total']);
-            foreach ($grouped as &$data) arsort($data['types']);
-            return $grouped;
+            foreach ($map as &$types) arsort($types);
+            uksort($map, 'strcasecmp');
+            return $map;
         };
 
-        // Card 1: All assets by company → type (uses company_name for company-owned, company_supplied_to for rental)
-        $allByCompanyType = AssetInventory::selectRaw('
+        // Card 1: All assets by company → type
+        $allRows = AssetInventory::selectRaw('
                 COALESCE(
                     NULLIF(TRIM(CASE WHEN ownership_type = "rental" THEN company_supplied_to ELSE company_name END), ""),
                     "Unspecified"
-                ) as company,
-                asset_type,
-                count(*) as total
-            ')
-            ->groupBy('company', 'asset_type')->get();
-        $overviewAllByCompany = $groupByCompanyAndType($allByCompanyType);
+                ) as company, asset_type, count(*) as total
+            ')->groupBy('company', 'asset_type')->get();
+        $overviewAllByCompany = $buildCompanyTypeMap($allRows);
         $overviewAllTotal     = AssetInventory::count();
+        // Flat totals by type (for default "All Companies" view)
+        $overviewAllByType = [];
+        foreach ($overviewAllByCompany as $types) {
+            foreach ($types as $t => $c) $overviewAllByType[$t] = ($overviewAllByType[$t] ?? 0) + $c;
+        }
+        arsort($overviewAllByType);
 
-        // Card 2: Company-owned assets by company_name → type
-        $companyOwnedRows = AssetInventory::where('ownership_type', 'company')
+        // Card 2: Company-owned assets by company → type
+        $coRows = AssetInventory::where('ownership_type', 'company')
             ->selectRaw('COALESCE(NULLIF(TRIM(company_name),""), "Unspecified") as company, asset_type, count(*) as total')
             ->groupBy('company', 'asset_type')->get();
-        $overviewCompanyByCompany = $groupByCompanyAndType($companyOwnedRows);
+        $overviewCompanyByCompany = $buildCompanyTypeMap($coRows);
         $overviewCompanyTotal     = AssetInventory::where('ownership_type', 'company')->count();
+        $overviewCompanyByType = [];
+        foreach ($overviewCompanyByCompany as $types) {
+            foreach ($types as $t => $c) $overviewCompanyByType[$t] = ($overviewCompanyByType[$t] ?? 0) + $c;
+        }
+        arsort($overviewCompanyByType);
 
-        // Card 3: Rental/leased assets by company_supplied_to → type
-        $rentalRows = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, asset_type, count(*) as total')
-            ->groupBy('company', 'asset_type')->get();
-        $overviewRentalByCompany = $groupByCompanyAndType($rentalRows);
-        $overviewRentalTotal     = AssetInventory::where('ownership_type', 'rental')->count();
+        // Card 3: Rental/leased assets by company → type → brand counts
+        // Structure: [ 'CompanyName' => [ 'total' => N, 'types' => [ 'type' => [ 'total' => N, 'brands' => [ 'brand' => N ] ] ] ] ]
+        $rentalBrandRows = AssetInventory::where('ownership_type', 'rental')
+            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, asset_type, COALESCE(NULLIF(TRIM(brand),""), "Unknown") as brand_name, count(*) as total')
+            ->groupBy('company', 'asset_type', 'brand_name')->get();
+        $overviewRentalByCompany = [];
+        foreach ($rentalBrandRows as $row) {
+            $co    = $resolveCo($row->company);
+            $type  = $row->asset_type;
+            $brand = $row->brand_name;
+            if (!isset($overviewRentalByCompany[$co])) $overviewRentalByCompany[$co] = ['total' => 0, 'types' => []];
+            if (!isset($overviewRentalByCompany[$co]['types'][$type])) $overviewRentalByCompany[$co]['types'][$type] = ['total' => 0, 'brands' => []];
+            $overviewRentalByCompany[$co]['total'] += $row->total;
+            $overviewRentalByCompany[$co]['types'][$type]['total'] += $row->total;
+            $overviewRentalByCompany[$co]['types'][$type]['brands'][$brand] = ($overviewRentalByCompany[$co]['types'][$type]['brands'][$brand] ?? 0) + $row->total;
+        }
+        uasort($overviewRentalByCompany, fn($a, $b) => $b['total'] <=> $a['total']);
+        foreach ($overviewRentalByCompany as &$coData) {
+            uasort($coData['types'], fn($a, $b) => $b['total'] <=> $a['total']);
+            foreach ($coData['types'] as &$typeData) arsort($typeData['brands']);
+        }
+        $overviewRentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
 
         return view('it.assets.page', compact('assets', 'stats', 'employees', 'disposed', 'rentalVendors',
             'registeredCompanies',
-            'overviewAllTotal', 'overviewAllByCompany',
-            'overviewCompanyTotal', 'overviewCompanyByCompany',
+            'overviewAllTotal', 'overviewAllByType', 'overviewAllByCompany',
+            'overviewCompanyTotal', 'overviewCompanyByType', 'overviewCompanyByCompany',
             'overviewRentalTotal', 'overviewRentalByCompany'
         ));
     }
