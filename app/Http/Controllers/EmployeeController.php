@@ -156,19 +156,53 @@ class EmployeeController extends Controller
         $allActive = Employee::whereNull('active_until');
         $activeTotal = (clone $allActive)->count();
 
-        // Card 1: count per actual company value from employee records (trimmed to avoid duplicates)
-        $statsByCompany = (clone $allActive)->selectRaw('TRIM(company) as company, count(*) as total')
-            ->whereNotNull('company')->where('company', '!=', '')
-            ->groupByRaw('TRIM(company)')->orderByRaw('TRIM(company)')->get();
+        // Normalise helper: strip dots, collapse whitespace, lowercase — "Enlinea Sdn. Bhd." == "Enlinea Sdn Bhd"
+        $normalise = fn(string $v): string => mb_strtolower(trim(preg_replace('/\s+/', ' ', str_replace('.', '', $v))));
 
-        // Company list for filter dropdowns in Cards 2 & 3 (from actual employee data)
+        // Build canonical company map from registered companies
+        $registeredCompanies = \App\Models\Company::orderBy('name')->pluck('name');
+        $canonMap = []; // normalised_key => canonical display name
+        foreach ($registeredCompanies as $name) {
+            $canonMap[$normalise($name)] = $name;
+        }
+
+        // Card 1: group employee company values, merge variants into canonical names
+        $rawByCompany = (clone $allActive)->selectRaw('TRIM(company) as company, count(*) as total')
+            ->whereNotNull('company')->where('company', '!=', '')
+            ->groupByRaw('TRIM(company)')->get();
+
+        $mergedCompany = [];
+        foreach ($rawByCompany as $row) {
+            $key = $normalise($row->company);
+            $display = $canonMap[$key] ?? $row->company; // use canonical name if matched
+            if (!isset($canonMap[$key])) {
+                $canonMap[$key] = $display; // register for dept/type matching
+            }
+            $mergedCompany[$display] = ($mergedCompany[$display] ?? 0) + $row->total;
+        }
+        ksort($mergedCompany);
+        $statsByCompany = collect($mergedCompany)->map(fn($total, $company) => (object) compact('company', 'total'))->values();
+
+        // Company list for filter dropdowns in Cards 2 & 3
         $widgetCompanies = $statsByCompany->pluck('company');
 
-        $statsByDept = (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
-            ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->orderByDesc('total')->get();
+        // Dept & Type stats: normalise company names for consistent filter matching
+        $mapCompany = function ($rows) use ($normalise, $canonMap) {
+            return $rows->map(function ($row) use ($normalise, $canonMap) {
+                $row->company = $canonMap[$normalise($row->company ?? '')] ?? $row->company;
+                return $row;
+            });
+        };
 
-        $statsByType = (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
-            ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->orderByDesc('total')->get();
+        $statsByDept = $mapCompany(
+            (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
+                ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->orderByDesc('total')->get()
+        );
+
+        $statsByType = $mapCompany(
+            (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
+                ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->orderByDesc('total')->get()
+        );
 
         return view('hr.employees.index', compact(
             'employees','companies','departments','designations','workRoles',
