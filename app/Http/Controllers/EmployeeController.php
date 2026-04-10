@@ -248,12 +248,25 @@ class EmployeeController extends Controller
 
         $callback = function () use ($employees) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Full Name','Designation','Company','Department','Work Role',
-                              'Company Email','Start Date','Employment Type']);
+            fputcsv($handle, [
+                'Full Name','Preferred Name','Official Document ID','Date of Birth','Sex',
+                'Marital Status','Religion','Race','Is Disabled',
+                'Residential Address','Personal Contact Number','House Tel No','Personal Email',
+                'Bank Account Number','Bank Name','EPF No','Income Tax No','SOCSO No',
+                'Employment Type','Designation','Department','Company','Office Location',
+                'Reporting Manager','Company Email','Google ID','Work Role',
+                'Start Date','Exit Date',
+            ]);
             foreach ($employees as $e) {
                 fputcsv($handle, [
-                    $e->full_name, $e->designation, $e->company, $e->department, $e->work_role,
-                    $e->company_email, $e->start_date?->format('d/m/Y'), $e->employment_type,
+                    $e->full_name, $e->preferred_name, $e->official_document_id,
+                    $e->date_of_birth?->format('d/m/Y'), $e->sex,
+                    $e->marital_status, $e->religion, $e->race, $e->is_disabled ? 'yes' : 'no',
+                    $e->residential_address, $e->personal_contact_number, $e->house_tel_no, $e->personal_email,
+                    $e->bank_account_number, $e->bank_name, $e->epf_no, $e->income_tax_no, $e->socso_no,
+                    $e->employment_type, $e->designation, $e->department, $e->company, $e->office_location,
+                    $e->reporting_manager, $e->company_email, $e->google_id, $e->work_role,
+                    $e->start_date?->format('d/m/Y'), $e->exit_date?->format('d/m/Y'),
                 ]);
             }
             fclose($handle);
@@ -275,25 +288,31 @@ class EmployeeController extends Controller
         $callback = function () {
             $handle = fopen('php://output', 'w');
 
-            // Column headers
+            // Column headers — matches onboarding form and employee edit form fields
             fputcsv($handle, [
-                'full_name',
-                'preferred_name',
-                'personal_contact_number',
-                'employment_type',
-                'designation',
-                'department',
-                'reporting_manager',
-                'start_date',
+                'full_name',                // * REQUIRED
+                'preferred_name',           // * REQUIRED
+                'personal_contact_number',  // * REQUIRED
+                'employment_type',          // * REQUIRED
+                'designation',              // * REQUIRED
+                'department',               // * REQUIRED
+                'reporting_manager',        // * REQUIRED
+                'start_date',               // * REQUIRED
                 'official_document_id',
                 'date_of_birth',
                 'sex',
                 'marital_status',
                 'religion',
                 'race',
+                'is_disabled',
                 'residential_address',
+                'house_tel_no',
                 'personal_email',
                 'bank_account_number',
+                'bank_name',
+                'epf_no',
+                'income_tax_no',
+                'socso_no',
                 'company',
                 'office_location',
                 'company_email',
@@ -318,15 +337,21 @@ class EmployeeController extends Controller
                 'single',                    // marital_status          (optional: single / married / divorced / widowed)
                 'Islam',                     // religion                (optional)
                 'Malay',                     // race                    (optional)
+                'no',                        // is_disabled             (optional: yes / no)
                 '123, Jalan Ampang, KL',     // residential_address     (optional)
+                '03-12345678',               // house_tel_no            (optional)
                 'ahmad@gmail.com',           // personal_email          (optional)
                 '1234567890',                // bank_account_number     (optional)
+                'Maybank',                   // bank_name               (optional)
+                'EPF12345',                  // epf_no                  (optional)
+                'SG12345678',               // income_tax_no           (optional)
+                'SOCSO12345',               // socso_no                (optional)
                 'Claritas Asia Sdn. Bhd.',   // company                 (optional)
                 'Kuala Lumpur',              // office_location         (optional)
                 'ahmad@claritas.asia',       // company_email           (optional)
                 'ahmad@claritas.asia',       // google_id               (optional, usually same as company_email)
                 'executive_associate',       // work_role               (optional: manager / senior_executive / executive_associate / director_hod / hr_manager / hr_executive / hr_intern / it_manager / it_executive / it_intern / others)
-                '',                          // exit_date               (optional, YYYY-MM-DD or leave blank)
+                '',                          // exit_date               (optional, DD-MM-YYYY or leave blank)
             ]);
 
             fclose($handle);
@@ -430,6 +455,10 @@ class EmployeeController extends Controller
             $employmentType = in_array($rawEmpType, ['permanent','intern','contract'])
                 ? $rawEmpType : 'contract';
 
+            // Normalize is_disabled — accept yes/no/1/0/true/false
+            $rawDisabled = strtolower(trim($data['is_disabled'] ?? ''));
+            $isDisabled = in_array($rawDisabled, ['yes','1','true']);
+
             $newEmployee = Employee::create([
                 'active_from'             => $startDate,
                 'full_name'               => trim($data['full_name']),
@@ -440,10 +469,16 @@ class EmployeeController extends Controller
                 'marital_status'          => $maritalStatus,
                 'religion'                => trim($data['religion']                ?? '') ?: null,
                 'race'                    => trim($data['race']                    ?? '') ?: null,
+                'is_disabled'             => $isDisabled,
                 'residential_address'     => trim($data['residential_address']     ?? '') ?: null,
                 'personal_contact_number' => trim($data['personal_contact_number'] ?? '') ?: null,
+                'house_tel_no'            => trim($data['house_tel_no']            ?? '') ?: null,
                 'personal_email'          => trim($data['personal_email']          ?? '') ?: null,
                 'bank_account_number'     => trim($data['bank_account_number']     ?? '') ?: null,
+                'bank_name'               => trim($data['bank_name']              ?? '') ?: null,
+                'epf_no'                  => trim($data['epf_no']                 ?? '') ?: null,
+                'income_tax_no'           => trim($data['income_tax_no']          ?? '') ?: null,
+                'socso_no'                => trim($data['socso_no']               ?? '') ?: null,
                 'designation'             => trim($data['designation']),
                 'department'              => trim($data['department']              ?? '') ?: null,
                 'company'                 => trim($data['company']                 ?? '') ?: null,
