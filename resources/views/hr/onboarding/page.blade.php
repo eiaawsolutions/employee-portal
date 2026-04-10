@@ -4,6 +4,8 @@
 
 @section('content')
 
+@include('partials.onboarding-overview-widget')
+
 {{-- ─── PAGE HEADER with Add button ─── --}}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
