@@ -479,16 +479,13 @@
                             <input type="text" id="addEmpSearchInput" class="form-control"
                                    placeholder="Search or select employee..."
                                    autocomplete="off"
-                                   value="{{ $addPreselectedLabel }}"
-                                   oninput="addFilterEmp(this.value)"
-                                   onfocus="addShowEmpList()"
-                                   onblur="setTimeout(addHideEmpList, 200)">
+                                   value="{{ $addPreselectedLabel }}">
                             <ul id="addEmpList"
                                 class="list-unstyled border rounded bg-white shadow-sm position-absolute mb-0"
                                 style="z-index:1060;max-height:200px;overflow-y:auto;display:none;top:100%;left:0;min-width:100%;width:max-content;max-width:480px;">
                                 <li>
                                     <button type="button" class="dropdown-item"
-                                            onmousedown="addSelectEmp('', '— Not Assigned —')">
+                                            data-empid="" data-emplabel="— Not Assigned —">
                                         — Not Assigned —
                                     </button>
                                 </li>
@@ -500,7 +497,7 @@
                                 @endphp
                                 <li>
                                     <button type="button" class="dropdown-item"
-                                            onmousedown="addSelectEmp('{{ $emp->id }}', {{ json_encode($empLabel) }})"
+                                            data-empid="{{ $emp->id }}" data-emplabel="{{ $empLabel }}"
                                             data-empname="{{ strtolower($empLabel) }}"
                                             style="white-space:normal;word-break:break-word;">
                                         {{ $empLabel }}
@@ -638,31 +635,46 @@ function syncAssignmentStatus() {
 }
 
 // ── Assigned Employee searchable dropdown (Add form) ──────────────────────
-function addShowEmpList() {
-    const el = document.getElementById('addEmpList');
-    if (el) el.style.display = '';
-}
-function addHideEmpList() {
-    const el = document.getElementById('addEmpList');
-    if (el) el.style.display = 'none';
-}
-function addFilterEmp(query) {
-    const q = query.toLowerCase().trim();
-    document.querySelectorAll('#addEmpList li').forEach(li => {
-        const btn = li.querySelector('button');
-        const name = btn?.dataset.empname ?? '';
-        li.style.display = (!q || name.includes(q)) ? '' : 'none';
+(function () {
+    const searchInput = document.getElementById('addEmpSearchInput');
+    const empList     = document.getElementById('addEmpList');
+    const hiddenInput = document.getElementById('addAssignedEmployeeId');
+    if (!searchInput || !empList) return;
+
+    function showList()  { empList.style.display = ''; }
+    function hideList()  { empList.style.display = 'none'; }
+
+    function filterList(query) {
+        const q = query.toLowerCase().trim();
+        empList.querySelectorAll('li').forEach(li => {
+            const btn  = li.querySelector('button');
+            const name = btn?.dataset.empname ?? '';
+            li.style.display = (!q || name.includes(q)) ? '' : 'none';
+        });
+        showList();
+    }
+
+    function selectEmp(id, label) {
+        if (hiddenInput) hiddenInput.value = id;
+        searchInput.value = id ? label : '';
+        hideList();
+        syncAssignmentStatus();
+    }
+
+    searchInput.addEventListener('input', function () { filterList(this.value); });
+    searchInput.addEventListener('focus', showList);
+    searchInput.addEventListener('blur',  function () { setTimeout(hideList, 200); });
+
+    empList.querySelectorAll('button[data-emplabel]').forEach(btn => {
+        btn.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            selectEmp(this.dataset.empid, this.dataset.emplabel);
+        });
     });
-    addShowEmpList();
-}
-function addSelectEmp(id, label) {
-    const hidden = document.getElementById('addAssignedEmployeeId');
-    const search = document.getElementById('addEmpSearchInput');
-    if (hidden) hidden.value = id;
-    if (search) search.value = id ? label : '';
-    addHideEmpList();
-    syncAssignmentStatus();
-}
+
+    // Expose for external callers (syncAssignmentStatus, etc.)
+    window.addSelectEmp = selectEmp;
+})();
 
 function syncStatusFromConditionAdd(condition) {
     const statusSelect  = document.getElementById('assetStatus');
