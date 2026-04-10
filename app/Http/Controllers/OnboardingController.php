@@ -44,18 +44,11 @@ class OnboardingController extends Controller
                   || $request->filled('department');
 
         if (!$hasFilter) {
-            // Default: upcoming onboardings not yet activated, OR invite-submitted records awaiting HR completion
-            $query->where(function ($q) {
-                $q->where(function ($q2) {
-                    // Normal: upcoming start date, not yet activated
-                    $q2->whereHas('workDetail', fn($q3) => $q3->where('start_date', '>=', now()->toDateString()))
-                       ->whereDoesntHave('employee');
-                })->orWhere(function ($q2) {
-                    // Invite-submitted: new hire filled in details, HR yet to complete
-                    $q2->where('invite_submitted', true)
-                       ->whereDoesntHave('employee');
-                });
-            });
+            // Default: all onboardings with a start date in the current month
+            $query->whereHas('workDetail', fn($q) =>
+                $q->whereMonth('start_date', now()->month)
+                   ->whereYear('start_date', now()->year)
+            );
         }
 
         if ($request->filled('search')) {
