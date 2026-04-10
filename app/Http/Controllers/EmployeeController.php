@@ -1610,6 +1610,19 @@ class EmployeeController extends Controller
 
         $query = Offboarding::with('onboarding');
 
+        $hasFilter = $request->filled('search')
+                  || $request->filled('company')
+                  || $request->filled('position')
+                  || $request->filled('exit_date_from')
+                  || $request->filled('exit_date_to');
+
+        if (!$hasFilter) {
+            // Default: current month exit dates
+            $query->whereNotNull('exit_date')
+                  ->whereMonth('exit_date', now()->month)
+                  ->whereYear('exit_date', now()->year);
+        }
+
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(fn($q) =>

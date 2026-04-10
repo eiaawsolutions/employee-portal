@@ -18,6 +18,18 @@ class OffboardingController extends Controller
         $query = Offboarding::with(['employee', 'picUser'])
             ->whereNotNull('exit_date');
 
+        $hasFilter = $request->filled('search')
+                  || $request->filled('company')
+                  || $request->filled('position')
+                  || $request->filled('exit_date_from')
+                  || $request->filled('exit_date_to');
+
+        if (!$hasFilter) {
+            // Default: current month exit dates
+            $query->whereMonth('exit_date', now()->month)
+                  ->whereYear('exit_date', now()->year);
+        }
+
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(fn($q) =>
