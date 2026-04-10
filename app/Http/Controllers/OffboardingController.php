@@ -82,24 +82,37 @@ class OffboardingController extends Controller
         $registeredCos = Company::orderBy('name')->pluck('name');
         $canonMap = [];
         foreach ($registeredCos as $n) $canonMap[$normaliseCo($n)] = $n;
-        $rawExiting = Offboarding::select('company', DB::raw('count(*) as total'))
-            ->whereNotNull('exit_date')
-            ->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)
-            ->groupBy('company')->get();
-        $grouped = [];
-        foreach ($rawExiting as $row) {
-            $raw = trim($row->company ?? '') ?: 'Unknown';
-            $key = $canonMap[$normaliseCo($raw)] ?? $raw;
-            $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
-        }
-        $exitingByCompany = collect($grouped)->map(fn($t, $c) => (object) ['company' => $c, 'total' => $t])->values()->all();
+        $groupCo = function ($rows) use ($normaliseCo, $canonMap) {
+            $grouped = [];
+            foreach ($rows as $row) {
+                $raw = trim($row->company ?? '') ?: 'Unknown';
+                $key = $canonMap[$normaliseCo($raw)] ?? $raw;
+                $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
+            }
+            return collect($grouped)->map(fn($t, $c) => (object) ['company' => $c, 'total' => $t])->values()->all();
+        };
+
+        $exitingByCompany = $groupCo(
+            Offboarding::select('company', DB::raw('count(*) as total'))
+                ->whereNotNull('exit_date')
+                ->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)
+                ->groupBy('company')->get()
+        );
+        $offboardedYtdByCompany = $groupCo(
+            Offboarding::select('company', DB::raw('count(*) as total'))
+                ->whereNotNull('exit_date')
+                ->whereYear('exit_date', $now->year)
+                ->groupBy('company')->orderByDesc('total')->get()
+        );
         $offboardStats = [
             'exiting_this_month' => Offboarding::whereNotNull('exit_date')
                 ->whereMonth('exit_date', $now->month)->whereYear('exit_date', $now->year)->count(),
+            'offboarded_ytd' => Offboarding::whereNotNull('exit_date')
+                ->whereYear('exit_date', $now->year)->count(),
         ];
 
         return view('hr.offboarding.index', array_merge(
-            compact('offboardings', 'companies', 'month', 'year', 'itStaff', 'offboardStats', 'exitingByCompany'),
+            compact('offboardings', 'companies', 'month', 'year', 'itStaff', 'offboardStats', 'exitingByCompany', 'offboardedYtdByCompany'),
             $this->sharedCompact()
         ));
     }
