@@ -25,144 +25,7 @@
 </div>
 @endif
 
-{{-- ── Dashboard Widget Styles ──────────────────────────────────────────── --}}
-<style>
-    .dash-widget {
-        border: none;
-        border-radius: 16px;
-        overflow: hidden;
-        transition: transform .2s ease, box-shadow .2s ease;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06);
-        min-height: 220px;
-    }
-    .dash-widget:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,.1);
-    }
-    .dash-widget .widget-header {
-        padding: 20px 22px 14px;
-        position: relative;
-        overflow: hidden;
-    }
-    .dash-widget .widget-header::before {
-        content: '';
-        position: absolute;
-        top: -30px;
-        right: -30px;
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background: rgba(255,255,255,.12);
-    }
-    .dash-widget .widget-header::after {
-        content: '';
-        position: absolute;
-        bottom: -20px;
-        right: 40px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: rgba(255,255,255,.08);
-    }
-    .dash-widget .widget-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 14px;
-        background: rgba(255,255,255,.22);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        backdrop-filter: blur(4px);
-    }
-    .dash-widget .widget-icon i {
-        font-size: 22px;
-        color: #fff;
-    }
-    .dash-widget .widget-number {
-        font-size: 32px;
-        font-weight: 800;
-        color: #fff;
-        line-height: 1;
-        letter-spacing: -0.5px;
-    }
-    .dash-widget .widget-label {
-        font-size: 12px;
-        color: rgba(255,255,255,.85);
-        font-weight: 500;
-    }
-    .dash-widget .widget-body {
-        padding: 14px 22px 18px;
-        background: #fff;
-    }
-    .dash-widget .breakdown-title {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        color: #94a3b8;
-        margin-bottom: 8px;
-    }
-    .dash-widget .breakdown-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 12.5px;
-        color: #334155;
-    }
-    .dash-widget .breakdown-row:last-child {
-        border-bottom: none;
-    }
-    .dash-widget .breakdown-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 3px 10px;
-        border-radius: 20px;
-        color: #fff;
-    }
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 14px;
-    }
-    .section-header .section-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .section-header h6 {
-        font-size: 13px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        color: #475569;
-        margin: 0;
-    }
-    .dash-widget .widget-filter {
-        position: relative;
-        z-index: 1;
-    }
-    .dash-widget .widget-filter select {
-        background: rgba(255,255,255,.2);
-        border: 1px solid rgba(255,255,255,.3);
-        color: #fff;
-        font-size: 11px;
-        border-radius: 8px;
-        padding: 4px 24px 4px 10px;
-        backdrop-filter: blur(4px);
-        cursor: pointer;
-    }
-    .dash-widget .widget-filter select option {
-        color: #334155;
-        background: #fff;
-    }
-</style>
+@include('partials.dashboard-widgets-style')
 
 {{-- ── Summary Cards ──────────────────────────────────────────────────── --}}
 <div class="section-header">
@@ -185,12 +48,12 @@
                     </div>
                 </div>
             </div>
-            <div class="widget-body flex-fill">
+            <div class="widget-body flex-fill" style="max-height:360px;overflow-y:auto;">
                 <div class="breakdown-title">By Company</div>
-                @forelse($statsByCompany as $row)
+                @forelse($statsByCompany as $company => $total)
                 <div class="breakdown-row">
-                    <span>{{ $row->company }}</span>
-                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $row->total }}</span>
+                    <span>{{ $company }}</span>
+                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $total }}</span>
                 </div>
                 @empty
                 <div class="text-muted small text-center py-2">No data</div>
@@ -199,98 +62,66 @@
         </div>
     </div>
 
-    {{-- Card 2: By Department --}}
-    @php $deptGroups = $statsByDept->groupBy('department'); $deptTotal = $statsByDept->sum('total'); @endphp
+    {{-- Card 2: By Department (filterable by company) --}}
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
             <div class="widget-header" style="background:linear-gradient(135deg,#10b981,#047857);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-diagram-3-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="widget-number" id="deptTotalNumber">{{ $deptTotal }}</div>
+                        <div class="widget-number" id="deptTotal">{{ $activeTotal }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterCard('dept', this.value)">
-                            <option value="">All</option>
-                            @foreach($widgetCompanies as $co)
+                        <select id="deptFilter">
+                            <option value="">All Companies</option>
+                            @foreach($deptByCompany as $co => $depts)
                             <option value="{{ $co }}">{{ $co }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="widget-body flex-fill">
+            <div class="widget-body flex-fill" id="deptBody" style="max-height:360px;overflow-y:auto;">
                 <div class="breakdown-title">By Department</div>
-                <div class="dept-scroll" style="max-height:160px;overflow-y:auto;">
-                @forelse($deptGroups as $dept => $rows)
-                @php
-                    $dt = $rows->sum('total');
-                    $deptCountStr = $rows->map(fn($r) => $r->company . ':' . $r->total)->implode('||');
-                @endphp
-                <div class="dept-row breakdown-row"
-                     data-companies="{{ $rows->pluck('company')->implode('|') }}"
-                     data-counts="{{ $deptCountStr }}"
-                     data-total="{{ $dt }}">
+                @forelse($deptAllTotals as $dept => $count)
+                <div class="breakdown-row">
                     <span>{{ $dept }}</span>
-                    <span class="breakdown-badge dept-badge" style="background:#10b981;">{{ $dt }}</span>
+                    <span class="breakdown-badge" style="background:#10b981;">{{ $count }}</span>
                 </div>
                 @empty
                 <div class="text-muted small text-center py-2">No data</div>
                 @endforelse
-                </div>
             </div>
         </div>
     </div>
 
-    {{-- Card 3: By Employment Type --}}
-    @php
-        $typeGroups  = $statsByType->groupBy('employment_type');
-        $typeConfig  = [
-            'permanent' => ['color'=>'#f59e0b','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-person-check-fill'],
-            'contract'  => ['color'=>'#6366f1','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-file-earmark-person-fill'],
-            'intern'    => ['color'=>'#ec4899','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-mortarboard-fill'],
-        ];
-    @endphp
+    {{-- Card 3: By Employment Type (filterable by company) --}}
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
             <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-badge-fill"></i></div>
                     <div class="flex-grow-1">
-                        <div class="widget-number" id="typeTotalNumber">{{ $statsByType->sum('total') }}</div>
+                        <div class="widget-number" id="typeTotal">{{ $activeTotal }}</div>
                         <div class="widget-label">Overall Active Employee</div>
                     </div>
                     <div class="widget-filter">
-                        <select class="form-select form-select-sm" onchange="filterCard('type', this.value)">
-                            <option value="">All</option>
-                            @foreach($widgetCompanies as $co)
+                        <select id="typeFilter">
+                            <option value="">All Companies</option>
+                            @foreach($typeByCompany as $co => $types)
                             <option value="{{ $co }}">{{ $co }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="widget-body flex-fill">
+            <div class="widget-body flex-fill" id="typeBody" style="max-height:360px;overflow-y:auto;">
                 <div class="breakdown-title">By Type</div>
-                @forelse($typeGroups as $type => $rows)
-                @php
-                    $tt  = $rows->sum('total');
-                    $cfg = $typeConfig[$type] ?? ['color'=>'#6b7280','bg'=>'rgba(255,255,255,.15)','icon'=>'bi-person-fill'];
-                    $typeCountStr = $rows->map(fn($r) => $r->company . ':' . $r->total)->implode('||');
-                @endphp
-                <div class="type-row breakdown-row"
-                     data-companies="{{ $rows->pluck('company')->implode('|') }}"
-                     data-counts="{{ $typeCountStr }}"
-                     data-total="{{ $tt }}">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="rounded-2 d-flex align-items-center justify-content-center"
-                             style="width:28px;height:28px;background:{{ $cfg['bg'] }};">
-                            <i class="{{ $cfg['icon'] }}" style="font-size:13px;color:{{ $cfg['color'] }};"></i>
-                        </div>
-                        <span class="fw-medium">{{ ucfirst($type) }}</span>
-                    </div>
-                    <span class="breakdown-badge" style="background:{{ $cfg['color'] }};">{{ $tt }}</span>
+                @forelse($typeAllTotals as $type => $count)
+                <div class="breakdown-row">
+                    <span>{{ ucfirst($type) }}</span>
+                    <span class="breakdown-badge" style="background:#f59e0b;">{{ $count }}</span>
                 </div>
                 @empty
                 <div class="text-muted small text-center py-2">No data</div>
@@ -548,42 +379,69 @@
 
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
-function filterCard(type, company) {
-    const selector = type === 'dept' ? '.dept-row' : '.type-row';
-    const totalEl  = document.getElementById(type === 'dept' ? 'deptTotalNumber' : 'typeTotalNumber');
-    const selected = company ? company.trim().toLowerCase() : '';
-    let headerSum  = 0;
+// ── Employee Overview card filters ───────────────────────────────────
+(function () {
+    var deptAll  = @json($deptAllTotals);
+    var deptMap  = @json($deptByCompany);
+    var deptGrand = {{ $activeTotal }};
 
-    document.querySelectorAll(selector).forEach(row => {
-        const badge = row.querySelector('.breakdown-badge');
-        if (!selected) {
-            row.style.display = '';
-            const t = parseInt(row.dataset.total, 10) || 0;
-            if (badge) badge.textContent = t;
-            headerSum += t;
+    var typeAll  = @json($typeAllTotals);
+    var typeMap  = @json($typeByCompany);
+    var typeGrand = {{ $activeTotal }};
+
+    function renderList(container, data, badgeColor, total, formatter) {
+        var totalEl = container.closest('.dash-widget').querySelector('.widget-number');
+        if (totalEl) totalEl.textContent = total;
+
+        var keys = Object.keys(data);
+        if (!keys.length) {
+            container.innerHTML = '<div class="breakdown-title">—</div><div class="text-muted small text-center py-2">No data</div>';
             return;
         }
+        keys.sort(function(a, b) { return data[b] - data[a]; });
+        var label = container.querySelector('.breakdown-title');
+        var labelText = label ? label.textContent : '';
+        var html = '<div class="breakdown-title">' + labelText + '</div>';
+        keys.forEach(function(k) {
+            var display = formatter ? formatter(k) : k;
+            html += '<div class="breakdown-row">'
+                  + '<span>' + display + '</span>'
+                  + '<span class="breakdown-badge" style="background:' + badgeColor + ';">' + data[k] + '</span>'
+                  + '</div>';
+        });
+        container.innerHTML = html;
+    }
 
-        // Parse data-counts: "Company A:3||Company B:2"
-        let count = 0;
-        let found = false;
-        const pairs = (row.dataset.counts || '').split('||');
-        for (const pair of pairs) {
-            const colonIdx = pair.lastIndexOf(':');
-            if (colonIdx === -1) continue;
-            const name = pair.substring(0, colonIdx).trim().toLowerCase();
-            const val  = parseInt(pair.substring(colonIdx + 1).trim(), 10);
-            if (name === selected) { count += isNaN(val) ? 0 : val; found = true; }
-        }
+    var deptFilter = document.getElementById('deptFilter');
+    var deptBody   = document.getElementById('deptBody');
+    if (deptFilter && deptBody) {
+        deptFilter.addEventListener('change', function () {
+            var co = this.value;
+            if (!co) {
+                renderList(deptBody, deptAll, '#10b981', deptGrand);
+            } else {
+                var depts = deptMap[co] || {};
+                var t = 0; for (var d in depts) t += depts[d];
+                renderList(deptBody, depts, '#10b981', t);
+            }
+        });
+    }
 
-        const display = found ? count : 0;
-        row.style.display = display > 0 ? '' : 'none';
-        if (badge) badge.textContent = display;
-        headerSum += display;
-    });
-
-    if (totalEl) totalEl.textContent = headerSum;
-}
+    var typeFilter = document.getElementById('typeFilter');
+    var typeBody   = document.getElementById('typeBody');
+    if (typeFilter && typeBody) {
+        typeFilter.addEventListener('change', function () {
+            var co = this.value;
+            if (!co) {
+                renderList(typeBody, typeAll, '#f59e0b', typeGrand, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
+            } else {
+                var types = typeMap[co] || {};
+                var t = 0; for (var k in types) t += types[k];
+                renderList(typeBody, types, '#f59e0b', t, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
+            }
+        });
+    }
+})();
 
 function updateImportLabel(input) {
     const label = document.getElementById('importFileLabel');

@@ -156,65 +156,64 @@ class EmployeeController extends Controller
         $allActive = Employee::whereNull('active_until');
         $activeTotal = (clone $allActive)->count();
 
-        // Normalise helper: strip dots, collapse whitespace, lowercase — "Enlinea Sdn. Bhd." == "Enlinea Sdn Bhd"
+        // Normalise helper: strip dots, collapse whitespace, lowercase
         $normalise = fn(string $v): string => mb_strtolower(trim(preg_replace('/\s+/', ' ', str_replace('.', '', $v))));
 
         // Build canonical company map from registered companies
         $registeredCompanies = \App\Models\Company::orderBy('name')->pluck('name');
-        $canonMap = []; // normalised_key => canonical display name
-        foreach ($registeredCompanies as $name) {
-            $canonMap[$normalise($name)] = $name;
-        }
+        $canonMap = [];
+        foreach ($registeredCompanies as $name) $canonMap[$normalise($name)] = $name;
+        $resolveCo = fn(?string $raw) => $canonMap[$normalise(trim($raw ?? ''))] ?? (trim($raw ?? '') ?: 'Unspecified');
 
-        // Card 1: group employee company values, merge variants into canonical names
+        // Card 1: By Company — flat totals
         $rawByCompany = (clone $allActive)->selectRaw('TRIM(company) as company, count(*) as total')
             ->whereNotNull('company')->where('company', '!=', '')
             ->groupByRaw('TRIM(company)')->get();
-
-        $mergedCompany = [];
+        $statsByCompany = [];
         foreach ($rawByCompany as $row) {
-            $key = $normalise($row->company);
-            $display = $canonMap[$key] ?? $row->company; // use canonical name if matched
-            if (!isset($canonMap[$key])) {
-                $canonMap[$key] = $display; // register for dept/type matching
-            }
-            $mergedCompany[$display] = ($mergedCompany[$display] ?? 0) + $row->total;
+            $co = $resolveCo($row->company);
+            $statsByCompany[$co] = ($statsByCompany[$co] ?? 0) + $row->total;
         }
-        ksort($mergedCompany);
-        $statsByCompany = collect($mergedCompany)->map(fn($total, $company) => (object) compact('company', 'total'))->values();
+        ksort($statsByCompany);
 
-        // Company list for filter dropdowns in Cards 2 & 3
-        $widgetCompanies = $statsByCompany->pluck('company');
+        // Card 2: By Department — grouped by company for filter
+        // Structure: $deptByCompany = [ 'Company' => [ 'Dept' => count ] ], $deptAllTotals = [ 'Dept' => count ]
+        $rawDept = (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
+            ->whereNotNull('department')->where('department', '!=', '')
+            ->groupByRaw('department, TRIM(company)')->get();
+        $deptByCompany = [];
+        $deptAllTotals = [];
+        foreach ($rawDept as $row) {
+            $co   = $resolveCo($row->company);
+            $dept = $row->department;
+            $deptByCompany[$co][$dept] = ($deptByCompany[$co][$dept] ?? 0) + $row->total;
+            $deptAllTotals[$dept] = ($deptAllTotals[$dept] ?? 0) + $row->total;
+        }
+        arsort($deptAllTotals);
+        foreach ($deptByCompany as &$depts) arsort($depts);
+        uksort($deptByCompany, 'strcasecmp');
 
-        // Dept & Type stats: normalise company names then re-aggregate duplicates
-        $mergeByGroup = function ($rows, string $groupField) use ($normalise, $canonMap) {
-            $merged = [];
-            foreach ($rows as $row) {
-                $normCo = $canonMap[$normalise($row->company ?? '')] ?? $row->company;
-                $key = $row->$groupField . '||' . $normCo;
-                if (!isset($merged[$key])) {
-                    $merged[$key] = (object) [$groupField => $row->$groupField, 'company' => $normCo, 'total' => 0];
-                }
-                $merged[$key]->total += $row->total;
-            }
-            return collect(array_values($merged))->sortByDesc('total')->values();
-        };
-
-        $statsByDept = $mergeByGroup(
-            (clone $allActive)->selectRaw('department, TRIM(company) as company, count(*) as total')
-                ->whereNotNull('department')->groupByRaw('department, TRIM(company)')->get(),
-            'department'
-        );
-
-        $statsByType = $mergeByGroup(
-            (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
-                ->whereNotNull('employment_type')->groupByRaw('employment_type, TRIM(company)')->get(),
-            'employment_type'
-        );
+        // Card 3: By Employment Type — grouped by company for filter
+        $rawType = (clone $allActive)->selectRaw('employment_type, TRIM(company) as company, count(*) as total')
+            ->whereNotNull('employment_type')->where('employment_type', '!=', '')
+            ->groupByRaw('employment_type, TRIM(company)')->get();
+        $typeByCompany = [];
+        $typeAllTotals = [];
+        foreach ($rawType as $row) {
+            $co   = $resolveCo($row->company);
+            $type = $row->employment_type;
+            $typeByCompany[$co][$type] = ($typeByCompany[$co][$type] ?? 0) + $row->total;
+            $typeAllTotals[$type] = ($typeAllTotals[$type] ?? 0) + $row->total;
+        }
+        arsort($typeAllTotals);
+        foreach ($typeByCompany as &$types) arsort($types);
+        uksort($typeByCompany, 'strcasecmp');
 
         return view('hr.employees.index', compact(
             'employees','companies','departments','designations','workRoles',
-            'statsByCompany','statsByDept','statsByType','activeTotal','widgetCompanies'
+            'activeTotal','statsByCompany',
+            'deptAllTotals','deptByCompany',
+            'typeAllTotals','typeByCompany'
         ));
     }
 
