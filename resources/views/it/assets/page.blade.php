@@ -315,7 +315,7 @@
                         <input type="text" name="asset_tag" id="assetTagInput"
                                class="form-control @error('asset_tag') is-invalid @enderror"
                                value="{{ old('asset_tag') }}" placeholder="e.g. LPT-003"
-                               oninput="syncAssetName(this.value)" required>
+                               required>
                         @error('asset_tag')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-2">
@@ -854,29 +854,30 @@ function updateBrandField(typeSelect, brandSelect, brandText, preselected) {
     }
 })();
 
-function syncAssetName(tagValue) {
-    const nameInput = document.getElementById('assetNameInput');
-    if (!nameInput) return;
-    // Only auto-fill if user hasn't manually changed it
-    if (!nameInput.dataset.manuallyEdited) {
-        nameInput.value = tagValue;
-    }
-}
-
     // Auto-activate the correct tab based on URL ?tab= param
     document.addEventListener('DOMContentLoaded', function () {
         const nameInput = document.getElementById('assetNameInput');
-        if (nameInput) {
+        const tagInput  = document.getElementById('assetTagInput');
+
+        if (nameInput && tagInput) {
+            // Auto-fill Asset Name from Asset Tag (unless user has manually edited it)
+            tagInput.addEventListener('input', function () {
+                if (!nameInput.dataset.manuallyEdited) {
+                    nameInput.value = this.value;
+                }
+            });
+
+            // Track manual edits to Asset Name
             nameInput.addEventListener('input', function () {
-                const tagInput = document.getElementById('assetTagInput');
-                if (tagInput && this.value !== tagInput.value) {
+                if (this.value !== tagInput.value) {
                     this.dataset.manuallyEdited = '1';
                 } else {
                     delete this.dataset.manuallyEdited;
                 }
             });
-            const tagInput = document.getElementById('assetTagInput');
-            if (tagInput && tagInput.value && !nameInput.value) {
+
+            // Initialise on load (handles old() repopulation after validation error)
+            if (tagInput.value && !nameInput.value) {
                 nameInput.value = tagInput.value;
             }
         }
