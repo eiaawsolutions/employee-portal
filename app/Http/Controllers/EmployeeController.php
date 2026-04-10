@@ -172,7 +172,7 @@ class EmployeeController extends Controller
 
         return view('hr.employees.index', compact(
             'employees','companies','departments','designations','workRoles',
-            'statsByCompany','statsByDept','statsByType','registeredCompanies','activeTotal','widgetCompanies'
+            'statsByCompany','statsByDept','statsByType','activeTotal','widgetCompanies'
         ));
     }
 
