@@ -27,7 +27,7 @@
             <input type="text" name="asset_tag" id="editAssetTagInput"
                    class="form-control @error('asset_tag') is-invalid @enderror"
                    value="{{ old('asset_tag',$asset->asset_tag) }}"
-                   oninput="syncAssetNameEdit(this.value)" required>
+                   required>
             @error('asset_tag')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
         <div class="col-md-2"><label class="form-label fw-semibold">Asset Type <span class="text-danger">*</span></label>
             <select name="asset_type" class="form-select" required>
@@ -192,16 +192,13 @@
                     <input type="text" id="editEmpSearchInput" class="form-control"
                            placeholder="Search or select employee..."
                            autocomplete="off"
-                           value="{{ $editEmpDisplayLabel }}"
-                           oninput="editFilterEmp(this.value)"
-                           onfocus="editShowEmpList()"
-                           onblur="setTimeout(editHideEmpList, 200)">
+                           value="{{ $editEmpDisplayLabel }}">
                     <ul id="editEmpList"
                         class="list-unstyled border rounded bg-white shadow-sm position-absolute mb-0"
                         style="z-index:1055;max-height:200px;overflow-y:auto;display:none;top:100%;left:0;min-width:100%;width:max-content;max-width:480px;">
                         <li>
                             <button type="button" class="dropdown-item"
-                                    onmousedown="editSelectEmp('', '— Not Assigned —')">
+                                    data-empid="" data-emplabel="— Not Assigned —">
                                 — Not Assigned —
                             </button>
                         </li>
@@ -213,7 +210,7 @@
                         @endphp
                         <li>
                             <button type="button" class="dropdown-item"
-                                    onmousedown="editSelectEmp('{{ $emp->id }}', {{ json_encode($eLabel) }})"
+                                    data-empid="{{ $emp->id }}" data-emplabel="{{ $eLabel }}"
                                     data-empname="{{ strtolower($eLabel) }}"
                                     style="white-space:normal;word-break:break-word;">
                                 {{ $eLabel }}
@@ -508,57 +505,74 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ── Asset Name auto-fill (same as Add form) ───────────────────────────────
-function syncAssetNameEdit(tagValue) {
-    const nameInput = document.getElementById('editAssetNameInput');
-    if (!nameInput) return;
-    if (!nameInput.dataset.manuallyEdited) {
-        nameInput.value = tagValue;
-    }
-}
 document.addEventListener('DOMContentLoaded', function () {
     const nameInput = document.getElementById('editAssetNameInput');
     const tagInput  = document.getElementById('editAssetTagInput');
-    if (nameInput) {
+
+    if (nameInput && tagInput) {
+        // Auto-fill Asset Name from Asset Tag (unless user has manually edited it)
+        tagInput.addEventListener('input', function () {
+            if (!nameInput.dataset.manuallyEdited) {
+                nameInput.value = this.value;
+            }
+        });
+
+        // Track manual edits to Asset Name
         nameInput.addEventListener('input', function () {
-            if (tagInput && this.value !== tagInput.value) {
+            if (this.value !== tagInput.value) {
                 this.dataset.manuallyEdited = '1';
             } else {
                 delete this.dataset.manuallyEdited;
             }
         });
+
         // Pre-mark as manually edited if a name already exists that differs from tag
-        if (tagInput && nameInput.value && nameInput.value !== tagInput.value) {
+        if (nameInput.value && nameInput.value !== tagInput.value) {
             nameInput.dataset.manuallyEdited = '1';
         }
     }
 });
 
 // ── Assigned Employee searchable dropdown ────────────────────────────────
-function editShowEmpList() {
-    const el = document.getElementById('editEmpList');
-    if (el) el.style.display = '';
-}
-function editHideEmpList() {
-    const el = document.getElementById('editEmpList');
-    if (el) el.style.display = 'none';
-}
-function editFilterEmp(query) {
-    const q = query.toLowerCase().trim();
-    document.querySelectorAll('#editEmpList li').forEach(li => {
-        const btn = li.querySelector('button');
-        const name = btn?.dataset.empname ?? '';
-        li.style.display = (!q || name.includes(q)) ? '' : 'none';
+(function () {
+    const searchInput = document.getElementById('editEmpSearchInput');
+    const empList     = document.getElementById('editEmpList');
+    const hiddenInput = document.getElementById('editAssignedEmployeeId');
+    if (!searchInput || !empList) return;
+
+    function showList()  { empList.style.display = ''; }
+    function hideList()  { empList.style.display = 'none'; }
+
+    function filterList(query) {
+        const q = query.toLowerCase().trim();
+        empList.querySelectorAll('li').forEach(li => {
+            const btn  = li.querySelector('button');
+            const name = btn?.dataset.empname ?? '';
+            li.style.display = (!q || name.includes(q)) ? '' : 'none';
+        });
+        showList();
+    }
+
+    function selectEmp(id, label) {
+        if (hiddenInput) hiddenInput.value = id;
+        searchInput.value = id ? label : '';
+        hideList();
+        onEmployeeChange(id);
+    }
+
+    searchInput.addEventListener('input', function () { filterList(this.value); });
+    searchInput.addEventListener('focus', showList);
+    searchInput.addEventListener('blur',  function () { setTimeout(hideList, 200); });
+
+    empList.querySelectorAll('button[data-emplabel]').forEach(btn => {
+        btn.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            selectEmp(this.dataset.empid, this.dataset.emplabel);
+        });
     });
-    editShowEmpList();
-}
-function editSelectEmp(id, label) {
-    const hidden = document.getElementById('editAssignedEmployeeId');
-    const search = document.getElementById('editEmpSearchInput');
-    if (hidden) hidden.value = id;
-    if (search) search.value = id ? label : '';
-    editHideEmpList();
-    onEmployeeChange(id);
-}
+
+    window.editSelectEmp = selectEmp;
+})();
 
 // ── Existing photo remove ─────────────────────────────────────────────────
 function removeExistingPhoto(btn) {
