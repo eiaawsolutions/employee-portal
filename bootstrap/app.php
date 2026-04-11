@@ -29,8 +29,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Redirect to login with a fresh CSRF token when session has expired (419)
-        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
-            return redirect()->route('login')->with('warning', 'Your session has expired. Please log in again.');
+        // Redirect to login with a fresh CSRF token when session has expired (419).
+        // Laravel's prepareException() converts TokenMismatchException to HttpException(419)
+        // before render callbacks run, so we must catch HttpException and check the status code.
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() === 419) {
+                return redirect()->route('login')->with('warning', 'Your session has expired. Please log in again.');
+            }
         });
     })->create();
