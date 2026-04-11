@@ -4,97 +4,104 @@
 
 @push('styles')
 <style>
-    .kpi-card { border: none; border-radius: 12px; transition: transform 0.15s; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .kpi-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
-    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; }
     .chart-card { border: 1px solid #e2e8f0; border-radius: 12px; }
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .stat-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .dash-widget .status-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .dash-widget .status-pill { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,.2); color: #fff; }
 </style>
 @endpush
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
 
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 {{-- ROW 1: TOP-LINE KPIs --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
-<div class="mb-2"><span class="section-title"><i class="bi bi-speedometer2 me-1"></i>Key Performance Indicators — {{ $year }}</span></div>
+<div class="section-header">
+    <div class="section-icon" style="background:#eff6ff;">
+        <i class="bi bi-speedometer2" style="font-size:16px;color:#2563eb;"></i>
+    </div>
+    <h6>Key Performance Indicators &mdash; {{ $year }}</h6>
+</div>
 <div class="row g-3 mb-4">
-    {{-- Active Employees --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#dbeafe;"><i class="bi bi-people-fill" style="font-size:20px;color:#2563eb;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-people-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalActive) }}</div>
+                        <div class="widget-label">Active Employees</div>
+                    </div>
                 </div>
-                <div class="kpi-value">{{ number_format($totalActive) }}</div>
-                <div class="kpi-label">Active Employees</div>
             </div>
         </div>
     </div>
-    {{-- New Hires YTD --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#d1fae5;"><i class="bi bi-person-plus-fill" style="font-size:20px;color:#10b981;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-person-plus-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalNewHires) }}</div>
+                        <div class="widget-label">New Hires YTD</div>
+                    </div>
                 </div>
-                <div class="kpi-value">{{ number_format($totalNewHires) }}</div>
-                <div class="kpi-label">New Hires YTD</div>
             </div>
         </div>
     </div>
-    {{-- Exits YTD --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #ef4444;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#fee2e2;"><i class="bi bi-person-dash-fill" style="font-size:20px;color:#ef4444;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-person-dash-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalExits) }}</div>
+                        <div class="widget-label">Exits YTD</div>
+                    </div>
                 </div>
-                <div class="kpi-value">{{ number_format($totalExits) }}</div>
-                <div class="kpi-label">Exits YTD</div>
             </div>
         </div>
     </div>
-    {{-- Turnover Rate --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #f59e0b;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#fef3c7;"><i class="bi bi-arrow-repeat" style="font-size:20px;color:#f59e0b;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-repeat" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ $turnoverRate }}%</div>
+                        <div class="widget-label">Turnover Rate</div>
+                    </div>
                 </div>
-                <div class="kpi-value">{{ $turnoverRate }}%</div>
-                <div class="kpi-label">Turnover Rate</div>
             </div>
         </div>
     </div>
-    {{-- YTD Payroll --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #8b5cf6;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#ede9fe;"><i class="bi bi-cash-stack" style="font-size:20px;color:#8b5cf6;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-cash-stack" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($payrollStats->gross ?? 0, 0) }}</div>
+                        <div class="widget-label">YTD Gross Payroll</div>
+                    </div>
                 </div>
-                <div class="kpi-value" style="font-size:20px;">RM {{ number_format($payrollStats->gross ?? 0, 0) }}</div>
-                <div class="kpi-label">YTD Gross Payroll</div>
             </div>
         </div>
     </div>
-    {{-- Avg Salary --}}
     <div class="col-6 col-md-3 col-xl-2">
-        <div class="card kpi-card h-100" style="border-left:4px solid #06b6d4;">
-            <div class="card-body p-3">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="kpi-icon" style="background:#cffafe;"><i class="bi bi-wallet2" style="font-size:20px;color:#06b6d4;"></i></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-wallet2" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($avgSalary ?? 0, 0) }}</div>
+                        <div class="widget-label">Average Salary</div>
+                    </div>
                 </div>
-                <div class="kpi-value" style="font-size:20px;">RM {{ number_format($avgSalary ?? 0, 0) }}</div>
-                <div class="kpi-label">Average Salary</div>
             </div>
         </div>
     </div>
@@ -104,46 +111,62 @@
 {{-- ROW 2: Secondary KPIs --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 <div class="row g-3 mb-4">
-    {{-- Attendance Rate --}}
     <div class="col-6 col-md-3">
-        <div class="card kpi-card h-100" style="border-left:4px solid #14b8a6;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ $attendanceRate }}%</div>
-                <div class="kpi-label">Attendance Rate</div>
-            </div>
-        </div>
-    </div>
-    {{-- Leave Days Taken --}}
-    <div class="col-6 col-md-3">
-        <div class="card kpi-card h-100" style="border-left:4px solid #ec4899;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($leaveStats->total_days_taken ?? 0, 0) }}</div>
-                <div class="kpi-label">Leave Days Taken YTD</div>
-            </div>
-        </div>
-    </div>
-    {{-- Total Assets --}}
-    <div class="col-6 col-md-3">
-        <div class="card kpi-card h-100" style="border-left:4px solid #f97316;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($assetStats['total']) }}</div>
-                <div class="kpi-label">Total Assets</div>
-                <div class="mt-1">
-                    <span class="stat-pill" style="background:#d1fae5;color:#059669;">{{ $assetStats['available'] }} avail</span>
-                    <span class="stat-pill" style="background:#dbeafe;color:#2563eb;">{{ $assetStats['assigned'] }} in use</span>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#14b8a6,#0f766e);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar-check-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ $attendanceRate }}%</div>
+                        <div class="widget-label">Attendance Rate</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    {{-- Claims Approved --}}
     <div class="col-6 col-md-3">
-        <div class="card kpi-card h-100" style="border-left:4px solid #a855f7;">
-            <div class="card-body p-3">
-                <div class="kpi-value" style="font-size:20px;">RM {{ number_format($claimsStats->approved_amount ?? 0, 0) }}</div>
-                <div class="kpi-label">Claims Approved YTD</div>
-                @if(($claimsStats->pending_amount ?? 0) > 0)
-                <div class="mt-1"><span class="stat-pill" style="background:#fef3c7;color:#d97706;">RM {{ number_format($claimsStats->pending_amount, 0) }} pending</span></div>
-                @endif
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#ec4899,#be185d);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar2-week-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ number_format($leaveStats->total_days_taken ?? 0, 0) }}</div>
+                        <div class="widget-label">Leave Days YTD</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#f97316,#c2410c);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-laptop-fill" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:26px;">{{ number_format($assetStats['total']) }}</div>
+                        <div class="widget-label">Total Assets</div>
+                        <div class="status-pills">
+                            <span class="status-pill">{{ $assetStats['available'] }} avail</span>
+                            <span class="status-pill">{{ $assetStats['assigned'] }} in use</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header" style="background:linear-gradient(135deg,#a855f7,#7c3aed);padding:16px 18px 12px;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-receipt-cutoff" style="font-size:18px;"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($claimsStats->approved_amount ?? 0, 0) }}</div>
+                        <div class="widget-label">Claims Approved YTD</div>
+                        @if(($claimsStats->pending_amount ?? 0) > 0)
+                        <div class="status-pills"><span class="status-pill">RM {{ number_format($claimsStats->pending_amount, 0) }} pending</span></div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -17,60 +17,47 @@
 </div>
 
 {{-- Financial Ratios --}}
+@include('partials.dashboard-widgets-style')
+<div class="section-header">
+    <div class="section-icon" style="background:#f0fdf4;"><i class="bi bi-bar-chart-line-fill" style="font-size:16px;color:#16a34a;"></i></div>
+    <h6>Financial Ratios &amp; KPIs</h6>
+</div>
 <div class="row g-3 mb-4">
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Current Ratio</div>
-                <div class="fs-3 fw-bold {{ ($ratios['currentRatio'] ?? 0) >= 1 ? 'text-success' : 'text-danger' }}">
-                    {{ number_format($ratios['currentRatio'] ?? 0, 2) }}
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ratios['currentRatio'] ?? 0) >= 1 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-speedometer" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($ratios['currentRatio'] ?? 0, 2) }}</div><div class="widget-label">Current Ratio</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Profit Margin</div>
-                <div class="fs-3 fw-bold {{ ($ratios['profitMargin'] ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
-                    {{ number_format(($ratios['profitMargin'] ?? 0) * 100, 1) }}%
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ratios['profitMargin'] ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-percent" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format(($ratios['profitMargin'] ?? 0) * 100, 1) }}%</div><div class="widget-label">Profit Margin</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">YTD Revenue</div>
-                <div class="fs-5 fw-bold text-primary">RM {{ number_format($ytdRevenue ?? 0, 0) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-up-arrow" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdRevenue ?? 0, 0) }}</div><div class="widget-label">YTD Revenue</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">YTD Expenses</div>
-                <div class="fs-5 fw-bold text-danger">RM {{ number_format($ytdExpenses ?? 0, 0) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-down-arrow" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdExpenses ?? 0, 0) }}</div><div class="widget-label">YTD Expenses</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">YTD Net Profit</div>
-                <div class="fs-5 fw-bold {{ ($ytdNetProfit ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
-                    RM {{ number_format($ytdNetProfit ?? 0, 0) }}
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ytdNetProfit ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-trophy-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdNetProfit ?? 0, 0) }}</div><div class="widget-label">YTD Net Profit</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center h-100">
-            <div class="card-body">
-                <div class="text-muted small">Cash Position</div>
-                <div class="fs-5 fw-bold">RM {{ number_format($cashPosition ?? 0, 0) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-2">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-bank2" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($cashPosition ?? 0, 0) }}</div><div class="widget-label">Cash Position</div></div></div>
+        </div></div>
     </div>
 </div>
 

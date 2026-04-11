@@ -8,54 +8,53 @@
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
     .rate-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
 </style>
 @endpush
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
+
+{{-- Section Header --}}
+<div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-calendar-check-fill text-white" style="font-size:15px;"></i>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#1e293b;">Attendance Overview</div>
+</div>
 
 {{-- KPI Row --}}
 @php
     $avgRate = collect($attendanceTrend)->where('rate', '>', 0)->avg('rate');
     $totalOt = collect($attendanceTrend)->sum('ot_hours');
     $totalAbsent = collect($attendanceTrend)->sum('absent');
+    $avgLateRate = collect($attendanceTrend)->where('late_rate', '>', 0)->avg('late_rate');
 @endphp
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ $avgRate ? number_format($avgRate, 1) : '—' }}%</div>
-                <div class="kpi-label">Avg Attendance Rate</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#14b8a6,#0f766e);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar-check-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ $avgRate ? number_format($avgRate, 1) : '—' }}%</div><div class="widget-label">Avg Attendance Rate</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #ef4444;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalAbsent) }}</div>
-                <div class="kpi-label">Total Absent Days YTD</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar-x-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalAbsent) }}</div><div class="widget-label">Absent Days YTD</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalOt, 1) }}</div>
-                <div class="kpi-label">Total Overtime Hours YTD</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-clock-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalOt, 1) }}</div><div class="widget-label">Overtime Hours YTD</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                @php $avgLateRate = collect($attendanceTrend)->where('late_rate', '>', 0)->avg('late_rate'); @endphp
-                <div class="kpi-value">{{ $avgLateRate ? number_format($avgLateRate, 1) : '—' }}%</div>
-                <div class="kpi-label">Avg Late Arrival Rate</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-alarm-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ $avgLateRate ? number_format($avgLateRate, 1) : '—' }}%</div><div class="widget-label">Avg Late Rate</div></div></div>
+        </div></div>
     </div>
 </div>
 

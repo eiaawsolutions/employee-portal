@@ -8,48 +8,46 @@
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; }
-    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
 </style>
 @endpush
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
+
+{{-- Section Header --}}
+<div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-people-fill text-white" style="font-size:15px;"></i>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#1e293b;">Workforce Overview</div>
+</div>
 
 {{-- KPI Row --}}
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalActive) }}</div>
-                <div class="kpi-label">Total Active Employees</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-people-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalActive) }}</div><div class="widget-label">Total Active Employees</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ count($byDepartment) }}</div>
-                <div class="kpi-label">Departments</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-diagram-3-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ count($byDepartment) }}</div><div class="widget-label">Departments</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ count($byCompany) }}</div>
-                <div class="kpi-label">Companies</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-building-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ count($byCompany) }}</div><div class="widget-label">Companies</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #8b5cf6;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ count($byDesignation) }}</div>
-                <div class="kpi-label">Unique Designations</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-person-badge-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ count($byDesignation) }}</div><div class="widget-label">Unique Designations</div></div></div>
+        </div></div>
     </div>
 </div>
 

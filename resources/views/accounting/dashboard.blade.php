@@ -19,81 +19,65 @@
 </div>
 
 {{-- KPI Cards --}}
+@include('partials.dashboard-widgets-style')
+<div class="section-header">
+    <div class="section-icon" style="background:#eff6ff;"><i class="bi bi-calculator" style="font-size:16px;color:#2563eb;"></i></div>
+    <h6>Accounting Overview</h6>
+</div>
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Monthly Revenue</div>
-                <div class="fs-4 fw-bold text-success">RM {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-up-arrow" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($monthlyRevenue ?? 0, 2) }}</div><div class="widget-label">Monthly Revenue</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Monthly Expenses</div>
-                <div class="fs-4 fw-bold text-danger">RM {{ number_format($monthlyExpenses ?? 0, 2) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-down-arrow" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($monthlyExpenses ?? 0, 2) }}</div><div class="widget-label">Monthly Expenses</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Receivable Outstanding</div>
-                <div class="fs-4 fw-bold text-primary">RM {{ number_format($totalReceivable ?? 0, 2) }}</div>
-                @if(($overdueInvoices ?? 0) > 0)
-                    <span class="badge bg-danger">{{ $overdueInvoices }} overdue</span>
-                @endif
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-down-left-circle-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalReceivable ?? 0, 2) }}</div><div class="widget-label">Receivable Outstanding</div>
+            @if(($overdueInvoices ?? 0) > 0)<div style="margin-top:4px;"><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">{{ $overdueInvoices }} overdue</span></div>@endif
+            </div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Payable Outstanding</div>
-                <div class="fs-4 fw-bold text-warning">RM {{ number_format($totalPayable ?? 0, 2) }}</div>
-                @if(($overdueBills ?? 0) > 0)
-                    <span class="badge bg-danger">{{ $overdueBills }} overdue</span>
-                @endif
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-up-right-circle-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalPayable ?? 0, 2) }}</div><div class="widget-label">Payable Outstanding</div>
+            @if(($overdueBills ?? 0) > 0)<div style="margin-top:4px;"><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">{{ $overdueBills }} overdue</span></div>@endif
+            </div></div>
+        </div></div>
     </div>
 </div>
-
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Net Profit (YTD)</div>
-                <div class="fs-4 fw-bold {{ ($netProfit ?? 0) >= 0 ? 'text-success' : 'text-danger' }}">
-                    RM {{ number_format($netProfit ?? 0, 2) }}
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($netProfit ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-trophy-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($netProfit ?? 0, 2) }}</div><div class="widget-label">Net Profit (YTD)</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Bank Balances</div>
-                <div class="fs-4 fw-bold">RM {{ number_format($totalBankBalance ?? 0, 2) }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-bank2" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalBankBalance ?? 0, 2) }}</div><div class="widget-label">Bank Balances</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Pending Invoices</div>
-                <div class="fs-4 fw-bold">{{ $pendingInvoices ?? 0 }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-file-earmark-text-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ $pendingInvoices ?? 0 }}</div><div class="widget-label">Pending Invoices</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="text-muted small">Pending Bills</div>
-                <div class="fs-4 fw-bold">{{ $pendingBills ?? 0 }}</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f97316,#c2410c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-file-earmark-minus-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ $pendingBills ?? 0 }}</div><div class="widget-label">Pending Bills</div></div></div>
+        </div></div>
     </div>
 </div>
 

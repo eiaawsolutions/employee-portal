@@ -8,57 +8,50 @@
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .kpi-value { font-size: 24px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
     .alert-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
 </style>
 @endpush
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
 
 {{-- KPI Row --}}
 @php $totalAssets = collect($statusBreakdown)->sum('total'); @endphp
+<div class="section-header">
+    <div class="section-icon" style="background:#fff7ed;"><i class="bi bi-laptop" style="font-size:16px;color:#f97316;"></i></div>
+    <h6>Asset KPIs</h6>
+</div>
 <div class="row g-3 mb-4">
-    <div class="col-md-2">
-        <div class="card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalAssets) }}</div>
-                <div class="kpi-label">Total Assets</div>
-            </div>
-        </div>
+    <div class="col-6 col-md">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-box-seam-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalAssets) }}</div><div class="widget-label">Total Assets</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($ownership['company_count']) }}</div>
-                <div class="kpi-label">Company Owned</div>
-            </div>
-        </div>
+    <div class="col-6 col-md">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-building-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($ownership['company_count']) }}</div><div class="widget-label">Company Owned</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-2">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($ownership['rental_count']) }}</div>
-                <div class="kpi-label">Rental</div>
-            </div>
-        </div>
+    <div class="col-6 col-md">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-truck-front-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($ownership['rental_count']) }}</div><div class="widget-label">Rental</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #8b5cf6;">
-            <div class="card-body p-3">
-                <div class="kpi-value">RM {{ number_format($ownership['company_cost'], 0) }}</div>
-                <div class="kpi-label">Total Purchase Cost</div>
-            </div>
-        </div>
+    <div class="col-6 col-md">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-cash-stack" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($ownership['company_cost'], 0) }}</div><div class="widget-label">Purchase Cost</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #ef4444;">
-            <div class="card-body p-3">
-                <div class="kpi-value">RM {{ number_format($ownership['rental_monthly'], 0) }}</div>
-                <div class="kpi-label">Monthly Rental Cost</div>
-            </div>
-        </div>
+    <div class="col-6 col-md">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-currency-dollar" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($ownership['rental_monthly'], 0) }}</div><div class="widget-label">Monthly Rental</div></div></div>
+        </div></div>
     </div>
 </div>
 

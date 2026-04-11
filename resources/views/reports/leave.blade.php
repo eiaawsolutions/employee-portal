@@ -8,8 +8,6 @@
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
     .utilization-bar { height: 8px; border-radius: 4px; background: #e2e8f0; overflow: hidden; }
     .utilization-bar .fill { height: 100%; border-radius: 4px; }
 </style>
@@ -17,6 +15,15 @@
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
+
+{{-- Section Header --}}
+<div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#ec4899,#be185d);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-calendar2-week-fill text-white" style="font-size:15px;"></i>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#1e293b;">Leave Overview</div>
+</div>
 
 {{-- KPI Row --}}
 @php
@@ -24,37 +31,29 @@
     $totalApps = collect($byType)->sum('count');
 @endphp
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #ec4899;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalDays, 1) }}</div>
-                <div class="kpi-label">Total Leave Days (Approved)</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ec4899,#be185d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar2-week-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalDays, 1) }}</div><div class="widget-label">Total Leave Days</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ number_format($totalApps) }}</div>
-                <div class="kpi-label">Approved Applications</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-check-circle-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ number_format($totalApps) }}</div><div class="widget-label">Approved Applications</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #f59e0b;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ count($byType) }}</div>
-                <div class="kpi-label">Leave Types Used</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-tags-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ count($byType) }}</div><div class="widget-label">Leave Types Used</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                <div class="kpi-value">{{ count($byDepartment) }}</div>
-                <div class="kpi-label">Departments with Leave</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-diagram-3-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:26px;">{{ count($byDepartment) }}</div><div class="widget-label">Depts with Leave</div></div></div>
+        </div></div>
     </div>
 </div>
 

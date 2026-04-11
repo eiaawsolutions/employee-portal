@@ -6,40 +6,63 @@
 <div class="container-fluid">
 
     {{-- Stats Cards --}}
+    @include('partials.dashboard-widgets-style')
+    <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7;">
+            <i class="bi bi-receipt-cutoff" style="font-size:16px;color:#d97706;"></i>
+        </div>
+        <h6>Claims Overview</h6>
+    </div>
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="text-warning mb-1"><i class="bi bi-hourglass-split" style="font-size:1.5rem;"></i></div>
-                    <h4 class="mb-0">{{ $stats['pending'] ?? 0 }}</h4>
-                    <small class="text-muted">Pending Review</small>
+            <div class="card dash-widget h-100">
+                <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-hourglass-split"></i></div>
+                        <div>
+                            <div class="widget-number">{{ $stats['pending'] ?? 0 }}</div>
+                            <div class="widget-label">Pending Review</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="text-success mb-1"><i class="bi bi-check-circle" style="font-size:1.5rem;"></i></div>
-                    <h4 class="mb-0">{{ $stats['approved'] ?? 0 }}</h4>
-                    <small class="text-muted">HR Approved</small>
+            <div class="card dash-widget h-100">
+                <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-check-circle-fill"></i></div>
+                        <div>
+                            <div class="widget-number">{{ $stats['approved'] ?? 0 }}</div>
+                            <div class="widget-label">HR Approved</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="text-primary mb-1"><i class="bi bi-cash-stack" style="font-size:1.5rem;"></i></div>
-                    <h4 class="mb-0">RM {{ number_format($stats['total_approved'] ?? 0, 2) }}</h4>
-                    <small class="text-muted">Approved This Month</small>
+            <div class="card dash-widget h-100">
+                <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-cash-stack"></i></div>
+                        <div>
+                            <div class="widget-number" style="font-size:24px;">RM {{ number_format($stats['total_approved'] ?? 0, 2) }}</div>
+                            <div class="widget-label">Approved This Month</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body text-center">
-                    <div class="text-info mb-1"><i class="bi bi-receipt" style="font-size:1.5rem;"></i></div>
-                    <h4 class="mb-0">{{ $stats['total'] ?? 0 }}</h4>
-                    <small class="text-muted">Total Claims</small>
+            <div class="card dash-widget h-100">
+                <div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-receipt"></i></div>
+                        <div>
+                            <div class="widget-number">{{ $stats['total'] ?? 0 }}</div>
+                            <div class="widget-label">Total Claims</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

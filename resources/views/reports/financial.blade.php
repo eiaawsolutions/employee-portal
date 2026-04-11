@@ -8,48 +8,47 @@
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
-    .kpi-value { font-size: 24px; font-weight: 700; line-height: 1; color: #1e293b; }
-    .kpi-label { font-size: 12px; color: #64748b; margin-top: 2px; }
 </style>
 @endpush
 
 @section('content')
 @include('reports.partials.report-header')
+@include('partials.dashboard-widgets-style')
+
+{{-- Section Header --}}
+<div class="d-flex align-items-center gap-2 mb-3">
+    <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-cash-stack text-white" style="font-size:15px;"></i>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#1e293b;">Financial Overview</div>
+</div>
 
 {{-- KPI Row --}}
+@php $totalClaimsApproved = collect($claimsTrend)->sum('amount'); @endphp
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #8b5cf6;">
-            <div class="card-body p-3">
-                <div class="kpi-value">RM {{ number_format($ytdGross, 0) }}</div>
-                <div class="kpi-label">YTD Gross Payroll</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-cash-stack" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($ytdGross, 0) }}</div><div class="widget-label">YTD Gross Payroll</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #2563eb;">
-            <div class="card-body p-3">
-                <div class="kpi-value">RM {{ number_format($ytdNet, 0) }}</div>
-                <div class="kpi-label">YTD Net Payroll</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-wallet2" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($ytdNet, 0) }}</div><div class="widget-label">YTD Net Payroll</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #ef4444;">
-            <div class="card-body p-3">
-                <div class="kpi-value">RM {{ number_format($ytdEmployerCost, 0) }}</div>
-                <div class="kpi-label">YTD Employer Cost</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-building-fill" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($ytdEmployerCost, 0) }}</div><div class="widget-label">YTD Employer Cost</div></div></div>
+        </div></div>
     </div>
-    <div class="col-md-3">
-        <div class="card h-100" style="border-left:4px solid #10b981;">
-            <div class="card-body p-3">
-                @php $totalClaimsApproved = collect($claimsTrend)->sum('amount'); @endphp
-                <div class="kpi-value">RM {{ number_format($totalClaimsApproved, 0) }}</div>
-                <div class="kpi-label">YTD Claims Paid</div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-receipt-cutoff" style="font-size:18px;"></i></div>
+            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalClaimsApproved, 0) }}</div><div class="widget-label">YTD Claims Paid</div></div></div>
+        </div></div>
     </div>
 </div>
 
