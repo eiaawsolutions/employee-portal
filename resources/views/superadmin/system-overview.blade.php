@@ -98,6 +98,9 @@
     .mc-claims .card-header      { background: linear-gradient(135deg, #d63384, #ab296a); color: #fff; }
     .mc-reports .card-header     { background: linear-gradient(135deg, #1a237e, #283593); color: #fff; }
     .mc-accounting .card-header  { background: linear-gradient(135deg, #00695c, #00897b); color: #fff; }
+    .mc-announcements .card-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+    .mc-knowledge .card-header { background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff; }
+    .mc-company .card-header { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
 
     .flow-section {
         background: #f8f9fa;
@@ -355,7 +358,7 @@
 {{-- 8 MODULE CARDS --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
 <h3 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap text-primary me-2"></i>System Modules</h3>
-<p class="text-muted mb-4">Ten integrated modules covering human resource management and AI-powered accounting.</p>
+<p class="text-muted mb-4">Thirteen integrated modules covering human resource management, AI-powered accounting, and administration.</p>
 
 <div class="row g-4 mb-5">
     {{-- Onboarding --}}
@@ -370,7 +373,8 @@
                     <li>Auto-activation on start date</li>
                     <li>IT task auto-generation</li>
                     <li>Consent tracking & re-acknowledgement</li>
-                    <li>CSV import/export</li>
+                    <li>CSV export with date/company filters</li>
+                    <li>Overview dashboard (YTD &amp; monthly by company)</li>
                 </ul>
             </div>
         </div>
@@ -389,6 +393,8 @@
                     <li>Edit log with re-consent flow</li>
                     <li>Manager hierarchy tracking</li>
                     <li>Self-service profile editing</li>
+                    <li>CSV import/export (29 fields)</li>
+                    <li>Overview cards (by company, dept, type with filters)</li>
                 </ul>
             </div>
         </div>
@@ -418,13 +424,15 @@
             <div class="card-header"><i class="bi bi-laptop"></i> IT Assets</div>
             <div class="card-body">
                 <ul class="feature-list">
-                    <li>Full asset inventory tracking</li>
+                    <li>Full asset inventory with cascading category/type/brand</li>
                     <li>Assignment & provisioning workflow</li>
                     <li>AARF with dual acknowledgement (email token)</li>
                     <li>Rental & warranty tracking</li>
-                    <li>Asset disposal management</li>
-                    <li>Photo documentation (multi-file)</li>
-                    <li>CSV import/export</li>
+                    <li>Decommissioning with reason tracking</li>
+                    <li>Multi-invoice upload & photo documentation</li>
+                    <li>CSV import/export with auto-spec parsing</li>
+                    <li>Overview cards (by company, ownership, brand)</li>
+                    <li>7 filter dimensions (category, type, brand, status, ownership, vendor, company)</li>
                 </ul>
             </div>
         </div>
@@ -443,6 +451,7 @@
                     <li>Half-day leave support</li>
                     <li>Public holiday management</li>
                     <li>Automated manager reminders</li>
+                    <li>"On Leave This Week" dashboard widget</li>
                 </ul>
             </div>
         </div>
@@ -497,6 +506,7 @@
                     <li>Two-tier approval + bulk approve</li>
                     <li>CSV export with security protection</li>
                     <li>Auto payroll integration on approval</li>
+                    <li>Claims overview dashboard with status KPIs</li>
                 </ul>
             </div>
         </div>
@@ -537,6 +547,57 @@
                     <li>AI invoice OCR (OpenAI Vision)</li>
                     <li>AI finance chatbot</li>
                     <li>Executive financial dashboard</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- Announcements --}}
+    <div class="col-md-6 col-lg-3">
+        <div class="card module-card mc-announcements">
+            <div class="card-header"><i class="bi bi-megaphone"></i> Announcements</div>
+            <div class="card-body">
+                <ul class="feature-list">
+                    <li>Company-wide news & announcements</li>
+                    <li>Multi-company targeting (per announcement)</li>
+                    <li>Multi-file attachments (images + PDFs)</li>
+                    <li>Dashboard widget with latest 5 entries</li>
+                    <li>Birthday babies of the month widget</li>
+                    <li>On Leave This Week widget</li>
+                    <li>Announcement email notifications</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- Knowledge Base --}}
+    <div class="col-md-6 col-lg-3">
+        <div class="card module-card mc-knowledge">
+            <div class="card-header"><i class="bi bi-book"></i> Knowledge Base</div>
+            <div class="card-body">
+                <ul class="feature-list">
+                    <li>Searchable help topics by module</li>
+                    <li>Password-protected admin access</li>
+                    <li>Markdown content rendering</li>
+                    <li>Module-organized topic categories</li>
+                    <li>Auto-cached metadata (1-hour TTL)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- Company Management --}}
+    <div class="col-md-6 col-lg-3">
+        <div class="card module-card mc-company">
+            <div class="card-header"><i class="bi bi-building-gear"></i> Company Mgmt</div>
+            <div class="card-body">
+                <ul class="feature-list">
+                    <li>Multi-company registration</li>
+                    <li>Statutory details (KWSP, SOCSO, EIS, TIN)</li>
+                    <li>Company logo upload</li>
+                    <li>Address & contact information</li>
+                    <li>Cross-module company normalization</li>
+                    <li>Company-scoped data filtering throughout system</li>
                 </ul>
             </div>
         </div>
@@ -716,7 +777,9 @@
                 <div><i class="bi bi-check-circle-fill me-2"></i>Employment Act 1955 Compliant</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>Real-time Threat Detection</div>
                 <div><i class="bi bi-check-circle-fill me-2"></i>HMAC Log Integrity Chain</div>
-                <div><i class="bi bi-check-circle-fill me-2"></i>Weekly Compliance Sweep</div>
+                <div><i class="bi bi-check-circle-fill me-2"></i>Two-Factor Authentication (TOTP)</div>
+                <div><i class="bi bi-check-circle-fill me-2"></i>Weekly Pending Compliance Sweep</div>
+                <div><i class="bi bi-check-circle-fill me-2"></i>CSP Nonce-based Script Security</div>
             </div>
 
             <div class="mt-3" style="font-size:0.72rem;opacity:0.7;">

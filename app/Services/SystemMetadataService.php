@@ -204,6 +204,9 @@ class SystemMetadataService
             ['name' => 'Expense Claims',      'icon' => 'bi-receipt-cutoff',      'color' => '#d63384'],
             ['name' => 'C-Suite Reports',     'icon' => 'bi-graph-up-arrow',      'color' => '#1a237e'],
             ['name' => 'AI Accounting',       'icon' => 'bi-calculator',          'color' => '#00695c'],
+            ['name' => 'Announcements',       'icon' => 'bi-megaphone',           'color' => '#f59e0b'],
+            ['name' => 'Knowledge Base',      'icon' => 'bi-book',                'color' => '#6366f1'],
+            ['name' => 'Company Management',  'icon' => 'bi-building-gear',       'color' => '#0ea5e9'],
         ];
     }
 
