@@ -320,8 +320,8 @@
                     <img src="{{ asset('storage/'.$photo) }}"
                          style="width:80px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
                     <input type="hidden" name="photo_keep_paths[]" value="{{ $photo }}" class="photo-keep-input">
-                    <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0"
-                            style="font-size:11px;" onclick="removeExistingPhoto(this)" title="Remove">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0 photo-remove-btn"
+                            style="font-size:11px;" title="Remove">
                         <i class="bi bi-x me-1"></i>Remove
                     </button>
                 </div>
@@ -621,15 +621,22 @@ document.addEventListener('DOMContentLoaded', function () {
     window.editSelectEmp = selectEmp;
 })();
 
-// ── Existing photo remove ─────────────────────────────────────────────────
-function removeExistingPhoto(btn) {
-    const item = btn.closest('.photo-keep-item');
-    const keepInput = item.querySelector('.photo-keep-input');
-    if (keepInput) keepInput.disabled = true;
-    item.style.opacity = '0.4';
-    item.style.pointerEvents = 'none';
-    btn.disabled = true;
-}
+// ── Existing photo remove (event delegation) ────────────────────────────
+(function () {
+    var list = document.getElementById('photoExistingList');
+    if (list) {
+        list.addEventListener('click', function (e) {
+            var btn = e.target.closest('.photo-remove-btn');
+            if (!btn) return;
+            var item = btn.closest('.photo-keep-item');
+            var keepInput = item.querySelector('.photo-keep-input');
+            if (keepInput) keepInput.disabled = true;
+            item.style.opacity = '0.4';
+            item.style.pointerEvents = 'none';
+            btn.disabled = true;
+        });
+    }
+})();
 
 // ── Image compression utility ─────────────────────────────────────────────
 function compressImage(file, maxWidth = 1920, maxHeight = 1920, quality = 0.8) {
@@ -681,10 +688,6 @@ document.getElementById('photoNewFileInput').addEventListener('change', async fu
     renderPhotoNewList();
     this.value = '';
 });
-function removePhotoNew(i) {
-    photoNewFiles.splice(i, 1);
-    renderPhotoNewList();
-}
 function renderPhotoNewList() {
     const list   = document.getElementById('photoNewList');
     const hidden = document.getElementById('photoNewHidden');
@@ -695,8 +698,8 @@ function renderPhotoNewList() {
         list.innerHTML += `<div class="d-flex flex-column align-items-center gap-1" style="width:80px;">
             <img src="${url}" style="width:80px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
             <span class="text-muted" style="font-size:10px;">${sizeKB} KB</span>
-            <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0"
-                    style="font-size:11px;" onclick="removePhotoNew(${i})">
+            <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0 photo-new-remove-btn"
+                    style="font-size:11px;" data-index="${i}">
                 <i class="bi bi-x me-1"></i>Remove
             </button>
         </div>`;
@@ -713,6 +716,14 @@ function renderPhotoNewList() {
         hidden.appendChild(inp);
     }
 }
+// Event delegation for dynamically-rendered new photo Remove buttons
+document.getElementById('photoNewList').addEventListener('click', function (e) {
+    var btn = e.target.closest('.photo-new-remove-btn');
+    if (!btn) return;
+    var idx = parseInt(btn.dataset.index, 10);
+    photoNewFiles.splice(idx, 1);
+    renderPhotoNewList();
+});
 </script>
 @endpush
 

@@ -792,10 +792,6 @@ document.getElementById('addPhotoNewFileInput').addEventListener('change', async
     renderAddFormPhotoList();
     this.value = '';
 });
-function removeAddFormPhoto(i) {
-    addFormPhotoFiles.splice(i, 1);
-    renderAddFormPhotoList();
-}
 function renderAddFormPhotoList() {
     const list   = document.getElementById('addPhotoNewList');
     const hidden = document.getElementById('addPhotoNewHidden');
@@ -806,8 +802,8 @@ function renderAddFormPhotoList() {
         list.innerHTML += `<div class="d-flex flex-column align-items-center gap-1" style="width:80px;">
             <img src="${url}" style="width:80px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
             <span class="text-muted" style="font-size:10px;">${sizeKB} KB</span>
-            <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0"
-                    style="font-size:11px;" onclick="removeAddFormPhoto(${i})">
+            <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0 add-photo-remove-btn"
+                    style="font-size:11px;" data-index="${i}">
                 <i class="bi bi-x me-1"></i>Remove
             </button>
         </div>`;
@@ -824,6 +820,14 @@ function renderAddFormPhotoList() {
         hidden.appendChild(inp);
     }
 }
+// Event delegation for dynamically-rendered add-form photo Remove buttons
+document.getElementById('addPhotoNewList').addEventListener('click', function (e) {
+    var btn = e.target.closest('.add-photo-remove-btn');
+    if (!btn) return;
+    var idx = parseInt(btn.dataset.index, 10);
+    addFormPhotoFiles.splice(idx, 1);
+    renderAddFormPhotoList();
+});
 
 /* ── Cascading Category → Type → Brand ─────────────────────────────── */
 const assetCatConfig = @json(config('asset-categories'));
