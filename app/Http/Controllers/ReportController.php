@@ -25,6 +25,39 @@ class ReportController extends Controller
         }
     }
 
+    /**
+     * Build a company name resolver that normalizes variants to registered canonical names.
+     * E.g. "Enlinea Sdn Bhd" and "Enlinea Sdn. Bhd." both resolve to the registered form.
+     */
+    private function companyResolver(): \Closure
+    {
+        $normaliseCo = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
+        $canonMap = [];
+        foreach (Company::orderBy('name')->pluck('name') as $name) {
+            $canonMap[$normaliseCo($name)] = $name;
+        }
+        return fn(?string $raw) => $canonMap[$normaliseCo(trim($raw ?? ''))] ?? (trim($raw ?? '') ?: 'Unspecified');
+    }
+
+    /**
+     * Normalize and merge a collection of rows with a company-like field.
+     * Returns a collection of objects with label + total (+ any extra numeric fields summed).
+     */
+    private function mergeByCompany($rows, string $field = 'label', array $sumFields = ['total']): \Illuminate\Support\Collection
+    {
+        $resolveCo = $this->companyResolver();
+        $merged = [];
+        foreach ($rows as $row) {
+            $key = $resolveCo($row->$field);
+            if (!isset($merged[$key])) {
+                $merged[$key] = (object) [$field => $key];
+                foreach ($sumFields as $f) $merged[$key]->$f = 0;
+            }
+            foreach ($sumFields as $f) $merged[$key]->$f += ($row->$f ?? 0);
+        }
+        return collect($merged)->sortByDesc('total')->values();
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // EXECUTIVE DASHBOARD — all KPIs on one page
     // ═══════════════════════════════════════════════════════════════════
@@ -78,10 +111,13 @@ class ReportController extends Controller
             ->selectRaw("COALESCE(NULLIF(TRIM(department),''), 'Unspecified') as dept, COUNT(*) as total")
             ->groupBy('dept')->orderByDesc('total')->get();
 
-        // Company distribution
-        $companyDistribution = Employee::whereNull('active_until')
-            ->selectRaw("COALESCE(NULLIF(TRIM(company),''), 'Unspecified') as comp, COUNT(*) as total")
-            ->groupBy('comp')->orderByDesc('total')->get();
+        // Company distribution (normalized)
+        $companyDistribution = $this->mergeByCompany(
+            Employee::whereNull('active_until')
+                ->selectRaw("COALESCE(NULLIF(TRIM(company),''), 'Unspecified') as label, COUNT(*) as total")
+                ->groupBy('label')->get(),
+            'label', ['total']
+        );
 
         // Employment type breakdown
         $empTypeBreakdown = Employee::whereNull('active_until')
@@ -267,10 +303,12 @@ class ReportController extends Controller
 
         $totalActive = $baseQ()->count();
 
-        // By company
-        $byCompany = $baseQ()
-            ->selectRaw("COALESCE(NULLIF(TRIM(company),''), 'Unspecified') as label, COUNT(*) as total")
-            ->groupBy('label')->orderByDesc('total')->get();
+        // By company (normalized)
+        $byCompany = $this->mergeByCompany(
+            $baseQ()->selectRaw("COALESCE(NULLIF(TRIM(company),''), 'Unspecified') as label, COUNT(*) as total")
+                ->groupBy('label')->get(),
+            'label', ['total']
+        );
 
         // By department
         $byDepartment = $baseQ()
@@ -659,6 +697,7 @@ class ReportController extends Controller
         $this->authorize();
 
         $companies = Company::orderBy('name')->pluck('name')->toArray();
+        $resolveCo = $this->companyResolver();
 
         // Status overview
         $statusBreakdown = AssetInventory::selectRaw('status, COUNT(*) as total')
@@ -676,10 +715,18 @@ class ReportController extends Controller
             'rental_monthly' => AssetInventory::where('ownership_type', 'rental')->sum('rental_cost_per_month'),
         ];
 
-        // By company (for company-owned)
-        $byCompanyOwned = AssetInventory::where('ownership_type', 'company')
+        // By company (for company-owned) — normalized
+        $rawByCompany = AssetInventory::where('ownership_type', 'company')
             ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as label, COUNT(*) as total, SUM(purchase_cost) as cost")
-            ->groupBy('label')->orderByDesc('total')->get();
+            ->groupBy('label')->get();
+        $mergedCompany = [];
+        foreach ($rawByCompany as $row) {
+            $key = $resolveCo($row->label);
+            if (!isset($mergedCompany[$key])) $mergedCompany[$key] = (object) ['label' => $key, 'total' => 0, 'cost' => 0];
+            $mergedCompany[$key]->total += $row->total;
+            $mergedCompany[$key]->cost += $row->cost;
+        }
+        $byCompanyOwned = collect($mergedCompany)->sortByDesc('total')->values();
 
         // By rental vendor
         $byRentalVendor = AssetInventory::where('ownership_type', 'rental')
@@ -690,18 +737,39 @@ class ReportController extends Controller
         $conditionBreakdown = AssetInventory::selectRaw("COALESCE(asset_condition, 'unknown') as cond, COUNT(*) as total")
             ->groupBy('cond')->orderByDesc('total')->get();
 
-        // Rental by Vendor → Company Supplied To → Asset Type → Brand
-        $rentalByVendorBrand = AssetInventory::where('ownership_type', 'rental')
+        // Rental by Vendor → Company Supplied To → Asset Type → Brand (normalized)
+        $rawRentalBrand = AssetInventory::where('ownership_type', 'rental')
             ->selectRaw("COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, COALESCE(NULLIF(TRIM(company_supplied_to),''), 'Unspecified') as supplied_to, COALESCE(NULLIF(TRIM(asset_type),''), 'Unspecified') as asset_type, brand, COUNT(*) as total")
-            ->groupBy('vendor', 'supplied_to', 'asset_type', 'brand')->orderBy('vendor')->orderBy('supplied_to')->orderBy('asset_type')->orderByDesc('total')->get()
+            ->groupBy('vendor', 'supplied_to', 'asset_type', 'brand')->get();
+        // Normalize supplied_to company names then re-group
+        $rawRentalBrand->transform(function ($row) use ($resolveCo) {
+            $row->supplied_to = $resolveCo($row->supplied_to);
+            return $row;
+        });
+        $rentalByVendorBrand = $rawRentalBrand
             ->groupBy('vendor')
             ->map(fn($rows) => $rows->groupBy('supplied_to')->map(fn($cRows) => $cRows->groupBy('asset_type')));
 
-        // Company-Owned by Company & Brand
-        $companyByEntityBrand = AssetInventory::where('ownership_type', 'company')
+        // Company-Owned by Company & Brand (normalized)
+        $rawEntityBrand = AssetInventory::where('ownership_type', 'company')
             ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, brand, COUNT(*) as total")
-            ->groupBy('company', 'brand')->orderBy('company')->orderByDesc('total')->get()
-            ->groupBy('company');
+            ->groupBy('company', 'brand')->get();
+        $rawEntityBrand->transform(function ($row) use ($resolveCo) {
+            $row->company = $resolveCo($row->company);
+            return $row;
+        });
+        // Re-aggregate after normalization (merge duplicate company+brand combos)
+        $mergedEntityBrand = [];
+        foreach ($rawEntityBrand as $row) {
+            $key = $row->company . '||' . $row->brand;
+            if (!isset($mergedEntityBrand[$key])) {
+                $mergedEntityBrand[$key] = (object) ['company' => $row->company, 'brand' => $row->brand, 'total' => 0];
+            }
+            $mergedEntityBrand[$key]->total += $row->total;
+        }
+        $companyByEntityBrand = collect($mergedEntityBrand)->values()
+            ->sortBy('company')->groupBy('company')
+            ->map(fn($rows) => $rows->sortByDesc('total'));
 
         // Warranty expiring soon (next 90 days)
         $warrantyExpiring = AssetInventory::whereNotNull('warranty_expiry_date')

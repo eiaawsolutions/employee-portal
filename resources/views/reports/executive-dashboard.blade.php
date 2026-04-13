@@ -241,7 +241,7 @@
                     <tbody>
                     @foreach($companyDistribution as $row)
                     <tr>
-                        <td>{{ $row->comp }}</td>
+                        <td>{{ $row->label }}</td>
                         <td class="text-end fw-semibold">{{ $row->total }}</td>
                         <td class="text-end">{{ $totalActive > 0 ? round($row->total / $totalActive * 100, 1) : 0 }}%</td>
                     </tr>
