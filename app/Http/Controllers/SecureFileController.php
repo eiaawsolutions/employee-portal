@@ -24,6 +24,7 @@ class SecureFileController extends Controller
         'leave-attachments'     => ['hr_manager', 'hr_executive', 'superadmin', 'system_admin', 'self'],
         'aarfs'                 => ['hr_manager', 'hr_executive', 'it_manager', 'it_executive', 'superadmin', 'system_admin', 'self'],
         'invoices'              => ['hr_manager', 'it_manager', 'it_executive', 'superadmin', 'system_admin'],
+        'rental_contracts'      => ['hr_manager', 'it_manager', 'it_executive', 'superadmin', 'system_admin'],
         'claim_receipts'        => ['hr_manager', 'hr_executive', 'superadmin', 'system_admin', 'self'],
     ];
 

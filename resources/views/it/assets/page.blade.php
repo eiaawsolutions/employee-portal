@@ -478,6 +478,9 @@
                     <div class="col-md-3"><label class="form-label fw-semibold">Invoice(s)</label>
                         <input type="file" name="invoice_documents[]" id="rentalInvoiceInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple disabled>
                         <div class="form-text text-muted small">PDF or images. Multiple files allowed.</div></div>
+                    <div class="col-md-4"><label class="form-label fw-semibold">Contract Document(s)</label>
+                        <input type="file" name="rental_contract_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                        <div class="form-text text-muted small">Upload rental/lease contract. PDF or images.</div></div>
                     <div class="col-md-4"><label class="form-label fw-semibold">Supplied To (Company)</label>
                         <select name="company_supplied_to" class="form-select">
                             <option value="">— Select Company —</option>

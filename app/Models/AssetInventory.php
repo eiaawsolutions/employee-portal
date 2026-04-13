@@ -20,7 +20,7 @@ class AssetInventory extends Model
         // Section C – Ownership
         'ownership_type', 'company_name', 'company_supplied_to',
         'rental_vendor', 'rental_vendor_contact', 'rental_cost_per_month',
-        'rental_start_date', 'rental_end_date', 'rental_contract_reference',
+        'rental_start_date', 'rental_end_date', 'rental_contract_reference', 'rental_contract_documents',
         // Section D – Assignment
         'assigned_employee_id', 'asset_assigned_date', 'expected_return_date',
         // Section E – Condition
@@ -40,6 +40,7 @@ class AssetInventory extends Model
         'rental_cost_per_month'  => 'decimal:2',
         'asset_photos'           => 'array',
         'invoice_documents'      => 'array',
+        'rental_contract_documents' => 'array',
     ];
 
     public function assignments()      { return $this->hasMany(AssetAssignment::class); }

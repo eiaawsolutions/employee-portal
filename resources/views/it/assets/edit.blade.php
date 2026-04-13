@@ -132,6 +132,9 @@
                 <input type="file" name="invoice_documents[]" id="editRentalInvoiceInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple
                     {{ old('ownership_type', $asset->ownership_type) !== 'rental' ? 'disabled' : '' }}>
                 <div class="form-text text-muted small">PDF or images.</div></div>
+            <div class="col-md-4"><label class="form-label fw-semibold">Contract Doc(s) {{ $asset->rental_contract_documents ? '— '.count($asset->rental_contract_documents).' file(s)' : '' }}</label>
+                <input type="file" name="rental_contract_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <div class="form-text text-muted small">Upload rental/lease contract.</div></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Supplied To (Company)</label>
                 <select name="company_supplied_to" class="form-select">
                     <option value="">— Select Company —</option>

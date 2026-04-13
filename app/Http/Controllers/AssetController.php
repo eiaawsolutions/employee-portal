@@ -185,6 +185,13 @@ class AssetController extends Controller
             }
             $data['invoice_documents'] = $paths;
         }
+        if ($request->hasFile('rental_contract_documents')) {
+            $paths = [];
+            foreach ($request->file('rental_contract_documents') as $file) {
+                $paths[] = $file->store('rental_contracts', 'local');
+            }
+            $data['rental_contract_documents'] = $paths;
+        }
 
         $asset = AssetInventory::create($data);
 
@@ -296,6 +303,14 @@ class AssetController extends Controller
                 $paths[] = $file->store('invoices', 'local');
             }
             $data['invoice_documents'] = $paths;
+        }
+        if ($request->hasFile('rental_contract_documents')) {
+            $existing = $asset->rental_contract_documents ?? [];
+            $paths = $existing;
+            foreach ($request->file('rental_contract_documents') as $file) {
+                $paths[] = $file->store('rental_contracts', 'local');
+            }
+            $data['rental_contract_documents'] = $paths;
         }
 
         // Handle photo keep/remove + new uploads
@@ -1350,6 +1365,8 @@ class AssetController extends Controller
             $rules['rental_start_date']         = 'nullable|date';
             $rules['rental_end_date']           = 'nullable|date|after_or_equal:rental_start_date';
             $rules['rental_contract_reference'] = 'nullable|string|max:255';
+            $rules['rental_contract_documents']   = 'nullable|array|max:10';
+            $rules['rental_contract_documents.*'] = 'file|mimes:pdf,jpg,jpeg,png|max:5120|valid_file_content';
             $rules['status']                    = 'required|in:available,unavailable,assigned';
             $rules['assigned_employee_id']      = 'nullable|exists:employees,id';
             $rules['asset_assigned_date']       = 'nullable|date';

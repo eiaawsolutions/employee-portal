@@ -60,8 +60,14 @@
                     <tr><td class="text-muted">Vendor / Supplier</td><td>{{ $asset->purchase_vendor ?? '—' }}</td></tr>
                     <tr><td class="text-muted">Purchase Cost</td><td>{{ $asset->purchase_cost ? 'RM '.number_format($asset->purchase_cost,2) : '—' }}</td></tr>
                     <tr><td class="text-muted">Warranty Expiry</td><td>{{ $asset->warranty_expiry_date?->format('d/m/Y') ?? '—' }}</td></tr>
-                    <tr><td class="text-muted">Invoice Doc</td><td>
-                        @if($asset->invoice_document)
+                    <tr><td class="text-muted">Invoice(s)</td><td>
+                        @if(!empty($asset->invoice_documents))
+                            @foreach($asset->invoice_documents as $i => $path)
+                            <a href="{{ secure_file_url($path) }}" target="_blank" class="btn btn-sm btn-outline-primary me-1 mb-1">
+                                <i class="bi bi-{{ str_ends_with(strtolower($path), '.pdf') ? 'file-pdf' : 'image' }} me-1"></i>{{ $i + 1 }}
+                            </a>
+                            @endforeach
+                        @elseif($asset->invoice_document)
                             <a href="{{ secure_file_url($asset->invoice_document) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-pdf me-1"></i>View</a>
                         @else — @endif
                     </td></tr>
@@ -73,9 +79,24 @@
                         {{ $asset->rental_start_date?->format('d/m/Y') ?? '—' }} — {{ $asset->rental_end_date?->format('d/m/Y') ?? '—' }}
                     </td></tr>
                     <tr><td class="text-muted">Contract Ref</td><td>{{ $asset->rental_contract_reference ?? '—' }}</td></tr>
+                    <tr><td class="text-muted">Contract Doc(s)</td><td>
+                        @if(!empty($asset->rental_contract_documents))
+                            @foreach($asset->rental_contract_documents as $i => $path)
+                            <a href="{{ secure_file_url($path) }}" target="_blank" class="btn btn-sm btn-outline-secondary me-1 mb-1">
+                                <i class="bi bi-{{ str_ends_with(strtolower($path), '.pdf') ? 'file-pdf' : 'image' }} me-1"></i>{{ $i + 1 }}
+                            </a>
+                            @endforeach
+                        @else — @endif
+                    </td></tr>
                     <tr><td class="text-muted">Supplied To</td><td>{{ $asset->company_supplied_to ?? '—' }}</td></tr>
-                    <tr><td class="text-muted">Invoice Doc</td><td>
-                        @if($asset->invoice_document)
+                    <tr><td class="text-muted">Invoice(s)</td><td>
+                        @if(!empty($asset->invoice_documents))
+                            @foreach($asset->invoice_documents as $i => $path)
+                            <a href="{{ secure_file_url($path) }}" target="_blank" class="btn btn-sm btn-outline-primary me-1 mb-1">
+                                <i class="bi bi-{{ str_ends_with(strtolower($path), '.pdf') ? 'file-pdf' : 'image' }} me-1"></i>{{ $i + 1 }}
+                            </a>
+                            @endforeach
+                        @elseif($asset->invoice_document)
                             <a href="{{ secure_file_url($asset->invoice_document) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-pdf me-1"></i>View</a>
                         @else — @endif
                     </td></tr>
