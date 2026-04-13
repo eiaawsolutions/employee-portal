@@ -167,9 +167,11 @@
                                     <a href="{{ route('assets.edit', $a) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
                                     @if($a->status === 'assigned')
                                     <button type="button"
-                                            class="btn btn-sm btn-danger"
+                                            class="btn btn-sm btn-danger release-asset-btn"
                                             title="Release asset from employee"
-                                            onclick="confirmRelease({{ $a->id }}, '{{ addslashes($a->asset_tag) }}', '{{ addslashes($a->resolvedAssigneeName()) }}')">
+                                            data-asset-id="{{ $a->id }}"
+                                            data-asset-tag="{{ $a->asset_tag }}"
+                                            data-employee-name="{{ $a->resolvedAssigneeName() }}">
                                         <i class="bi bi-person-dash"></i> Release
                                     </button>
                                     @endif
@@ -955,12 +957,15 @@ function updateBrandField(typeValue, brandSelect, brandText, preselected) {
         }
     });
 
-function confirmRelease(assetId, assetTag, employeeName) {
-    document.getElementById('releaseAssetTag').textContent = assetTag;
-    document.getElementById('releaseEmployeeName').textContent = employeeName;
-    document.getElementById('releaseForm').action = '/assets/' + assetId + '/release';
+// ── Release button (event delegation) ────────────────────────────────
+document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.release-asset-btn');
+    if (!btn) return;
+    document.getElementById('releaseAssetTag').textContent = btn.dataset.assetTag;
+    document.getElementById('releaseEmployeeName').textContent = btn.dataset.employeeName;
+    document.getElementById('releaseForm').action = '/assets/' + btn.dataset.assetId + '/release';
     new bootstrap.Modal(document.getElementById('releaseModal')).show();
-}
+});
 </script>
 @endpush
 
