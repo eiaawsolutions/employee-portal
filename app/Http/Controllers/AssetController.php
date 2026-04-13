@@ -39,7 +39,15 @@ class AssetController extends Controller
         if ($request->filled('ownership')) $query->where('ownership_type', $request->ownership);
         if ($request->filled('vendor'))    $query->where('rental_vendor', $request->vendor);
         if ($request->filled('brand'))     $query->where('brand', $request->brand);
-        if ($request->filled('company_name')) $query->where('company_name', 'like', "%{$request->company_name}%");
+        if ($request->filled('company_name')) {
+            $coNorm = strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($request->company_name))));
+            $query->where(function ($q) use ($request, $coNorm) {
+                $q->where('company_name', $request->company_name)
+                  ->orWhere('company_supplied_to', $request->company_name)
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(TRIM(company_name), '.', ''), ',', '')) LIKE ?", ["%{$coNorm}%"])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(TRIM(company_supplied_to), '.', ''), ',', '')) LIKE ?", ["%{$coNorm}%"]);
+            });
+        }
 
         $assets = $query->latest()->paginate(15)->withQueryString();
 
@@ -77,11 +85,7 @@ class AssetController extends Controller
             ->whereNotNull('brand')->where('brand', '!=', '')
             ->distinct()->orderBy('brand')
             ->pluck('brand');
-        $filterCompanyNames = AssetInventory::whereNotNull('company_name')->where('company_name', '!=', '')
-            ->distinct()->orderBy('company_name')
-            ->pluck('company_name');
-
-        // Registered companies for Add Asset company_name dropdown
+        // Registered companies — used for both Add Asset dropdown and filter dropdown
         $registeredCompanies = \App\Models\Company::orderBy('name')->get(['name']);
 
         // Asset overview widget data
@@ -156,7 +160,7 @@ class AssetController extends Controller
         $overviewRentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
 
         return view('it.assets.page', compact('assets', 'stats', 'employees', 'disposed', 'rentalVendors',
-            'registeredCompanies', 'filterBrands', 'filterCompanyNames',
+            'registeredCompanies', 'filterBrands',
             'overviewAllTotal', 'overviewAllByType', 'overviewAllByCompany',
             'overviewCompanyTotal', 'overviewCompanyByType', 'overviewCompanyByCompany',
             'overviewRentalTotal', 'overviewRentalByCompany'
@@ -650,7 +654,15 @@ class AssetController extends Controller
         if ($request->filled('ownership'))    $query->where('ownership_type', $request->ownership);
         if ($request->filled('vendor'))       $query->where('rental_vendor', $request->vendor);
         if ($request->filled('brand'))        $query->where('brand', $request->brand);
-        if ($request->filled('company_name')) $query->where('company_name', 'like', "%{$request->company_name}%");
+        if ($request->filled('company_name')) {
+            $coNorm = strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($request->company_name))));
+            $query->where(function ($q) use ($request, $coNorm) {
+                $q->where('company_name', $request->company_name)
+                  ->orWhere('company_supplied_to', $request->company_name)
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(TRIM(company_name), '.', ''), ',', '')) LIKE ?", ["%{$coNorm}%"])
+                  ->orWhereRaw("LOWER(REPLACE(REPLACE(TRIM(company_supplied_to), '.', ''), ',', '')) LIKE ?", ["%{$coNorm}%"]);
+            });
+        }
 
         $assets  = $query->latest()->get();
         $headers = [

@@ -101,8 +101,8 @@
             <div class="col-md-2">
                 <select name="company_name" class="form-select form-select-sm">
                     <option value="">All Companies</option>
-                    @foreach($filterCompanyNames as $cn)
-                        <option value="{{ $cn }}" {{ request('company_name')==$cn?'selected':'' }}>{{ $cn }}</option>
+                    @foreach($registeredCompanies as $rc)
+                        <option value="{{ $rc->name }}" {{ request('company_name')==$rc->name?'selected':'' }}>{{ $rc->name }}</option>
                     @endforeach
                 </select>
             </div>
