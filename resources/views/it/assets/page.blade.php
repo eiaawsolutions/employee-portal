@@ -424,15 +424,13 @@
                         <label class="form-label fw-semibold">Ownership Type <span class="text-danger">*</span></label>
                         <div class="d-flex gap-3 mt-1">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ownership_type" id="own_company" value="company"
-                                    {{ old('ownership_type','company') === 'company' ? 'checked' : '' }}
-                                    onchange="toggleOwnership(this.value)">
+                                <input class="form-check-input add-ownership-radio" type="radio" name="ownership_type" id="own_company" value="company"
+                                    {{ old('ownership_type','company') === 'company' ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold" for="own_company"><i class="bi bi-building me-1 text-primary"></i>Company Owned</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="ownership_type" id="own_rental" value="rental"
-                                    {{ old('ownership_type') === 'rental' ? 'checked' : '' }}
-                                    onchange="toggleOwnership(this.value)">
+                                <input class="form-check-input add-ownership-radio" type="radio" name="ownership_type" id="own_rental" value="rental"
+                                    {{ old('ownership_type') === 'rental' ? 'checked' : '' }}>
                                 <label class="form-check-label fw-semibold" for="own_rental"><i class="bi bi-truck me-1 text-warning"></i>Rental / Leased</label>
                             </div>
                         </div>
@@ -647,17 +645,22 @@ function toggleDVendorFilter(value) {
     if (wrap) wrap.style.display = value === 'rental' ? '' : 'none';
 }
 
-function toggleOwnership(value) {
-    const rentalFields  = document.getElementById('rentalFields');
-    const companyFields = document.getElementById('companyFields');
-    if (rentalFields)  rentalFields.style.display  = value === 'rental'  ? '' : 'none';
-    if (companyFields) companyFields.style.display = value === 'company' ? '' : 'none';
-    // Disable the hidden section's invoice input so duplicate name doesn't override the active one
-    const companyInvoice = document.getElementById('companyInvoiceInput');
-    const rentalInvoice  = document.getElementById('rentalInvoiceInput');
-    if (companyInvoice) companyInvoice.disabled = (value !== 'company');
-    if (rentalInvoice)  rentalInvoice.disabled  = (value !== 'rental');
-}
+// ── Ownership toggle (Add form) ──────────────────────────────────────
+(function () {
+    function toggleOwnership(value) {
+        var rentalFields  = document.getElementById('rentalFields');
+        var companyFields = document.getElementById('companyFields');
+        if (rentalFields)  rentalFields.style.display  = value === 'rental'  ? '' : 'none';
+        if (companyFields) companyFields.style.display = value === 'company' ? '' : 'none';
+        var companyInvoice = document.getElementById('companyInvoiceInput');
+        var rentalInvoice  = document.getElementById('rentalInvoiceInput');
+        if (companyInvoice) companyInvoice.disabled = (value !== 'company');
+        if (rentalInvoice)  rentalInvoice.disabled  = (value !== 'rental');
+    }
+    document.querySelectorAll('.add-ownership-radio').forEach(function (radio) {
+        radio.addEventListener('change', function () { toggleOwnership(this.value); });
+    });
+})();
 
 function syncAssignmentStatus() {
     const empHidden    = document.getElementById('addAssignedEmployeeId');

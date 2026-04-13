@@ -82,15 +82,13 @@
             <label class="form-label fw-semibold">Ownership Type <span class="text-danger">*</span></label>
             <div class="d-flex gap-3 mt-1">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="ownership_type" id="edit_own_company" value="company"
-                        {{ old('ownership_type', $asset->ownership_type ?? 'company') === 'company' ? 'checked' : '' }}
-                        onchange="toggleOwnership(this.value)">
+                    <input class="form-check-input edit-ownership-radio" type="radio" name="ownership_type" id="edit_own_company" value="company"
+                        {{ old('ownership_type', $asset->ownership_type ?? 'company') === 'company' ? 'checked' : '' }}>
                     <label class="form-check-label fw-semibold" for="edit_own_company"><i class="bi bi-building me-1 text-primary"></i>Company Owned</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="ownership_type" id="edit_own_rental" value="rental"
-                        {{ old('ownership_type', $asset->ownership_type) === 'rental' ? 'checked' : '' }}
-                        onchange="toggleOwnership(this.value)">
+                    <input class="form-check-input edit-ownership-radio" type="radio" name="ownership_type" id="edit_own_rental" value="rental"
+                        {{ old('ownership_type', $asset->ownership_type) === 'rental' ? 'checked' : '' }}>
                     <label class="form-check-label fw-semibold" for="edit_own_rental"><i class="bi bi-truck me-1 text-warning"></i>Rental / Leased</label>
                 </div>
             </div>
@@ -114,11 +112,11 @@
             <div class="col-md-4"><label class="form-label fw-semibold">Warranty Expiry</label>
                 <input type="date" name="warranty_expiry_date" class="form-control" value="{{ old('warranty_expiry_date',$asset->warranty_expiry_date?->format('Y-m-d')) }}"></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Invoice(s) {{ $asset->invoice_documents ? '— '.count($asset->invoice_documents).' file(s)' : '' }}</label>
-                <input type="file" name="invoice_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <input type="file" name="invoice_documents[]" id="editCompanyInvoiceInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
                 <div class="form-text text-muted small">PDF or images. Multiple files allowed.</div></div>
         </div>
         <div id="rentalFields" class="row g-3" style="{{ old('ownership_type', $asset->ownership_type) === 'rental' ? '' : 'display:none;' }}">
-            <div class="col-md-4"><label class="form-label fw-semibold">Rental Vendor</label>
+            <div class="col-md-4"><label class="form-label fw-semibold">Rental Vendor <span class="text-danger">*</span></label>
                 <input type="text" name="rental_vendor" class="form-control" value="{{ old('rental_vendor',$asset->rental_vendor) }}" placeholder="Vendor / leasing company"></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Vendor Contact</label>
                 <input type="text" name="rental_vendor_contact" class="form-control" value="{{ old('rental_vendor_contact',$asset->rental_vendor_contact) }}" placeholder="Phone or email"></div>
@@ -131,7 +129,8 @@
             <div class="col-md-3"><label class="form-label fw-semibold">Contract Reference</label>
                 <input type="text" name="rental_contract_reference" class="form-control" value="{{ old('rental_contract_reference',$asset->rental_contract_reference) }}" placeholder="Contract / PO number"></div>
             <div class="col-md-3"><label class="form-label fw-semibold">Invoice(s) {{ $asset->invoice_documents ? '— '.count($asset->invoice_documents).' file(s)' : '' }}</label>
-                <input type="file" name="invoice_documents[]" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <input type="file" name="invoice_documents[]" id="editRentalInvoiceInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple
+                    {{ old('ownership_type', $asset->ownership_type) !== 'rental' ? 'disabled' : '' }}>
                 <div class="form-text text-muted small">PDF or images.</div></div>
             <div class="col-md-4"><label class="form-label fw-semibold">Supplied To (Company)</label>
                 <select name="company_supplied_to" class="form-select">
@@ -463,12 +462,22 @@ function updateBrandField(typeValue, brandSelect, brandText, preselected) {
     }
 })();
 
-function toggleOwnership(value) {
-    const rentalFields  = document.getElementById('rentalFields');
-    const companyFields = document.getElementById('companyFields');
-    if (rentalFields)  rentalFields.style.display  = value === 'rental'  ? '' : 'none';
-    if (companyFields) companyFields.style.display = value === 'company' ? '' : 'none';
-}
+// ── Ownership toggle (Edit form) ─────────────────────────────────────
+(function () {
+    function toggleOwnership(value) {
+        var rentalFields  = document.getElementById('rentalFields');
+        var companyFields = document.getElementById('companyFields');
+        if (rentalFields)  rentalFields.style.display  = value === 'rental'  ? '' : 'none';
+        if (companyFields) companyFields.style.display = value === 'company' ? '' : 'none';
+        var companyInvoice = document.getElementById('editCompanyInvoiceInput');
+        var rentalInvoice  = document.getElementById('editRentalInvoiceInput');
+        if (companyInvoice) companyInvoice.disabled = (value !== 'company');
+        if (rentalInvoice)  rentalInvoice.disabled  = (value !== 'rental');
+    }
+    document.querySelectorAll('.edit-ownership-radio').forEach(function (radio) {
+        radio.addEventListener('change', function () { toggleOwnership(this.value); });
+    });
+})();
 
 /**
  * When condition changes, auto-set the Section A status field:
