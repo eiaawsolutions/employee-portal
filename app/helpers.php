@@ -24,6 +24,8 @@ if (!function_exists('secure_file_url')) {
             'leave-attachments',
             'aarfs',
             'invoices',
+            'rental_contracts',
+            'claim_receipts',
         ];
 
         $directory = explode('/', $path)[0] ?? '';
