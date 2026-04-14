@@ -256,7 +256,7 @@
             <div class="card-header py-2 text-danger"><i class="bi bi-exclamation-circle me-1"></i>Rental Contracts Expiring (Next 90 Days) — {{ $rentalExpiring->count() }}</div>
             <div class="card-body" style="max-height:300px;overflow-y:auto;">
                 <table class="table table-sm mini-table mb-0">
-                    <thead><tr><th>Asset Tag</th><th>Type</th><th>Vendor</th><th>Monthly (RM)</th><th>Expires</th></tr></thead>
+                    <thead><tr><th>Asset Tag</th><th>Type</th><th>Vendor</th><th class="text-end">Monthly (RM)</th><th>Expires</th></tr></thead>
                     <tbody>
                     @foreach($rentalExpiring as $asset)
                     <tr>
