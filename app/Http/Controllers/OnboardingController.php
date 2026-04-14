@@ -176,6 +176,16 @@ class OnboardingController extends Controller
         $this->authorizeCanAdd();
         $validated = $this->validateOnboarding($request);
 
+        // ── Duplicate prevention ─────────────────────────────────────────
+        $dupeErrors = $this->checkForDuplicates(
+            $validated['official_document_id'],
+            $validated['company'],
+            $validated['company_email'] ?? null,
+        );
+        if ($dupeErrors) {
+            return back()->withErrors($dupeErrors)->withInput();
+        }
+
         // Spouse name + tel required when married
         if ($request->input('marital_status') === 'married') {
             $spouses = array_filter($request->input('spouses', []), fn($s) => !empty($s['name']));
@@ -328,6 +338,17 @@ class OnboardingController extends Controller
         $this->authorizeCanEdit();
         $user      = Auth::user();
         $validated = $this->validateOnboarding($request, isUpdate: true, user: $user);
+
+        // ── Duplicate prevention (exclude current record) ────────────────
+        $dupeErrors = $this->checkForDuplicates(
+            $validated['official_document_id'],
+            $validated['company'],
+            $validated['company_email'] ?? null,
+            excludeOnboardingId: $onboarding->id,
+        );
+        if ($dupeErrors) {
+            return back()->withErrors($dupeErrors)->withInput();
+        }
 
         // Spouse name + tel required when married
         if ($request->input('marital_status') === 'married') {
@@ -1001,5 +1022,58 @@ class OnboardingController extends Controller
                 'cat_e_50'  => (int)$request->input('cat_e_50',  0),
             ],
         ]);
+    }
+
+    // ── Duplicate prevention ─────────────────────────────────────────────
+    // Checks active employees + pending onboarding records for duplicates.
+    // Returns an error array for withErrors(), or null if clean.
+    private function checkForDuplicates(string $nric, string $company, ?string $companyEmail, ?int $excludeOnboardingId = null): ?array
+    {
+        $errors = [];
+
+        // 1. NRIC + Company — same person at the same company
+        $nricEmployeeDupe = Employee::whereNull('active_until')
+            ->where('official_document_id', $nric)
+            ->where('company', $company)
+            ->exists();
+
+        $nricOnboardingQuery = PersonalDetail::join('work_details', 'personal_details.onboarding_id', '=', 'work_details.onboarding_id')
+            ->join('onboardings', 'personal_details.onboarding_id', '=', 'onboardings.id')
+            ->where('onboardings.status', 'pending')
+            ->where('personal_details.official_document_id', $nric)
+            ->where('work_details.company', $company);
+        if ($excludeOnboardingId) {
+            $nricOnboardingQuery->where('onboardings.id', '!=', $excludeOnboardingId);
+        }
+        $nricOnboardingDupe = $nricOnboardingQuery->exists();
+
+        if ($nricEmployeeDupe) {
+            $errors['official_document_id'] = 'An active employee with this NRIC/Passport (' . $nric . ') already exists at ' . $company . '.';
+        } elseif ($nricOnboardingDupe) {
+            $errors['official_document_id'] = 'A pending onboarding record with this NRIC/Passport (' . $nric . ') already exists at ' . $company . '.';
+        }
+
+        // 2. Company email — globally unique
+        if ($companyEmail) {
+            $emailEmployeeDupe = Employee::whereNull('active_until')
+                ->where('company_email', $companyEmail)
+                ->exists();
+
+            $emailOnboardingQuery = WorkDetail::join('onboardings', 'work_details.onboarding_id', '=', 'onboardings.id')
+                ->where('onboardings.status', 'pending')
+                ->where('work_details.company_email', $companyEmail);
+            if ($excludeOnboardingId) {
+                $emailOnboardingQuery->where('onboardings.id', '!=', $excludeOnboardingId);
+            }
+            $emailOnboardingDupe = $emailOnboardingQuery->exists();
+
+            if ($emailEmployeeDupe) {
+                $errors['company_email'] = 'An active employee with this company email (' . $companyEmail . ') already exists.';
+            } elseif ($emailOnboardingDupe) {
+                $errors['company_email'] = 'A pending onboarding record with this company email (' . $companyEmail . ') already exists.';
+            }
+        }
+
+        return !empty($errors) ? $errors : null;
     }
 }

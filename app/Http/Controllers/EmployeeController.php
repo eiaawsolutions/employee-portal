@@ -459,6 +459,33 @@ class EmployeeController extends Controller
             $rawDisabled = strtolower(trim($data['is_disabled'] ?? ''));
             $isDisabled = in_array($rawDisabled, ['yes','1','true']);
 
+            // ── Duplicate prevention ─────────────────────────────────────
+            $csvNric    = trim($data['official_document_id'] ?? '');
+            $csvCompany = trim($data['company'] ?? '');
+            $csvEmail   = $companyEmail;
+
+            if ($csvNric && $csvCompany) {
+                $nricDupe = Employee::whereNull('active_until')
+                    ->where('official_document_id', $csvNric)
+                    ->where('company', $csvCompany)
+                    ->exists();
+                if ($nricDupe) {
+                    $errors[] = "Row {$rowNumber}: Duplicate — an active employee with NRIC '{$csvNric}' already exists at '{$csvCompany}'.";
+                    $skipped++;
+                    continue;
+                }
+            }
+            if ($csvEmail) {
+                $emailDupe = Employee::whereNull('active_until')
+                    ->where('company_email', $csvEmail)
+                    ->exists();
+                if ($emailDupe) {
+                    $errors[] = "Row {$rowNumber}: Duplicate — an active employee with company email '{$csvEmail}' already exists.";
+                    $skipped++;
+                    continue;
+                }
+            }
+
             $newEmployee = Employee::create([
                 'active_from'             => $startDate,
                 'full_name'               => trim($data['full_name']),
@@ -877,6 +904,35 @@ class EmployeeController extends Controller
         ];
 
         $data = $request->validate($rules);
+
+        // ── Duplicate prevention (exclude current employee) ──────────────
+        $nric    = $data['official_document_id'] ?? $employee->official_document_id;
+        $company = $data['company'] ?? $employee->company;
+        $email   = $data['company_email'] ?? $employee->company_email;
+
+        $dupeErrors = [];
+        if ($nric && $company) {
+            $nricDupe = Employee::whereNull('active_until')
+                ->where('id', '!=', $employee->id)
+                ->where('official_document_id', $nric)
+                ->where('company', $company)
+                ->exists();
+            if ($nricDupe) {
+                $dupeErrors['official_document_id'] = 'Another active employee with this NRIC/Passport (' . $nric . ') already exists at ' . $company . '.';
+            }
+        }
+        if ($email) {
+            $emailDupe = Employee::whereNull('active_until')
+                ->where('id', '!=', $employee->id)
+                ->where('company_email', $email)
+                ->exists();
+            if ($emailDupe) {
+                $dupeErrors['company_email'] = 'Another active employee with this company email (' . $email . ') already exists.';
+            }
+        }
+        if ($dupeErrors) {
+            return back()->withErrors($dupeErrors)->withInput();
+        }
 
         // Capture Section A old values BEFORE any update (for consent change detection)
         $oldSectionA = [
