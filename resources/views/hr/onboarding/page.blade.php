@@ -724,6 +724,50 @@
                         @endif
                     </div>
                     <div class="col-md-4">
+                        <label class="form-label fw-semibold">Confirmation Date</label>
+                        <input type="hidden" name="confirmation_date" id="hr_cd_combined">
+                        <div class="d-flex gap-1">
+                            <select id="hr_cd_day" class="form-select" style="min-width:0">
+                                <option value="">Day</option>
+                                @for($d = 1; $d <= 31; $d++)
+                                    <option value="{{ str_pad($d,2,'0',STR_PAD_LEFT) }}">{{ $d }}</option>
+                                @endfor
+                            </select>
+                            <select id="hr_cd_month" class="form-select" style="min-width:0">
+                                <option value="">Month</option>
+                                @foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $mi => $mn)
+                                    <option value="{{ str_pad($mi+1,2,'0',STR_PAD_LEFT) }}">{{ $mn }}</option>
+                                @endforeach
+                            </select>
+                            <select id="hr_cd_year" class="form-select" style="min-width:0">
+                                <option value="">Year</option>
+                                @for($y = date('Y') + 2; $y >= 1990; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <script nonce="{{ $cspNonce ?? '' }}">
+                        (function(){
+                            var old='{{ old('confirmation_date') }}';
+                            if(old){var p=old.split('-');
+                                document.getElementById('hr_cd_year').value=p[0];
+                                document.getElementById('hr_cd_month').value=p[1];
+                                document.getElementById('hr_cd_day').value=p[2];
+                                document.getElementById('hr_cd_combined').value=old;
+                            }
+                            function sync(){
+                                var d=document.getElementById('hr_cd_day').value,
+                                    m=document.getElementById('hr_cd_month').value,
+                                    y=document.getElementById('hr_cd_year').value;
+                                document.getElementById('hr_cd_combined').value=(y&&m&&d)?y+'-'+m+'-'+d:'';
+                            }
+                            ['hr_cd_day','hr_cd_month','hr_cd_year'].forEach(function(id){
+                                document.getElementById(id).addEventListener('change',sync);
+                            });
+                        })();
+                        </script>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Company Email</label>
                         <input type="email" name="company_email" id="company_email"
                                class="form-control" value="{{ old('company_email') }}"

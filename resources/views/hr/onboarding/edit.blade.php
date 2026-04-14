@@ -552,6 +552,47 @@ $obEditStatusBg  = match($obEditStatus) {
                     @endif
                 </div>
                 <div class="col-md-4">
+                    <label class="form-label fw-semibold">Confirmation Date</label>
+                    @php $ob_cd = old('confirmation_date', $w?->confirmation_date?->format('Y-m-d')); @endphp
+                    <input type="hidden" name="confirmation_date" id="ob_cd_combined" value="{{ $ob_cd }}">
+                    <div class="d-flex gap-1">
+                        <select id="ob_cd_day" class="form-select" style="min-width:0">
+                            <option value="">Day</option>
+                            @for($d = 1; $d <= 31; $d++)
+                                <option value="{{ str_pad($d,2,'0',STR_PAD_LEFT) }}"
+                                    {{ $ob_cd && (int)explode('-',$ob_cd)[2] === $d ? 'selected' : '' }}>{{ $d }}</option>
+                            @endfor
+                        </select>
+                        <select id="ob_cd_month" class="form-select" style="min-width:0">
+                            <option value="">Month</option>
+                            @foreach(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] as $mi => $mn)
+                                <option value="{{ str_pad($mi+1,2,'0',STR_PAD_LEFT) }}"
+                                    {{ $ob_cd && (int)explode('-',$ob_cd)[1] === $mi+1 ? 'selected' : '' }}>{{ $mn }}</option>
+                            @endforeach
+                        </select>
+                        <select id="ob_cd_year" class="form-select" style="min-width:0">
+                            <option value="">Year</option>
+                            @for($y = date('Y') + 2; $y >= 1990; $y--)
+                                <option value="{{ $y }}"
+                                    {{ $ob_cd && (int)explode('-',$ob_cd)[0] === $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <script nonce="{{ $cspNonce ?? '' }}">
+                    (function(){
+                        function sync(){
+                            var d=document.getElementById('ob_cd_day').value,
+                                m=document.getElementById('ob_cd_month').value,
+                                y=document.getElementById('ob_cd_year').value;
+                            document.getElementById('ob_cd_combined').value=(y&&m&&d)?y+'-'+m+'-'+d:'';
+                        }
+                        ['ob_cd_day','ob_cd_month','ob_cd_year'].forEach(function(id){
+                            document.getElementById(id).addEventListener('change',sync);
+                        });
+                    })();
+                    </script>
+                </div>
+                <div class="col-md-4">
                     <label class="form-label fw-semibold">Company Email</label>
                     <input type="email" name="company_email" id="edit_company_email" class="form-control"
                            value="{{ old('company_email', $w?->company_email) }}"

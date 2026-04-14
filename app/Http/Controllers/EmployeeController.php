@@ -144,7 +144,7 @@ class EmployeeController extends Controller
         if ($request->filled('designation')) $query->where('designation','like',"%{$request->designation}%");
         if ($request->filled('work_role'))   $query->where('work_role','like',"%{$request->work_role}%");
 
-        $employees = $query->latest()->paginate(10)->withQueryString();
+        $employees = $query->orderBy('full_name')->paginate(10)->withQueryString();
 
         // Filter options
         $companies    = Employee::whereNull('active_until')->distinct()->pluck('company')->filter()->sort()->values();
@@ -838,6 +838,7 @@ class EmployeeController extends Controller
             'start_date'              => 'nullable|date',
             'exit_date'               => 'nullable|date|after_or_equal:start_date',
             'last_salary_date'        => 'nullable|date',
+            'confirmation_date'       => 'nullable|date',
             'employment_status'       => 'nullable|in:active,resigned,terminated,contract_ended',
             'remarks'                 => 'nullable|string|max:2000',
             // Section F - Education

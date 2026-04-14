@@ -222,6 +222,8 @@
                         <td class="py-2">{{ $employee->exit_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Last Salary Date</td>
                         <td class="py-2">{{ $employee->last_salary_date?->format('d/m/Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Confirmation Date</td>
+                        <td class="py-2">{{ $employee->confirmation_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Company Email</td>
                         <td class="py-2">{{ $employee->company_email ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Google ID</td>

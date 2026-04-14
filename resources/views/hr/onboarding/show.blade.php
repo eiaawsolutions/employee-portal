@@ -337,6 +337,7 @@
                     <tr><td class="text-muted py-2">Start Date</td><td class="py-2">{{ $w->start_date?->format('d/m/Y') }}</td></tr>
                     <tr><td class="text-muted py-2">Exit Date</td><td class="py-2">{{ $w->exit_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Last Salary Date</td><td class="py-2">{{ $w->last_salary_date?->format('d/m/Y') ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Confirmation Date</td><td class="py-2">{{ $w->confirmation_date?->format('d/m/Y') ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Company Email</td><td class="py-2">{{ $w->company_email ?? '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Google ID</td><td class="py-2">{{ $w->google_id ?? '—' }}</td></tr>
                 </table>
