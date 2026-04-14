@@ -318,6 +318,7 @@ class EmployeeController extends Controller
                 'company_email',
                 'google_id',
                 'employee_number',
+                'employment_status',
                 'work_role',
                 'exit_date',
                 'last_salary_date',
@@ -354,6 +355,7 @@ class EmployeeController extends Controller
                 'ahmad@claritas.asia',       // company_email           (optional)
                 'ahmad@claritas.asia',       // google_id               (optional, usually same as company_email)
                 'EMP-001',                   // employee_number         (optional)
+                'active',                    // employment_status       (optional, defaults to 'active': active / resigned / terminated / contract_ended)
                 'executive_associate',       // work_role               (optional, defaults to 'others': manager / senior_executive / executive_associate / director_hod / hr_manager / hr_executive / hr_intern / it_manager / it_executive / it_intern / others)
                 '',                          // exit_date               (optional, DD-MM-YYYY or leave blank)
                 '',                          // last_salary_date        (optional, DD-MM-YYYY or leave blank)
@@ -533,6 +535,7 @@ class EmployeeController extends Controller
                 'google_id'               => $googleId ?: null,
                 'employment_type'         => $employmentType,
                 'employee_number'         => trim($data['employee_number']         ?? '') ?: null,
+                'employment_status'       => in_array(strtolower(trim($data['employment_status'] ?? '')), ['active','resigned','terminated','contract_ended']) ? strtolower(trim($data['employment_status'])) : 'active',
                 'work_role'               => trim($data['work_role']               ?? '') ?: 'others',
                 'start_date'              => $startDate,
                 'exit_date'               => $parseDate($data['exit_date']         ?? ''),
