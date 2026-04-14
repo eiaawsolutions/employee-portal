@@ -21,6 +21,7 @@ class Employee extends Model
         'nric_file_paths',
         'consent_given_at', 'consent_ip',
         // Work info (official record)
+        'employee_number',
         'designation', 'department', 'company', 'office_location',
         'reporting_manager', 'manager_id', 'reporting_manager_email',
         'company_email', 'start_date', 'exit_date', 'last_salary_date',
@@ -129,6 +130,7 @@ class Employee extends Model
             'consent_given_at'        => $p?->consent_given_at,
             'consent_ip'              => $p?->consent_ip,
             // Work
+            'employee_number'  => $w?->employee_number,
             'designation'      => $w?->designation,
             'department'       => $w?->department,
             'company'          => $w?->company,

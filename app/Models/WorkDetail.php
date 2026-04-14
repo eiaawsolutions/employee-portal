@@ -9,10 +9,11 @@ class WorkDetail extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'onboarding_id', 'employee_status', 'staff_status', 'employment_type',
-        'designation', 'company', 'office_location', 'reporting_manager',
-        'reporting_manager_email', 'start_date', 'exit_date', 'last_salary_date',
-        'confirmation_date', 'company_email', 'google_id', 'department', 'role',
+        'onboarding_id', 'employee_number', 'employee_status', 'staff_status',
+        'employment_type', 'designation', 'company', 'office_location',
+        'reporting_manager', 'reporting_manager_email', 'start_date', 'exit_date',
+        'last_salary_date', 'confirmation_date', 'company_email', 'google_id',
+        'department', 'role',
     ];
 
     protected $casts = [

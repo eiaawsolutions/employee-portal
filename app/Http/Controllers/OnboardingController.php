@@ -252,6 +252,7 @@ class OnboardingController extends Controller
 
             WorkDetail::create([
                 'onboarding_id'           => $onboarding->id,
+                'employee_number'         => $validated['employee_number'] ?? null,
                 'employee_status'         => $validated['employee_status'],
                 'staff_status'            => $validated['staff_status'],
                 'employment_type'         => $validated['employment_type'],
@@ -436,6 +437,7 @@ class OnboardingController extends Controller
             ]);
 
             $workData = [
+                'employee_number'         => $validated['employee_number'] ?? null,
                 'employee_status'         => $validated['employee_status'],
                 'staff_status'            => $validated['staff_status'],
                 'employment_type'         => $validated['employment_type'],
@@ -916,6 +918,7 @@ class OnboardingController extends Controller
             'edu_certificate'=>'nullable|array','edu_certificate.*'=>'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120|valid_file_content',
             'edu_existing_cert_paths'=>'nullable|array','edu_existing_cert_paths.*'=>'nullable|string',
             'employee_status'=>'required|in:active,resigned','staff_status'=>'required|in:existing,new,rehire',
+            'employee_number'=>'nullable|string|max:50',
             'employment_type'=>'required|in:permanent,intern,contract','designation'=>'required|string|max:255',
             'company'=>'required|string|max:255','office_location'=>'required|string|max:255',
             'reporting_manager'=>'required|string|max:255','reporting_manager_email'=>'nullable|email',

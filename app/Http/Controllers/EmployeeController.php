@@ -317,8 +317,11 @@ class EmployeeController extends Controller
                 'office_location',
                 'company_email',
                 'google_id',
+                'employee_number',
                 'work_role',
                 'exit_date',
+                'last_salary_date',
+                'confirmation_date',
             ]);
 
             // Example row — required fields filled, optional fields can be left blank
@@ -350,8 +353,11 @@ class EmployeeController extends Controller
                 'Kuala Lumpur',              // office_location         (optional)
                 'ahmad@claritas.asia',       // company_email           (optional)
                 'ahmad@claritas.asia',       // google_id               (optional, usually same as company_email)
-                'executive_associate',       // work_role               (optional: manager / senior_executive / executive_associate / director_hod / hr_manager / hr_executive / hr_intern / it_manager / it_executive / it_intern / others)
+                'EMP-001',                   // employee_number         (optional)
+                'executive_associate',       // work_role               (optional, defaults to 'others': manager / senior_executive / executive_associate / director_hod / hr_manager / hr_executive / hr_intern / it_manager / it_executive / it_intern / others)
                 '',                          // exit_date               (optional, DD-MM-YYYY or leave blank)
+                '',                          // last_salary_date        (optional, DD-MM-YYYY or leave blank)
+                '',                          // confirmation_date       (optional, DD-MM-YYYY or leave blank)
             ]);
 
             fclose($handle);
@@ -526,9 +532,12 @@ class EmployeeController extends Controller
                 'company_email'           => $companyEmail ?: null,
                 'google_id'               => $googleId ?: null,
                 'employment_type'         => $employmentType,
-                'work_role'               => trim($data['work_role']               ?? '') ?: null,
+                'employee_number'         => trim($data['employee_number']         ?? '') ?: null,
+                'work_role'               => trim($data['work_role']               ?? '') ?: 'others',
                 'start_date'              => $startDate,
                 'exit_date'               => $parseDate($data['exit_date']         ?? ''),
+                'last_salary_date'        => $parseDate($data['last_salary_date']  ?? ''),
+                'confirmation_date'       => $parseDate($data['confirmation_date'] ?? ''),
             ]);
 
             // Resolve manager_id from reporting_manager name
@@ -864,6 +873,7 @@ class EmployeeController extends Controller
             'nric_files'              => 'nullable|array|max:5',
             'nric_files.*'            => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120|valid_file_content',
             // Work
+            'employee_number'         => 'nullable|string|max:50',
             'designation'             => 'nullable|string|max:255',
             'department'              => 'nullable|string|max:255',
             'company'                 => 'nullable|string|max:255',

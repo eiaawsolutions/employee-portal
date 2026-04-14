@@ -479,6 +479,12 @@
                 </div>
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
+                        <label class="form-label fw-semibold">Employee Number</label>
+                        <input type="text" name="employee_number" class="form-control @error('employee_number') is-invalid @enderror"
+                               value="{{ old('employee_number') }}" placeholder="e.g. EMP-001">
+                        @error('employee_number')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-3">
                         <label class="form-label fw-semibold">Employee Status <span class="text-danger">*</span></label>
                         <select name="employee_status" class="form-select @error('employee_status') is-invalid @enderror" required>
                             <option value="">Select...</option>

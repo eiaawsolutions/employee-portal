@@ -325,7 +325,12 @@ $obEditStatusBg  = match($obEditStatus) {
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Employee Number</label>
+                    <input type="text" name="employee_number" class="form-control"
+                           value="{{ old('employee_number', $w?->employee_number) }}" placeholder="e.g. EMP-001">
+                </div>
+                <div class="col-md-3">
                     <label class="form-label fw-semibold">Employee Status <span class="text-danger">*</span></label>
                     <select name="employee_status" class="form-select" required>
                         <option value="active" {{ old('employee_status', $w?->employee_status) == 'active' ? 'selected' : '' }}>Active</option>

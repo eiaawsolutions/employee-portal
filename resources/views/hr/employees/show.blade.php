@@ -187,7 +187,9 @@
         <div class="row g-0">
             <div class="col-md-6">
                 <table class="table table-sm table-borderless mb-0" style="font-size:13.5px;">
-                    <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Employment Type</td>
+                    <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Employee Number</td>
+                        <td class="py-2">{{ $employee->employee_number ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Employment Type</td>
                         <td class="py-2">{{ $employee->employment_type ? ucfirst($employee->employment_type) : '—' }}</td></tr>
                     <tr><td class="text-muted py-2">Employment Status</td>
                         <td class="py-2">

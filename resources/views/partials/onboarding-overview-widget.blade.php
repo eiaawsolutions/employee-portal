@@ -9,22 +9,34 @@
 </div>
 <div class="row g-3 mb-4">
 
+    @php
+        $obYtdCompanyNames = collect($onboardingsByCompany)->pluck('company')->filter()->unique()->sort()->values();
+    @endphp
+
     {{-- 1. Total Onboard Year to Date --}}
     <div class="col-md-6">
-        <div class="card dash-widget h-100">
+        <div class="card dash-widget h-100" id="card-ob-ytd">
             <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-plus-fill"></i></div>
-                    <div>
-                        <div class="widget-number">{{ $onboardStats['total_onboardings_ytd'] }}</div>
+                    <div class="flex-grow-1">
+                        <div class="widget-number" data-total="{{ $onboardStats['total_onboardings_ytd'] }}">{{ $onboardStats['total_onboardings_ytd'] }}</div>
                         <div class="widget-label">Onboarded YTD</div>
+                    </div>
+                    <div class="widget-filter">
+                        <select class="form-select form-select-sm ob-card-filter" data-card="ob-ytd">
+                            <option value="">All</option>
+                            @foreach($obYtdCompanyNames as $name)
+                            <option value="{{ $name }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
             <div class="widget-body flex-fill">
                 <div class="breakdown-title">By Company</div>
                 @forelse($onboardingsByCompany as $row)
-                <div class="breakdown-row">
+                <div class="breakdown-row ob-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
                     <span class="breakdown-badge" style="background:#3b82f6;">{{ $row->total }}</span>
                 </div>

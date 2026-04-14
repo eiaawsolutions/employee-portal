@@ -320,7 +320,8 @@
         <div class="row g-0">
             <div class="col-md-6">
                 <table class="table table-sm table-borderless mb-0" style="font-size:13.5px;">
-                    <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Employee Status</td><td class="py-2">
+                    <tr><td class="text-muted py-2" style="width:46%;padding-left:0;">Employee Number</td><td class="py-2">{{ $w->employee_number ?? '—' }}</td></tr>
+                    <tr><td class="text-muted py-2">Employee Status</td><td class="py-2">
                         <span class="badge {{ $w->employee_status === 'active' ? 'bg-success' : 'bg-danger' }}">{{ ucfirst($w->employee_status) }}</span>
                     </td></tr>
                     <tr><td class="text-muted py-2">Staff Status</td><td class="py-2">{{ ucfirst($w->staff_status) }}</td></tr>
