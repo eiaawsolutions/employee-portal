@@ -4,6 +4,7 @@
 
 @section('content')
 
+{{-- ── Deactivated Accounts ──────────────────────────────────────────── --}}
 <div class="card mb-4">
     <div class="card-body py-3">
         <form method="GET" action="{{ route('superadmin.accounts.index') }}" class="row g-2 align-items-end">
@@ -24,7 +25,7 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card mb-4">
     <div class="card-header d-flex align-items-center justify-content-between py-3" style="background:#fff;">
         <div>
             <h6 class="mb-0 fw-bold"><i class="bi bi-person-x me-2 text-danger"></i>Deactivated Accounts</h6>
@@ -121,6 +122,113 @@
         @if($deactivated->hasPages())
         <div class="d-flex justify-content-end p-3">
             {{ $deactivated->links() }}
+        </div>
+        @endif
+        @endif
+    </div>
+</div>
+
+{{-- ── Two-Factor Authentication Reset ───────────────────────────────── --}}
+<div class="card mb-4">
+    <div class="card-body py-3">
+        <form method="GET" action="{{ route('superadmin.accounts.index') }}" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-semibold mb-1">Search 2FA Users</label>
+                <input type="text" name="tfa_search" class="form-control form-control-sm"
+                       placeholder="Name or email…" value="{{ request('tfa_search') }}">
+            </div>
+            {{-- Preserve the deactivated-accounts search when filtering 2FA --}}
+            @if(request('search'))
+            <input type="hidden" name="search" value="{{ request('search') }}">
+            @endif
+            <div class="col-md-4 d-flex gap-2 align-items-end">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-search me-1"></i>Filter
+                </button>
+                @if(request('tfa_search'))
+                <a href="{{ route('superadmin.accounts.index', request('search') ? ['search' => request('search')] : []) }}" class="btn btn-outline-secondary btn-sm">Clear</a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between py-3" style="background:#fff;">
+        <div>
+            <h6 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2 text-warning"></i>Two-Factor Authentication Reset</h6>
+            <small class="text-muted">{{ $tfaUsers->total() }} user(s) with 2FA enabled &mdash; reset if a user is locked out of their authenticator app</small>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        @if($tfaUsers->isEmpty())
+        <div class="text-center py-5">
+            <div style="width:56px;height:56px;background:#f0f9ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                <i class="bi bi-shield-check" style="font-size:26px;color:#2563eb;"></i>
+            </div>
+            <div class="fw-semibold text-muted">No users with 2FA enabled</div>
+            <small class="text-muted">No accounts currently have two-factor authentication active.</small>
+        </div>
+        @else
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" style="font-size:14px;">
+                <thead style="background:#f8fafc;">
+                    <tr>
+                        <th class="ps-4">User</th>
+                        <th>Role</th>
+                        <th>Company</th>
+                        <th>2FA Enabled Since</th>
+                        <th>2FA Required</th>
+                        <th class="text-end pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach($tfaUsers as $tfaUser)
+                <tr>
+                    <td class="ps-4">
+                        <div class="fw-semibold">{{ $tfaUser->name }}</div>
+                        <small class="text-muted">{{ $tfaUser->work_email }}</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary" style="font-size:11px;">
+                            {{ ucwords(str_replace('_', ' ', $tfaUser->role)) }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="font-size:13px;">{{ $tfaUser->employee?->company ?? '—' }}</span>
+                    </td>
+                    <td>
+                        <span style="font-size:13px;">{{ $tfaUser->two_factor_confirmed_at->format('d/m/Y') }}</span>
+                        <div class="text-muted" style="font-size:11px;">{{ $tfaUser->two_factor_confirmed_at->format('H:i') }}</div>
+                    </td>
+                    <td>
+                        @if($tfaUser->requiresTwoFactor())
+                            <span class="badge bg-info text-dark" style="font-size:11px;">
+                                <i class="bi bi-check-circle me-1"></i>Required
+                            </span>
+                        @else
+                            <span class="badge bg-light text-dark" style="font-size:11px;">Optional</span>
+                        @endif
+                    </td>
+                    <td class="text-end pe-4">
+                        <form action="{{ route('superadmin.accounts.reset-2fa', $tfaUser) }}" method="POST"
+                              onsubmit="return confirm('Reset 2FA for {{ addslashes($tfaUser->name) }}?\n\nThis will clear their current authenticator setup. They will be required to set up 2FA again on their next login.')">
+                            @csrf
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset 2FA
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        @if($tfaUsers->hasPages())
+        <div class="d-flex justify-content-end p-3">
+            {{ $tfaUsers->links() }}
         </div>
         @endif
         @endif

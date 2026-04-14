@@ -46,7 +46,7 @@ class TwoFactorController extends Controller
         $secret = Crypt::decryptString($encryptedSecret);
         $google2fa = new Google2FA();
 
-        if (!$google2fa->verifyKey($secret, $request->code)) {
+        if (!$google2fa->verifyKey($secret, $request->code, 2)) {
             return back()->withErrors(['code' => 'Invalid verification code. Please try again.']);
         }
 
@@ -114,10 +114,10 @@ class TwoFactorController extends Controller
         $user = \App\Models\User::findOrFail($userId);
         $secret = Crypt::decryptString($user->two_factor_secret);
 
-        // TOTP code verification
+        // TOTP code verification (window=2 allows ±60 s clock drift)
         if ($request->filled('code')) {
             $google2fa = new Google2FA();
-            if (!$google2fa->verifyKey($secret, $request->code)) {
+            if (!$google2fa->verifyKey($secret, $request->code, 2)) {
                 return back()->withErrors(['code' => 'Invalid authentication code.']);
             }
         }

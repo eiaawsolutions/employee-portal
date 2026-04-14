@@ -141,6 +141,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     // Account Management (Superadmin / System Admin)
     Route::get('/superadmin/account-management',            [AccountManagementController::class, 'index'])->name('superadmin.accounts.index');
     Route::post('/superadmin/account-management/{user}/activate', [AccountManagementController::class, 'activate'])->name('superadmin.accounts.activate');
+    Route::post('/superadmin/account-management/{user}/reset-2fa', [AccountManagementController::class, 'resetTwoFactor'])->name('superadmin.accounts.reset-2fa');
 
     Route::get('/superadmin/system-overview',           [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
     Route::post('/superadmin/system-overview/security-score', [DashboardController::class, 'refreshSecurityScore'])->name('superadmin.security-score.refresh');
