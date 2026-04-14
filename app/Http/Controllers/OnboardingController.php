@@ -178,6 +178,7 @@ class OnboardingController extends Controller
 
         // ── Duplicate prevention ─────────────────────────────────────────
         $dupeErrors = $this->checkForDuplicates(
+            $validated['full_name'],
             $validated['official_document_id'],
             $validated['company'],
             $validated['company_email'] ?? null,
@@ -341,6 +342,7 @@ class OnboardingController extends Controller
 
         // ── Duplicate prevention (exclude current record) ────────────────
         $dupeErrors = $this->checkForDuplicates(
+            $validated['full_name'],
             $validated['official_document_id'],
             $validated['company'],
             $validated['company_email'] ?? null,
@@ -1027,11 +1029,33 @@ class OnboardingController extends Controller
     // ── Duplicate prevention ─────────────────────────────────────────────
     // Checks active employees + pending onboarding records for duplicates.
     // Returns an error array for withErrors(), or null if clean.
-    private function checkForDuplicates(string $nric, string $company, ?string $companyEmail, ?int $excludeOnboardingId = null): ?array
+    private function checkForDuplicates(string $fullName, string $nric, string $company, ?string $companyEmail, ?int $excludeOnboardingId = null): ?array
     {
         $errors = [];
 
-        // 1. NRIC + Company — same person at the same company
+        // 1. Full name + Company — same name at the same company
+        $nameEmployeeDupe = Employee::whereNull('active_until')
+            ->whereRaw('LOWER(full_name) = ?', [mb_strtolower($fullName)])
+            ->where('company', $company)
+            ->exists();
+
+        $nameOnboardingQuery = PersonalDetail::join('work_details', 'personal_details.onboarding_id', '=', 'work_details.onboarding_id')
+            ->join('onboardings', 'personal_details.onboarding_id', '=', 'onboardings.id')
+            ->where('onboardings.status', 'pending')
+            ->whereRaw('LOWER(personal_details.full_name) = ?', [mb_strtolower($fullName)])
+            ->where('work_details.company', $company);
+        if ($excludeOnboardingId) {
+            $nameOnboardingQuery->where('onboardings.id', '!=', $excludeOnboardingId);
+        }
+        $nameOnboardingDupe = $nameOnboardingQuery->exists();
+
+        if ($nameEmployeeDupe) {
+            $errors['full_name'] = 'An active employee with this name (' . $fullName . ') already exists at ' . $company . '.';
+        } elseif ($nameOnboardingDupe) {
+            $errors['full_name'] = 'A pending onboarding record with this name (' . $fullName . ') already exists at ' . $company . '.';
+        }
+
+        // 2. NRIC + Company — same person at the same company
         $nricEmployeeDupe = Employee::whereNull('active_until')
             ->where('official_document_id', $nric)
             ->where('company', $company)
@@ -1053,7 +1077,7 @@ class OnboardingController extends Controller
             $errors['official_document_id'] = 'A pending onboarding record with this NRIC/Passport (' . $nric . ') already exists at ' . $company . '.';
         }
 
-        // 2. Company email — globally unique
+        // 3. Company email — globally unique
         if ($companyEmail) {
             $emailEmployeeDupe = Employee::whereNull('active_until')
                 ->where('company_email', $companyEmail)

@@ -460,10 +460,22 @@ class EmployeeController extends Controller
             $isDisabled = in_array($rawDisabled, ['yes','1','true']);
 
             // ── Duplicate prevention ─────────────────────────────────────
+            $csvName    = trim($data['full_name']);
             $csvNric    = trim($data['official_document_id'] ?? '');
             $csvCompany = trim($data['company'] ?? '');
             $csvEmail   = $companyEmail;
 
+            if ($csvName && $csvCompany) {
+                $nameDupe = Employee::whereNull('active_until')
+                    ->whereRaw('LOWER(full_name) = ?', [mb_strtolower($csvName)])
+                    ->where('company', $csvCompany)
+                    ->exists();
+                if ($nameDupe) {
+                    $errors[] = "Row {$rowNumber}: Duplicate — an active employee with name '{$csvName}' already exists at '{$csvCompany}'.";
+                    $skipped++;
+                    continue;
+                }
+            }
             if ($csvNric && $csvCompany) {
                 $nricDupe = Employee::whereNull('active_until')
                     ->where('official_document_id', $csvNric)
@@ -906,11 +918,22 @@ class EmployeeController extends Controller
         $data = $request->validate($rules);
 
         // ── Duplicate prevention (exclude current employee) ──────────────
+        $name    = $data['full_name'] ?? $employee->full_name;
         $nric    = $data['official_document_id'] ?? $employee->official_document_id;
         $company = $data['company'] ?? $employee->company;
         $email   = $data['company_email'] ?? $employee->company_email;
 
         $dupeErrors = [];
+        if ($name && $company) {
+            $nameDupe = Employee::whereNull('active_until')
+                ->where('id', '!=', $employee->id)
+                ->whereRaw('LOWER(full_name) = ?', [mb_strtolower($name)])
+                ->where('company', $company)
+                ->exists();
+            if ($nameDupe) {
+                $dupeErrors['full_name'] = 'Another active employee with this name (' . $name . ') already exists at ' . $company . '.';
+            }
+        }
         if ($nric && $company) {
             $nricDupe = Employee::whereNull('active_until')
                 ->where('id', '!=', $employee->id)
