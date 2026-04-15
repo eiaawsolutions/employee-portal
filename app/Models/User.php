@@ -117,7 +117,7 @@ class User extends Authenticatable
     public function canEditAarf(Aarf $aarf): bool
     {
         $allowed = in_array($this->role, ['it_manager', 'superadmin']);
-        return $allowed && !$aarf->acknowledged && !$aarf->it_manager_acknowledged;
+        return $allowed && !$aarf->acknowledged;
     }
 
     public function canAcknowledgeAarf(): bool

@@ -8,7 +8,7 @@
         $headers = [
             'consent'        => ['icon' => "\u{1F4CB}", 'title' => 'Pending Profile Acknowledgement',           'color' => '#7c3aed,#6d28d9'],
             'aarf_employee'  => ['icon' => "\u{1F4E6}", 'title' => 'Pending Asset Form Acknowledgement',        'color' => '#0891b2,#0e7490'],
-            'aarf_it'        => ['icon' => "\u{1F5A5}\u{FE0F}", 'title' => 'AARF Forms Awaiting IT Acknowledgement',   'color' => '#0284c7,#0369a1'],
+            'aarf_it'        => ['icon' => "\u{1F5A5}\u{FE0F}", 'title' => 'Reminder: AARF Forms Awaiting IT Acknowledgement',   'color' => '#0284c7,#0369a1'],
             'leave'          => ['icon' => "\u{1F4C5}", 'title' => 'Pending Leave Requests',                    'color' => '#f59e0b,#d97706'],
             'claims_manager' => ['icon' => "\u{1F4B0}", 'title' => 'Expense Claims Awaiting Your Approval',     'color' => '#059669,#047857'],
             'claims_hr'      => ['icon' => "\u{1F4B0}", 'title' => 'Expense Claims Awaiting HR Approval',       'color' => '#1e3a5f,#2563eb'],
@@ -104,10 +104,10 @@
         </div>
         @endif
 
-        {{-- ── AARF IT MANAGER ──────────────────────────────────────── --}}
+        {{-- ── AARF IT MANAGER (informational — no IT ack required) ──── --}}
         @elseif($type === 'aarf_it')
         <p style="color:#334155;font-size:15px;line-height:1.6;margin:0 0 20px;">
-            There are <strong>{{ $items->count() }}</strong> AARF form(s) awaiting IT manager acknowledgement.
+            There are <strong>{{ $items->count() }}</strong> AARF form(s) with pending employee acknowledgement.
         </p>
         <table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;">
             <thead>
@@ -123,11 +123,7 @@
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $aarf->aarf_reference }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $aarf->employee?->preferred_name ?? $aarf->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;">
-                        @if($aarf->acknowledged)
-                            <span style="color:#059669;font-weight:600;">Done</span>
-                        @else
-                            <span style="color:#d97706;">Pending</span>
-                        @endif
+                        <span style="color:#d97706;">Pending</span>
                     </td>
                 </tr>
                 @endforeach

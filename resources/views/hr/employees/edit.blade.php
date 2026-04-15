@@ -1727,6 +1727,14 @@ function autofillOfficeLocation(selectEl, targetId) {
     target.value = selected.dataset.address || '-';
 }
 
+// On page load, sync office location to match the currently selected company's address
+document.addEventListener('DOMContentLoaded', function() {
+    var companySelect = document.getElementById('empCompanySelect');
+    if (companySelect && companySelect.value) {
+        autofillOfficeLocation(companySelect, 'empOfficeLocation');
+    }
+});
+
 function filterManagersByCompany(companyName, mgrSelectId) {
     var norm = function(s) { return s.replace(/[.,]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); };
     var sel = document.getElementById(mgrSelectId);

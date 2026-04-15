@@ -91,8 +91,8 @@ class WeeklyPendingSweep extends Command
             }
         }
 
-        // ── 3. AARF — remind IT managers (unacknowledged by IT) ──────────
-        $pendingAarfIt = Aarf::where('it_manager_acknowledged', false)
+        // ── 3. AARF — notify IT managers (pending employee acknowledgements) ─
+        $pendingAarfIt = Aarf::where('acknowledged', false)
             ->with('employee')
             ->get();
 

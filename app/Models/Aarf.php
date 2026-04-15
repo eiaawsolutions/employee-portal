@@ -26,12 +26,12 @@ class Aarf extends Model
 
     public function isFullyAcknowledged(): bool
     {
-        return $this->acknowledged && $this->it_manager_acknowledged;
+        return $this->acknowledged;
     }
 
     public function isLocked(): bool
     {
-        return $this->acknowledged || $this->it_manager_acknowledged;
+        return $this->acknowledged;
     }
 
     public function onboarding() { return $this->belongsTo(Onboarding::class); }

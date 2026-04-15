@@ -1197,6 +1197,13 @@ function autofillOfficeLocation(selectEl, targetId) {
     target.value = selected.dataset.address || '-';
 }
 
+// On page load, sync office location if a company is already selected (e.g. validation redirect)
+document.addEventListener('DOMContentLoaded', function() {
+    var companySelect = document.getElementById('addOBCompanySelect');
+    if (companySelect && companySelect.value) {
+        autofillOfficeLocation(companySelect, 'addOBOfficeLocation');
+    }
+});
 
 // ── Google ID mirrors Company Email ──────────────────────────────────────
 function syncGoogleId(val) {

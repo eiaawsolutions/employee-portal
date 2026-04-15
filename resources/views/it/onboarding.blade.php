@@ -89,8 +89,8 @@
                         </td>
                         <td>
                             @if($ob->aarf)
-                                <span class="badge bg-{{ $ob->aarf->it_manager_acknowledged?'success':'warning text-dark' }}">
-                                    {{ $ob->aarf->it_manager_acknowledged ? 'Done' : 'Pending' }}
+                                <span class="badge bg-{{ $ob->aarf->acknowledged ? 'success' : 'warning text-dark' }}">
+                                    {{ $ob->aarf->acknowledged ? 'Done' : 'Pending' }}
                                 </span>
                             @else
                                 <span class="badge bg-light text-muted">—</span>
