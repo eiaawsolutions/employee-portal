@@ -232,7 +232,7 @@ $obEditStatusBg  = match($obEditStatus) {
                 </div>
                 <div class="col-md-3">
                     <label class="form-label fw-semibold">Marital Status <span class="text-danger">*</span></label>
-                    <select name="marital_status" id="obEditMaritalStatus" class="form-select" required onchange="obEditToggleSpouse(this.value)">
+                    <select name="marital_status" id="obEditMaritalStatus" class="form-select" required>
                         @foreach(['single', 'married', 'divorced', 'widowed'] as $ms)
                             <option value="{{ $ms }}" {{ old('marital_status', $p?->marital_status) == $ms ? 'selected' : '' }}>{{ ucfirst($ms) }}</option>
                         @endforeach
@@ -266,8 +266,7 @@ $obEditStatusBg  = match($obEditStatus) {
                 {{-- Bank Name --}}
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Bank Name</label>
-                    <select name="bank_name" id="editOBBankName" class="form-select"
-                            onchange="toggleEditOBOtherBank(this,'editOBBankNameOther')">
+                    <select name="bank_name" id="editOBBankName" class="form-select">
                         <option value="">— Select Bank —</option>
                         @foreach(['Maybank','CIMB Bank','Public Bank','RHB Bank','Hong Leong Bank','AmBank','Bank Islam','Bank Rakyat','BSN','OCBC Bank','UOB Malaysia','HSBC Bank','Standard Chartered','Affin Bank','Alliance Bank','Other'] as $b)
                         <option value="{{ $b }}" {{ old('bank_name',$p?->bank_name)==$b?'selected':'' }}>{{ $b }}</option>
@@ -364,8 +363,7 @@ $obEditStatusBg  = match($obEditStatus) {
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Company <span class="text-danger">*</span></label>
                     <select name="company" id="editOBCompanySelect"
-                            class="form-control" required
-                            onchange="autofillOfficeLocation(this, 'editOBOfficeLocation'); filterManagersByCompany(this.value, 'edit_reporting_manager')">
+                            class="form-control" required>
                         <option value="">Select company...</option>
                         @foreach($companies as $c)
                             <option value="{{ $c->name }}"
@@ -385,7 +383,7 @@ $obEditStatusBg  = match($obEditStatus) {
                     <label class="form-label fw-semibold">Reporting Manager <span class="text-danger">*</span></label>
                     <select name="reporting_manager" id="edit_reporting_manager"
                             class="form-select @error('reporting_manager') is-invalid @enderror"
-                            onchange="fetchManagerEmailEdit(this.value)" required>
+                            required>
                         @php
                             $roleLabels = [
                                 'hr_manager'          => 'HR Manager',
@@ -600,8 +598,7 @@ $obEditStatusBg  = match($obEditStatus) {
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Company Email</label>
                     <input type="email" name="company_email" id="edit_company_email" class="form-control"
-                           value="{{ old('company_email', $w?->company_email) }}"
-                           oninput="syncEditGoogleId(this.value)">
+                           value="{{ old('company_email', $w?->company_email) }}">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Google ID</label>
@@ -668,7 +665,7 @@ $obEditStatusBg  = match($obEditStatus) {
                     <label class="d-flex flex-column align-items-center p-3 border rounded text-center {{ $checked ? 'border-primary bg-primary bg-opacity-10' : '' }}"
                         style="cursor:pointer;" id="label_{{ $field }}">
                         <input type="checkbox" name="{{ $field }}" value="1" class="d-none" id="{{ $field }}"
-                            {{ $checked ? 'checked' : '' }} onchange="toggleAssetLabel(this)">
+                            {{ $checked ? 'checked' : '' }} class="asset-checkbox">
                         <i class="bi {{ $icon }}" style="font-size:28px; color:{{ $checked ? '#2563eb' : '#94a3b8' }};"></i>
                         <small class="mt-1 fw-semibold" style="font-size:11px;">{{ $label }}</small>
                     </label>
@@ -743,7 +740,7 @@ $obEditStatusBg  = match($obEditStatus) {
                         <label class="form-label fw-semibold small">Certificate <span class="text-muted fw-normal">(PDF/image, multiple allowed)</span></label>
                         <div class="d-flex gap-2">
                             <input type="file" id="editOBEduCertInput" class="form-control form-control-sm" accept=".jpg,.jpeg,.png,.pdf">
-                            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="editOBAddCertFile()">
+                            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0" id="editOBAddCertBtn">
                                 <i class="bi bi-upload me-1"></i>Upload
                             </button>
                         </div>
@@ -751,7 +748,7 @@ $obEditStatusBg  = match($obEditStatus) {
                     </div>
                 </div>
                 <div class="mt-2 text-end">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="editOBAddEdu()">
+                    <button type="button" class="btn btn-primary btn-sm" id="editOBAddEduBtn">
                         <i class="bi bi-plus-circle me-1"></i>Add to List
                     </button>
                 </div>
@@ -768,12 +765,10 @@ $obEditStatusBg  = match($obEditStatus) {
                             <span class="text-muted small ms-2">{{ $edu['institution'] ?? '' }}{{ isset($edu['year_graduated'])?' · '.$edu['year_graduated']:'' }}</span>
                         </div>
                         <div class="d-flex gap-1">
-                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
-                                    onclick="toggleOBEduEdit(this)">
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 ob-edu-edit-btn">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1"
-                                    onclick="this.closest('.editob-edu-row').remove();editOBSyncEdu()">
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 ob-edu-remove-btn">
                                 <i class="bi bi-x"></i>
                             </button>
                         </div>
@@ -813,8 +808,7 @@ $obEditStatusBg  = match($obEditStatus) {
                                 <div class="form-text">Existing certificates are preserved. Upload here to add more.</div>
                             </div>
                             <div class="col-12 text-end">
-                                <button type="button" class="btn btn-sm btn-primary py-0 px-3"
-                                        onclick="saveOBEduEdit(this)">
+                                <button type="button" class="btn btn-sm btn-primary py-0 px-3 ob-edu-save-btn">
                                     <i class="bi bi-check me-1"></i>Update
                                 </button>
                             </div>
@@ -857,12 +851,10 @@ $obEditStatusBg  = match($obEditStatus) {
                         <span class="text-muted small ms-2">{{ $sp['tel_no'] ?? '' }}{{ $sp['occupation'] ? ' · '.$sp['occupation'] : '' }}</span>
                     </div>
                     <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
-                                onclick="toggleOBSpouseEdit(this)">
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 ob-sp-edit-btn">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1"
-                                onclick="removeOBSpouse(this, {{ $i }})">
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 ob-sp-remove-btn">
                             <i class="bi bi-x"></i>
                         </button>
                     </div>
@@ -895,8 +887,7 @@ $obEditStatusBg  = match($obEditStatus) {
                             <textarea class="ob-sp-addr form-control form-control-sm" rows="2" placeholder="Address">{{ $sp['address'] ?? '' }}</textarea>
                         </div>
                         <div class="col-12 text-end">
-                            <button type="button" class="btn btn-sm btn-primary py-0 px-3"
-                                    onclick="saveOBSpouseEdit(this, {{ $i }})">
+                            <button type="button" class="btn btn-sm btn-primary py-0 px-3 ob-sp-save-btn">
                                 <i class="bi bi-check me-1"></i>Update
                             </button>
                         </div>
@@ -930,7 +921,7 @@ $obEditStatusBg  = match($obEditStatus) {
                         <select id="editOBSpDisabled" class="form-select form-select-sm"><option value="0">No</option><option value="1">Yes</option></select></div>
                 </div>
                 <div class="mt-2 text-end">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="editOBAddSpouse()">
+                    <button type="button" class="btn btn-primary btn-sm" id="editOBAddSpouseBtn">
                         <i class="bi bi-plus-circle me-1"></i>Add to List
                     </button>
                 </div>
@@ -958,12 +949,10 @@ $obEditStatusBg  = match($obEditStatus) {
                             <span class="text-muted small ms-2 ec-sublabel">{{ $ec['tel_no'] }} · {{ $ec['relationship'] }}</span>
                         </div>
                         <div class="d-flex gap-1 ms-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2"
-                                    onclick="toggleOBEcEdit(this)">
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 ob-ec-edit-btn">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1"
-                                    onclick="this.closest('.editob-ec-row').remove();obRenumberEc()">
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 ob-ec-remove-btn">
                                 <i class="bi bi-x"></i>
                             </button>
                         </div>
@@ -988,8 +977,7 @@ $obEditStatusBg  = match($obEditStatus) {
                                 </select>
                             </div>
                             <div class="col-12 text-end">
-                                <button type="button" class="btn btn-sm btn-primary py-0 px-3"
-                                        onclick="saveOBEcEdit(this)">
+                                <button type="button" class="btn btn-sm btn-primary py-0 px-3 ob-ec-save-btn">
                                     <i class="bi bi-check me-1"></i>Update
                                 </button>
                             </div>
@@ -1014,7 +1002,7 @@ $obEditStatusBg  = match($obEditStatus) {
                         </select></div>
                 </div>
                 <div class="mt-2 text-end">
-                    <button type="button" class="btn btn-primary btn-sm" onclick="editOBAddEc()">
+                    <button type="button" class="btn btn-primary btn-sm" id="editOBAddEcBtn">
                         <i class="bi bi-plus-circle me-1"></i>Add / Replace Contact
                     </button>
                 </div>
@@ -1166,6 +1154,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function toggleEditOBOtherBank(sel, otherId) {
+    document.getElementById(otherId)?.classList.toggle('d-none', sel.value !== 'Other');
+}
+
 function filterManagersByCompany(companyName, mgrSelectId) {
     var norm = function(s) { return s.replace(/[.,]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); };
     var sel = document.getElementById(mgrSelectId);
@@ -1191,12 +1183,34 @@ function fetchManagerEmailEdit(selectedName) {
 
 document.addEventListener('DOMContentLoaded', function() {
     var editCo = document.getElementById('editOBCompanySelect');
-    if (editCo && editCo.value) filterManagersByCompany(editCo.value, 'edit_reporting_manager');
+    if (editCo) {
+        if (editCo.value) {
+            autofillOfficeLocation(editCo, 'editOBOfficeLocation');
+            filterManagersByCompany(editCo.value, 'edit_reporting_manager');
+        }
+        editCo.addEventListener('change', function() {
+            autofillOfficeLocation(this, 'editOBOfficeLocation');
+            filterManagersByCompany(this.value, 'edit_reporting_manager');
+        });
+    }
     var ms = document.getElementById('obEditMaritalStatus');
-    if (ms) obEditToggleSpouse(ms.value);
-    // Pre-fill manager email on load
+    if (ms) {
+        obEditToggleSpouse(ms.value);
+        ms.addEventListener('change', function() { obEditToggleSpouse(this.value); });
+    }
+    var bankSel = document.getElementById('editOBBankName');
+    if (bankSel) {
+        toggleEditOBOtherBank(bankSel, 'editOBBankNameOther');
+        bankSel.addEventListener('change', function() { toggleEditOBOtherBank(this, 'editOBBankNameOther'); });
+    }
     var mgrSel = document.getElementById('edit_reporting_manager');
-    if (mgrSel && mgrSel.value) fetchManagerEmailEdit(mgrSel.value);
+    if (mgrSel) {
+        if (mgrSel.value) fetchManagerEmailEdit(mgrSel.value);
+        mgrSel.addEventListener('change', function() { fetchManagerEmailEdit(this.value); });
+    }
+    document.querySelectorAll('.asset-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', function() { toggleAssetLabel(this); });
+    });
 });
 
 // ── Section G spouse functions ────────────────────────────────────────────
@@ -1244,7 +1258,7 @@ function saveOBSpouseEdit(btn) {
     card.querySelector('.fw-semibold.small').textContent = name;
     card.querySelector('.text-muted.small.ms-2').textContent = tel + (occ ? ' · ' + occ : '');
     card.querySelector('.ob-spouse-edit-fields').classList.add('d-none');
-    btn.closest('.ob-spouse-card').querySelector('button[onclick*="toggleOBSpouseEdit"]').innerHTML = '<i class="bi bi-pencil"></i>';
+    btn.closest('.ob-spouse-card').querySelector('.ob-sp-edit-btn').innerHTML = '<i class="bi bi-pencil"></i>';
 }
 
 let _editOBNewCount = 0;
@@ -1303,11 +1317,17 @@ function renderOBCertFileList() {
     if (!list) return;
     list.innerHTML = '';
     _obEditCertFiles.forEach((f, i) => {
-        list.innerHTML += `<span class="badge bg-light border text-dark me-1 mb-1" style="font-size:11px;">
-            ${escHtml(f.name)}
-            <button type="button" class="btn-close ms-1" style="font-size:9px;"
-                    onclick="_obEditCertFiles.splice(${i},1);renderOBCertFileList()"></button>
-        </span>`;
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-light border text-dark me-1 mb-1';
+        badge.style.fontSize = '11px';
+        badge.textContent = f.name + ' ';
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close ms-1';
+        closeBtn.style.fontSize = '9px';
+        closeBtn.addEventListener('click', function() { _obEditCertFiles.splice(i,1); renderOBCertFileList(); });
+        badge.appendChild(closeBtn);
+        list.appendChild(badge);
     });
 }
 
@@ -1325,14 +1345,16 @@ function editOBAddEdu() {
                 <span class="fw-semibold small">${escHtml(qual)}</span>
                 <span class="text-muted small ms-2">${escHtml(inst)}${year ? ' · ' + escHtml(year) : ''}</span>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1"
-                    onclick="this.closest('.editob-edu-row').remove();editOBSyncEdu()">
-                <i class="bi bi-x"></i>
-            </button>
         </div>
         <input type="hidden" class="editob-edu-qual" name="edu_qualification[]" value="${escHtml(qual)}">
         <input type="hidden" class="editob-edu-inst" name="edu_institution[]" value="${escHtml(inst)}">
         <input type="hidden" class="editob-edu-year" name="edu_year[]" value="${escHtml(year)}">`;
+    const rmBtn = document.createElement('button');
+    rmBtn.type = 'button';
+    rmBtn.className = 'btn btn-sm btn-outline-danger py-0 px-1';
+    rmBtn.innerHTML = '<i class="bi bi-x"></i>';
+    rmBtn.addEventListener('click', function() { row.remove(); editOBSyncEdu(); });
+    row.querySelector('.d-flex').appendChild(rmBtn);
     if (_obEditCertFiles.length) {
         const dt = new DataTransfer();
         _obEditCertFiles.forEach(f => dt.items.add(f));
@@ -1374,7 +1396,7 @@ function saveOBEduEdit(btn) {
     if (summary) summary.textContent = qual;
     if (sub) sub.textContent = (inst || '') + (year ? ' · ' + year : '');
     row.querySelector('.ob-edu-edit-fields').classList.add('d-none');
-    const editBtn = row.querySelector('button[onclick*="toggleOBEduEdit"]');
+    const editBtn = row.querySelector('.ob-edu-edit-btn');
     if (editBtn) editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
 }
 
@@ -1402,7 +1424,7 @@ function saveOBEcEdit(btn) {
     if (label) label.textContent = 'Contact ' + order + ': ' + name;
     if (sub) sub.textContent = tel + ' · ' + rel;
     row.querySelector('.ob-ec-edit-fields').classList.add('d-none');
-    const editBtn = row.querySelector('button[onclick*="toggleOBEcEdit"]');
+    const editBtn = row.querySelector('.ob-ec-edit-btn');
     if (editBtn) editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
 }
 
@@ -1441,11 +1463,10 @@ function editOBAddEc() {
                 <span class="text-muted small ms-2 ec-sublabel">${escHtml(tel)} · ${escHtml(rel)}</span>
             </div>
             <div class="d-flex gap-1 ms-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="toggleOBEcEdit(this)">
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 ob-ec-edit-btn">
                     <i class="bi bi-pencil"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1"
-                        onclick="this.closest('.editob-ec-row').remove();obRenumberEc()">
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 ob-ec-remove-btn">
                     <i class="bi bi-x"></i>
                 </button>
             </div>
@@ -1467,7 +1488,7 @@ function editOBAddEc() {
                     </select>
                 </div>
                 <div class="col-12 text-end">
-                    <button type="button" class="btn btn-sm btn-primary py-0 px-3" onclick="saveOBEcEdit(this)">
+                    <button type="button" class="btn btn-sm btn-primary py-0 px-3 ob-ec-save-btn">
                         <i class="bi bi-check me-1"></i>Update
                     </button>
                 </div>
@@ -1478,6 +1499,29 @@ function editOBAddEc() {
     document.getElementById('editOBEcTel').value = '';
     document.getElementById('editOBEcRel').value = '';
 }
+
+// ── Bind buttons via addEventListener (CSP-safe) ─────────────────────────
+document.getElementById('editOBAddCertBtn').addEventListener('click', editOBAddCertFile);
+document.getElementById('editOBAddEduBtn').addEventListener('click', editOBAddEdu);
+document.getElementById('editOBAddSpouseBtn').addEventListener('click', editOBAddSpouse);
+document.getElementById('editOBAddEcBtn').addEventListener('click', editOBAddEc);
+
+// Event delegation for dynamically created and server-rendered buttons
+document.addEventListener('click', function(e) {
+    var btn;
+    // Education edit/remove/save
+    if ((btn = e.target.closest('.ob-edu-edit-btn'))) { toggleOBEduEdit(btn); }
+    else if ((btn = e.target.closest('.ob-edu-remove-btn'))) { btn.closest('.editob-edu-row').remove(); editOBSyncEdu(); }
+    else if ((btn = e.target.closest('.ob-edu-save-btn'))) { saveOBEduEdit(btn); }
+    // Spouse edit/remove/save
+    else if ((btn = e.target.closest('.ob-sp-edit-btn'))) { toggleOBSpouseEdit(btn); }
+    else if ((btn = e.target.closest('.ob-sp-remove-btn'))) { removeOBSpouse(btn); }
+    else if ((btn = e.target.closest('.ob-sp-save-btn'))) { saveOBSpouseEdit(btn); }
+    // Emergency contact edit/remove/save
+    else if ((btn = e.target.closest('.ob-ec-edit-btn'))) { toggleOBEcEdit(btn); }
+    else if ((btn = e.target.closest('.ob-ec-remove-btn'))) { btn.closest('.editob-ec-row').remove(); obRenumberEc(); }
+    else if ((btn = e.target.closest('.ob-ec-save-btn'))) { saveOBEcEdit(btn); }
+});
 
 function toggleAssetLabel(checkbox) {
     var label = document.getElementById('label_' + checkbox.id);
