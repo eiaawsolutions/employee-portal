@@ -37,6 +37,11 @@ This is a **multi-role HR platform** built on Laravel 12 with Blade + Tailwind C
 - **Finance:** Accounting module (Chart of Accounts, AR/AP, GL, invoices, purchase orders, budgeting, tax returns) under `app/Http/Controllers/Accounting/`
 - **Admin:** Company management, knowledge base, system overview/reports, role/permission assignment
 
+### Frontend Patterns Reference
+See `FRONTEND-PATTERNS.md` for a detailed reference of how each page's JavaScript works — event handlers, CSP compliance, dynamic form patterns, file upload patterns, and a per-page interaction map. **Consult before modifying any Blade view with JavaScript** to avoid breaking existing functionality.
+
+**Critical rule:** Never use inline `onclick`/`onchange` attributes. The CSP policy blocks them. Always use `addEventListener` inside a nonce-protected `<script>` block.
+
 ### Roles & Access
 Role groups with granular sub-roles:
 - **HR** (`hr_manager`, `hr_executive`, `hr_intern`) — employee lifecycle; only `hr_manager` can edit records, download contracts, and access restricted documents
