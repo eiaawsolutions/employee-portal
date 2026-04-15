@@ -4,6 +4,8 @@
 
 @section('content')
 
+@include('partials.onboarding-overview-widget')
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p class="text-muted mb-0 small">View all new hire onboarding records</p>
 </div>

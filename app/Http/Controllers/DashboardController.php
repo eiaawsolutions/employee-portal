@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\Company;
 use App\Models\Onboarding;
 use App\Models\Employee;
 use App\Models\AssetInventory;
@@ -322,7 +323,37 @@ class DashboardController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('it.onboarding', compact('onboardings','companies','itStaff'));
+        // Onboarding overview stats for widget
+        $now = now();
+        $normaliseCo = fn(string $s) => strtolower(str_replace(['.', ','], '', preg_replace('/\s+/', ' ', trim($s))));
+        $registeredCos = Company::orderBy('name')->pluck('name');
+        $canonMap = [];
+        foreach ($registeredCos as $n) $canonMap[$normaliseCo($n)] = $n;
+        $groupCo = function ($rows) use ($normaliseCo, $canonMap) {
+            $grouped = [];
+            foreach ($rows as $row) {
+                $raw = trim($row->company ?? '') ?: 'Unknown';
+                $key = $canonMap[$normaliseCo($raw)] ?? $raw;
+                $grouped[$key] = ($grouped[$key] ?? 0) + $row->total;
+            }
+            return collect($grouped)->map(fn($t, $c) => (object) ['company' => $c, 'total' => $t])->values()->all();
+        };
+
+        $onboardingsByCompany = $groupCo(
+            WorkDetail::select('company', DB::raw('count(*) as total'))
+                ->whereYear('start_date', $now->year)->groupBy('company')->orderByDesc('total')->get()
+        );
+        $newJoinersByCompany = $groupCo(
+            WorkDetail::select('company', DB::raw('count(*) as total'))
+                ->whereMonth('start_date', $now->month)->whereYear('start_date', $now->year)->groupBy('company')->get()
+        );
+        $onboardStats = [
+            'total_onboardings_ytd'  => WorkDetail::whereYear('start_date', $now->year)->count(),
+            'new_joiners_this_month' => WorkDetail::whereMonth('start_date', $now->month)->whereYear('start_date', $now->year)->count(),
+        ];
+
+        return view('it.onboarding', compact('onboardings','companies','itStaff',
+            'onboardStats', 'onboardingsByCompany', 'newJoinersByCompany'));
     }
 
     public function userDashboard()
