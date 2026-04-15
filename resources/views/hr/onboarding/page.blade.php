@@ -924,7 +924,7 @@
                             </div>
                         </div>
                         <div class="mt-2 text-end">
-                            <button type="button" class="btn btn-primary btn-sm" onclick="obAddEduEntry()">
+                            <button type="button" class="btn btn-primary btn-sm" id="obAddEduBtn">
                                 <i class="bi bi-plus-circle me-1"></i>Add to List
                             </button>
                         </div>
@@ -995,7 +995,7 @@
                             </div>
                         </div>
                         <div class="mt-2 text-end">
-                            <button type="button" class="btn btn-primary btn-sm" onclick="obAddSpouseEntry()">
+                            <button type="button" class="btn btn-primary btn-sm" id="obAddSpouseBtn">
                                 <i class="bi bi-plus-circle me-1"></i>Add to List
                             </button>
                         </div>
@@ -1031,7 +1031,7 @@
                             </div>
                         </div>
                         <div class="mt-2 text-end">
-                            <button type="button" class="btn btn-primary btn-sm" onclick="obAddEcEntry()">
+                            <button type="button" class="btn btn-primary btn-sm" id="obAddEcBtn">
                                 <i class="bi bi-plus-circle me-1"></i>Add to List
                             </button>
                         </div>
@@ -1285,18 +1285,23 @@ function obAddEduEntry() {
     ['obEduQual','obEduInst','obEduYear'].forEach(id => document.getElementById(id).value = '');
     if (certInput) certInput.value = '';
 }
-function obRemoveEduEntry(i) { obEduEntries.splice(i,1); obRenderEduList(); }
 function obRenderEduList() {
     const list = document.getElementById('obEduList');
     const h    = document.getElementById('obEduHidden');
     list.innerHTML = '';
     h.innerHTML    = '';
     obEduEntries.forEach((e,i) => {
-        list.innerHTML += `<div class="d-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white">
-            <div><span class="fw-semibold small">${obEsc(e.qualification)}</span>
-            <span class="text-muted small ms-2">${e.institution?e.institution:''}${e.year?' · '+e.year:''}${e.certFile?' · '+obEsc(e.certFile.name):''}</span></div>
-            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="obRemoveEduEntry(${i})">
-                <i class="bi bi-x"></i></button></div>`;
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white';
+        row.innerHTML = `<div><span class="fw-semibold small">${obEsc(e.qualification)}</span>
+            <span class="text-muted small ms-2">${e.institution?e.institution:''}${e.year?' · '+e.year:''}${e.certFile?' · '+obEsc(e.certFile.name):''}</span></div>`;
+        const rmBtn = document.createElement('button');
+        rmBtn.type = 'button';
+        rmBtn.className = 'btn btn-sm btn-outline-danger py-0 px-1';
+        rmBtn.innerHTML = '<i class="bi bi-x"></i>';
+        rmBtn.addEventListener('click', function() { obEduEntries.splice(i,1); obRenderEduList(); });
+        row.appendChild(rmBtn);
+        list.appendChild(row);
         h.innerHTML += `<input type="hidden" name="edu_qualification[]" value="${obEsc(e.qualification)}">
             <input type="hidden" name="edu_institution[]" value="${obEsc(e.institution)}">
             <input type="hidden" name="edu_year[]" value="${obEsc(e.year)}">`;
@@ -1315,6 +1320,7 @@ function obRenderEduList() {
         h.appendChild(inp);
     }
 }
+document.getElementById('obAddEduBtn').addEventListener('click', obAddEduEntry);
 
 // ── Spouse list (add modal) ──────────────────────────────────────────────
 let obSpouseEntries = [];
@@ -1340,18 +1346,23 @@ function obAddSpouseEntry() {
     obRenderSpouseList();
     ['obSpName','obSpNric','obSpTel','obSpOccupation','obSpIncomeTax','obSpAddress'].forEach(id=>document.getElementById(id).value='');
 }
-function obRemoveSpouseEntry(i) { obSpouseEntries.splice(i,1); obRenderSpouseList(); }
 function obRenderSpouseList() {
     const list = document.getElementById('obSpouseList');
     const h    = document.getElementById('obSpouseHidden');
     list.innerHTML = '';
     h.innerHTML    = '';
     obSpouseEntries.forEach((e,i) => {
-        list.innerHTML += `<div class="d-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white">
-            <div><span class="fw-semibold small">${obEsc(e.name)}</span>
-            <span class="text-muted small ms-2">${e.tel?e.tel:''}</span></div>
-            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="obRemoveSpouseEntry(${i})">
-                <i class="bi bi-x"></i></button></div>`;
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white';
+        row.innerHTML = `<div><span class="fw-semibold small">${obEsc(e.name)}</span>
+            <span class="text-muted small ms-2">${e.tel?e.tel:''}</span></div>`;
+        const rmBtn = document.createElement('button');
+        rmBtn.type = 'button';
+        rmBtn.className = 'btn btn-sm btn-outline-danger py-0 px-1';
+        rmBtn.innerHTML = '<i class="bi bi-x"></i>';
+        rmBtn.addEventListener('click', function() { obSpouseEntries.splice(i,1); obRenderSpouseList(); });
+        row.appendChild(rmBtn);
+        list.appendChild(row);
         h.innerHTML += `<input type="hidden" name="spouses[${i}][name]" value="${obEsc(e.name)}">
             <input type="hidden" name="spouses[${i}][nric_no]" value="${obEsc(e.nric)}">
             <input type="hidden" name="spouses[${i}][tel_no]" value="${obEsc(e.tel)}">
@@ -1362,6 +1373,7 @@ function obRenderSpouseList() {
             <input type="hidden" name="spouses[${i}][is_disabled]" value="${e.disabled}">`;
     });
 }
+document.getElementById('obAddSpouseBtn').addEventListener('click', obAddSpouseEntry);
 
 // ── Emergency contacts (add modal) ───────────────────────────────────────
 let obEcEntries = [];
@@ -1377,7 +1389,6 @@ function obAddEcEntry() {
     document.getElementById('obEcTel').value='';
     document.getElementById('obEcRel').value='';
 }
-function obRemoveEcEntry(i) { obEcEntries.splice(i,1); obRenderEcList(); }
 function obRenderEcList() {
     const list = document.getElementById('obEcList');
     const h    = document.getElementById('obEcHidden');
@@ -1386,17 +1397,24 @@ function obRenderEcList() {
     h.innerHTML    = '';
     obEcEntries.forEach((e,i) => {
         const order = i+1;
-        list.innerHTML += `<div class="d-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white">
-            <div><span class="fw-semibold small">Contact ${order}: ${obEsc(e.name)}</span>
-            <span class="text-muted small ms-2">${obEsc(e.tel)} · ${obEsc(e.relationship)}</span></div>
-            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1" onclick="obRemoveEcEntry(${i})">
-                <i class="bi bi-x"></i></button></div>`;
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-white';
+        row.innerHTML = `<div><span class="fw-semibold small">Contact ${order}: ${obEsc(e.name)}</span>
+            <span class="text-muted small ms-2">${obEsc(e.tel)} · ${obEsc(e.relationship)}</span></div>`;
+        const rmBtn = document.createElement('button');
+        rmBtn.type = 'button';
+        rmBtn.className = 'btn btn-sm btn-outline-danger py-0 px-1';
+        rmBtn.innerHTML = '<i class="bi bi-x"></i>';
+        rmBtn.addEventListener('click', function() { obEcEntries.splice(i,1); obRenderEcList(); });
+        row.appendChild(rmBtn);
+        list.appendChild(row);
         h.innerHTML += `<input type="hidden" name="emergency[${order}][name]" value="${obEsc(e.name)}">
             <input type="hidden" name="emergency[${order}][tel_no]" value="${obEsc(e.tel)}">
             <input type="hidden" name="emergency[${order}][relationship]" value="${obEsc(e.relationship)}">`;
     });
     if (txt) txt.textContent = `${obEcEntries.length} of 2 contacts added.`;
 }
+document.getElementById('obAddEcBtn').addEventListener('click', obAddEcEntry);
 function obEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // ── Marital Status → Spouse Section toggle (HR full form) ───────────────

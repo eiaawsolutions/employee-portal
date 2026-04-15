@@ -893,7 +893,7 @@
             @endforelse
         </div>
         <div class="d-flex gap-2 mt-2 mb-3">
-            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addEduEditRow()">
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="empAddEduBtn">
                 <i class="bi bi-plus-circle me-1"></i>Add Qualification
             </button>
         </div>
@@ -1066,7 +1066,7 @@
             </div>
             <div class="text-end mt-3">
                 <button type="button" class="btn btn-outline-primary btn-sm px-4"
-                        onclick="addEmpNewSpouse()">
+                        id="empAddSpouseBtn">
                     <i class="bi bi-plus-circle me-1"></i>Add to List
                 </button>
             </div>
@@ -1579,6 +1579,7 @@ function addEduEditRow() {
         </div>`;
     container.appendChild(div);
 }
+document.getElementById('empAddEduBtn').addEventListener('click', addEduEditRow);
 
 // ── NRIC file management ──────────────────────────────────────────────────
 function removeNricExisting(btn) {
@@ -1929,6 +1930,7 @@ function addEmpNewSpouse() {
     document.getElementById('empNewSpWorking').value  = '0';
     document.getElementById('empNewSpDisabled').value = '0';
 }
+document.getElementById('empAddSpouseBtn').addEventListener('click', addEmpNewSpouse);
 
 function removeEmpNewSpouse(btn, idx) {
     btn.closest('.new-spouse-card').remove();
