@@ -83,8 +83,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <select name="ownership" class="form-select form-select-sm" id="ownershipFilter"
-                        onchange="toggleVendorFilter(this.value)">
+                <select name="ownership" class="form-select form-select-sm" id="ownershipFilter">
                     <option value="">All Ownership</option>
                     <option value="company" {{ request('ownership')==='company'?'selected':'' }}>Company Owned</option>
                     <option value="rental"  {{ request('ownership')==='rental'?'selected':'' }}>Rental / Leased</option>
@@ -212,8 +211,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <select name="d_ownership" class="form-select form-select-sm" id="dOwnershipFilter"
-                        onchange="toggleDVendorFilter(this.value)">
+                <select name="d_ownership" class="form-select form-select-sm" id="dOwnershipFilter">
                     <option value="">All Ownership</option>
                     <option value="company" {{ request('d_ownership')==='company'?'selected':'' }}>Company Owned</option>
                     <option value="rental"  {{ request('d_ownership')==='rental'?'selected':'' }}>Rental / Leased</option>
@@ -568,7 +566,7 @@
                 </div>
                 <div class="row g-3 mb-2">
                     <div class="col-md-3"><label class="form-label fw-semibold">Condition <span class="text-danger">*</span></label>
-                        <select name="asset_condition" id="addAssetCondition" class="form-select" required onchange="syncStatusFromConditionAdd(this.value)">
+                        <select name="asset_condition" id="addAssetCondition" class="form-select" required>
                             <option value="good"              {{ old('asset_condition','good')=='good'             ?'selected':'' }}>Good</option>
                             <option value="not_good"          {{ old('asset_condition')=='not_good'               ?'selected':'' }}>Not Good</option>
                             <option value="under_maintenance" {{ old('asset_condition')=='under_maintenance'      ?'selected':'' }}>Under Maintenance</option>
@@ -644,10 +642,35 @@ function toggleVendorFilter(value) {
     const wrap = document.getElementById('vendorFilterWrap');
     if (wrap) wrap.style.display = value === 'rental' ? '' : 'none';
 }
+var ownershipFilter = document.getElementById('ownershipFilter');
+if (ownershipFilter) {
+    toggleVendorFilter(ownershipFilter.value);
+    ownershipFilter.addEventListener('change', function() { toggleVendorFilter(this.value); });
+}
 
 function toggleDVendorFilter(value) {
     const wrap = document.getElementById('dVendorFilterWrap');
     if (wrap) wrap.style.display = value === 'rental' ? '' : 'none';
+}
+var dOwnershipFilter = document.getElementById('dOwnershipFilter');
+if (dOwnershipFilter) {
+    toggleDVendorFilter(dOwnershipFilter.value);
+    dOwnershipFilter.addEventListener('change', function() { toggleDVendorFilter(this.value); });
+}
+
+// Condition change listener for add form
+var addCondSelect = document.getElementById('addAssetCondition');
+if (addCondSelect) {
+    syncStatusFromConditionAdd(addCondSelect.value);
+    addCondSelect.addEventListener('change', function() { syncStatusFromConditionAdd(this.value); });
+}
+
+// CSV import file label
+var importFileInput = document.getElementById('assetImportFileInput');
+if (importFileInput) {
+    importFileInput.addEventListener('change', function() {
+        document.getElementById('assetImportFileLabel').textContent = this.files[0]?.name || 'No file chosen';
+    });
 }
 
 // ── Ownership toggle (Add form) ──────────────────────────────────────
@@ -1011,7 +1034,7 @@ document.addEventListener('click', function (e) {
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Select CSV File</label>
                         <input type="file" name="csv_file" class="form-control" accept=".csv,.txt" required
-                               onchange="document.getElementById('assetImportFileLabel').textContent = this.files[0]?.name || 'No file chosen'">
+                               id="assetImportFileInput">
                         <div id="assetImportFileLabel" class="form-text text-muted mt-1">No file chosen</div>
                     </div>
                 </form>

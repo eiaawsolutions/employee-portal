@@ -266,7 +266,7 @@
         {{-- Condition: Good / Not Good / Under Maintenance --}}
         <div class="col-md-3">
             <label class="form-label fw-semibold">Condition <span class="text-danger">*</span></label>
-            <select name="asset_condition" id="assetCondition" class="form-select" required onchange="syncStatusFromCondition(this.value)">
+            <select name="asset_condition" id="assetCondition" class="form-select" required>
                 @php
                     // Map any legacy/new values → current three-option set
                     $cond = old('asset_condition', $asset->asset_condition);
@@ -548,10 +548,13 @@ function syncStatusFromCondition(condition) {
     }
 }
 
-// Run on page load to handle pre-selected condition (e.g. validation error redirect)
+// Run on page load + bind change listener
 document.addEventListener('DOMContentLoaded', function () {
     const condEl = document.getElementById('assetCondition');
-    if (condEl) syncStatusFromCondition(condEl.value);
+    if (condEl) {
+        syncStatusFromCondition(condEl.value);
+        condEl.addEventListener('change', function() { syncStatusFromCondition(this.value); });
+    }
 });
 
 // ── Asset Name auto-fill (same as Add form) ───────────────────────────────
