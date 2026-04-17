@@ -207,7 +207,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label fw-semibold">Marital Status <span class="text-danger">*</span></label>
-                    <select name="marital_status" id="empMaritalStatus" class="form-select" required onchange="empToggleSpouse(this.value)">
+                    <select name="marital_status" id="empMaritalStatus" class="form-select" required>
                         @foreach(['single','married','divorced','widowed'] as $ms)
                             <option value="{{ $ms }}" {{ old('marital_status', $employee->marital_status) == $ms ? 'selected' : '' }}>
                                 {{ ucfirst($ms) }}
@@ -1772,7 +1772,10 @@ function empToggleSpouse(val) {
 }
 document.addEventListener('DOMContentLoaded', function() {
     const sel = document.getElementById('empMaritalStatus');
-    if (sel) empToggleSpouse(sel.value);
+    if (sel) {
+        empToggleSpouse(sel.value);
+        sel.addEventListener('change', function() { empToggleSpouse(this.value); });
+    }
 
     // Auto-fill spouse address from Section A residential address
     const resAddr   = document.getElementById('empResAddress');

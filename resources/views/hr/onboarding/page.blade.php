@@ -375,7 +375,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Marital Status <span class="text-danger">*</span></label>
-                        <select name="marital_status" id="obMaritalStatus" class="form-select @error('marital_status') is-invalid @enderror" required onchange="obToggleSpouseSection(this.value)">
+                        <select name="marital_status" id="obMaritalStatus" class="form-select @error('marital_status') is-invalid @enderror" required>
                             <option value="">Select...</option>
                             @foreach(['single'=>'Single','married'=>'Married','divorced'=>'Divorced','widowed'=>'Widowed'] as $v=>$l)
                                 <option value="{{ $v }}" {{ old('marital_status')==$v?'selected':'' }}>{{ $l }}</option>
@@ -1436,7 +1436,10 @@ function obToggleSpouseSection(val) {
 }
 document.addEventListener('DOMContentLoaded', function() {
     const sel = document.getElementById('obMaritalStatus');
-    if (sel) obToggleSpouseSection(sel.value);
+    if (sel) {
+        obToggleSpouseSection(sel.value);
+        sel.addEventListener('change', function() { obToggleSpouseSection(this.value); });
+    }
 });
 
 </script>

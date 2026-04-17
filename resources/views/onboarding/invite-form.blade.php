@@ -186,7 +186,7 @@ body { background:#f1f5f9; min-height:100vh; }
 
             <div class="col-md-4">
                 <label class="form-label fw-semibold">Marital Status <span class="text-danger">*</span></label>
-                <select name="marital_status" id="maritalStatus" class="form-select @error('marital_status') is-invalid @enderror" required onchange="toggleSpouseSection(this.value)">
+                <select name="marital_status" id="maritalStatus" class="form-select @error('marital_status') is-invalid @enderror" required>
                     <option value="">Select...</option>
                     @foreach(['single'=>'Single','married'=>'Married','divorced'=>'Divorced','widowed'=>'Widowed'] as $v=>$l)
                     <option value="{{ $v }}" {{ old('marital_status')==$v?'selected':'' }}>{{ $l }}</option>
@@ -930,10 +930,13 @@ function toggleSpouseSection(val) {
         if (note) note.textContent = 'Not applicable — spouse information is only required when marital status is Married.';
     }
 }
-// Run on page load to reflect old() value
+// Run on page load to reflect old() value + wire up change handler (CSP-compliant)
 document.addEventListener('DOMContentLoaded', function() {
     const sel = document.getElementById('maritalStatus');
-    if (sel) toggleSpouseSection(sel.value);
+    if (sel) {
+        toggleSpouseSection(sel.value);
+        sel.addEventListener('change', function() { toggleSpouseSection(this.value); });
+    }
 });
 
 </script>
