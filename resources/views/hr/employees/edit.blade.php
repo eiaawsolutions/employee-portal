@@ -1933,6 +1933,29 @@ function addEmpNewSpouse() {
 }
 document.getElementById('empAddSpouseBtn').addEventListener('click', addEmpNewSpouse);
 
+// Fail-safe: if HR typed into the Add Spouse fields but forgot to click "Add to List",
+// auto-commit the entry on form submit so the data isn't lost.
+(function() {
+    const form = document.querySelector('form[action*="/hr/employees/"][action$="' + '{{ $employee->id }}' + '"]')
+              || document.getElementById('empAddSpouseBtn')?.closest('form');
+    if (!form) return;
+    form.addEventListener('submit', function() {
+        const nameEl = document.getElementById('empNewSpName');
+        const telEl  = document.getElementById('empNewSpTel');
+        if (!nameEl || !telEl) return;
+        const name = nameEl.value.trim();
+        const tel  = telEl.value.trim();
+        if (name && tel) {
+            try {
+                addEmpNewSpouse();
+            } catch (e) {
+                // Don't block submission — server-side validation will catch anything malformed
+                console.error('Auto-add spouse on submit failed:', e);
+            }
+        }
+    }, true);
+})();
+
 function removeEmpNewSpouse(btn, idx) {
     btn.closest('.new-spouse-card').remove();
     document.querySelectorAll(`#empNewSpouseHidden input[data-new-sp-idx="${idx}"]`).forEach(el => el.remove());
