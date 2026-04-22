@@ -1308,15 +1308,42 @@ class EmployeeController extends Controller
         if (!empty($delSpouseIds)) {
             \App\Models\EmployeeSpouseDetail::where('employee_id', $employee->id)->whereIn('id', $delSpouseIds)->delete();
         }
-        foreach ($request->input('spouses', []) as $sp) {
-            if (empty($sp['name'])) continue;
+        $spousesPayload = $request->input('spouses', []);
+        \Illuminate\Support\Facades\Log::info('employees.update spouse section', [
+            'employee_id'      => $employee->id,
+            'spouses_received' => is_array($spousesPayload) ? count($spousesPayload) : 0,
+            'spouses_raw'      => $spousesPayload,
+            'del_spouse_ids'   => $delSpouseIds,
+            'marital_status'   => $employee->marital_status,
+        ]);
+        foreach ($spousesPayload as $spIdxLog => $sp) {
+            if (empty($sp['name'])) {
+                \Illuminate\Support\Facades\Log::info('employees.update spouse skipped (empty name)', [
+                    'employee_id' => $employee->id,
+                    'index'       => $spIdxLog,
+                    'row'         => $sp,
+                ]);
+                continue;
+            }
             $spId = !empty($sp['id']) ? (int)$sp['id'] : null;
             $spFields = ['name' => $sp['name'], 'nric_no' => $sp['nric_no'] ?? null, 'tel_no' => $sp['tel_no'] ?? null, 'occupation' => $sp['occupation'] ?? null, 'income_tax_no' => $sp['income_tax_no'] ?? null, 'address' => $sp['address'] ?? null, 'is_working' => !empty($sp['is_working']), 'is_disabled' => !empty($sp['is_disabled'])];
-            if ($spId) {
-                \App\Models\EmployeeSpouseDetail::where('employee_id', $employee->id)->where('id', $spId)->update($spFields);
-            } else {
-                $spFields['employee_id'] = $employee->id;
-                \App\Models\EmployeeSpouseDetail::create($spFields);
+            try {
+                if ($spId) {
+                    \App\Models\EmployeeSpouseDetail::where('employee_id', $employee->id)->where('id', $spId)->update($spFields);
+                    \Illuminate\Support\Facades\Log::info('employees.update spouse updated', ['employee_id' => $employee->id, 'spouse_id' => $spId]);
+                } else {
+                    $spFields['employee_id'] = $employee->id;
+                    $created = \App\Models\EmployeeSpouseDetail::create($spFields);
+                    \Illuminate\Support\Facades\Log::info('employees.update spouse created', ['employee_id' => $employee->id, 'new_spouse_id' => $created->id]);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('employees.update spouse save failed', [
+                    'employee_id' => $employee->id,
+                    'spouse_id'   => $spId,
+                    'fields'      => $spFields,
+                    'error'       => $e->getMessage(),
+                ]);
+                throw $e;
             }
         }
 
@@ -1481,17 +1508,32 @@ class EmployeeController extends Controller
             'spouse_is_disabled'   => 'nullable|boolean',
         ]);
 
-        \App\Models\EmployeeSpouseDetail::create([
-            'employee_id'   => $employee->id,
-            'name'          => $validated['spouse_name'],
-            'address'       => $validated['spouse_address'],
-            'nric_no'       => $validated['spouse_nric_no'],
-            'tel_no'        => $validated['spouse_tel_no'],
-            'occupation'    => $validated['spouse_occupation'],
-            'income_tax_no' => $validated['spouse_income_tax_no'],
-            'is_working'    => $request->boolean('spouse_is_working'),
-            'is_disabled'   => $request->boolean('spouse_is_disabled'),
-        ]);
+        try {
+            $created = \App\Models\EmployeeSpouseDetail::create([
+                'employee_id'   => $employee->id,
+                'name'          => $validated['spouse_name'],
+                'address'       => $validated['spouse_address'] ?? null,
+                'nric_no'       => $validated['spouse_nric_no'] ?? null,
+                'tel_no'        => $validated['spouse_tel_no'] ?? null,
+                'occupation'    => $validated['spouse_occupation'] ?? null,
+                'income_tax_no' => $validated['spouse_income_tax_no'] ?? null,
+                'is_working'    => $request->boolean('spouse_is_working'),
+                'is_disabled'   => $request->boolean('spouse_is_disabled'),
+            ]);
+            \Illuminate\Support\Facades\Log::info('employees.spouse.update created', [
+                'employee_id'   => $employee->id,
+                'new_spouse_id' => $created->id,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('employees.spouse.update failed', [
+                'employee_id' => $employee->id,
+                'error'       => $e->getMessage(),
+                'payload'     => $validated,
+            ]);
+            return back()
+                ->with('add_spouse_errors', true)
+                ->withErrors(['spouse_name' => 'Could not save spouse: ' . $e->getMessage()]);
+        }
 
         $consentRequired = $u->isHrManager() || $u->isSuperadmin() || $u->isSystemAdmin();
         $this->triggerEmployeeConsent($employee, ['Section G — Spouse Information'], null, $consentRequired);
