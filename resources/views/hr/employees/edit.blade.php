@@ -1757,9 +1757,7 @@ function empToggleSpouse(val) {
     const star    = document.querySelector('.emp-spouse-required');
     if (!section) return;
     const isMarried = val === 'married';
-    section.style.opacity = isMarried ? '' : '0.45';
-    const panel = document.getElementById('empAddSpousePanel');
-    if (panel) panel.style.pointerEvents = isMarried ? '' : 'none';
+    section.style.opacity = isMarried ? '' : '0.7';
     section.querySelectorAll('.spouse-card button').forEach(el => {
         el.disabled = !isMarried;
     });
