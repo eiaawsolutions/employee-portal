@@ -562,13 +562,6 @@
 {{-- ══════════════════════════════════════════════════════════════════════ --}}
 @if($canSeePersonal)
 @include('partials.employee-extra-sections-view', ['employee' => $employee, 'showConsent' => true])
-@if($canEdit)
-<div class="d-flex justify-content-end mb-3">
-    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSpouseModal">
-        <i class="bi bi-person-plus me-1"></i>Add Spouse
-    </button>
-</div>
-@endif
 @endif
 
 {{-- Edit & Consent Acknowledgement Log --}}
@@ -652,92 +645,6 @@
 </div>
 @endif
 
-{{-- ── Add Spouse Modal (dedicated endpoint, simple flat form) ─────────── --}}
-@if($canEdit)
-<div class="modal fade" id="addSpouseModal" tabindex="-1" aria-labelledby="addSpouseModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="modal-title fw-bold" id="addSpouseModalLabel">
-                    <i class="bi bi-person-plus me-2 text-primary"></i>Add Spouse — {{ $empName }}
-                </h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('employees.spouse.update', $employee) }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    @if($errors->any() && session('add_spouse_errors'))
-                    <div class="alert alert-danger py-2 small mb-3">
-                        <ul class="mb-0 ps-3">
-                            @foreach($errors->all() as $err)
-                                <li>{{ $err }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
-                            <input type="text" name="spouse_name" class="form-control" required maxlength="255">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">NRIC No.</label>
-                            <input type="text" name="spouse_nric_no" class="form-control" maxlength="50">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                Tel No. @if($employee->marital_status === 'married')<span class="text-danger">*</span>@endif
-                            </label>
-                            <input type="text" name="spouse_tel_no" class="form-control"
-                                   @if($employee->marital_status === 'married') required @endif maxlength="30">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Occupation</label>
-                            <input type="text" name="spouse_occupation" class="form-control" maxlength="255">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">Income Tax No.</label>
-                            <input type="text" name="spouse_income_tax_no" class="form-control" maxlength="50">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Address</label>
-                            <textarea name="spouse_address" class="form-control" rows="2">{{ $employee->residential_address }}</textarea>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-semibold">Working?</label>
-                            <select name="spouse_is_working" class="form-select">
-                                <option value="0">No</option>
-                                <option value="1">Yes</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-semibold">Disabled?</label>
-                            <select name="spouse_is_disabled" class="form-select">
-                                <option value="0">No</option>
-                                <option value="1">Yes</option>
-                            </select>
-                        </div>
-                    </div>
-                    @if($employee->marital_status !== 'married')
-                    <div class="alert alert-warning small mt-3 mb-0 py-2">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Marital status is currently <strong>{{ ucfirst($employee->marital_status ?? 'unknown') }}</strong>.
-                        Please update it via <em>Edit Employee</em> if this spouse record should be active.
-                    </div>
-                    @endif
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-sm btn-primary">
-                        <i class="bi bi-check-circle me-1"></i>Save Spouse
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endif
-
 {{-- ── Change Photo Modal ──────────────────────────────────────────────── --}}
 @if($canEdit)
 <div class="modal fade" id="changePhotoModalEmp" tabindex="-1" aria-labelledby="changePhotoModalEmpLabel" aria-hidden="true">
@@ -774,16 +681,3 @@
 @endif
 
 @endsection
-
-@if($canEdit && session('add_spouse_errors'))
-@push('scripts')
-<script nonce="{{ $cspNonce ?? '' }}">
-document.addEventListener('DOMContentLoaded', function() {
-    const el = document.getElementById('addSpouseModal');
-    if (el && window.bootstrap) {
-        new bootstrap.Modal(el).show();
-    }
-});
-</script>
-@endpush
-@endif
