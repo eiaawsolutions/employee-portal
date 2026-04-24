@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class BankAccount extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_bank_accounts';
 
     protected $fillable = [
-        'company', 'account_name', 'account_number', 'bank_name', 'bank_branch',
+        'tenant_id', 'company', 'account_name', 'account_number', 'bank_name', 'bank_branch',
         'swift_code', 'currency', 'opening_balance', 'opening_balance_date',
         'chart_of_account_id', 'is_active',
     ];

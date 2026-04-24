@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,9 +12,9 @@ use Illuminate\Support\Str;
 
 class Onboarding extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $fillable = [
-        'status',
+        'tenant_id', 'status',
         'is_expired',           // true once moved to employee table
         'hr_email', 'it_email',
         'hr_emails', 'it_emails',

@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_purchase_orders';
 
     protected $fillable = [
-        'company', 'vendor_id', 'po_number', 'date', 'expected_date',
+        'tenant_id', 'company', 'vendor_id', 'po_number', 'date', 'expected_date',
         'reference', 'subtotal', 'tax_total', 'total', 'status',
         'notes', 'created_by', 'approved_by',
     ];

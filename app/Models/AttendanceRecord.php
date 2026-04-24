@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendanceRecord extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'date', 'clock_in', 'clock_out',
+        'tenant_id', 'employee_id', 'date', 'clock_in', 'clock_out',
         'work_hours', 'overtime_hours', 'break_duration',
         'status', 'clock_in_ip', 'clock_out_ip',
         'remarks', 'work_schedule_id',

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LeaveApplication extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'leave_type_id', 'start_date', 'end_date',
+        'tenant_id', 'employee_id', 'leave_type_id', 'start_date', 'end_date',
         'total_days', 'is_half_day', 'half_day_period', 'reason',
         'attachment_path', 'status', 'approved_by', 'approved_at',
         'rejection_reason',

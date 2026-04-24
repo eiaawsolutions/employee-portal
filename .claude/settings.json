@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"Schema::table\\('work_details'\" /c/laragon/www/claritas-onboarding/database/migrations/*.php)"
+    ]
+  }
+}

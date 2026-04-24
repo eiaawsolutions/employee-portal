@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoice extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_sales_invoices';
 
     protected $fillable = [
-        'company', 'customer_id', 'invoice_number', 'date', 'due_date',
+        'tenant_id', 'company', 'customer_id', 'invoice_number', 'date', 'due_date',
         'reference', 'description', 'subtotal', 'tax_total', 'discount_total',
         'total', 'amount_paid', 'balance_due', 'currency', 'exchange_rate',
         'status', 'notes', 'terms', 'created_by', 'approved_by', 'approved_at',

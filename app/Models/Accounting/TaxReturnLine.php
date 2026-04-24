@@ -2,13 +2,16 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class TaxReturnLine extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_tax_return_lines';
 
-    protected $fillable = ['tax_return_id', 'tax_code_id', 'description', 'taxable_amount', 'tax_amount'];
+    protected $fillable = ['tenant_id', 'tax_return_id', 'tax_code_id', 'description', 'taxable_amount', 'tax_amount'];
 
     protected $casts = [
         'taxable_amount' => 'decimal:2',

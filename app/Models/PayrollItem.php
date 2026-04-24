@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PayrollItem extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company', 'name', 'code', 'type', 'default_amount',
+        'tenant_id', 'company', 'name', 'code', 'type', 'default_amount',
         'is_statutory', 'is_recurring', 'is_active',
     ];
 

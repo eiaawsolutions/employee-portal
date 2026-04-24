@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Budget extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_budgets';
 
     protected $fillable = [
-        'company', 'name', 'fiscal_year_id', 'status', 'description',
+        'tenant_id', 'company', 'name', 'fiscal_year_id', 'status', 'description',
         'created_by', 'approved_by',
     ];
 

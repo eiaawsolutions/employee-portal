@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_customers';
 
     protected $fillable = [
-        'company', 'customer_code', 'name', 'email', 'phone',
+        'tenant_id', 'company', 'customer_code', 'name', 'email', 'phone',
         'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country',
         'tax_id', 'credit_limit', 'payment_terms_days', 'currency', 'notes', 'is_active',
     ];

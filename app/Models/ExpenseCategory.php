@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class ExpenseCategory extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company', 'name', 'code', 'description',
+        'tenant_id', 'company', 'name', 'code', 'description',
         'monthly_limit', 'requires_receipt', 'is_active',
         'sort_order', 'keywords',
     ];

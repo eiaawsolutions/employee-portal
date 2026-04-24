@@ -2,41 +2,79 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Onboarding;
+use App\Http\Controllers\OnboardingController;
 use App\Models\Employee;
 use App\Models\Offboarding;
-use App\Http\Controllers\OnboardingController;
+use App\Models\Onboarding;
+use App\Models\Tenant;
+use App\Support\TenantContext;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class ActivateEmployees extends Command
 {
     protected $signature   = 'employees:activate';
-    protected $description = 'Activate employees on start_date and offboard on exit_date';
+    protected $description = 'Activate employees on start_date and offboard on exit_date — iterates every active tenant.';
 
     public function handle(): void
     {
         $today = Carbon::today();
         $this->info("Running employee lifecycle check for: {$today->toDateString()}");
 
+        $tenantsTotalWelcome    = 0;
+        $tenantsTotalActivated  = 0;
+        $tenantsTotalOffboarded = 0;
+        $tenantsProcessed       = 0;
+
+        TenantContext::forEach(function (Tenant $tenant) use (
+            $today,
+            &$tenantsTotalWelcome,
+            &$tenantsTotalActivated,
+            &$tenantsTotalOffboarded,
+            &$tenantsProcessed,
+        ) {
+            $tenantsProcessed++;
+            $this->line("→ Tenant [{$tenant->id}] {$tenant->slug}");
+
+            [$welcomed, $activated, $offboarded] = $this->processTenant($today);
+
+            $tenantsTotalWelcome    += $welcomed;
+            $tenantsTotalActivated  += $activated;
+            $tenantsTotalOffboarded += $offboarded;
+        });
+
+        $this->info("Done. Tenants processed: {$tenantsProcessed}. Welcome emails attempted: {$tenantsTotalWelcome}. New employee records: {$tenantsTotalActivated}. Offboarded: {$tenantsTotalOffboarded}.");
+    }
+
+    /**
+     * Per-tenant work. Runs inside TenantContext, so all model queries are
+     * automatically scoped to the current tenant by the global scope + RLS.
+     *
+     * @return array{0:int,1:int,2:int} [welcomed, activated, offboarded]
+     */
+    private function processTenant(Carbon $today): array
+    {
         $controller = app(OnboardingController::class);
 
         // ── 1. WELCOME EMAIL: send to any onboarding whose start_date == today
-        //       and welcome_email_sent is still false (catches new + existing records)
         $toWelcome = Onboarding::with(['personalDetail', 'workDetail', 'employee'])
             ->where('welcome_email_sent', false)
-            ->whereHas('workDetail', fn($q) => $q->whereDate('start_date', $today))
+            ->whereHas('workDetail', fn ($q) => $q->whereDate('start_date', $today))
             ->get();
 
-        $this->info("Found {$toWelcome->count()} onboarding(s) needing welcome email today.");
+        if ($toWelcome->isEmpty()) {
+            $this->line('   no onboardings starting today.');
+        } else {
+            $this->line("   found {$toWelcome->count()} onboarding(s) needing welcome email.");
+        }
 
-        $activated = 0;
+        $welcomed   = 0;
+        $activated  = 0;
 
         foreach ($toWelcome as $ob) {
             $startDate = $ob->workDetail?->start_date?->toDateString();
             if (!$startDate) continue;
 
-            // Create or update the employee record
             $employee = Employee::firstOrCreate(
                 ['onboarding_id' => $ob->id],
                 ['active_from'   => $startDate]
@@ -47,39 +85,31 @@ class ActivateEmployees extends Command
                 $activated++;
             }
 
-            // Send welcome email — this is the primary purpose of the daily run
             $sent = $controller->sendWelcomeEmail($ob);
-            $this->info('  Welcome email ' . ($sent ? 'SENT ✓' : 'FAILED ✗') . ' → ' . ($ob->personalDetail?->full_name ?? 'Unknown') . ' (' . ($ob->workDetail?->company_email ?? $ob->personalDetail?->personal_email ?? 'no email') . ')');
+            $welcomed++;
 
-            // If exit_date is also set, create offboarding record
+            $this->line('   welcome ' . ($sent ? 'SENT ✓' : 'FAILED ✗')
+                . ' → ' . ($ob->personalDetail?->full_name ?? 'Unknown')
+                . ' (' . ($ob->workDetail?->company_email ?? $ob->personalDetail?->personal_email ?? 'no email') . ')');
+
             if ($ob->workDetail?->exit_date) {
                 Offboarding::createFromEmployee($employee);
             }
-
-            if ($activated > 0) {
-                $this->info("  Employee record created/populated: {$ob->personalDetail?->full_name} (Onboarding #{$ob->id})");
-            }
         }
 
-        // ── 2. OFFBOARD: employees whose exit_date == today, at 23:59 only ──
-        // We only run this block when the clock is at or past 23:59 so that
-        // employees remain visible in the system until the very end of their exit day.
-        $now         = Carbon::now();
-        $offboarded  = 0;
+        // ── 2. OFFBOARD at 23:59 only ────────────────────────────────────────
+        $offboarded = 0;
+        $now = Carbon::now();
 
-        if ($now->format('H:i') < '23:59') {
-            $this->info('Offboard check skipped — will run at 23:59.');
-        } else {
+        if ($now->format('H:i') >= '23:59') {
             $exiting = Employee::whereNotNull('exit_date')
                 ->whereDate('exit_date', $today)
                 ->whereNull('active_until')
                 ->get();
 
             foreach ($exiting as $emp) {
-                // Ensure offboarding record exists
                 Offboarding::createFromEmployee($emp);
 
-                // Mark employee as offboarded — removes them from employee listing (active_until set)
                 $emp->update([
                     'active_until'      => $today,
                     'employment_status' => in_array($emp->employment_status, ['resigned', 'terminated', 'contract_ended'])
@@ -87,17 +117,15 @@ class ActivateEmployees extends Command
                         : 'resigned',
                 ]);
 
-                // Deactivate the linked user account so they cannot login from today
                 if ($emp->user_id) {
                     \App\Models\User::where('id', $emp->user_id)->update(['is_active' => false]);
-                    $this->info("  Deactivated user account for: {$emp->full_name}");
                 }
 
-                $this->info("  Offboarded: {$emp->full_name} (exit: {$today->toDateString()})");
+                $this->line("   offboarded: {$emp->full_name} (exit: {$today->toDateString()})");
                 $offboarded++;
             }
-        } // end 23:59 offboard block
+        }
 
-        $this->info("Done. Welcome emails attempted: {$toWelcome->count()}, New employee records: {$activated}, Offboarded: {$offboarded}.");
+        return [$welcomed, $activated, $offboarded];
     }
 }

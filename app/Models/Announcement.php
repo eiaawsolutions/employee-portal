@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Announcement extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'title',
+        'tenant_id', 'title',
         'body',
         'companies',
         'attachment_paths',

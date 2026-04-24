@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class JournalEntryLine extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_journal_entry_lines';
 
     protected $fillable = [
-        'journal_entry_id', 'account_id', 'description', 'debit', 'credit',
+        'tenant_id', 'journal_entry_id', 'account_id', 'description', 'debit', 'credit',
         'tax_code_id', 'tax_amount', 'currency', 'exchange_rate',
     ];
 

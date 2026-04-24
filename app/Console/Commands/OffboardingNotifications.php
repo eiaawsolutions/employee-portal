@@ -3,11 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Models\Offboarding;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Mail\OffboardingNoticeMail;
 use App\Mail\OffboardingReminderMail;
 use App\Mail\OffboardingWeekReminderMail;
 use App\Mail\OffboardingSendoffMail;
+use App\Support\TenantContext;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -16,16 +18,26 @@ use Illuminate\Support\Facades\Log;
 class OffboardingNotifications extends Command
 {
     protected $signature   = 'offboarding:notify';
-    protected $description = 'Send scheduled offboarding notification emails (1-month notice, 1-week reminder, 3-day reminder, sendoff)';
+    protected $description = 'Send scheduled offboarding notification emails — iterates every active tenant.';
 
     public function handle(): void
     {
-        $today    = Carbon::today();
+        $today = Carbon::today();
+        $this->info("Running offboarding notifications for: {$today->toDateString()}");
+
+        TenantContext::forEach(function (Tenant $tenant) use ($today) {
+            $this->line("→ Tenant [{$tenant->id}] {$tenant->slug}");
+            $this->processTenant($today);
+        });
+
+        $this->info('Done.');
+    }
+
+    private function processTenant(Carbon $today): void
+    {
         $oneMonth = $today->copy()->addMonth();
         $oneWeek  = $today->copy()->addDays(7);
         $threeDays = $today->copy()->addDays(3);
-
-        $this->info("Running offboarding notifications for: {$today->toDateString()}");
 
         // Gather all active HR and IT user emails for CC/team notifications
         $hrEmails = User::whereIn('role', ['hr_manager','hr_executive','hr_intern'])
@@ -203,8 +215,6 @@ class OffboardingNotifications extends Command
                 $this->error("  FAILED for: {$ob->full_name} — " . $e->getMessage());
             }
         }
-
-        $this->info("Done.");
     }
 
     /**

@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ExpenseClaim extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'claim_number', 'title', 'year', 'month',
+        'tenant_id', 'employee_id', 'claim_number', 'title', 'year', 'month',
         'total_amount', 'total_gst', 'total_with_gst', 'item_count',
         'status', 'submitted_at', 'submission_deadline',
         'manager_id', 'manager_approved_by', 'manager_approved_at', 'manager_remarks',

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class PayrollConfig extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company',
+        'tenant_id', 'company',
         'epf_employee_rate', 'epf_employer_rate', 'epf_employer_rate_high', 'epf_employer_salary_threshold',
         'epf_employee_rate_senior', 'epf_employer_rate_senior',
         'epf_foreign_employee_rate', 'epf_foreign_employer_flat',

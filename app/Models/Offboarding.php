@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Offboarding extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id', 'employee_id',
+        'tenant_id', 'onboarding_id', 'employee_id',
         'full_name', 'company', 'department', 'designation',
         'company_email', 'reporting_manager_email', 'personal_email',
         'exit_date', 'reason', 'remarks',

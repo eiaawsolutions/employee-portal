@@ -1,0 +1,79 @@
+name: Staging load test
+
+# Runs the k6 smoke load test against Railway staging. Manual-trigger only —
+# we don't want this firing on every push because:
+#   (1) it hits real infrastructure (even if staging)
+#   (2) it creates AI API spend per run (the flow exercises /ai/ask)
+#   (3) it seeds tenants into the staging DB
+#
+# Trigger from the Actions tab: "Run workflow" → set vus + duration inputs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      vus:
+        description: 'Peak concurrent virtual users'
+        required: true
+        default: '200'
+      duration:
+        description: 'Steady-state duration'
+        required: true
+        default: '3m'
+      base_host:
+        description: 'Base host (staging apex)'
+        required: true
+        default: 'staging.ep.eiaawsolutions.com'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Staging artisan host — the seed command runs against the staging DB.
+      # The STAGING_SSH_* secrets connect to the Railway staging shell.
+      BASE_HOST: ${{ inputs.base_host }}
+      VUS: ${{ inputs.vus }}
+      DURATION: ${{ inputs.duration }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      # Seed tenants on staging via a Railway-exposed artisan endpoint OR SSH.
+      # We default to calling an authenticated seed endpoint over HTTPS; if
+      # your staging workflow uses Railway SSH instead, swap the step below.
+      - name: Seed tenants on staging
+        env:
+          SEED_SECRET: ${{ secrets.STAGING_SEED_SECRET }}
+        run: |
+          curl -fsS -X POST "https://${BASE_HOST}/ops/seed-load-test" \
+            -H "Authorization: Bearer ${SEED_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d '{"tenants": 100, "users_per_tenant": 10}' \
+            -o docs/load-test/tenants.json
+          test -s docs/load-test/tenants.json || (echo "Seed response was empty"; exit 1)
+
+      - name: Run k6 smoke
+        run: |
+          k6 run \
+            -e BASE_HOST="${BASE_HOST}" \
+            -e VUS="${VUS}" \
+            -e DURATION="${DURATION}" \
+            --summary-export=load-test-summary.json \
+            docs/load-test/workforce-smoke.js
+
+      - name: Verify thresholds
+        run: bash docs/load-test/verify-thresholds.sh load-test-summary.json
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-summary
+          path: load-test-summary.json

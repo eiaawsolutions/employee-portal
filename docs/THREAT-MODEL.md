@@ -275,3 +275,128 @@ Write SHA-256 manifest → Prune backups older than 30 days
 ---
 
 *Document generated: 2026-04-06 | Next review due: 2026-07-06*
+
+---
+
+## Appendix A — EIAAW Workforce SaaS surfaces (Sessions 6-11)
+
+**Added:** 2026-04-24. The original threat model above is v1 Claritas (single-tenant, MySQL). This appendix covers the multi-tenant SaaS surfaces built in Sessions 6-11 on top of the v1 foundation.
+
+## A1. New trust boundaries
+
+```
+Internet (Cloudflare edge)
+  └─ apex: ep.eiaawsolutions.com (marketing + signup)  [boundary: unauthenticated visitors]
+       │
+       ├─ Stripe webhook POST (signature-verified)     [boundary: Stripe → our app]
+       ├─ CSP violation report POST                    [boundary: browser → our app, unauthenticated]
+       └─ SSO metadata GET (public per SAML spec)      [boundary: IdP admin → our app]
+  └─ tenant: {slug}.ep.eiaawsolutions.com              [boundary: tenant-scoped]
+       │
+       ├─ SSO ACS POST (signature-verified via cert)   [boundary: IdP → our app]
+       ├─ OIDC callback GET (state + nonce verified)   [boundary: IdP → our app]
+       └─ AI assistant POST (authenticated)            [boundary: user → AiGateway → LLM provider]
+  └─ Postgres (RLS FORCE on 80+ tables)                [boundary: app → DB, non-superuser role]
+```
+
+## A2. STRIDE per new surface
+
+### A2.1 Apex marketing + signup
+
+| Threat (STRIDE) | Vector | Mitigation | Status |
+|---|---|---|---|
+| Spoofing | Forged signup email → takeover of a target slug | Email-confirm loop; token expiry 24h; reserved-slug list includes `admin`, `api`, `www`, etc. | ✓ live |
+| Tampering | Replay of used signup token | Token deleted on provision | ✓ live |
+| Repudiation | Signup fraud (dispute-later) | `security_audit_logs` captures IP + UA on signup + confirm | ✓ live |
+| Information disclosure | Slug enumeration via collision error messages | Generic "already taken" regardless of live/pending status | ✓ live |
+| DoS | Flood signup form | `throttle:5,1` on start, `throttle:10,1` on confirm | ✓ live |
+| Elevation of privilege | JIT-provisioned superadmin on signup | Controller hardcodes `role=superadmin` at *first-owner* position only; no self-upgrade path exposed | ✓ live |
+
+### A2.2 Stripe webhook
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Spoofing | Forged webhook POST | Cashier's `VerifyWebhookSignature` middleware (HMAC-SHA256 against `STRIPE_WEBHOOK_SECRET`) | ✓ live |
+| Tampering | Replay of old Stripe event | `subscription_events` idempotency key = `stripe_event_id`; second POST is 200 OK no-op | ✓ live |
+| DoS | Stripe delivery backoff if we 500 | Controller wraps side-effects in try/catch; persists event row first then processes | ✓ live |
+
+### A2.3 SSO (SAML + OIDC)
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Spoofing | Forged SAML assertion | SAMLResponse signature verified against tenant's configured X.509 cert; XXE disabled; DOCTYPE rejected | ✓ live |
+| Spoofing | Forged OIDC ID token | RS256 signature verified against issuer's JWKS (cached 6h); `iss`/`aud`/`exp`/`nonce` checked | ✓ live |
+| Tampering | Replay of captured SAML Response | `NotBefore`/`NotOnOrAfter` window checked (±30s); session `request_id` cleared on ACS | ✓ live |
+| Tampering | Replay of OIDC code | `state` + `nonce` bound to session, single-use, cleared after exchange | ✓ live |
+| Repudiation | User denies IdP-initiated login | Every SSO login writes `sso_login` event to `security_audit_logs` with user + tenant + IP | ✓ live |
+| Information disclosure | IdP admin sees another tenant's metadata | Metadata endpoint is tenant-scoped via `ResolveTenant`; different tenant = different subdomain = different metadata XML | ✓ live |
+| Elevation of privilege | IdP group → superadmin mapping | `SsoService::mapRole()` refuses to map to `superadmin`; `SsoConfigController::parseRoleMapping()` strips `superadmin` from submitted mappings; defense in depth | ✓ live |
+| DoS | JWKS fetch flood | 6h cache on discovery + JWKS; 10s timeout | ✓ live |
+
+**Known residual risk:** handwritten SAML signature verification handles common IdP cases (Entra / Okta / Google) but not every XML-DSig edge case. Documented as a Session 10+ upgrade path to a battle-tested library when SAML volume justifies the dependency.
+
+### A2.4 AI Gateway
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Prompt injection (LLM01) | User prompt overrides system instructions | `assertPromptSafe()` rejects 5 known-injection patterns; system prompt instructs refusal + sets `refused:true` flag | ✓ live |
+| Insecure output handling (LLM02) | Model returns HTML / JS → rendered in drawer | Structured JSON output enforced; `sanitizePlainText` strips tags server-side; drawer renders `textContent` only | ✓ live (A-grade) |
+| Sensitive info disclosure (LLM06) | Model answers questions it shouldn't (salary, NRIC) | Role passed to system prompt; prompt rules restrict by role; future: prompt-based redaction + retrieval-layer filtering | yellow — prompt-based only; retrieval layer is Session 12+ |
+| Excessive agency (LLM08) | Model executes actions it shouldn't | Read-only v1 — no tool-use wired; system prompt instructs "tell user to do it themselves" | ✓ live |
+| Cost DoS | Runaway prompts drain budget | Per-tenant monthly USD budget; cost circuit breaker (`isBudgetExhausted`); per-route rate limit `throttle:15,1` | ✓ live |
+| Supply chain (LLM05) | Provider compromise | Two providers configured (Anthropic + OpenAI); switch via `AI_PROVIDER` env | yellow — fallback chain not wired automatically on provider error |
+| Data leakage to training | Customer data sent to model used for training | Anthropic + OpenAI APIs do not train on customer data by default — documented in Privacy Policy §5 | ✓ confirmed in DPAs |
+
+### A2.5 Audit export
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Information disclosure | Operator exports another tenant's log | `audit:export --tenant=X` runs inside `TenantContext::run($tenant)` which sets Postgres RLS; cross-tenant read is rejected by DB | ✓ live |
+| Tampering | Operator modifies exported JSONL before delivery | File integrity is out-of-scope; Amos to sign exports before delivery to customer if required by DPA | yellow — flagged; not shipped |
+| Repudiation | Customer denies receiving export | Operator logs `audit.export` action; customer signs receipt out-of-band | manual |
+
+### A2.6 CSP violation reports
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| DoS | Attacker floods `/csp-report` with fake violations | `throttle:60,1` rate limit; logs are summary-only (directive + blocked URI + line), not full raw reports | ✓ live |
+| Information disclosure | Legit CSP report contains sensitive URL path | `CspReportController::trim()` shortens `document-uri` and `source-file` to last 120-160 chars | ✓ live |
+
+### A2.7 Plan gating + upgrade-required
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Elevation of privilege | Starter tenant hits `/accounting` directly | `EnsurePlan` middleware `plan:finance.accounting` checks `Tenant::hasFeature()` → redirect to `upgrade-required`; JSON 403 for XHR | ✓ live |
+| Information disclosure | Upgrade-required page leaks what features other plans include | Page reads from `config/plans.php` — intentional; this is marketing content | n/a |
+
+### A2.8 Tenant deletion pipeline
+
+| Threat | Vector | Mitigation | Status |
+|---|---|---|---|
+| Repudiation | Customer disputes "you didn't delete my data" | Every deletion phase logged to `storage/logs/billing.log` + `tenant.pii_scrubbed` / `tenant.hard_purged` events | ✓ live |
+| Denial of delete | Race condition — tenant reactivates during grace | Webhook `invoice.payment_succeeded` clears `past_due_at` but NOT `canceled_at` / `deleted_at`; reactivation from `canceled` state requires support workflow | ✓ by design |
+| Tampering | Operator runs `billing:purge-canceled --force` prematurely | `--force` must be explicit; dry-run default; 90-day window check inside command | ✓ live |
+
+## A3. Data classification changes since v1
+
+| New category | Sensitivity | Examples | Storage |
+|---|---|---|---|
+| AI prompt / answer | Medium | Workforce-related questions + answers, cited record IDs | `ai_conversations`, redacted to `[redacted]` at deletion Phase 1 |
+| SSO IdP config (incl. client secret) | High | OIDC client_secret, SAML cert (public half) | `tenants.sso_config` JSONB; client_secret masked in admin UI |
+| Stripe webhook payload | Medium | Full Stripe event body | `subscription_events.payload` JSONB |
+| CSP violation sample | Low | Stripped directive + blocked URI | log stream only |
+
+## A4. Residual risk register (open items)
+
+| Ref | Risk | Severity | Mitigation plan | Target |
+| --- | --- | --- | --- | --- |
+| R1 | Handwritten SAML sig verification misses an edge case | Medium | Adopt `onelogin/php-saml` once SAML tenant count > 10 | Session 12+ |
+| R2 | AI retrieval layer not implemented — role-based disclosure is prompt-based only | Medium | Wire actual DB-level retrieval with role filters at query time | Session 12 |
+| R3 | AI provider fallback not automatic on 5xx | Low | Wire Anthropic → OpenAI fallback with circuit breaker | Session 12+ |
+| R4 | Audit export files not signed | Low | HMAC sign exports for Enterprise DPA deliveries | On first enterprise customer |
+| R5 | Inline-handler CSP migration incomplete (149 handlers across 52 views) | Medium | Drive by CSP-Report-Only telemetry post-launch | Session 12 |
+| R6 | No external penetration test yet | Medium | Scheduled Q4 2026 per security roadmap | Q4 2026 |
+
+## A5. Review cadence
+
+This appendix reviewed every session that adds a new surface; rolled into the main threat model at the next quarterly review (next due 2026-07-06).

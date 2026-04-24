@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FindWorkspaceController;
+use App\Http\Controllers\MarketingController;
+use App\Http\Controllers\SignupController;
+use App\Http\Controllers\StripeWebhookController;
+use Laravel\Cashier\Http\Middleware\VerifyWebhookSignature;
 use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ItTaskController;
@@ -36,8 +41,43 @@ use App\Http\Controllers\Accounting\AiAccountingController;
 use App\Http\Controllers\Accounting\AccountingSettingController;
 use Illuminate\Support\Facades\Route;
 
-// Root redirect
-Route::get('/', fn() => redirect()->route('login'));
+// ── Stripe webhook (no auth, signature-verified by Cashier middleware) ──────
+// CSRF exemption added in bootstrap/app.php (alongside the AARF exemption).
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
+    ->middleware(VerifyWebhookSignature::class)
+    ->name('cashier.webhook');
+
+// CSP violation reports — browser posts here when report-only policy triggers.
+Route::post('/csp-report', [\App\Http\Controllers\CspReportController::class, 'store'])
+    ->name('csp.report')
+    ->middleware('throttle:60,1');
+
+// ── Marketing surfaces (apex only: 'apex' middleware 404s on tenant subdomains) ──
+Route::middleware('apex')->group(function () {
+    Route::get('/',                 [MarketingController::class, 'landing'])->name('marketing.landing');
+    Route::get('/features',         [MarketingController::class, 'features'])->name('marketing.features');
+    Route::get('/pricing',          [MarketingController::class, 'pricing'])->name('marketing.pricing');
+    Route::get('/security',         [MarketingController::class, 'security'])->name('marketing.security');
+    Route::get('/faq',              [MarketingController::class, 'faq'])->name('marketing.faq');
+
+    // Legal stubs — pre-launch placeholders; final counsel-reviewed copy
+    // replaces these before public launch.
+    Route::get('/terms',            [MarketingController::class, 'terms'])->name('marketing.terms');
+    Route::get('/privacy',          [MarketingController::class, 'privacy'])->name('marketing.privacy');
+    Route::get('/dpa',              [MarketingController::class, 'dpa'])->name('marketing.dpa');
+
+    Route::get('/find-workspace',   [FindWorkspaceController::class, 'show'])->name('marketing.find-workspace');
+    Route::post('/find-workspace',  [FindWorkspaceController::class, 'lookup'])->name('marketing.find-workspace.lookup')->middleware('throttle:5,1');
+
+    // Public signup (apex only; SignupController also guards with ensureMarketingApex for belt-and-braces)
+    Route::middleware('guest')->group(function () {
+        Route::get('/signup',                         [SignupController::class, 'showForm'])->name('signup.form');
+        Route::post('/signup',                        [SignupController::class, 'start'])->name('signup.start')->middleware('throttle:5,1');
+        Route::get('/signup/sent',                    [SignupController::class, 'showSent'])->name('signup.sent');
+        Route::get('/signup/confirm/{token}',         [SignupController::class, 'showConfirm'])->name('signup.confirm');
+        Route::post('/signup/confirm/{token}',        [SignupController::class, 'confirm'])->name('signup.confirm.submit')->middleware('throttle:10,1');
+    });
+});
 
 // ── Guest ──────────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -56,6 +96,26 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// ── SSO — tenant-scoped, Enterprise-gated ────────────────────────────────
+// No 'apex' middleware: SSO only runs on tenant subdomains. The controllers
+// abort(404) on the apex via $this->tenant() which requires current_tenant.
+// Plan gating lives on the start + config endpoints; metadata + callback/ACS
+// must be reachable without the plan check because the IdP itself calls them.
+Route::prefix('sso')->group(function () {
+    // IdP-callable endpoints (no plan check; the IdP can't present the plan)
+    Route::get('/saml/metadata',  [\App\Http\Controllers\SsoController::class, 'samlMetadata'])->name('sso.saml.metadata');
+    Route::post('/saml/acs',      [\App\Http\Controllers\SsoController::class, 'samlAcs'])->name('sso.saml.acs');
+    Route::get('/oidc/callback',  [\App\Http\Controllers\SsoController::class, 'oidcCallback'])->name('sso.oidc.callback');
+
+    // User-initiated start endpoints (plan-gated)
+    Route::middleware('plan:auth.sso_oidc')->group(function () {
+        Route::get('/oidc/start', [\App\Http\Controllers\SsoController::class, 'oidcStart'])->name('sso.oidc.start');
+    });
+    Route::middleware('plan:auth.sso_saml')->group(function () {
+        Route::get('/saml/start', [\App\Http\Controllers\SsoController::class, 'samlStart'])->name('sso.saml.start');
+    });
+});
 
 // ── Two-Factor Authentication Challenge (pre-auth, session-gated) ─────────
 Route::get('/two-factor-challenge',  [TwoFactorController::class, 'challenge'])->name('two-factor.challenge');
@@ -80,6 +140,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::get('/secure-file/{path}', [SecureFileController::class, 'serve'])
         ->where('path', '.*')
         ->name('secure.file');
+
+    // Upgrade-required page — shown when EnsurePlan middleware blocks access
+    Route::get('/upgrade-required', [\App\Http\Controllers\UpgradeRequiredController::class, 'show'])
+        ->name('upgrade-required');
+
+    // AI assistant (read-only v1) — drawer in app shell
+    Route::prefix('ai')->middleware('plan:ai.basic')->group(function () {
+        Route::post('/ask',    [\App\Http\Controllers\AiAssistantController::class, 'ask'])->name('ai.ask')->middleware('throttle:15,1');
+        Route::get('/recent',  [\App\Http\Controllers\AiAssistantController::class, 'recent'])->name('ai.recent');
+    });
 
     // Dashboards
     Route::get('/dashboard',    [DashboardController::class, 'userDashboard'])->name('user.dashboard');
@@ -146,6 +216,18 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::get('/superadmin/system-overview',           [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
     Route::post('/superadmin/system-overview/security-score', [DashboardController::class, 'refreshSecurityScore'])->name('superadmin.security-score.refresh');
     Route::post('/superadmin/system-overview/update-check',   [DashboardController::class, 'refreshUpdateCheck'])->name('superadmin.update-check.refresh');
+
+    // Dedicated database request (Enterprise only — plan-gated)
+    Route::middleware('plan:infra.dedicated_db')->group(function () {
+        Route::get('/superadmin/dedicated-database',  [\App\Http\Controllers\DedicatedDatabaseController::class, 'show'])->name('superadmin.dedicated-db');
+        Route::post('/superadmin/dedicated-database', [\App\Http\Controllers\DedicatedDatabaseController::class, 'request'])->name('superadmin.dedicated-db.request')->middleware('throttle:5,60');
+    });
+
+    // SSO configuration (Enterprise only — plan-gated on any SSO feature)
+    Route::middleware('plan:auth.sso_saml')->group(function () {
+        Route::get('/superadmin/sso',  [\App\Http\Controllers\SsoConfigController::class, 'show'])->name('superadmin.sso');
+        Route::post('/superadmin/sso', [\App\Http\Controllers\SsoConfigController::class, 'update'])->name('superadmin.sso.update')->middleware('throttle:10,60');
+    });
 
     // Knowledge Base (Superadmin only — separate password)
     Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
@@ -233,20 +315,22 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     // IT AARF management routes removed — IT AARF pages decommissioned.
     // Employee acknowledgement (aarf.view / aarf.acknowledge) and HR view (hr.aarf.view) are unaffected.
 
-    // Assets (IT)
-    Route::get('/assets',              [AssetController::class, 'index'])->name('assets.index');
-    Route::post('/assets',             [AssetController::class, 'store'])->name('assets.store')->middleware('throttle:uploads');
-    Route::get('/assets/export/csv',          [AssetController::class, 'export'])->name('assets.export');
-    Route::get('/assets/import-template',     [AssetController::class, 'importTemplate'])->name('assets.import.template');
-    Route::post('/assets/import',             [AssetController::class, 'importCsv'])->name('assets.import')->middleware('throttle:uploads');
-    Route::get('/assets/disposed',                 [AssetController::class, 'disposed'])->name('assets.disposed');
-    Route::get('/assets/disposed/{asset}',         [AssetController::class, 'disposedShow'])->name('assets.disposed.show');
-    Route::get('/assets/{asset}',             [AssetController::class, 'show'])->name('assets.show');
-    Route::get('/assets/{asset}/edit',        [AssetController::class, 'edit'])->name('assets.edit');
-    Route::put('/assets/{asset}',             [AssetController::class, 'update'])->name('assets.update')->middleware('throttle:uploads');
-    Route::post('/assets/{asset}/reassign',   [AssetController::class, 'reassign'])->name('assets.reassign');
-    Route::post('/assets/{asset}/return',     [AssetController::class, 'returnAsset'])->name('assets.return');
-    Route::post('/assets/{asset}/release',    [AssetController::class, 'releaseAsset'])->name('assets.release');
+    // Assets (IT) — gated to Scale+ (plan:it.assets)
+    Route::middleware('plan:it.assets')->group(function () {
+        Route::get('/assets',              [AssetController::class, 'index'])->name('assets.index');
+        Route::post('/assets',             [AssetController::class, 'store'])->name('assets.store')->middleware('throttle:uploads');
+        Route::get('/assets/export/csv',          [AssetController::class, 'export'])->name('assets.export');
+        Route::get('/assets/import-template',     [AssetController::class, 'importTemplate'])->name('assets.import.template');
+        Route::post('/assets/import',             [AssetController::class, 'importCsv'])->name('assets.import')->middleware('throttle:uploads');
+        Route::get('/assets/disposed',                 [AssetController::class, 'disposed'])->name('assets.disposed');
+        Route::get('/assets/disposed/{asset}',         [AssetController::class, 'disposedShow'])->name('assets.disposed.show');
+        Route::get('/assets/{asset}',             [AssetController::class, 'show'])->name('assets.show');
+        Route::get('/assets/{asset}/edit',        [AssetController::class, 'edit'])->name('assets.edit');
+        Route::put('/assets/{asset}',             [AssetController::class, 'update'])->name('assets.update')->middleware('throttle:uploads');
+        Route::post('/assets/{asset}/reassign',   [AssetController::class, 'reassign'])->name('assets.reassign');
+        Route::post('/assets/{asset}/return',     [AssetController::class, 'returnAsset'])->name('assets.return');
+        Route::post('/assets/{asset}/release',    [AssetController::class, 'releaseAsset'])->name('assets.release');
+    });
 
     // ══════════════════════════════════════════════════════════════════════
     // LEAVE MANAGEMENT
@@ -397,8 +481,10 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     Route::post('/my/team-claims/{claim}/reject',       [ExpenseClaimController::class, 'managerReject'])->name('user.claims.team.reject');
 
     // ══════════════════════════════════════════════════════════════════════
-    // ACCOUNTING MODULE
+    // ACCOUNTING MODULE — gated to Scale+ (plan:finance.accounting)
     // ══════════════════════════════════════════════════════════════════════
+
+    Route::middleware('plan:finance.accounting')->group(function () {
 
     // Dashboard
     Route::get('/accounting',                                       [AccountingDashboardController::class, 'index'])->name('accounting.dashboard');
@@ -544,4 +630,6 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     Route::put('/accounting/settings',                               [AccountingSettingController::class, 'update'])->name('accounting.settings.update')->middleware('throttle:10,1');
     Route::post('/accounting/settings/fiscal-year',                  [AccountingSettingController::class, 'storeFiscalYear'])->name('accounting.settings.store-fiscal-year');
     Route::post('/accounting/settings/currency',                     [AccountingSettingController::class, 'storeCurrency'])->name('accounting.settings.store-currency');
+
+    }); // end plan:finance.accounting group
 });

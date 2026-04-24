@@ -1,0 +1,107 @@
+/* ─────────────────────────────────────────────────────────────────
+   EIAAW Workforce — Design Tokens
+   ─────────────────────────────────────────────────────────────────
+   Source of truth: ~/.claude/skills/full-stack-engineer/references/eiaaw-design-system.md
+   Canonical implementation: c:/laragon/www/Sales marketing agent/public/landing.html
+   DO NOT introduce additional palette tokens. Compose from these.
+   ─────────────────────────────────────────────────────────────────
+*/
+:root {
+  /* ── Surface ── */
+  --bg: #FAF7F2;
+  --bg-warm: #F3EDE0;
+  --surface: #FFFFFF;
+
+  /* ── Ink ── */
+  --ink: #0F1A1D;
+  --ink-2: #2A3438;
+  --mute: #6B7A7F;
+
+  /* ── Lines ── */
+  --line: #D9CFBC;
+  --line-soft: #E8DFCC;
+
+  /* ── Brand teal ── */
+  --primary: #1FA896;
+  --primary-dark: #11766A;
+  --primary-tint: #E5F4F1;
+
+  /* ── States ── */
+  --danger: #B4412B;
+  --warn: #C68A2E;
+  --success: #2F8C6E;
+
+  /* ── Decorative gradient (chatbot, accents only — never on backgrounds) ── */
+  --gradient: linear-gradient(135deg, #22B8A5 0%, #11766A 55%, #0A4D47 100%);
+
+  /* ── Typography ── */
+  --serif: 'Instrument Serif', 'Times New Roman', serif;
+  --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono:  'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+
+  /* ── Motion ── */
+  --ease: cubic-bezier(.2,.7,.2,1);
+
+  /* ── App shell measurements ── */
+  --sidebar-w: 264px;
+  --topbar-h: 60px;
+
+  /* ── Semantic tokens (app shell) ── */
+  --surface-form: var(--surface);
+  --surface-table: var(--surface);
+  --surface-ai-bubble: var(--primary-tint);
+
+  --state-success: var(--success);
+  --state-warning: var(--warn);
+  --state-danger:  var(--danger);
+}
+
+/* ── Lockup component (used in nav, sidebar, footer) ── */
+.eiaaw-lockup { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+.eiaaw-lockup img { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; }
+.eiaaw-lockup-text { display: flex; flex-direction: column; line-height: 1.05; }
+.eiaaw-lockup-text strong {
+  font-family: var(--sans); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--primary-dark); text-transform: uppercase;
+}
+.eiaaw-lockup-text small {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 400;
+  color: var(--mute); text-transform: uppercase;
+  letter-spacing: 0.12em; margin-top: 2px;
+}
+.eiaaw-lockup--sidebar img { width: 36px; height: 36px; }
+.eiaaw-lockup--sidebar .eiaaw-lockup-text strong { color: var(--ink); }
+
+/* ── Eyebrow primitive (mono caps) ── */
+.eyebrow {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--primary-dark);
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.eyebrow::before {
+  content: ''; width: 28px; height: 1px;
+  background: currentColor; opacity: 0.5;
+}
+
+/* ── Button system ── */
+.eiaaw-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 18px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: 999px;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.35s var(--ease);
+  border: 1px solid transparent;
+  position: relative; overflow: hidden;
+}
+.eiaaw-btn--primary { background: var(--ink); color: var(--bg); }
+.eiaaw-btn--primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.eiaaw-btn--outline { background: transparent; color: var(--ink); border-color: var(--ink); }
+.eiaaw-btn--outline:hover { background: var(--ink); color: var(--bg); }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

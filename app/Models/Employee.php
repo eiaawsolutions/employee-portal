@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $fillable = [
+        'tenant_id',
         'onboarding_id', 'user_id', 'active_from', 'active_until',
         // Personal profile (official record, editable by user)
         'full_name', 'preferred_name', 'official_document_id', 'date_of_birth', 'sex',

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeSalaryItem extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_salary_id', 'payroll_item_id', 'amount',
+        'tenant_id', 'employee_salary_id', 'payroll_item_id', 'amount',
     ];
 
     protected $casts = [

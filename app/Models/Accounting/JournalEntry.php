@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class JournalEntry extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_journal_entries';
 
     protected $fillable = [
-        'company', 'entry_number', 'date', 'reference', 'description',
+        'tenant_id', 'company', 'entry_number', 'date', 'reference', 'description',
         'status', 'source_type', 'source_id', 'posted_by', 'posted_at',
         'reversed_by_entry_id', 'created_by',
     ];

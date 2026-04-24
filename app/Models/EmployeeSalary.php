@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EmployeeSalary extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'basic_salary', 'payment_method',
+        'tenant_id', 'employee_id', 'basic_salary', 'payment_method',
         'bank_name', 'bank_account_number',
         'effective_from', 'effective_until', 'is_active',
     ];

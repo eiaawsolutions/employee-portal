@@ -30,6 +30,13 @@ class AppServiceProvider extends ServiceProvider
     /** Image MIME types that should have metadata stripped. */
     private const IMAGE_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
+    public function register(): void
+    {
+        // AiGateway singleton — all AI requests flow through here
+        // (budget enforcement + usage logging + OWASP guards).
+        $this->app->singleton(\App\Services\AiGateway::class, fn () => \App\Services\AiGateway::fromConfig());
+    }
+
     public function boot(): void
     {
         Paginator::useBootstrapFive();

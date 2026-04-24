@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class ItTask extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id', 'offboarding_id', 'assigned_to', 'assigned_by',
+        'tenant_id', 'onboarding_id', 'offboarding_id', 'assigned_to', 'assigned_by',
         'task_type', 'title', 'description', 'status', 'completed_at',
     ];
 

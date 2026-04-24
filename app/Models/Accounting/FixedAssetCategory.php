@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class FixedAssetCategory extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_fixed_asset_categories';
 
     protected $fillable = [
-        'company', 'name', 'depreciation_method', 'useful_life_years',
+        'tenant_id', 'company', 'name', 'depreciation_method', 'useful_life_years',
         'asset_account_id', 'depreciation_expense_account_id', 'accumulated_depreciation_account_id',
     ];
 

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LeaveEntitlement extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'leave_type_id', 'company', 'min_tenure_months',
+        'tenant_id', 'leave_type_id', 'company', 'min_tenure_months',
         'max_tenure_months', 'entitled_days', 'carry_forward_limit',
     ];
 

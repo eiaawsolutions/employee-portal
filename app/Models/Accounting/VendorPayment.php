@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class VendorPayment extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_vendor_payments';
 
     protected $fillable = [
-        'company', 'vendor_id', 'payment_number', 'date', 'amount',
+        'tenant_id', 'company', 'vendor_id', 'payment_number', 'date', 'amount',
         'payment_method', 'reference', 'bank_account_id', 'notes',
         'journal_entry_id', 'created_by',
     ];

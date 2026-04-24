@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class EmployeeEditLog extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id',
+        'tenant_id', 'employee_id',
         'edited_by_user_id', 'edited_by_name', 'edited_by_role',
         'sections_changed', 'change_notes',
         'consent_required', 'consent_token', 'consent_token_expires_at',

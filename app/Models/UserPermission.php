@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class UserPermission extends Model
 {
-    protected $fillable = ['user_id', 'resource', 'access_level'];
+    use BelongsToTenant;
+
+    protected $fillable = ['tenant_id', 'user_id', 'resource', 'access_level'];
 
     public function user() { return $this->belongsTo(User::class); }
 

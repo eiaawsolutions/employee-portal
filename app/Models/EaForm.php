@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class EaForm extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'year',
+        'tenant_id', 'employee_id', 'year',
         'employer_name', 'employer_address', 'employer_tax_no',
         'employee_name', 'employee_tax_no', 'employee_ic_no',
         'employee_epf_no', 'employee_socso_no',

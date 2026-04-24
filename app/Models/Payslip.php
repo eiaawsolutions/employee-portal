@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Payslip extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'pay_run_id', 'employee_id', 'payslip_number',
+        'tenant_id', 'pay_run_id', 'employee_id', 'payslip_number',
         'basic_salary', 'total_earnings', 'total_deductions', 'net_pay',
         'epf_employee', 'socso_employee', 'eis_employee', 'pcb_amount',
         'epf_employer', 'socso_employer', 'eis_employer', 'hrdf_amount',

@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AccountingAuditTrail extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_audit_trail';
 
     protected $fillable = [
-        'company', 'user_id', 'action', 'auditable_type', 'auditable_id',
+        'tenant_id', 'company', 'user_id', 'action', 'auditable_type', 'auditable_id',
         'old_values', 'new_values', 'ip_address',
     ];
 

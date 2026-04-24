@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class CreditNote extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_credit_notes';
 
     protected $fillable = [
-        'company', 'customer_id', 'invoice_id', 'credit_note_number', 'date',
+        'tenant_id', 'company', 'customer_id', 'invoice_id', 'credit_note_number', 'date',
         'reference', 'subtotal', 'tax_total', 'total', 'status', 'notes', 'created_by',
     ];
 

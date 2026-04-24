@@ -2,13 +2,16 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class BudgetLine extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_budget_lines';
 
-    protected $fillable = ['budget_id', 'account_id', 'fiscal_period_id', 'amount'];
+    protected $fillable = ['tenant_id', 'budget_id', 'account_id', 'fiscal_period_id', 'amount'];
 
     protected $casts = ['amount' => 'decimal:2'];
 

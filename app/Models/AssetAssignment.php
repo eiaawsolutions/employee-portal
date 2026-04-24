@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AssetAssignment extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id', 'employee_id', 'asset_inventory_id',
+        'tenant_id', 'onboarding_id', 'employee_id', 'asset_inventory_id',
         'assigned_date', 'returned_date', 'status',
     ];
 

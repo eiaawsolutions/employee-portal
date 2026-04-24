@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AccountingSetting extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_settings';
 
     protected $fillable = [
-        'company', 'fiscal_year_start_month', 'base_currency',
+        'tenant_id', 'company', 'fiscal_year_start_month', 'base_currency',
         'tax_registration_number', 'tax_type',
         'invoice_prefix', 'credit_note_prefix', 'bill_prefix', 'po_prefix',
         'journal_prefix', 'payment_prefix', 'receipt_prefix',

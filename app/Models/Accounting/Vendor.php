@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Vendor extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_vendors';
 
     protected $fillable = [
-        'company', 'vendor_code', 'name', 'email', 'phone',
+        'tenant_id', 'company', 'vendor_code', 'name', 'email', 'phone',
         'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country',
         'tax_id', 'payment_terms_days', 'currency',
         'bank_name', 'bank_account_number', 'bank_swift', 'notes', 'is_active',

@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class BankTransfer extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_bank_transfers';
 
     protected $fillable = [
-        'company', 'from_bank_account_id', 'to_bank_account_id',
+        'tenant_id', 'company', 'from_bank_account_id', 'to_bank_account_id',
         'amount', 'date', 'reference', 'description', 'journal_entry_id', 'created_by',
     ];
 

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AssetProvisioning extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id', 'laptop_provision', 'monitor_set', 'converter',
+        'tenant_id', 'onboarding_id', 'laptop_provision', 'monitor_set', 'converter',
         'company_phone', 'sim_card', 'access_card_request', 'office_keys', 'others'
     ];
 

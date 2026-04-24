@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PayslipItem extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'payslip_id', 'payroll_item_id', 'description',
+        'tenant_id', 'payslip_id', 'payroll_item_id', 'description',
         'type', 'amount', 'is_statutory',
     ];
 

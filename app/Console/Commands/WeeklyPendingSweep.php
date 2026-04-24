@@ -8,7 +8,9 @@ use App\Models\Employee;
 use App\Models\EmployeeEditLog;
 use App\Models\ExpenseClaim;
 use App\Models\LeaveApplication;
+use App\Models\Tenant;
 use App\Models\User;
+use App\Support\TenantContext;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -16,12 +18,31 @@ use Illuminate\Support\Facades\Mail;
 class WeeklyPendingSweep extends Command
 {
     protected $signature   = 'sweep:pending-weekly';
-    protected $description = 'Weekly sweep of all pending acknowledgements and approvals — sends reminders to responsible parties';
+    protected $description = 'Weekly sweep of pending acknowledgements + approvals — iterates every active tenant.';
 
     public function handle(): int
     {
-        $this->info('Starting weekly pending sweep...');
+        $this->info('Starting weekly pending sweep across all tenants...');
 
+        $totalSent = 0;
+        $totalSkipped = 0;
+
+        TenantContext::forEach(function (Tenant $tenant) use (&$totalSent, &$totalSkipped) {
+            [$sent, $skipped] = $this->processTenant($tenant);
+            $totalSent += $sent;
+            $totalSkipped += $skipped;
+            if ($sent > 0 || $skipped > 0) {
+                $this->line("→ Tenant [{$tenant->id}] {$tenant->slug} — sent {$sent}, skipped {$skipped}");
+            }
+        });
+
+        $this->info("Done. Total sent: {$totalSent}, skipped: {$totalSkipped}");
+        return self::SUCCESS;
+    }
+
+    /** @return array{0:int,1:int} [sent, skipped] */
+    private function processTenant(Tenant $tenant): array
+    {
         $sent    = 0;
         $skipped = 0;
 
@@ -217,7 +238,6 @@ class WeeklyPendingSweep extends Command
             }
         }
 
-        $this->info("Weekly sweep complete. Sent: {$sent}, Skipped: {$skipped}");
-        return self::SUCCESS;
+        return [$sent, $skipped];
     }
 }

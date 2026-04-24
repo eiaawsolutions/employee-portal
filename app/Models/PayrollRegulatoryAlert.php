@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PayrollRegulatoryAlert extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'title', 'description', 'authority', 'reference_law', 'reference_url',
+        'tenant_id', 'title', 'description', 'authority', 'reference_law', 'reference_url',
         'effective_date', 'announced_date', 'severity', 'status',
         'config_fields_affected',
         'acknowledged_by', 'acknowledged_at', 'notified_at',

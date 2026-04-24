@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,8 +15,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EmployeeHistory extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id', 'employee_id', 'user_id',
+        'tenant_id', 'onboarding_id', 'employee_id', 'user_id',
         // Personal
         'full_name', 'official_document_id', 'date_of_birth', 'sex',
         'marital_status', 'religion', 'race', 'residential_address',

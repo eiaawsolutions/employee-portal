@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class ChartOfAccount extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_chart_of_accounts';
 
     protected $fillable = [
-        'company', 'account_code', 'name', 'type', 'sub_type', 'parent_id',
+        'tenant_id', 'company', 'account_code', 'name', 'type', 'sub_type', 'parent_id',
         'description', 'normal_balance', 'opening_balance', 'opening_balance_date',
         'currency', 'is_active', 'is_system', 'allow_direct_posting',
     ];

@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class BillItem extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_bill_items';
 
     protected $fillable = [
-        'bill_id', 'account_id', 'description', 'quantity', 'unit_price',
+        'tenant_id', 'bill_id', 'account_id', 'description', 'quantity', 'unit_price',
         'tax_code_id', 'tax_amount', 'line_total', 'sort_order',
     ];
 

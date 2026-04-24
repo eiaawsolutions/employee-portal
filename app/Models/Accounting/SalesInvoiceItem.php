@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoiceItem extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_sales_invoice_items';
 
     protected $fillable = [
-        'sales_invoice_id', 'account_id', 'description', 'quantity', 'unit_price',
+        'tenant_id', 'sales_invoice_id', 'account_id', 'description', 'quantity', 'unit_price',
         'discount_percent', 'tax_code_id', 'tax_amount', 'line_total', 'sort_order',
     ];
 

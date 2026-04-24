@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Aarf extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'aarfs';
 
     protected $fillable = [
-        'onboarding_id', 'employee_id', 'aarf_reference', 'acknowledged', 'acknowledged_at',
+        'tenant_id', 'onboarding_id', 'employee_id', 'aarf_reference', 'acknowledged', 'acknowledged_at',
         'acknowledgement_token', 'it_manager_acknowledged', 'it_manager_acknowledged_at',
         'it_manager_user_id', 'it_manager_remarks',
         'it_notes', 'asset_changes', 'pending_asset_ids',

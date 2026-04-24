@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AiInvoiceScan extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_ai_invoice_scans';
 
     protected $fillable = [
-        'company', 'file_path', 'file_name', 'file_type', 'status',
+        'tenant_id', 'company', 'file_path', 'file_name', 'file_type', 'status',
         'extracted_data', 'confidence_score', 'error_message',
         'bill_id', 'reviewed_by', 'reviewed_at', 'created_by',
     ];

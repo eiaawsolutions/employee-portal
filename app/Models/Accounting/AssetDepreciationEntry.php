@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AssetDepreciationEntry extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_asset_depreciation_entries';
 
     protected $fillable = [
-        'fixed_asset_id', 'period_date', 'depreciation_amount',
+        'tenant_id', 'fixed_asset_id', 'period_date', 'depreciation_amount',
         'accumulated_depreciation', 'net_book_value', 'journal_entry_id',
     ];
 

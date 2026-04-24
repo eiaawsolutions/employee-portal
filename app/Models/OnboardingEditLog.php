@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class OnboardingEditLog extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'onboarding_id',
+        'tenant_id', 'onboarding_id',
         'edited_by_user_id',
         'edited_by_name',
         'edited_by_role',

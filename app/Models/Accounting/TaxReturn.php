@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class TaxReturn extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_tax_returns';
 
     protected $fillable = [
-        'company', 'return_type', 'period_start', 'period_end',
+        'tenant_id', 'company', 'return_type', 'period_start', 'period_end',
         'total_output_tax', 'total_input_tax', 'net_tax_payable',
         'status', 'filed_date', 'due_date', 'payment_date', 'reference', 'notes', 'created_by',
     ];

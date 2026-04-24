@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomerPayment extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_customer_payments';
 
     protected $fillable = [
-        'company', 'customer_id', 'payment_number', 'date', 'amount',
+        'tenant_id', 'company', 'customer_id', 'payment_number', 'date', 'amount',
         'payment_method', 'reference', 'bank_account_id', 'notes',
         'journal_entry_id', 'created_by',
     ];

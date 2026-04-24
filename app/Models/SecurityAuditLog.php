@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class SecurityAuditLog extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'user_id', 'work_email', 'role',
+        'tenant_id', 'user_id', 'work_email', 'role',
         'event_type', 'url', 'method', 'ip_address', 'details', 'emailed',
     ];
 

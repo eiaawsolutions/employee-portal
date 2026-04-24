@@ -2,14 +2,17 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class TaxCode extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_tax_codes';
 
     protected $fillable = [
-        'company', 'code', 'name', 'rate', 'type', 'is_default', 'is_active',
+        'tenant_id', 'company', 'code', 'name', 'rate', 'type', 'is_default', 'is_active',
         'purchase_account_id', 'sales_account_id',
     ];
 

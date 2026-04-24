@@ -3,13 +3,16 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class AiChatSession extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_ai_chat_sessions';
 
-    protected $fillable = ['company', 'user_id', 'title', 'is_active'];
+    protected $fillable = ['tenant_id', 'company', 'user_id', 'title', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 

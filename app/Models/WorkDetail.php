@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class WorkDetail extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $fillable = [
+        'tenant_id',
         'onboarding_id', 'employee_number', 'employee_status', 'staff_status',
         'employment_type', 'designation', 'company', 'office_location',
         'reporting_manager', 'reporting_manager_email', 'start_date', 'exit_date',

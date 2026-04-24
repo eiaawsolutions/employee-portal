@@ -2,13 +2,16 @@
 
 namespace App\Models\Accounting;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomerPaymentAllocation extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_customer_payment_allocations';
 
-    protected $fillable = ['customer_payment_id', 'invoice_id', 'amount'];
+    protected $fillable = ['tenant_id', 'customer_payment_id', 'invoice_id', 'amount'];
 
     protected $casts = ['amount' => 'decimal:2'];
 

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class ExpenseClaimPolicy extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company', 'submission_deadline_day', 'require_manager_approval',
+        'tenant_id', 'company', 'submission_deadline_day', 'require_manager_approval',
         'require_hr_approval', 'auto_approve_below', 'reminder_days_before',
         'gst_enabled', 'gst_rate', 'general_rules',
     ];

@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withProviders([
         App\Providers\AuthServiceProvider::class,
+        App\Providers\CashierServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Force HTTPS in production
@@ -20,11 +21,29 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global security headers on every response
         $middleware->prepend(\App\Http\Middleware\SecurityHeaders::class);
 
+        // EIAAW Workforce — resolve current tenant from subdomain BEFORE any
+        // tenant-scoped query runs. Binds app('current_tenant') and sets the
+        // Postgres SET LOCAL app.tenant_id session variable for RLS.
+        // Runs on every web request; safe no-op on the marketing apex.
+        $middleware->web(append: [
+            \App\Http\Middleware\ResolveTenant::class,
+        ]);
+
+        // Named aliases so route definitions can opt-in/out granularly if needed.
+        $middleware->alias([
+            'tenant' => \App\Http\Middleware\ResolveTenant::class,
+            'apex'   => \App\Http\Middleware\EnsureApex::class,
+            'plan'   => \App\Http\Middleware\EnsurePlan::class,
+        ]);
+
         // Exempt the public AARF acknowledgement POST from CSRF verification.
         // This route is accessed via a token link (e.g. from email), often in a fresh
         // browser session where no CSRF token has been set yet.
         $middleware->validateCsrfTokens(except: [
             'aarf/*/acknowledge',
+            'stripe/webhook',
+            'sso/saml/acs',  // IdP posts here without CSRF — response signature is the integrity check
+            'csp-report',    // Browser-emitted CSP violation reports
         ]);
 
     })

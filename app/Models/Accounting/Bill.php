@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Bill extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_bills';
 
     protected $fillable = [
-        'company', 'vendor_id', 'bill_number', 'vendor_bill_number', 'date', 'due_date',
+        'tenant_id', 'company', 'vendor_id', 'bill_number', 'vendor_bill_number', 'date', 'due_date',
         'reference', 'description', 'subtotal', 'tax_total', 'total',
         'amount_paid', 'balance_due', 'currency', 'exchange_rate',
         'status', 'notes', 'created_by', 'approved_by', 'approved_at',

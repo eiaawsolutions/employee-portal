@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class RecurringTemplate extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_recurring_templates';
 
     protected $fillable = [
-        'company', 'name', 'type', 'frequency', 'next_run_date',
+        'tenant_id', 'company', 'name', 'type', 'frequency', 'next_run_date',
         'end_date', 'template_data', 'is_active', 'last_run_at', 'created_by',
     ];
 

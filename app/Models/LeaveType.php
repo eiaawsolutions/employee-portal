@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeaveType extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company', 'name', 'code', 'description',
+        'tenant_id', 'company', 'name', 'code', 'description',
         'is_paid', 'requires_attachment', 'is_active', 'sort_order',
     ];
 

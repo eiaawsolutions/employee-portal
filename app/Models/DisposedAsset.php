@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class DisposedAsset extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'dispose_assets';
 
     protected $fillable = [
-        'asset_inventory_id', 'asset_tag', 'asset_type',
+        'tenant_id', 'asset_inventory_id', 'asset_tag', 'asset_type',
         'brand', 'model', 'serial_number',
         'asset_condition', 'reason', 'disposed_by', 'disposed_at', 'remarks',
     ];

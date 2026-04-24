@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PayRun extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'company', 'reference', 'title', 'year', 'month',
+        'tenant_id', 'company', 'reference', 'title', 'year', 'month',
         'pay_date', 'period_start', 'period_end', 'status',
         'created_by', 'approved_by', 'approved_at',
         'total_gross', 'total_deductions', 'total_net', 'total_employer_cost',

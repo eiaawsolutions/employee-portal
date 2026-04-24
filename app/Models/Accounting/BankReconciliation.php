@@ -3,14 +3,17 @@
 namespace App\Models\Accounting;
 
 use App\Models\User;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class BankReconciliation extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'acc_bank_reconciliations';
 
     protected $fillable = [
-        'bank_account_id', 'statement_date', 'statement_balance',
+        'tenant_id', 'bank_account_id', 'statement_date', 'statement_balance',
         'reconciled_balance', 'difference', 'status', 'completed_by', 'completed_at',
     ];
 

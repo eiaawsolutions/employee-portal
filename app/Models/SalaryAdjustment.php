@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SalaryAdjustment extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'adjusted_by', 'type',
+        'tenant_id', 'employee_id', 'adjusted_by', 'type',
         'previous_salary', 'new_salary',
         'effective_date', 'reason',
     ];

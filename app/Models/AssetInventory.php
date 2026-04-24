@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
 class AssetInventory extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
     protected $fillable = [
-        // Section A – Identification
+        'tenant_id', // Section A – Identification
         'asset_tag', 'asset_category', 'asset_type', 'brand', 'model', 'serial_number',
         'status', 'notes',
         // Section B – Specification

@@ -31,3 +31,38 @@ Schedule::command('system:refresh-metadata')->hourly();
 
 // Update checker: daily package update scan + security score refresh
 Schedule::command('system:check-updates')->dailyAt('06:00');
+
+// Billing (Wk3): trial-end auto-downgrade and past-due grace suspension.
+// Run early morning, after the 02:00 backup window.
+Schedule::command('billing:trial-end')
+    ->dailyAt('02:15')
+    ->appendOutputTo(storage_path('logs/billing.log'));
+
+Schedule::command('billing:past-due-suspend')
+    ->dailyAt('02:30')
+    ->appendOutputTo(storage_path('logs/billing.log'));
+
+// Tenant deletion pipeline (Session 11 A-grade close).
+// Phase 1: 30d after cancellation — scrub PII + soft-delete.
+// Phase 2: 90d after cancellation — hard-purge rows. Runs with --force in CI.
+Schedule::command('billing:delete-canceled')
+    ->dailyAt('03:00')
+    ->appendOutputTo(storage_path('logs/billing.log'));
+
+Schedule::command('billing:purge-canceled --force')
+    ->dailyAt('03:30')
+    ->appendOutputTo(storage_path('logs/billing.log'));
+
+// Statutory rate drift check — runs weekly, fails CI/ops alerting on drift
+// so payroll miscalculation is caught before a live run, not after.
+Schedule::command('payroll:verify-statutory-rates')
+    ->weeklyOn(1, '04:00')  // Monday 4am
+    ->appendOutputTo(storage_path('logs/payroll-statutory.log'));
+
+// Backup restoration test — Monday 05:00, proves DR works before the next
+// business-hours incident. Skips if TEST_RESTORE_DSN is unset so non-production
+// environments don't fail this step.
+Schedule::command('backup:test-restore')
+    ->weeklyOn(1, '05:00')
+    ->appendOutputTo(storage_path('logs/backup-verify.log'))
+    ->skip(fn () => empty(env('TEST_RESTORE_DSN')));

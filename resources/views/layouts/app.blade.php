@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Employee Portal')</title>
+    <title>@yield('title', config('eiaaw.product_name', 'EIAAW Workforce'))</title>
+    <link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
     {{-- Apply saved theme before page renders to prevent flash --}}
     <script nonce="{{ $cspNonce ?? '' }}">
         (function() {
@@ -13,11 +14,17 @@
             document.documentElement.setAttribute('data-theme', t);
         })();
     </script>
+    {{-- EIAAW typography stack ── Inter, Instrument Serif, JetBrains Mono --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('brand/eiaaw-tokens.css') }}" rel="stylesheet">
     <style>
-        :root { --sidebar-w: 255px; --primary: #2684FE; }
-        body { background: #f1f5f9; font-family: 'Segoe UI', sans-serif; }
+        /* EIAAW Workforce app shell — minimalist-ui profile.
+           Tokens come from brand/eiaaw-tokens.css; everything below composes from them. */
+        body { background: var(--bg); font-family: var(--sans); color: var(--ink); }
         .modal { z-index: 1055; }
         .modal-backdrop { z-index: 1050; }
         .modal-dialog-scrollable { max-height: calc(100vh - 56px); }
@@ -26,45 +33,65 @@
         .modal-dialog-scrollable .modal-content > form {
             display: flex; flex-direction: column; flex: 1 1 auto; overflow: hidden; min-height: 0;
         }
+        /* ── Sidebar (warm cream, ink text — EIAAW minimalist-ui) ── */
         .sidebar {
             width: var(--sidebar-w); height: 100vh; position: fixed; top: 0; left: 0; z-index: 100;
-            background: linear-gradient(180deg, #1A6FE8 0%, #4B9EFF 100%);
+            background: var(--bg-warm);
+            border-right: 1px solid var(--line-soft);
             display: flex; flex-direction: column; overflow: hidden;
         }
-        .sidebar-brand { padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.13); }
-        .sidebar-brand h5 { color: #fff; font-weight: 700; margin: 0; font-size: 16px; }
-        .sidebar-brand small { color: rgba(255,255,255,0.55); font-size: 11px; }
+        .sidebar-brand {
+            padding: 18px 18px 16px;
+            border-bottom: 1px solid var(--line-soft);
+        }
+        .sidebar-brand .eiaaw-lockup-text strong { font-size: 13px; color: var(--ink); }
+        .sidebar-brand .eiaaw-lockup-text small { font-size: 9px; }
         .sidebar-section {
-            padding: 14px 18px 4px; font-size: 10px; text-transform: uppercase;
-            letter-spacing: 1.2px; color: rgba(255,255,255,0.4); font-weight: 600;
+            padding: 16px 20px 4px; font-family: var(--mono); font-size: 10px;
+            text-transform: uppercase; letter-spacing: 0.14em;
+            color: var(--mute); font-weight: 500;
         }
-        .sidebar-nav { padding: 6px 0; flex: 1; overflow-y: auto; }
-        .sidebar-nav .nav-item { margin: 1px 10px; }
+        .sidebar-nav { padding: 4px 0; flex: 1; overflow-y: auto; }
+        .sidebar-nav .nav-item { margin: 1px 12px; }
         .sidebar-nav .nav-link {
-            color: rgba(255,255,255,0.75); border-radius: 8px; padding: 9px 14px;
-            display: flex; align-items: center; gap: 10px; transition: all 0.15s; font-size: 14px;
+            color: var(--ink-2); border-radius: 8px; padding: 9px 12px;
+            display: flex; align-items: center; gap: 10px;
+            transition: background 0.18s var(--ease), color 0.18s var(--ease);
+            font-size: 13.5px; font-weight: 500;
         }
-        .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active {
-            background: rgba(255,255,255,0.16); color: #fff;
+        .sidebar-nav .nav-link:hover {
+            background: rgba(31,168,150,0.08); color: var(--primary-dark);
         }
-        .sidebar-nav .nav-link i { font-size: 17px; width: 20px; flex-shrink: 0; }
-        .sidebar-footer { padding: 14px 10px; border-top: 1px solid rgba(255,255,255,0.13); }
-        .user-chip { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 11px 12px; }
+        .sidebar-nav .nav-link.active {
+            background: var(--primary-tint); color: var(--primary-dark); font-weight: 600;
+        }
+        .sidebar-nav .nav-link i { font-size: 16px; width: 20px; flex-shrink: 0; opacity: 0.85; }
+        .sidebar-footer { padding: 12px 12px 14px; border-top: 1px solid var(--line-soft); }
+        .user-chip {
+            background: var(--surface); border: 1px solid var(--line-soft);
+            border-radius: 10px; padding: 10px 12px;
+        }
         .user-avatar {
-            width: 34px; height: 34px; background: rgba(255,255,255,0.2); border-radius: 50%;
+            width: 34px; height: 34px; background: var(--primary-tint); border-radius: 50%;
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
         .role-badge {
-            font-size: 10px; padding: 2px 7px; border-radius: 20px;
-            background: rgba(255,255,255,0.18); color: #fff; display: inline-block; margin-top: 2px;
+            font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 20px;
+            background: var(--primary-tint); color: var(--primary-dark);
+            display: inline-block; margin-top: 2px;
+            text-transform: uppercase; letter-spacing: 0.08em;
         }
-        .main-content { margin-left: var(--sidebar-w); min-height: 100vh; }
+        .main-content { margin-left: var(--sidebar-w); min-height: 100vh; background: var(--bg); }
         .topbar {
-            background: #fff; border-bottom: 1px solid #e2e8f0; padding: 12px 24px;
+            background: var(--surface); border-bottom: 1px solid var(--line-soft);
+            padding: 12px 24px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 50;
         }
-        .topbar h4 { margin: 0; font-weight: 600; color: #1e293b; font-size: 18px; }
+        .topbar h4 {
+            margin: 0; font-weight: 600; color: var(--ink); font-size: 17px;
+            letter-spacing: -0.01em;
+        }
         .content-area { padding: 22px 24px; }
 
         /* ── Mobile responsiveness ── */
@@ -89,12 +116,36 @@
             .topbar { padding: 10px 16px; }
             .content-area { padding: 16px 14px; }
         }
-        .card { border: none; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.09); }
+        .card {
+            border: 1px solid var(--line-soft); background: var(--surface);
+            border-radius: 12px; box-shadow: 0 1px 2px rgba(15,26,29,0.04);
+        }
         .section-header {
-            background: #f8fafc; border-left: 4px solid var(--primary);
+            background: var(--bg-warm); border-left: 3px solid var(--primary);
             padding: 9px 14px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
         }
-        .section-header h6 { margin: 0; font-weight: 600; color: #1e293b; }
+        .section-header h6 { margin: 0; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+        /* ── Bootstrap accent overrides — keep BS structure, swap colors to EIAAW ── */
+        .btn-primary {
+            background-color: var(--ink); border-color: var(--ink); color: var(--bg);
+            font-weight: 500; letter-spacing: -0.005em;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: var(--primary-dark) !important;
+            border-color: var(--primary-dark) !important; color: var(--bg) !important;
+        }
+        .btn-outline-primary { color: var(--primary-dark); border-color: var(--primary-dark); }
+        .btn-outline-primary:hover { background-color: var(--primary-dark); color: var(--bg); }
+        a { color: var(--primary-dark); text-decoration: none; }
+        a:hover { color: var(--primary); text-decoration: underline; }
+        .text-primary { color: var(--primary-dark) !important; }
+        .bg-primary { background-color: var(--primary-dark) !important; }
+        .border-primary { border-color: var(--primary-dark) !important; }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary); box-shadow: 0 0 0 0.15rem rgba(31,168,150,0.15);
+        }
+        .badge.bg-primary { background-color: var(--primary-dark) !important; }
+        :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         /* ── Dark Mode overrides ── */
         [data-theme="dark"] body { background: #0f172a; }
         [data-theme="dark"] .main-content { background: #0f172a; }
@@ -137,7 +188,13 @@
 @auth
 <nav class="sidebar">
     <div class="sidebar-brand">
-        <h5><i class="bi bi-people-fill me-2"></i>Employee Portal</h5>
+        <a href="{{ url('/') }}" class="eiaaw-lockup eiaaw-lockup--sidebar">
+            <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
+            <span class="eiaaw-lockup-text">
+                <strong>EIAAW Workforce</strong>
+                <small>AI &middot; Human Partnerships</small>
+            </span>
+        </a>
     </div>
 
     <div class="sidebar-nav">
@@ -927,7 +984,7 @@
             <img src="{{ Auth::user()->profile_picture_url }}" alt="Avatar"
                  class="rounded-circle flex-shrink-0" style="width:34px;height:34px;object-fit:cover;">
             <div style="overflow:hidden;flex:1;">
-                <div style="color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <div style="color:var(--ink);font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                     {{ Auth::user()->name }}
                 </div>
                 <span class="role-badge">{{ str_replace('_', ' ', ucwords(Auth::user()->role)) }}</span>
@@ -951,6 +1008,7 @@
         </span>
     </div>
     <div class="content-area">
+        @include('partials.trial-banner')
         @foreach(['success','error','info','warning'] as $type)
             @if(session($type))
                 <div class="alert alert-{{ $type === 'error' ? 'danger' : $type }} alert-dismissible fade show">
@@ -1103,6 +1161,11 @@ function setTheme(theme) {
 })();
 </script>
 @endauth
+
+@auth
+    @include('partials.ai-assistant-drawer')
+@endauth
+
 @stack('scripts')
 </body>
 </html>

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, BelongsToTenant;
 
-    protected $fillable = ['name', 'work_email', 'password', 'role', 'is_active', 'profile_picture', 'login_attempts', 'deactivation_reason', 'deactivated_at', 'session_token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'];
+    protected $fillable = ['tenant_id', 'name', 'work_email', 'password', 'role', 'is_active', 'profile_picture', 'login_attempts', 'deactivation_reason', 'deactivated_at', 'session_token', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'];
     protected $hidden   = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
     protected $casts    = ['password' => 'hashed', 'is_active' => 'boolean', 'deactivated_at' => 'datetime', 'two_factor_confirmed_at' => 'datetime'];
 

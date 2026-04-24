@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class EmployeeContract extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'employee_id', 'uploaded_by', 'original_filename', 'file_path', 'file_size', 'notes',
+        'tenant_id', 'employee_id', 'uploaded_by', 'original_filename', 'file_path', 'file_size', 'notes',
     ];
 
     public function employee()   { return $this->belongsTo(Employee::class); }
