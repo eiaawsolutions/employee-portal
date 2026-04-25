@@ -7,28 +7,28 @@
 @endphp
 
 <div class="section-header">
-    <div class="section-icon" style="background:#fce7f3;">
-        <i class="bi bi-balloon-heart-fill" style="font-size:16px;color:#ec4899;"></i>
-    </div>
     <h6>Birthday Babies &mdash; {{ $currentMonth }}</h6>
 </div>
 
 <div class="row g-3 mb-4">
     <div class="col-12">
         <div class="card dash-widget" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#ec4899,#be185d);padding:16px 22px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-balloon-heart-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:28px;">{{ $bdayCount }}</div>
+                        <div class="widget-number">{{ $bdayCount }}</div>
                         <div class="widget-label">{{ $bdayCount === 1 ? 'Birthday' : 'Birthdays' }} this month</div>
                     </div>
                 </div>
             </div>
-            <div class="widget-body" style="padding:16px 22px;">
+            <div class="widget-body">
                 @if($birthdayBabies->isEmpty())
-                    <div class="text-center py-3">
-                        <div class="text-muted small">No birthdays this month</div>
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-balloon-heart" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No birthdays this month</div>
                     </div>
                 @else
                     <div class="row g-2">
@@ -40,25 +40,23 @@
                                     && \Carbon\Carbon::parse($baby->date_of_birth)->month === \Carbon\Carbon::now()->month;
                         @endphp
                         <div class="col-md-6 col-lg-4">
-                            <div class="d-flex align-items-center gap-3 p-2 rounded-3"
-                                 style="background:{{ $isToday ? '#fdf2f8' : '#f8fafc' }};border:1px solid {{ $isToday ? '#f9a8d4' : '#f1f5f9' }};transition:all .15s ease;"
-                                 onmouseenter="this.style.background='#fdf2f8';this.style.borderColor='#f9a8d4'"
-                                 onmouseleave="this.style.background='{{ $isToday ? '#fdf2f8' : '#f8fafc' }}';this.style.borderColor='{{ $isToday ? '#f9a8d4' : '#f1f5f9' }}'">
-                                <div style="width:40px;height:40px;background:{{ $isToday ? 'linear-gradient(135deg,#ec4899,#be185d)' : '#fce7f3' }};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <div class="d-flex align-items-center gap-3 p-2 rounded-3 bday-row"
+                                 style="background:{{ $isToday ? 'var(--primary-tint)' : 'var(--bg)' }};border:1px solid {{ $isToday ? 'rgba(17,118,106,0.22)' : 'var(--line-soft)' }};transition:all .35s var(--ease);">
+                                <div style="width:40px;height:40px;background:{{ $isToday ? 'var(--gradient)' : 'var(--surface)' }};border:1px solid {{ $isToday ? 'transparent' : 'var(--line-soft)' }};border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                     @if($isToday)
-                                        <i class="bi bi-balloon-heart-fill" style="font-size:18px;color:#fff;"></i>
+                                        <i class="bi bi-balloon-heart-fill" style="font-size:16px;color:#fff;"></i>
                                     @else
-                                        <span style="font-size:14px;font-weight:800;color:#ec4899;">{{ $day }}</span>
+                                        <span style="font-family:var(--sans);font-size:14px;font-weight:700;color:var(--primary-dark);letter-spacing:-0.02em;">{{ $day }}</span>
                                     @endif
                                 </div>
                                 <div style="min-width:0;">
-                                    <div class="fw-semibold text-truncate" style="font-size:13px;color:#1e293b;">
+                                    <div class="text-truncate" style="font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink);letter-spacing:-0.005em;">
                                         {{ $displayName }}
                                         @if($isToday)
-                                            <span class="badge ms-1" style="background:linear-gradient(135deg,#ec4899,#be185d);font-size:9px;vertical-align:middle;padding:3px 8px;border-radius:10px;">Today!</span>
+                                            <span class="ms-1" style="font-family:var(--mono);background:var(--primary-dark);color:#fff;font-size:9px;font-weight:500;vertical-align:middle;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.1em;">Today</span>
                                         @endif
                                     </div>
-                                    <div class="text-truncate" style="font-size:11px;color:#64748b;">
+                                    <div class="text-truncate" style="font-family:var(--sans);font-size:11.5px;color:var(--mute);">
                                         {{ $baby->designation }}{{ $baby->company ? ' · '.$baby->company : '' }}
                                     </div>
                                 </div>
@@ -71,3 +69,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bday-row:hover {
+        border-color: rgba(17,118,106,0.28) !important;
+        background: var(--primary-tint) !important;
+        transform: translateY(-1px);
+    }
+</style>

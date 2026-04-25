@@ -11,19 +11,26 @@
     $dashDesig = $dashUser->employee?->designation ?? ucwords(str_replace('_',' ',$dashUser->role));
     $dashCompany = $dashUser->employee?->company;
 @endphp
-<div class="card mb-4" style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 50%,#3b82f6 100%);border:none;border-radius:16px;overflow:hidden;position:relative;">
-    <div style="position:absolute;top:-40px;right:-20px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);"></div>
-    <div style="position:absolute;bottom:-30px;right:80px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);"></div>
-    <div class="card-body d-flex align-items-center gap-3 py-3" style="position:relative;z-index:1;">
-        <div style="width:52px;height:52px;background:rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
-            <i class="bi bi-person-fill" style="font-size:26px;color:#fff;"></i>
+<div class="card mb-4" style="background:linear-gradient(180deg,var(--bg) 0%,var(--bg-warm) 100%);border:1px solid var(--line-soft);border-radius:18px;overflow:hidden;position:relative;box-shadow:0 1px 2px rgba(15,26,29,0.04),0 8px 24px -10px rgba(15,26,29,0.10);">
+    <div class="card-body d-flex align-items-center gap-3 py-4" style="position:relative;z-index:1;padding-left:26px;padding-right:26px;">
+        <div style="width:52px;height:52px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="bi bi-person-fill" style="font-size:24px;color:var(--primary-dark);"></i>
         </div>
-        <div>
-            <h5 class="text-white mb-0 fw-bold">Welcome, {{ $dashName }}</h5>
-            <small style="color:rgba(255,255,255,0.8);">{{ $dashDesig }}{{ $dashCompany ? ' · '.$dashCompany : '' }}</small>
+        <div style="min-width:0;">
+            <div style="font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--primary-dark);text-transform:uppercase;letter-spacing:.14em;display:inline-flex;align-items:center;gap:10px;">
+                <span style="width:24px;height:1px;background:currentColor;opacity:.45;"></span>
+                Welcome back
+            </div>
+            <div style="font-family:var(--sans);font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-0.02em;line-height:1.15;margin-top:2px;">
+                <em style="font-family:var(--serif);font-style:italic;font-weight:400;color:var(--primary-dark);letter-spacing:-0.005em;">{{ $dashName }}</em>
+            </div>
+            <div style="font-family:var(--sans);font-size:12.5px;color:var(--mute);margin-top:2px;">
+                {{ $dashDesig }}{{ $dashCompany ? ' · '.$dashCompany : '' }}
+            </div>
         </div>
         <div class="ms-auto text-end d-none d-md-block">
-            <small style="color:rgba(255,255,255,.7);font-size:12px;">{{ now()->format('l, d/m/Y') }}</small>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--mute);text-transform:uppercase;letter-spacing:.14em;">{{ now()->format('l') }}</div>
+            <div style="font-family:var(--sans);font-size:13px;color:var(--ink-2);font-weight:500;margin-top:2px;">{{ now()->format('d/m/Y') }}</div>
         </div>
     </div>
 </div>
