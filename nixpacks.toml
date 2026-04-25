@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo_pgsql", "php82Extensions.pgsql", "php82Extensions.gd", "php82Extensions.intl", "php82Extensions.zip", "php82Extensions.bcmath", "php82Extensions.redis", "nodejs_22", "postgresql"]
+nixPkgs = ["php82", "php82Packages.composer", "php82Extensions.pdo_pgsql", "php82Extensions.pgsql", "php82Extensions.gd", "php82Extensions.intl", "php82Extensions.zip", "php82Extensions.bcmath", "php82Extensions.redis", "nodejs_22", "postgresql"]
 
 [phases.install]
 cmds = [
