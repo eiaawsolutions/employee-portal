@@ -6,6 +6,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        $this->verifySessionDomainConfig();
 
         // Rate-limit file uploads (configurable via SECURITY_UPLOAD_RATE_LIMIT)
         RateLimiter::for('uploads', function (Request $request) {
@@ -93,5 +96,41 @@ class AppServiceProvider extends ServiceProvider
 
             return true; // Always passes — sanitization is the goal, not validation
         });
+    }
+
+    /**
+     * Production-only sanity check: SESSION_DOMAIN must cover both the
+     * marketing apex and the tenant subdomains, otherwise the post-login
+     * bounce from ep.eiaawsolutions.com → {slug}.eiaawsolutions.com drops
+     * the session cookie and the user gets stuck in a /login → 2FA → /login
+     * loop. (April 2026 — see commit 21b3f17.)
+     *
+     * Logs an emergency-level message when misconfigured. Never throws.
+     */
+    private function verifySessionDomainConfig(): void
+    {
+        if (!app()->environment('production')) {
+            return;
+        }
+
+        $tenantDomain = strtolower((string) config('eiaaw.tenant_domain', ''));
+        $sessionDomain = strtolower((string) config('session.domain', ''));
+
+        if ($tenantDomain === '') {
+            return; // No tenant domain set → not the SaaS deploy; nothing to check.
+        }
+
+        $expected = '.' . ltrim($tenantDomain, '.');
+
+        if ($sessionDomain === $expected) {
+            return;
+        }
+
+        Log::emergency('SESSION_DOMAIN misconfigured — login + 2FA bounce will fail', [
+            'expected'      => $expected,
+            'actual'        => $sessionDomain ?: '(unset)',
+            'tenant_domain' => $tenantDomain,
+            'fix'           => "Set SESSION_DOMAIN={$expected} in Railway env and redeploy.",
+        ]);
     }
 }

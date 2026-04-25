@@ -263,6 +263,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
         Route::post('/superadmin/tenants/{tenant}/reactivate',
             [\App\Http\Controllers\SuperAdminTenantsController::class, 'reactivate'])
             ->name('superadmin.tenants.reactivate')->middleware('throttle:10,60');
+
+        // Platform diagnostics — read-only config snapshots for EIAAW staff
+        Route::get('/superadmin/diagnostics/session-domain',
+            [\App\Http\Controllers\PlatformDiagnosticsController::class, 'sessionDomain'])
+            ->name('superadmin.diagnostics.session-domain');
     });
 
     // Knowledge Base (Superadmin only — separate password)
