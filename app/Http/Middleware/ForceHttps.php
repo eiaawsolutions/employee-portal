@@ -16,6 +16,12 @@ class ForceHttps
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Health check probes from Railway's internal proxy come over plain
+        // HTTP and don't set X-Forwarded-Proto. They need a 200 not a 301.
+        if ($request->is('up')) {
+            return $next($request);
+        }
+
         if ($this->shouldForce() && !$request->secure()) {
             return redirect()->secure($request->getRequestUri(), 301);
         }
