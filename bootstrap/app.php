@@ -20,6 +20,18 @@ return Application::configure(basePath: dirname(__DIR__))
         App\Providers\CashierServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust Railway's edge proxy so X-Forwarded-Proto is honored. Without
+        // this, $request->secure() returns false even when the edge already
+        // terminated TLS, and our ForceHttps middleware 301-loops + the
+        // /up health check fails with 301 instead of 200.
+        $middleware->trustProxies(at: '*', headers:
+            \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR
+            | \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST
+            | \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT
+            | \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO
+            | \Illuminate\Http\Request::HEADER_X_FORWARDED_AWS_ELB
+        );
+
         // Force HTTPS in production
         $middleware->prepend(\App\Http\Middleware\ForceHttps::class);
 
