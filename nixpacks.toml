@@ -17,6 +17,5 @@ cmds = [
 ]
 
 [start]
-# Migrations first (idempotent), then start the server. The Procfile has
-# the same shape but Nixpacks ignores Procfile when nixpacks.toml exists.
-cmd = "php artisan migrate --force && php -d variables_order=EGPCS -S 0.0.0.0:$PORT -t public"
+# Boot script — externalised so the heredoc quoting stays sane.
+cmd = "bash docker-entrypoint.sh"
