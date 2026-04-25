@@ -37,7 +37,7 @@ class SwapDateOfBirth extends Command
         // ── Employees ────────────────────────────────────────────────────
         $this->info('=== EMPLOYEES ===');
         $employees = Employee::whereNotNull('date_of_birth')
-            ->whereRaw('DAY(date_of_birth) <= 12 AND MONTH(date_of_birth) <= 12')
+            ->whereRaw('EXTRACT(DAY FROM date_of_birth) <= 12 AND EXTRACT(MONTH FROM date_of_birth) <= 12')
             ->get();
 
         $empCount = 0;
@@ -65,7 +65,7 @@ class SwapDateOfBirth extends Command
         // ── Personal Details (onboarding) ────────────────────────────────
         $this->info('=== PERSONAL DETAILS ===');
         $pds = PersonalDetail::whereNotNull('date_of_birth')
-            ->whereRaw('DAY(date_of_birth) <= 12 AND MONTH(date_of_birth) <= 12')
+            ->whereRaw('EXTRACT(DAY FROM date_of_birth) <= 12 AND EXTRACT(MONTH FROM date_of_birth) <= 12')
             ->get();
 
         $pdCount = 0;

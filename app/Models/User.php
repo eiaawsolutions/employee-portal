@@ -22,11 +22,19 @@ class User extends Authenticatable
 
     /** Roles that must have 2FA enabled to access the application. */
     private const TWO_FACTOR_REQUIRED_ROLES = [
-        'superadmin', 'hr_manager', 'hr_executive', 'finance_manager', 'it_manager', 'it_executive',
+        'superadmin', 'system_admin',
+        'hr_manager', 'hr_executive',
+        'finance_manager',
+        'it_manager', 'it_executive',
     ];
 
     public function requiresTwoFactor(): bool
     {
+        // Platform admins always require 2FA — they hold integration keys
+        // (Stripe, Anthropic, Resend) that affect every tenant.
+        if ($this->isPlatformAdmin()) {
+            return true;
+        }
         return in_array($this->role, self::TWO_FACTOR_REQUIRED_ROLES);
     }
 

@@ -86,15 +86,15 @@ class ReportController extends Controller
         $turnoverRate = $totalActive > 0 ? round(($totalExits / $totalActive) * 100, 1) : 0;
 
         // Monthly headcount trend (new hires vs exits per month)
-        $monthlyHires = WorkDetail::selectRaw('MONTH(start_date) as m, COUNT(*) as total')
+        $monthlyHires = WorkDetail::selectRaw('EXTRACT(MONTH FROM start_date) as m, COUNT(*) as total')
             ->whereYear('start_date', $year)
             ->when($companyFilter, fn($q) => $q->where('company', $companyFilter))
-            ->groupByRaw('MONTH(start_date)')->pluck('total', 'm')->toArray();
+            ->groupByRaw('EXTRACT(MONTH FROM start_date)')->pluck('total', 'm')->toArray();
 
-        $monthlyExits = Offboarding::selectRaw('MONTH(exit_date) as m, COUNT(*) as total')
+        $monthlyExits = Offboarding::selectRaw('EXTRACT(MONTH FROM exit_date) as m, COUNT(*) as total')
             ->whereNotNull('exit_date')->whereYear('exit_date', $year)
             ->when($companyFilter, fn($q) => $q->where('company', $companyFilter))
-            ->groupByRaw('MONTH(exit_date)')->pluck('total', 'm')->toArray();
+            ->groupByRaw('EXTRACT(MONTH FROM exit_date)')->pluck('total', 'm')->toArray();
 
         $headcountTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -364,15 +364,15 @@ class ReportController extends Controller
         });
 
         // Monthly hires & exits for the year
-        $monthlyHires = WorkDetail::selectRaw('MONTH(start_date) as m, COUNT(*) as total')
+        $monthlyHires = WorkDetail::selectRaw('EXTRACT(MONTH FROM start_date) as m, COUNT(*) as total')
             ->whereYear('start_date', $year)
             ->when($companyFilter, fn($q) => $q->where('company', $companyFilter))
-            ->groupByRaw('MONTH(start_date)')->pluck('total', 'm')->toArray();
+            ->groupByRaw('EXTRACT(MONTH FROM start_date)')->pluck('total', 'm')->toArray();
 
-        $monthlyExits = Offboarding::selectRaw('MONTH(exit_date) as m, COUNT(*) as total')
+        $monthlyExits = Offboarding::selectRaw('EXTRACT(MONTH FROM exit_date) as m, COUNT(*) as total')
             ->whereNotNull('exit_date')->whereYear('exit_date', $year)
             ->when($companyFilter, fn($q) => $q->where('company', $companyFilter))
-            ->groupByRaw('MONTH(exit_date)')->pluck('total', 'm')->toArray();
+            ->groupByRaw('EXTRACT(MONTH FROM exit_date)')->pluck('total', 'm')->toArray();
 
         $hiresExitsTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -543,8 +543,8 @@ class ReportController extends Controller
             ->where('leave_applications.status', 'approved')
             ->when($companyFilter, fn($q) => $q->join('employees', 'leave_applications.employee_id', '=', 'employees.id')
                 ->where('employees.company', $companyFilter))
-            ->selectRaw('MONTH(leave_applications.start_date) as m, SUM(leave_applications.total_days) as total_days, COUNT(*) as count')
-            ->groupByRaw('MONTH(leave_applications.start_date)')->pluck('total_days', 'm')->toArray();
+            ->selectRaw('EXTRACT(MONTH FROM leave_applications.start_date) as m, SUM(leave_applications.total_days) as total_days, COUNT(*) as count')
+            ->groupByRaw('EXTRACT(MONTH FROM leave_applications.start_date)')->pluck('total_days', 'm')->toArray();
 
         $leaveTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -617,14 +617,14 @@ class ReportController extends Controller
             ->whereYear('attendance_records.date', $year)
             ->when($companyFilter, fn($q) => $q->join('employees', 'attendance_records.employee_id', '=', 'employees.id')
                 ->where('employees.company', $companyFilter))
-            ->selectRaw("MONTH(attendance_records.date) as m,
+            ->selectRaw("EXTRACT(MONTH FROM attendance_records.date) as m,
                 SUM(CASE WHEN attendance_records.status = 'present' THEN 1 ELSE 0 END) as present,
                 SUM(CASE WHEN attendance_records.status = 'late' THEN 1 ELSE 0 END) as late,
                 SUM(CASE WHEN attendance_records.status = 'absent' THEN 1 ELSE 0 END) as absent,
                 SUM(CASE WHEN attendance_records.status = 'on_leave' THEN 1 ELSE 0 END) as on_leave,
                 COUNT(*) as total,
                 SUM(attendance_records.overtime_hours) as ot_hours")
-            ->groupByRaw('MONTH(attendance_records.date)')->orderByRaw('MONTH(attendance_records.date)')->get()->keyBy('m');
+            ->groupByRaw('EXTRACT(MONTH FROM attendance_records.date)')->orderByRaw('EXTRACT(MONTH FROM attendance_records.date)')->get()->keyBy('m');
 
         $attendanceTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -662,8 +662,8 @@ class ReportController extends Controller
             ->where('overtime_requests.status', 'approved')
             ->when($companyFilter, fn($q) => $q->join('employees', 'overtime_requests.employee_id', '=', 'employees.id')
                 ->where('employees.company', $companyFilter))
-            ->selectRaw('MONTH(overtime_requests.date) as m, SUM(overtime_requests.hours) as total_hours, COUNT(*) as count')
-            ->groupByRaw('MONTH(overtime_requests.date)')->pluck('total_hours', 'm')->toArray();
+            ->selectRaw('EXTRACT(MONTH FROM overtime_requests.date) as m, SUM(overtime_requests.hours) as total_hours, COUNT(*) as count')
+            ->groupByRaw('EXTRACT(MONTH FROM overtime_requests.date)')->pluck('total_hours', 'm')->toArray();
 
         $overtimeTrend = [];
         for ($m = 1; $m <= 12; $m++) {

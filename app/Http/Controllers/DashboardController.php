@@ -92,7 +92,7 @@ class DashboardController extends Controller
         $birthdayBabies = Employee::whereNull('active_until')
             ->whereNotNull('date_of_birth')
             ->whereMonth('date_of_birth', $now->month)
-            ->orderByRaw('DAY(date_of_birth) ASC')
+            ->orderByRaw('EXTRACT(DAY FROM date_of_birth) ASC')
             ->get(['full_name', 'preferred_name', 'date_of_birth', 'designation', 'department', 'company']);
 
         return [
@@ -366,7 +366,7 @@ class DashboardController extends Controller
         $birthdayBabies = Employee::whereNull('active_until')
             ->whereNotNull('date_of_birth')
             ->whereMonth('date_of_birth', Carbon::now()->month)
-            ->orderByRaw('DAY(date_of_birth) ASC')
+            ->orderByRaw('EXTRACT(DAY FROM date_of_birth) ASC')
             ->get(['full_name', 'preferred_name', 'date_of_birth', 'designation', 'department', 'company']);
         $latestAnnouncements = $this->getAnnouncements($employee?->company);
         return view('user.dashboard', compact('user','employee','birthdayBabies','latestAnnouncements'));
