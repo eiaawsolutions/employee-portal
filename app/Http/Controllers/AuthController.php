@@ -16,11 +16,40 @@ class AuthController extends Controller
     // ── Login ──────────────────────────────────────────────────────────────
     public function showLogin(Request $request)
     {
+        if ($bounce = $this->guardPhantomSubdomain($request)) return $bounce;
+
         // Store redirect intent in session so it survives through login POST
         if ($request->query('redirect') === 'profile-consent') {
             $request->session()->put('redirect_after_login', 'profile-consent');
         }
         return view('auth.login', ['redirectIntent' => $request->query('redirect')]);
+    }
+
+    /**
+     * Phantom-subdomain guard. If the request hit a *.eiaawsolutions.com host
+     * that didn't resolve to a real tenant (typo'd subdomain), send the user
+     * to /find-workspace instead of rendering an unusable auth page. Apex
+     * hosts (marketing apex + bare tenant_domain) are exempt — apex login is
+     * the legitimate "I don't remember my workspace URL" entry point and
+     * bounces to the tenant subdomain after successful auth.
+     *
+     * Local dev is also exempt so ?tenant= query-string testing still works.
+     *
+     * Returns null when the request is fine to proceed; returns a redirect
+     * response when the controller should bail.
+     */
+    private function guardPhantomSubdomain(Request $request): ?\Illuminate\Http\RedirectResponse
+    {
+        if (app()->bound('current_tenant')) return null;
+        if (app()->environment() === 'local') return null;
+
+        $marketingHost = strtolower(config('eiaaw.marketing_host', env('APP_MARKETING_HOST', 'ep.eiaawsolutions.com')));
+        $tenantDomain  = strtolower(config('eiaaw.tenant_domain',  env('APP_TENANT_DOMAIN',  'eiaawsolutions.com')));
+        $host          = strtolower($request->getHost());
+
+        if ($host === $marketingHost || $host === $tenantDomain) return null;
+
+        return redirect()->route('marketing.find-workspace');
     }
 
     public function login(Request $request)
@@ -196,8 +225,10 @@ class AuthController extends Controller
     }
 
     // ── Register Step 1: show email form ───────────────────────────────────
-    public function showRegister()
+    public function showRegister(Request $request)
     {
+        if ($bounce = $this->guardPhantomSubdomain($request)) return $bounce;
+
         return view('auth.register');
     }
 
@@ -233,6 +264,8 @@ class AuthController extends Controller
     // ── Register Step 2: show set-password form ────────────────────────────
     public function showSetPassword(Request $request)
     {
+        if ($bounce = $this->guardPhantomSubdomain($request)) return $bounce;
+
         // Must arrive via the email check redirect (session flash)
         if (!session('verified_email')) {
             return redirect()->route('register')
@@ -348,8 +381,10 @@ class AuthController extends Controller
     }
 
     // ── Forgot Password ────────────────────────────────────────────────────
-    public function showForgotPassword()
+    public function showForgotPassword(Request $request)
     {
+        if ($bounce = $this->guardPhantomSubdomain($request)) return $bounce;
+
         return view('auth.forgot-password');
     }
 
@@ -376,6 +411,8 @@ class AuthController extends Controller
 
     public function showResetPassword(Request $request, string $token)
     {
+        if ($bounce = $this->guardPhantomSubdomain($request)) return $bounce;
+
         return view('auth.reset-password', ['token' => $token, 'email' => $request->email]);
     }
 
