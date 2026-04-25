@@ -16,6 +16,12 @@ class ForceHttps
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip HTTPS redirect for the healthcheck endpoint — Railway sends
+        // healthcheck requests over plain HTTP internally.
+        if ($request->is('up')) {
+            return $next($request);
+        }
+
         if ($this->shouldForce() && !$request->secure()) {
             return redirect()->secure($request->getRequestUri(), 301);
         }
