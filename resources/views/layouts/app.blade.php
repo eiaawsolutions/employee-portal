@@ -201,8 +201,10 @@
 
         {{-- ══════════════════════════════════════════════════
              SUPERADMIN MENU — all modules organized by category
+             system_admin (EIAAW staff) sees the same menu plus the
+             Platform block (Integrations, Tenants) gated below.
              ══════════════════════════════════════════════════ --}}
-        @if(Auth::user()->isSuperadmin())
+        @if(Auth::user()->isSuperadmin() || Auth::user()->isSystemAdmin())
 
         {{-- ── HR ── --}}
         <div class="sidebar-section">HR</div>
@@ -432,6 +434,23 @@
                 @if($__pendingTeamClaims > 0)
                 <span class="badge bg-warning text-dark ms-auto" style="font-size:10px;">{{ $__pendingTeamClaims }}</span>
                 @endif
+            </a>
+        </div>
+        @endif
+
+        {{-- ── Platform (EIAAW staff only) ── --}}
+        @if(Auth::user()->isPlatformAdmin())
+        <div class="sidebar-section">Platform</div>
+        <div class="nav-item">
+            <a href="{{ route('superadmin.tenants.index') }}"
+               class="nav-link {{ request()->routeIs('superadmin.tenants.*') ? 'active' : '' }}">
+                <i class="bi bi-buildings"></i> Tenants
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ route('superadmin.integrations') }}"
+               class="nav-link {{ request()->routeIs('superadmin.integrations*') ? 'active' : '' }}">
+                <i class="bi bi-key"></i> Integrations
             </a>
         </div>
         @endif

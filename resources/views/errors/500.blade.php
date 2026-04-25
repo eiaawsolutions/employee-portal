@@ -9,7 +9,10 @@
             <h1 class="display-1 fw-bold text-danger">500</h1>
             <h4 class="mb-3">Server Error</h4>
             <p class="text-muted mb-4">Something went wrong on our end. Please try again later.</p>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary me-2">Go Back</a>
+            @php($previous = request()->headers->get('referer'))
+            @if($previous)
+                <a href="{{ $previous }}" class="btn btn-outline-secondary me-2">Go Back</a>
+            @endif
             <a href="{{ route('login') }}" class="btn btn-primary">Home</a>
         </div>
     </div>

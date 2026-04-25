@@ -243,6 +243,20 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
         Route::delete('/superadmin/integrations/{key}',
             [\App\Http\Controllers\SuperAdminIntegrationsController::class, 'delete'])
             ->name('superadmin.integrations.delete')->middleware('throttle:20,60');
+
+        // Tenants directory — every workspace on the platform
+        Route::get('/superadmin/tenants',
+            [\App\Http\Controllers\SuperAdminTenantsController::class, 'index'])
+            ->name('superadmin.tenants.index');
+        Route::get('/superadmin/tenants/{tenant}',
+            [\App\Http\Controllers\SuperAdminTenantsController::class, 'show'])
+            ->name('superadmin.tenants.show');
+        Route::post('/superadmin/tenants/{tenant}/suspend',
+            [\App\Http\Controllers\SuperAdminTenantsController::class, 'suspend'])
+            ->name('superadmin.tenants.suspend')->middleware('throttle:10,60');
+        Route::post('/superadmin/tenants/{tenant}/reactivate',
+            [\App\Http\Controllers\SuperAdminTenantsController::class, 'reactivate'])
+            ->name('superadmin.tenants.reactivate')->middleware('throttle:10,60');
     });
 
     // Knowledge Base (Superadmin only — separate password)

@@ -128,7 +128,7 @@ class DashboardController extends Controller
         \App\Services\UpdateCheckerService $updates
     ) {
         $user = Auth::user();
-        if (!$user->isSuperadmin()) {
+        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
             abort(403);
         }
 
@@ -145,7 +145,7 @@ class DashboardController extends Controller
     public function refreshSecurityScore(\App\Services\SecurityScoreService $security)
     {
         $user = Auth::user();
-        if (!$user->isSuperadmin()) {
+        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
             abort(403);
         }
 
@@ -158,7 +158,7 @@ class DashboardController extends Controller
     public function refreshUpdateCheck(\App\Services\UpdateCheckerService $updates)
     {
         $user = Auth::user();
-        if (!$user->isSuperadmin()) {
+        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
             abort(403);
         }
 
@@ -186,18 +186,18 @@ class DashboardController extends Controller
 
         $companyOwnedTotal = AssetInventory::where('ownership_type', 'company')->count();
         $rawCompanyOwned = AssetInventory::where('ownership_type', 'company')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_name),""), "Unspecified") as company, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, count(*) as total")
             ->groupBy('company')->orderByDesc('total')->get();
         $companyOwnedByCompany = $this->groupedCompanyCollection($rawCompanyOwned);
 
         $rentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
         $rawRentalByVendor = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(rental_vendor),""), "Unspecified") as vendor, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, count(*) as total")
             ->groupBy('vendor')->orderByDesc('total')->get();
         $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
         $rawRentalBySuppliedTo = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_supplied_to),''), 'Unspecified') as company, count(*) as total")
             ->groupBy('company')->orderByDesc('total')->get();
         $rentalBySuppliedTo = $this->groupedCompanyCollection($rawRentalBySuppliedTo);
 
@@ -233,7 +233,7 @@ class DashboardController extends Controller
         // ── Card 2: Company Owned — breakdown by company_name ─────────────
         $companyOwnedTotal = AssetInventory::where('ownership_type', 'company')->count();
         $rawCompanyOwned = AssetInventory::where('ownership_type', 'company')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_name),""), "Unspecified") as company, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, count(*) as total")
             ->groupBy('company')
             ->orderByDesc('total')
             ->get();
@@ -242,14 +242,14 @@ class DashboardController extends Controller
         // ── Card 3: Rental — breakdown by vendor ─────────────────────────
         $rentalTotal = AssetInventory::where('ownership_type', 'rental')->count();
         $rawRentalByVendor = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(rental_vendor),""), "Unspecified") as vendor, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(rental_vendor),''), 'Unspecified') as vendor, count(*) as total")
             ->groupBy('vendor')
             ->orderByDesc('total')
             ->get();
         $rentalByVendor = $this->groupedCompanyCollection($rawRentalByVendor, 'vendor', normalizeAsCompany: false);
 
         $rawRentalBySuppliedTo = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_supplied_to),''), 'Unspecified') as company, count(*) as total")
             ->groupBy('company')->orderByDesc('total')->get();
         $rentalBySuppliedTo = $this->groupedCompanyCollection($rawRentalBySuppliedTo);
 

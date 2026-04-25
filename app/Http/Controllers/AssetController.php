@@ -109,12 +109,12 @@ class AssetController extends Controller
         };
 
         // Card 1: All assets by company → type
-        $allRows = AssetInventory::selectRaw('
+        $allRows = AssetInventory::selectRaw("
                 COALESCE(
-                    NULLIF(TRIM(CASE WHEN ownership_type = "rental" THEN company_supplied_to ELSE company_name END), ""),
-                    "Unspecified"
+                    NULLIF(TRIM(CASE WHEN ownership_type = 'rental' THEN company_supplied_to ELSE company_name END), ''),
+                    'Unspecified'
                 ) as company, asset_type, count(*) as total
-            ')->groupBy('company', 'asset_type')->get();
+            ")->groupBy('company', 'asset_type')->get();
         $overviewAllByCompany = $buildCompanyTypeMap($allRows);
         $overviewAllTotal     = AssetInventory::count();
         // Flat totals by type (for default "All Companies" view)
@@ -126,7 +126,7 @@ class AssetController extends Controller
 
         // Card 2: Company-owned assets by company → type
         $coRows = AssetInventory::where('ownership_type', 'company')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_name),""), "Unspecified") as company, asset_type, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_name),''), 'Unspecified') as company, asset_type, count(*) as total")
             ->groupBy('company', 'asset_type')->get();
         $overviewCompanyByCompany = $buildCompanyTypeMap($coRows);
         $overviewCompanyTotal     = AssetInventory::where('ownership_type', 'company')->count();
@@ -139,7 +139,7 @@ class AssetController extends Controller
         // Card 3: Rental/leased assets by company → type → brand counts
         // Structure: [ 'CompanyName' => [ 'total' => N, 'types' => [ 'type' => [ 'total' => N, 'brands' => [ 'brand' => N ] ] ] ] ]
         $rentalBrandRows = AssetInventory::where('ownership_type', 'rental')
-            ->selectRaw('COALESCE(NULLIF(TRIM(company_supplied_to),""), "Unspecified") as company, asset_type, COALESCE(NULLIF(TRIM(brand),""), "Unknown") as brand_name, count(*) as total')
+            ->selectRaw("COALESCE(NULLIF(TRIM(company_supplied_to),''), 'Unspecified') as company, asset_type, COALESCE(NULLIF(TRIM(brand),''), 'Unknown') as brand_name, count(*) as total")
             ->groupBy('company', 'asset_type', 'brand_name')->get();
         $overviewRentalByCompany = [];
         foreach ($rentalBrandRows as $row) {

@@ -23,7 +23,7 @@ class ItTaskController extends Controller
                 'assignedBy',
             ])
             ->where('assigned_to', $user->id)
-            ->orderByRaw("FIELD(status, 'in_progress', 'pending', 'done')")
+            ->orderByRaw("CASE status WHEN 'in_progress' THEN 1 WHEN 'pending' THEN 2 WHEN 'done' THEN 3 ELSE 4 END")
             ->orderByDesc('created_at')
             ->paginate(20);
 

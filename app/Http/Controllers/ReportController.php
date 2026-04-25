@@ -704,7 +704,7 @@ class ReportController extends Controller
             ->groupBy('status')->orderByDesc('total')->get();
 
         // By type
-        $byType = AssetInventory::selectRaw('asset_type, COUNT(*) as total, SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available, SUM(CASE WHEN status IN ("assigned","unavailable") THEN 1 ELSE 0 END) as assigned')
+        $byType = AssetInventory::selectRaw("asset_type, COUNT(*) as total, SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available, SUM(CASE WHEN status IN ('assigned','unavailable') THEN 1 ELSE 0 END) as assigned")
             ->groupBy('asset_type')->orderByDesc('total')->get();
 
         // Ownership breakdown
