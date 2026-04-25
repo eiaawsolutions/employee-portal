@@ -136,9 +136,40 @@
                     <p style="font-size: 13px; color: var(--mute); margin: 0;">No AI activity recorded.</p>
                 @else
                     <dl class="kv">
-                        <dt>Total tokens</dt>      <dd>{{ number_format($usage->sum('tokens_total')) }}</dd>
-                        <dt>Total spend</dt>       <dd>USD {{ number_format($usage->sum('cost_usd_total'), 2) }}</dd>
-                        <dt>Days with activity</dt><dd>{{ $usage->count() }}</dd>
+                        <dt>Requests</dt>           <dd>{{ number_format($aiTotals['requests']) }}</dd>
+                        <dt>Total tokens</dt>       <dd>{{ number_format($aiTotals['tokens']) }}</dd>
+                        <dt>Total spend</dt>        <dd>USD {{ number_format($aiTotals['cost_usd'], 2) }}</dd>
+                        <dt>Days with activity</dt> <dd>{{ $aiTotals['days'] }}</dd>
+                        <dt>Plan budget</dt>        <dd>USD {{ number_format($tenant->aiBudgetUsd(), 2) }} /mo</dd>
+                    </dl>
+                @endif
+            </div>
+
+            <div class="card">
+                <h3>Cost stack <span style="color:var(--mute); font-weight:400; font-size:13px;">· latest snapshot</span></h3>
+                @if (!$snapshot)
+                    <p style="font-size: 13px; color: var(--mute); margin: 0;">
+                        No usage snapshot yet — run <code>php artisan meter:tenant-usage --tenant={{ $tenant->slug }}</code>
+                        or wait for the daily 03:45 schedule.
+                    </p>
+                @else
+                    <dl class="kv">
+                        <dt>Estimated MRR</dt>
+                        <dd>
+                            @if ($mrr !== null)
+                                USD {{ number_format($mrr, 2) }} /mo
+                                <span style="color:var(--mute); font-size:12px;">({{ $tenant->planPriceUsdMonthly() }} × {{ $tenant->plan_seats }} seats)</span>
+                            @else
+                                Custom (Enterprise)
+                            @endif
+                        </dd>
+                        <dt>AI cost (30d)</dt>      <dd>USD {{ number_format($snapshot->ai_cost_usd_30d, 2) }}</dd>
+                        <dt>Storage</dt>            <dd>{{ number_format($snapshot->storage_mb) }} MB</dd>
+                        <dt>DB rows</dt>            <dd>{{ number_format($snapshot->db_row_count_total) }}</dd>
+                        <dt>Users</dt>              <dd>{{ $snapshot->users_count }} / {{ $tenant->plan_seats }} seats</dd>
+                        <dt>Employees</dt>          <dd>{{ number_format($snapshot->employees_count) }}</dd>
+                        <dt>Last active</dt>        <dd>{{ $snapshot->last_active_at?->diffForHumans() ?? '—' }}</dd>
+                        <dt>Snapshot date</dt>      <dd style="color:var(--mute); font-size:12px;">{{ $snapshot->usage_date->format('Y-m-d') }}</dd>
                     </dl>
                 @endif
             </div>

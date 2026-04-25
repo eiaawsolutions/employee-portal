@@ -244,6 +244,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
             [\App\Http\Controllers\SuperAdminIntegrationsController::class, 'delete'])
             ->name('superadmin.integrations.delete')->middleware('throttle:20,60');
 
+        // HQ Overview — fleet-wide aggregates (privacy-respecting). See
+        // app/Support/PlatformAdminVisibility.php for what HQ may + may not see.
+        Route::get('/superadmin/hq',
+            [\App\Http\Controllers\HqOverviewController::class, 'index'])
+            ->name('superadmin.hq.index');
+
         // Tenants directory — every workspace on the platform
         Route::get('/superadmin/tenants',
             [\App\Http\Controllers\SuperAdminTenantsController::class, 'index'])

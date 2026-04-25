@@ -505,6 +505,23 @@ class SsoService
             return null;
         }
 
+        // Plan-seat enforcement: if this JIT would push the tenant over its
+        // plan_seats limit, refuse and log. The SSO controller surfaces this
+        // as a generic "could not match" — operators see the audit reason.
+        if (!$tenant->canAddUser()) {
+            SecurityAuditLog::record('sso_jit_seat_limit_blocked', [
+                'work_email' => $email,
+                'tenant_id'  => $tenant->id,
+                'details'    => sprintf(
+                    'JIT blocked: %d of %d seats used on the %s plan',
+                    $tenant->seatsUsed(),
+                    (int) $tenant->plan_seats,
+                    $tenant->plan,
+                ),
+            ]);
+            return null;
+        }
+
         // JIT provision inside a transaction so the tenant_users pivot row lands too.
         return DB::transaction(function () use ($tenant, $email, $name, $groups) {
             $mappedRole = $this->mapRole($tenant, $groups);

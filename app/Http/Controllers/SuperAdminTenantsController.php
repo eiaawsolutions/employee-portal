@@ -52,13 +52,38 @@ class SuperAdminTenantsController extends Controller
     {
         $tenant->load(['users']);
 
+        // AI usage — last 30 days. Compute totals server-side so the view
+        // can't miss-name a column (the previous view summed tokens_total /
+        // cost_usd_total which don't exist; result was always 0).
         $usage = DB::table('ai_usage_daily')
             ->where('tenant_id', $tenant->id)
             ->where('usage_date', '>=', now()->subDays(30)->toDateString())
             ->orderBy('usage_date')
             ->get();
 
-        return view('superadmin.tenants.show', compact('tenant', 'usage'));
+        $aiTotals = [
+            'tokens'   => (int) $usage->sum(fn ($r) => (int) $r->input_tokens
+                                                   + (int) $r->output_tokens
+                                                   + (int) $r->cache_read_tokens
+                                                   + (int) $r->cache_write_tokens),
+            'cost_usd' => (float) $usage->sum('cost_usd'),
+            'requests' => (int) $usage->sum('request_count'),
+            'days'     => $usage->count(),
+        ];
+
+        // Latest meter snapshot for the cost-stack panel. Null on tenants
+        // the meter has never touched (fresh signup, or meter not yet run).
+        $snapshot = \App\Models\TenantUsageDaily::query()
+            ->where('tenant_id', $tenant->id)
+            ->latest('usage_date')
+            ->first();
+
+        // Estimated MRR for this tenant. Enterprise returns null (custom).
+        $mrr = $tenant->planPriceUsdMonthly() !== null
+            ? $tenant->planPriceUsdMonthly() * (int) $tenant->plan_seats
+            : null;
+
+        return view('superadmin.tenants.show', compact('tenant', 'usage', 'aiTotals', 'snapshot', 'mrr'));
     }
 
     public function suspend(Request $request, Tenant $tenant)

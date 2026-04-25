@@ -255,6 +255,21 @@ class AuthController extends Controller
         }
         $name = $name ?? explode('@', $email)[0];
 
+        // Plan-seat enforcement. The current tenant is resolved by the
+        // ResolveTenant middleware from the subdomain; bail with a 402
+        // upgrade-required if adding this user would exceed plan_seats.
+        $tenant = app()->bound('current_tenant') ? app('current_tenant') : null;
+        if ($tenant && !$tenant->canAddUser()) {
+            return redirect()->route('login')->withErrors([
+                'work_email' => sprintf(
+                    'This workspace has reached its plan limit (%d of %d seats on the %s plan). Please ask your administrator to upgrade.',
+                    $tenant->seatsUsed(),
+                    (int) $tenant->plan_seats,
+                    $tenant->plan,
+                ),
+            ]);
+        }
+
         // Create the user account
         $user = User::create([
             'name'       => $name,

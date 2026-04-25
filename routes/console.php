@@ -53,6 +53,15 @@ Schedule::command('billing:purge-canceled --force')
     ->dailyAt('03:30')
     ->appendOutputTo(storage_path('logs/billing.log'));
 
+// Tenant usage meter — daily snapshot for the HQ Overview dashboard.
+// Runs after billing rollups so the AI mirror is consistent. See
+// app/Console/Commands/MeterTenantUsage.php and
+// app/Support/PlatformAdminVisibility.php for the privacy contract.
+Schedule::command('meter:tenant-usage')
+    ->dailyAt('03:45')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/meter-tenant-usage.log'));
+
 // Statutory rate drift check — runs weekly, fails CI/ops alerting on drift
 // so payroll miscalculation is caught before a live run, not after.
 Schedule::command('payroll:verify-statutory-rates')

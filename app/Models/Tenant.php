@@ -98,6 +98,38 @@ class Tenant extends Model
     }
 
     /**
+     * Per-seat monthly price in USD for this tenant's plan.
+     * Returns null for Enterprise (custom-priced) — billing is handled out-of-band.
+     */
+    public function planPriceUsdMonthly(): ?float
+    {
+        $price = config("plans.{$this->plan}.price_usd_monthly");
+        return $price === null ? null : (float) $price;
+    }
+
+    /**
+     * Current count of users in this tenant's tenant_users pivot. Cheap query
+     * (count on a small pivot table); not cached — callers may cache if needed.
+     */
+    public function seatsUsed(): int
+    {
+        return $this->users()->count();
+    }
+
+    /**
+     * Whether one more user can be added without exceeding plan_seats.
+     * Enterprise tenants with plan_seats >= 9999 are treated as effectively
+     * unlimited (still bounded — never trust "infinity").
+     */
+    public function canAddUser(int $additional = 1): bool
+    {
+        $limit = (int) ($this->plan_seats ?? 0);
+        if ($limit <= 0) return false;
+        return ($this->seatsUsed() + $additional) <= $limit;
+    }
+
+
+    /**
      * Cashier billing identity. Used when creating the Stripe customer.
      * Falls back to the first owner user's work_email if no billing_email
      * is set on the tenant directly.

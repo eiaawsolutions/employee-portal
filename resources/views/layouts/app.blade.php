@@ -102,7 +102,7 @@
         .sidebar-overlay.active { display: block; }
         .hamburger-btn {
             display: none; background: none; border: none; padding: 4px 8px;
-            font-size: 22px; color: #1e293b; cursor: pointer; line-height: 1;
+            font-size: 22px; color: var(--ink); cursor: pointer; line-height: 1;
         }
         @media (max-width: 767.98px) {
             .sidebar {
@@ -162,7 +162,7 @@
         [data-theme="dark"] .form-control,
         [data-theme="dark"] .form-select { background: #0f172a; border-color: #475569; color: #e2e8f0; }
         [data-theme="dark"] .form-control:focus,
-        [data-theme="dark"] .form-select:focus { background: #0f172a; border-color: #2684FE; color: #e2e8f0; }
+        [data-theme="dark"] .form-select:focus { background: #0f172a; border-color: var(--primary); color: #e2e8f0; box-shadow: 0 0 0 3px rgba(31,168,150,0.18); }
         [data-theme="dark"] .form-control::placeholder { color: #64748b; }
         [data-theme="dark"] .input-group-text { background: #1e293b; border-color: #475569; color: #94a3b8; }
         [data-theme="dark"] .section-header { background: #1e293b; }
@@ -180,7 +180,7 @@
         [data-theme="dark"] hr { border-color: #334155; }
         [data-theme="dark"] .alert { border-color: #334155; }
         [data-theme="dark"] .pagination .page-link { background: #1e293b; border-color: #334155; color: #94a3b8; }
-        [data-theme="dark"] .pagination .page-item.active .page-link { background: #2684FE; border-color: #2684FE; }
+        [data-theme="dark"] .pagination .page-item.active .page-link { background: var(--primary-dark); border-color: var(--primary-dark); color: var(--bg); }
     </style>
     @stack('styles')
 </head>
@@ -441,6 +441,12 @@
         {{-- ── Platform (EIAAW staff only) ── --}}
         @if(Auth::user()->isPlatformAdmin())
         <div class="sidebar-section">Platform</div>
+        <div class="nav-item">
+            <a href="{{ route('superadmin.hq.index') }}"
+               class="nav-link {{ request()->routeIs('superadmin.hq.*') ? 'active' : '' }}">
+                <i class="bi bi-speedometer2"></i> HQ Overview
+            </a>
+        </div>
         <div class="nav-item">
             <a href="{{ route('superadmin.tenants.index') }}"
                class="nav-link {{ request()->routeIs('superadmin.tenants.*') ? 'active' : '' }}">
