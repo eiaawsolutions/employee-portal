@@ -65,7 +65,7 @@
             <span class="badge plan-{{ $tenant->plan }}">{{ $tenant->plan }}</span>
             <span class="badge status-{{ $tenant->status }}">{{ $tenant->status }}</span>
             <h1>{{ $tenant->name }} <em>workspace</em></h1>
-            <div class="url">https://{{ $tenant->slug }}.ep.eiaawsolutions.com</div>
+            <div class="url">https://{{ $tenant->slug }}.{{ config('eiaaw.tenant_domain') }}</div>
         </div>
     </div>
 

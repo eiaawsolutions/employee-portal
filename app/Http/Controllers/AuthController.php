@@ -139,13 +139,60 @@ class AuthController extends Controller
         // If arriving from a consent re-acknowledgement email, redirect to profile
         if ($request->input('redirect') === 'profile-consent' || $request->session()->get('redirect_after_login') === 'profile-consent') {
             $request->session()->forget('redirect_after_login');
-            return redirect()->route('profile');
+            return $this->redirectAfterLogin($request, $user, route('profile'));
         }
 
-        if ($user->isHr() || $user->isSuperadmin() || $user->isSystemAdmin()) return redirect()->route('hr.dashboard');
-        if ($user->isIt()) return redirect()->route('it.dashboard');
+        if ($user->isHr() || $user->isSuperadmin() || $user->isSystemAdmin()) {
+            return $this->redirectAfterLogin($request, $user, route('hr.dashboard'));
+        }
+        if ($user->isIt()) {
+            return $this->redirectAfterLogin($request, $user, route('it.dashboard'));
+        }
 
-        return redirect()->route('user.dashboard');
+        return $this->redirectAfterLogin($request, $user, route('user.dashboard'));
+    }
+
+    /**
+     * If the user logged in on the marketing apex (ep.eiaawsolutions.com)
+     * we need to bounce them to their tenant subdomain — otherwise every
+     * plan-gated route will 403 because no current_tenant is bound.
+     *
+     * The session cookie is scoped to .eiaawsolutions.com (leading dot)
+     * so it carries across the redirect. The user stays logged in.
+     *
+     * For requests that already arrived on a tenant subdomain, we skip
+     * the bounce and just return the original same-host redirect.
+     */
+    private function redirectAfterLogin(Request $request, User $user, string $destinationUrl): \Illuminate\Http\RedirectResponse
+    {
+        $marketingHost = strtolower(config('eiaaw.marketing_host', env('APP_MARKETING_HOST', 'ep.eiaawsolutions.com')));
+        $tenantDomain  = strtolower(config('eiaaw.tenant_domain',  env('APP_TENANT_DOMAIN',  'eiaawsolutions.com')));
+        $currentHost   = strtolower($request->getHost());
+
+        // Already on a tenant subdomain (or local dev) — no bounce needed.
+        if ($currentHost !== $marketingHost && $currentHost !== $tenantDomain) {
+            return redirect($destinationUrl);
+        }
+
+        // We're on the marketing apex / bare root. Find the user's tenant slug.
+        $slug = \App\Models\Tenant::where('id', $user->tenant_id)
+            ->withTrashed()
+            ->value('slug');
+
+        if (!$slug) {
+            // No tenant binding (shouldn't happen for live users; bail safely
+            // to /find-workspace which already exists for this case).
+            return redirect()->route('marketing.find-workspace');
+        }
+
+        // Reconstruct the URL on the tenant subdomain. parse_url so we
+        // preserve path + query string from the original destination.
+        $parts  = parse_url($destinationUrl);
+        $path   = $parts['path']  ?? '/';
+        $query  = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $scheme = $parts['scheme'] ?? 'https';
+
+        return redirect("{$scheme}://{$slug}.{$tenantDomain}{$path}{$query}");
     }
 
     // ── Register Step 1: show email form ───────────────────────────────────

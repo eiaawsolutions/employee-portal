@@ -132,7 +132,7 @@
                     <tr>
                         <td class="name">
                             <a href="{{ route('superadmin.tenants.show', $t) }}">{{ $t->name }}</a>
-                            <div class="slug">{{ $t->slug }}.ep.eiaawsolutions.com</div>
+                            <div class="slug">{{ $t->slug }}.{{ config('eiaaw.tenant_domain') }}</div>
                         </td>
                         <td>
                             <span class="badge plan-{{ $t->plan }}">{{ $t->plan }}</span>

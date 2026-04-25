@@ -152,12 +152,51 @@ class TwoFactorController extends Controller
 
         $redirect = session('2fa_redirect');
         if ($redirect) {
-            return redirect($redirect);
+            return $this->bounceToTenantSubdomain($request, $user, $redirect);
         }
 
-        if ($user->isHr() || $user->isSuperadmin() || $user->isSystemAdmin()) return redirect()->route('hr.dashboard');
-        if ($user->isIt()) return redirect()->route('it.dashboard');
+        if ($user->isHr() || $user->isSuperadmin() || $user->isSystemAdmin()) {
+            return $this->bounceToTenantSubdomain($request, $user, route('hr.dashboard'));
+        }
+        if ($user->isIt()) {
+            return $this->bounceToTenantSubdomain($request, $user, route('it.dashboard'));
+        }
 
-        return redirect()->route('user.dashboard');
+        return $this->bounceToTenantSubdomain($request, $user, route('user.dashboard'));
+    }
+
+    /**
+     * Mirror of AuthController::redirectAfterLogin — if the request arrived
+     * on the marketing apex (ep.eiaawsolutions.com) or bare root, rewrite
+     * the redirect target to the user's tenant subdomain so plan-gated
+     * routes have a current_tenant bound by ResolveTenant.
+     *
+     * Session cookie is scoped to .eiaawsolutions.com (leading dot) so the
+     * user stays logged in across the redirect.
+     */
+    private function bounceToTenantSubdomain(Request $request, \App\Models\User $user, string $destinationUrl): \Illuminate\Http\RedirectResponse
+    {
+        $marketingHost = strtolower(config('eiaaw.marketing_host', env('APP_MARKETING_HOST', 'ep.eiaawsolutions.com')));
+        $tenantDomain  = strtolower(config('eiaaw.tenant_domain',  env('APP_TENANT_DOMAIN',  'eiaawsolutions.com')));
+        $currentHost   = strtolower($request->getHost());
+
+        if ($currentHost !== $marketingHost && $currentHost !== $tenantDomain) {
+            return redirect($destinationUrl);
+        }
+
+        $slug = \App\Models\Tenant::where('id', $user->tenant_id)
+            ->withTrashed()
+            ->value('slug');
+
+        if (!$slug) {
+            return redirect()->route('marketing.find-workspace');
+        }
+
+        $parts  = parse_url($destinationUrl);
+        $path   = $parts['path']  ?? '/';
+        $query  = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $scheme = $parts['scheme'] ?? 'https';
+
+        return redirect("{$scheme}://{$slug}.{$tenantDomain}{$path}{$query}");
     }
 }

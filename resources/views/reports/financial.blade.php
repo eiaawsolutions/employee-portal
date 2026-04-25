@@ -4,7 +4,6 @@
 
 @push('styles')
 <style>
-    .chart-card { border: 1px solid #e2e8f0; border-radius: 12px; }
     .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
     .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
     .mini-table td { font-size: 13px; }
