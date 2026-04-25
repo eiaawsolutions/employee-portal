@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -31,13 +32,45 @@ class CreatePlatformAdmin extends Command
         $name = $this->option('name') ?: ucfirst(Str::before($email, '@'));
         $password = $this->option('password') ?: Str::random(24);
 
-        $user = User::firstOrNew(['work_email' => $email]);
-        $user->name = $name;
-        $user->role = 'system_admin';
-        $user->is_active = true;
-        $user->password = $password;
-        $user->tenant_id = null;
-        $user->save();
+        // Platform admins live inside an "eiaaw-hq" enterprise tenant. This
+        // satisfies users.tenant_id NOT NULL + the RLS policy. Operationally
+        // the user doesn't see a tenant — the EIAAW_PLATFORM_ADMINS allow-list
+        // (and EnsurePlatformAdmin middleware) is what gates the integrations
+        // page, not tenant membership.
+        $hqTenantId = DB::table('tenants')->where('slug', 'eiaaw-hq')->value('id')
+            ?? DB::table('tenants')->insertGetId([
+                'slug' => 'eiaaw-hq',
+                'name' => 'EIAAW HQ',
+                'plan' => 'enterprise',
+                'plan_seats' => 50,
+                'status' => 'active',
+                'country_code' => 'MY',
+                'billing_currency' => 'MYR',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        // Set session var so RLS policies on users/tenant_users let us
+        // INSERT/SELECT for this tenant_id. Otherwise FORCE RLS hides our row.
+        // SET LOCAL only persists inside a transaction, so wrap the writes.
+        $userId = DB::transaction(function () use ($hqTenantId, $email, $name, $password) {
+            DB::statement("SET LOCAL app.tenant_id = '{$hqTenantId}'");
+
+            $user = User::firstOrNew(['work_email' => $email]);
+            $user->name = $name;
+            $user->role = 'system_admin';
+            $user->is_active = true;
+            $user->password = $password;
+            $user->tenant_id = $hqTenantId;
+            $user->save();
+
+            DB::table('tenant_users')->updateOrInsert(
+                ['tenant_id' => $hqTenantId, 'user_id' => $user->id],
+                ['role' => 'owner', 'updated_at' => now(), 'created_at' => now()]
+            );
+
+            return $user->id;
+        });
 
         $this->info('--------------------------------------------------------');
         $this->info(' EIAAW Platform Admin account ready');
