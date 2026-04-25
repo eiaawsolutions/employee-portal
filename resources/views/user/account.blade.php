@@ -62,7 +62,7 @@
                         <div class="fw-semibold mt-2 small">Light</div>
                     </div>
                     <div class="theme-option p-3 rounded border text-center flex-fill" data-theme="dark" style="cursor:pointer;" onclick="setTheme('dark')">
-                        <i class="bi bi-moon-fill" style="font-size:28px;color:#2684FE;"></i>
+                        <i class="bi bi-moon-fill" style="font-size:28px;color:var(--primary-dark);"></i>
                         <div class="fw-semibold mt-2 small">Dark</div>
                     </div>
                 </div>

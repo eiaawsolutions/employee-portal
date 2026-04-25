@@ -12,15 +12,15 @@
         $__logoUrl = asset('storage/' . $__logoCompany->logo_path);
     }
 @endphp
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 0;">
   <tr>
     <td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0052CC,#2684FE);padding:32px 40px;">
+          <td style="background:linear-gradient(135deg,#0F1A1D,#2A3438);padding:32px 40px;">
             @if(!empty($__logoUrl))
         <div style="margin-bottom:12px;text-align:center;"><img src="{{ $__logoUrl }}" alt="Company Logo"
                          width="160" height="auto"
@@ -29,7 +29,7 @@
         <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">
               Employee Portal
             </h1>
-            <p style="margin:6px 0 0;color:#bfdbfe;font-size:14px;">Onboarding Invitation</p>
+            <p style="margin:6px 0 0;color:#E5F4F1;font-size:14px;">Onboarding Invitation</p>
           </td>
         </tr>
 
@@ -54,7 +54,7 @@
                   <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
                     href="{{ $inviteUrl }}" style="height:48px;v-text-anchor:middle;width:220px;" arcsize="17%" fillcolor="#F5A623" strokecolor="#F5A623">
                     <w:anchorlock/>
-                    <center style="color:#000000;font-family:Arial,sans-serif;font-size:15px;font-weight:700;">
+                    <center style="color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;">
                       Complete My Details
                     </center>
                   </v:roundrect>

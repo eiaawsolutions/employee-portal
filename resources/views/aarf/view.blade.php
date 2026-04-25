@@ -3,31 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Acceptance & Return Form — {{ $aarf->aarf_reference }}</title>
+    <title>Asset Acceptance &amp; Return Form · {{ $aarf->aarf_reference }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('brand/eiaaw-tokens.css') }}" rel="stylesheet">
     <style>
-        body { background:#f1f5f9; }
-        .aarf-card { max-width:820px; margin:30px auto; background:#fff; border-radius:16px;
-                     box-shadow:0 4px 20px rgba(0,0,0,0.1); overflow:hidden; }
-        .aarf-header { background:linear-gradient(135deg,#1e3a5f,#2563eb); color:#fff; padding:30px; }
-        .aarf-body   { padding:30px; }
-        .info-label  { font-weight:600; color:#475569; min-width:180px; }
-        .info-value  { color:#1e293b; }
-        .btn-ack     { background:#f59e0b; border:2px solid #d97706; color:#000;
-                       padding:14px 30px; font-size:16px; font-weight:700; border-radius:8px; }
-        @media print { .no-print { display:none !important; } }
+        body { background: var(--bg); font-family: var(--sans); color: var(--ink); }
+        .aarf-card { max-width: 820px; margin: 30px auto; background: var(--surface); border: 1px solid var(--line-soft);
+                     border-radius: 18px; box-shadow: 0 1px 2px rgba(15,26,29,0.04); overflow: hidden; }
+        .aarf-header { background: var(--ink); color: var(--bg); padding: 28px 30px; }
+        .aarf-header h4 { font-family: var(--sans); font-weight: 500; font-size: 22px; margin: 0 0 6px; letter-spacing: -0.015em; }
+        .aarf-header h4 em { font-family: var(--serif); font-style: italic; color: var(--primary); font-weight: 400; }
+        .aarf-header .ref-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.7; }
+        .aarf-body { padding: 30px; }
+        .info-label { font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); min-width: 180px; }
+        .info-value { color: var(--ink); }
+        .btn-ack { background: var(--ink); border: 1px solid var(--ink); color: var(--bg);
+                   padding: 13px 30px; font-size: 15px; font-weight: 500; border-radius: 999px;
+                   transition: background 0.18s var(--ease); }
+        .btn-ack:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,168,150,0.12); }
+        @media print { .no-print { display: none !important; } body { background: #fff; } .aarf-card { box-shadow: none; border: 0; } }
     </style>
 </head>
 <body>
 <div class="aarf-card">
     <div class="aarf-header">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div>
-                <h4 class="mb-1"><i class="bi bi-file-earmark-check me-2"></i>Asset Acceptance & Return Form</h4>
+                <div class="d-flex align-items-center gap-2 mb-2" style="opacity: 0.85;">
+                    <img src="{{ asset('brand/shield.png') }}" alt="" style="width: 26px; height: 26px;">
+                    <span style="font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em;">EIAAW Workforce</span>
+                </div>
+                <h4>Asset acceptance &amp; <em>return form</em></h4>
             </div>
             <div class="text-end">
-                <div style="font-size:12px;opacity:.7;">Reference No.</div>
+                <div class="ref-label">Reference</div>
                 <strong>{{ $aarf->aarf_reference }}</strong>
             </div>
         </div>
@@ -255,7 +270,7 @@
                 @else
                     <p class="text-muted small mb-3">
                         By clicking <strong>"I Acknowledge"</strong> below, you confirm you have received the assets listed
-                        above in good working condition. These assets remain the property of Claritas Asia Sdn. Bhd. and
+                        above in good working condition. These assets remain the property of {{ $w?->company ?? 'the company' }} and
                         must be returned upon resignation or end of employment.
                     </p>
                     <form action="{{ route('aarf.acknowledge', $aarf->acknowledgement_token) }}" method="POST">
@@ -293,7 +308,7 @@
 
         <div class="text-center mt-4 no-print">
             <small class="text-muted">
-                Official document — {{ $w?->company ?? 'Claritas Asia Sdn. Bhd.' }} | Ref: {{ $aarf->aarf_reference }}
+                Official document — {{ $w?->company ?? config('eiaaw.product_name', 'EIAAW Workforce') }} · Ref: {{ $aarf->aarf_reference }}
             </small>
             <br>
             <button class="btn btn-outline-secondary btn-sm mt-2" onclick="window.print()">

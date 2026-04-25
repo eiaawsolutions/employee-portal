@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
 <div style="max-width:600px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 
     {{-- Header --}}
@@ -39,7 +39,7 @@
             </thead>
             <tbody>
                 @foreach($pendingApplications as $app)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;">
                         <strong>{{ $app->employee?->preferred_name ?? $app->employee?->full_name ?? '—' }}</strong>
                     </td>
@@ -70,7 +70,7 @@
         {{-- CTA Button --}}
         <div style="text-align:center;margin:28px 0;">
             <a href="{{ url('/my/team-leave?status=pending') }}"
-               style="display:inline-block;background:#2684FE;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:600;font-size:14px;">
+               style="display:inline-block;background:#11766A;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:600;font-size:14px;">
                 Review Leave Requests
             </a>
         </div>

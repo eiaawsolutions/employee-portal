@@ -7,11 +7,11 @@
     <style>
         body { font-family: Arial, sans-serif; background:#f4f6f9; margin:0; padding:0; }
         .wrapper { max-width:600px; margin:30px auto; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-        .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); color:#fff; padding:28px 30px; }
+        .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); color:#fff; padding:28px 30px; }
         .header h2 { margin:0 0 4px; font-size:20px; }
         .header p  { margin:0; font-size:13px; opacity:.85; }
         .body { padding:28px 30px; color:#334155; }
-        .info-box { background:#f1f5f9; border-radius:8px; padding:16px 20px; margin:20px 0; }
+        .info-box { background:#FAF7F2; border-radius:8px; padding:16px 20px; margin:20px 0; }
         .info-box table { width:100%; border-collapse:collapse; }
         .info-box td { padding:5px 0; font-size:14px; }
         .info-box td:first-child { color:#64748b; width:140px; font-weight:600; }
@@ -174,7 +174,7 @@
           style="height:44px;v-text-anchor:middle;width:220px;" arcsize="10%"
           fillcolor="#F5A623" strokecolor="#F5A623">
           <w:anchorlock/>
-          <center style="color:#000000;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">View AARF</center>
+          <center style="color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;">View AARF</center>
         </v:roundrect>
         <![endif]-->
         <!--[if !mso]><!-->
@@ -193,7 +193,7 @@
           style="height:44px;v-text-anchor:middle;width:280px;" arcsize="10%"
           fillcolor="#F5A623" strokecolor="#F5A623">
           <w:anchorlock/>
-          <center style="color:#000000;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">View &amp; Acknowledge AARF</center>
+          <center style="color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;">View &amp; Acknowledge AARF</center>
         </v:roundrect>
         <![endif]-->
         <!--[if !mso]><!-->

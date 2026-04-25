@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .email-wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-  .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); padding:32px 30px; text-align:center; }
+  .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); padding:32px 30px; text-align:center; }
   .header h1 { color:#fff; margin:0; font-size:22px; font-weight:700; }
   .header p  { color:rgba(255,255,255,0.8); margin:6px 0 0; font-size:14px; }
   .body { padding:30px; }
@@ -15,7 +15,7 @@
   .detail-row:last-child { border-bottom:none; }
   .detail-label { color:#64748b; }
   .detail-value { color:#1e293b; font-weight:600; }
-  .btn { display:inline-block; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; padding:12px 28px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; margin-top:16px; }
+  .btn { display:inline-block; background:linear-gradient(135deg,#11766A,#0A4D47); color:#fff; padding:12px 28px; border-radius:8px; text-decoration:none; font-weight:600; font-size:14px; margin-top:16px; }
   .badge-pending { display:inline-block; background:#fef3c7; color:#92400e; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
   .footer { background:#f8fafc; padding:20px 30px; text-align:center; font-size:12px; color:#94a3b8; border-top:1px solid #e2e8f0; }
 </style>

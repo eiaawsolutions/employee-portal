@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-  .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); padding:28px 30px; text-align:center; color:#fff; }
+  .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); padding:28px 30px; text-align:center; color:#fff; }
   .header h1 { margin:0; font-size:20px; font-weight:700; }
   .header p { margin:6px 0 0; opacity:.8; font-size:13px; }
   .body { padding:28px 30px; }
-  .section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#2563eb; margin:20px 0 8px; border-bottom:2px solid #e2e8f0; padding-bottom:4px; }
+  .section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#11766A; margin:20px 0 8px; border-bottom:2px solid #e2e8f0; padding-bottom:4px; }
   .info-box { background:#f8fafc; border-left:4px solid #2563eb; border-radius:0 8px 8px 0; padding:14px 18px; margin:4px 0 16px; }
   .info-row { margin-bottom:6px; font-size:14px; }
   .info-label { color:#64748b; font-weight:600; }
@@ -105,8 +105,8 @@ if ($prov) {
   </div>
 
   <div class="footer">
-    © {{ date('Y') }} {{ $w?->company ?? 'Claritas Asia Sdn. Bhd.' }} &bull;
-    This is an automated notification from the Employee Portal.
+    © {{ date('Y') }} {{ $w?->company ?? config('eiaaw.product_name', 'EIAAW Workforce') }} &bull;
+    This is an automated notification from {{ config('eiaaw.product_name', 'EIAAW Workforce') }}.
   </div>
 </div>
 </body>

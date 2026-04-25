@@ -21,7 +21,7 @@
 {{-- KPI Cards --}}
 @include('partials.dashboard-widgets-style')
 <div class="section-header">
-    <div class="section-icon" style="background:#eff6ff;"><i class="bi bi-calculator" style="font-size:16px;color:#2563eb;"></i></div>
+    <div class="section-icon" style="background:var(--primary-tint);"><i class="bi bi-calculator" style="font-size:16px;color:var(--primary-dark);"></i></div>
     <h6>Accounting Overview</h6>
 </div>
 <div class="row g-3 mb-4">
@@ -38,7 +38,7 @@
         </div></div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#1FA896,#11766A);padding:16px 18px 12px;">
             <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-down-left-circle-fill" style="font-size:18px;"></i></div>
             <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalReceivable ?? 0, 2) }}</div><div class="widget-label">Receivable Outstanding</div>
             @if(($overdueInvoices ?? 0) > 0)<div style="margin-top:4px;"><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">{{ $overdueInvoices }} overdue</span></div>@endif
@@ -62,13 +62,13 @@
         </div></div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22B8A5,#0A4D47);padding:16px 18px 12px;">
             <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-bank2" style="font-size:18px;"></i></div>
             <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalBankBalance ?? 0, 2) }}</div><div class="widget-label">Bank Balances</div></div></div>
         </div></div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#0F1A1D,#2A3438);padding:16px 18px 12px;">
             <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-file-earmark-text-fill" style="font-size:18px;"></i></div>
             <div><div class="widget-number" style="font-size:26px;">{{ $pendingInvoices ?? 0 }}</div><div class="widget-label">Pending Invoices</div></div></div>
         </div></div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #FAF7F2; margin: 0; padding: 0; }
         .wrapper { max-width: 640px; margin: 32px auto; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .header-critical { background: linear-gradient(135deg, #dc2626, #7f1d1d); padding: 28px 32px; }
         .header-high     { background: linear-gradient(135deg, #ea580c, #9a3412); padding: 28px 32px; }
@@ -19,7 +19,7 @@
         .alert-low      { background: #eff6ff; border: 1px solid #bfdbfe; }
         .alert-box p { margin: 0; font-size: 14px; color: #1e293b; line-height: 1.5; }
         .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
-        .detail-table td { padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #475569; }
+        .detail-table td { padding: 8px 0; border-bottom: 1px solid #FAF7F2; color: #475569; }
         .detail-table td:first-child { font-weight: 600; color: #1e293b; width: 140px; }
         .severity-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
         .severity-critical { background: #fecaca; color: #dc2626; }

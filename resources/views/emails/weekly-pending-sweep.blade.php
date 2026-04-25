@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
 <div style="max-width:620px;margin:30px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 
     @php
@@ -47,7 +47,7 @@
             </thead>
             <tbody>
                 @foreach($items as $log)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;">
                         @if(is_array($log->sections_changed))
                             {{ implode(', ', $log->sections_changed) }}
@@ -85,7 +85,7 @@
             </thead>
             <tbody>
                 @foreach($items as $aarf)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $aarf->aarf_reference }}</td>
                     <td style="padding:10px 12px;text-align:center;color:#1e293b;">
                         {{ is_array($aarf->pending_asset_ids) ? count($aarf->pending_asset_ids) : 0 }} asset(s)
@@ -119,7 +119,7 @@
             </thead>
             <tbody>
                 @foreach($items as $aarf)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $aarf->aarf_reference }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $aarf->employee?->preferred_name ?? $aarf->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;">
@@ -153,7 +153,7 @@
             </thead>
             <tbody>
                 @foreach($items as $app)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;">
                         <strong>{{ $app->employee?->preferred_name ?? $app->employee?->full_name ?? '—' }}</strong>
                     </td>
@@ -199,7 +199,7 @@
             </thead>
             <tbody>
                 @foreach($items as $claim)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $claim->claim_number }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $claim->employee?->preferred_name ?? $claim->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;text-align:right;color:#1e293b;">{{ number_format($claim->total_with_gst ?? $claim->total_amount, 2) }}</td>
@@ -231,7 +231,7 @@
             </thead>
             <tbody>
                 @foreach($items as $claim)
-                <tr style="border-bottom:1px solid #f1f5f9;">
+                <tr style="border-bottom:1px solid #FAF7F2;">
                     <td style="padding:10px 12px;color:#1e293b;font-weight:600;">{{ $claim->claim_number }}</td>
                     <td style="padding:10px 12px;color:#1e293b;">{{ $claim->employee?->preferred_name ?? $claim->employee?->full_name ?? '—' }}</td>
                     <td style="padding:10px 12px;text-align:right;color:#1e293b;">{{ number_format($claim->total_with_gst ?? $claim->total_amount, 2) }}</td>
@@ -242,7 +242,7 @@
         </table>
         <div style="text-align:center;margin:24px 0;">
             <a href="{{ url('/claims?status=manager_approved') }}"
-               style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:600;font-size:14px;">
+               style="display:inline-block;background:#11766A;color:#fff;text-decoration:none;padding:12px 32px;border-radius:8px;font-weight:600;font-size:14px;">
                 Review Claims
             </a>
         </div>

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .email-wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-  .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); padding:32px 30px; text-align:center; }
+  .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); padding:32px 30px; text-align:center; }
   .header h1 { color:#fff; margin:0; font-size:22px; font-weight:700; }
   .header p  { color:rgba(255,255,255,0.8); margin:6px 0 0; font-size:14px; }
   .body { padding:30px; }
@@ -68,7 +68,7 @@ $loginUrl = url('/login');
         style="height:44px;v-text-anchor:middle;width:220px;" arcsize="10%"
         fillcolor="#F5A623" strokecolor="#F5A623">
         <w:anchorlock/>
-        <center style="color:#000000;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+        <center style="color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;">
           Log In &amp; Give Consent
         </center>
       </v:roundrect>

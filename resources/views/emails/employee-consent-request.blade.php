@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Action Required: Declaration &amp; Consent</title>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 0;">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
 
@@ -24,9 +24,9 @@
 
     {{-- Header --}}
     <tr>
-        <td style="background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:28px 32px;">
+        <td style="background:linear-gradient(135deg,#0F1A1D,#2A3438);padding:28px 32px;">
             <h2 style="margin:0;color:#fff;font-size:20px;font-weight:700;">Action Required</h2>
-            <p style="margin:6px 0 0;color:#bfdbfe;font-size:13px;">Re-acknowledge Declaration &amp; Consent</p>
+            <p style="margin:6px 0 0;color:#E5F4F1;font-size:13px;">Re-acknowledge Declaration &amp; Consent</p>
         </td>
     </tr>
 

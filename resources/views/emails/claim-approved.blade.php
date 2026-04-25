@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .email-wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
   .header { background:linear-gradient(135deg,#047857,#10b981); padding:32px 30px; text-align:center; }
   .header h1 { color:#fff; margin:0; font-size:22px; font-weight:700; }

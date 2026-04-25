@@ -155,7 +155,7 @@
 <div class="modal fade" id="picModalHROB{{ $ob->id }}" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header py-2" style="background:linear-gradient(135deg,#0052CC,#2684FE);">
+            <div class="modal-header py-2" style="background: var(--ink); color: var(--bg);">
                 <h6 class="modal-title text-white fw-bold mb-0">
                     <i class="bi bi-person-gear me-2"></i>Assign PIC
                 </h6>

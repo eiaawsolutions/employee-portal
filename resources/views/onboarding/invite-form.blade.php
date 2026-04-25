@@ -3,25 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Complete Your Onboarding — Claritas Asia</title>
+<title>Complete your onboarding · {{ config('eiaaw.product_name', 'EIAAW Workforce') }}</title>
+<link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="{{ asset('brand/eiaaw-tokens.css') }}" rel="stylesheet">
 <style>
-body { background:#f1f5f9; min-height:100vh; }
-.brand-header { background:linear-gradient(135deg,#1A6FE8,#4B9EFF); }
-.section-card { border-left:4px solid #1A6FE8; }
-.consent-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1.25rem; max-height:340px; overflow-y:auto; font-size:13.5px; line-height:1.8; }
-.list-entry { background:#fff; border:1px solid #dee2e6; border-radius:8px; padding:.85rem 1rem; margin-bottom:.6rem; position:relative; padding-right:3rem; }
-.list-entry .remove-btn { position:absolute; top:50%; right:.75rem; transform:translateY(-50%); }
-.input-panel { background:#f8fafc; border:1px solid #e9ecef; border-radius:8px; padding:1rem; margin-top:.75rem; }
-.file-item { display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #dee2e6; border-radius:6px; padding:.4rem .75rem; margin-bottom:.4rem; font-size:13px; }
+body { background: var(--bg); font-family: var(--sans); color: var(--ink); min-height: 100vh; }
+.brand-header { background: var(--bg-warm); border-bottom: 1px solid var(--line-soft); }
+.brand-header .lockup-text strong { font-family: var(--sans); font-weight: 600; font-size: 15px; color: var(--ink); letter-spacing: -0.01em; }
+.brand-header .lockup-text small { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute); }
+.brand-header h5 { font-family: var(--sans); font-weight: 500; font-size: 15px; color: var(--ink-2); margin: 0; letter-spacing: -0.005em; }
+.brand-header h5 em { font-family: var(--serif); font-style: italic; color: var(--primary-dark); font-weight: 400; }
+.section-card { border-left: 3px solid var(--primary); }
+.card { border: 1px solid var(--line-soft); border-radius: 14px; box-shadow: 0 1px 2px rgba(15,26,29,0.04); background: var(--surface); }
+.card-header { background: var(--surface) !important; border-bottom: 1px solid var(--line-soft); }
+.card-header h6 { font-family: var(--sans); font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+.form-label { font-size: 13px; font-weight: 500; color: var(--ink-2); letter-spacing: -0.005em; }
+.form-control, .form-select {
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 9px 12px; font-family: var(--sans); font-size: 14px;
+    background: var(--surface); color: var(--ink);
+}
+.form-control::placeholder { color: var(--mute); opacity: 0.7; }
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary); outline: none;
+    box-shadow: 0 0 0 3px rgba(31,168,150,0.12);
+}
+.btn-primary {
+    background-color: var(--ink); border-color: var(--ink); color: var(--bg);
+    font-weight: 500; padding: 10px 20px; border-radius: 999px;
+    transition: background 0.18s var(--ease);
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important; color: var(--bg) !important;
+}
+.btn-outline-danger { color: var(--danger); border-color: var(--danger); border-radius: 8px; }
+.btn-outline-danger:hover { background: var(--danger); color: var(--bg); }
+.text-primary { color: var(--primary-dark) !important; }
+.text-danger { color: var(--danger) !important; }
+a { color: var(--primary-dark); text-decoration: none; }
+a:hover { color: var(--primary); text-decoration: underline; }
+.alert-danger { background: #FBE9E4; border: 1px solid var(--danger); color: var(--danger); border-radius: 10px; }
+.alert-success { background: var(--primary-tint); border: 1px solid var(--primary); color: var(--primary-dark); border-radius: 10px; }
+.consent-box { background: var(--bg); border: 1px solid var(--line-soft); border-radius: 10px; padding: 1.25rem; max-height: 340px; overflow-y: auto; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+.list-entry { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 10px; padding: .85rem 1rem; margin-bottom: .6rem; position: relative; padding-right: 3rem; }
+.list-entry .remove-btn { position: absolute; top: 50%; right: .75rem; transform: translateY(-50%); }
+.input-panel { background: var(--bg); border: 1px solid var(--line-soft); border-radius: 10px; padding: 1rem; margin-top: .75rem; }
+.file-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--line-soft); border-radius: 8px; padding: .4rem .75rem; margin-bottom: .4rem; font-size: 13px; }
+.invalid-feedback { font-size: 12px; color: var(--danger); }
+.form-control.is-invalid, .form-select.is-invalid { border-color: var(--danger); }
 </style>
 </head>
 <body>
 
 <div class="brand-header py-3 px-4 mb-4">
-    <div class="container">
-        <h5 class="text-white mb-0 fw-bold"><i class="bi bi-person-plus me-2"></i>Employee Portal — Onboarding</h5>
+    <div class="container d-flex align-items-center justify-content-between" style="max-width: 800px;">
+        <span class="eiaaw-lockup">
+            <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce" style="width:34px; height:34px;">
+            <span class="lockup-text d-flex flex-column" style="line-height: 1.05;">
+                <strong>EIAAW Workforce</strong>
+                <small>AI · Human Partnerships</small>
+            </span>
+        </span>
+        <h5 class="d-none d-sm-block">Complete your <em>onboarding</em></h5>
     </div>
 </div>
 

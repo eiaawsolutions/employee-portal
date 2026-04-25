@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .email-wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-  .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); padding:32px 30px; text-align:center; }
+  .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); padding:32px 30px; text-align:center; }
   .header h1 { color:#fff; margin:0; font-size:22px; font-weight:700; }
   .header p  { color:rgba(255,255,255,0.8); margin:6px 0 0; font-size:14px; }
   .body { padding:30px; }
   .greeting { font-size:18px; font-weight:600; color:#1e293b; margin-bottom:12px; }
-  .section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#2563eb; margin:22px 0 8px; border-bottom:2px solid #e2e8f0; padding-bottom:4px; }
+  .section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#11766A; margin:22px 0 8px; border-bottom:2px solid #e2e8f0; padding-bottom:4px; }
   .info-box { background:#f8fafc; border-left:4px solid #2563eb; border-radius:0 8px 8px 0; padding:16px 20px; margin:4px 0 16px; }
   .info-row { margin-bottom:6px; font-size:14px; }
   .info-label { color:#64748b; font-weight:600; }
@@ -116,7 +116,7 @@ if ($prov) {
         style="height:44px;v-text-anchor:middle;width:260px;" arcsize="10%"
         fillcolor="#F5A623" strokecolor="#F5A623">
         <w:anchorlock/>
-        <center style="color:#000000;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">
+        <center style="color:#000000;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;font-weight:bold;">
           View &amp; Acknowledge AARF
         </center>
       </v:roundrect>

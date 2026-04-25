@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  body { font-family:'Segoe UI',Arial,sans-serif; background:#f1f5f9; margin:0; padding:20px; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#FAF7F2; margin:0; padding:20px; }
   .email-wrap { max-width:620px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
-  .header { background:linear-gradient(135deg,#1e3a5f,#2563eb); padding:32px 30px; text-align:center; }
+  .header { background:linear-gradient(135deg,#0F1A1D,#2A3438); padding:32px 30px; text-align:center; }
   .header h1 { color:#fff; margin:0; font-size:22px; font-weight:700; }
   .header p  { color:rgba(255,255,255,0.8); margin:6px 0 0; font-size:14px; }
   .body { padding:30px; }
@@ -13,7 +13,7 @@
   .info-box { background:#eff6ff; border-left:4px solid #2563eb; border-radius:0 8px 8px 0; padding:16px 20px; margin:16px 0; font-size:14px; color:#1e40af; }
   .sections-list { list-style:none; padding:0; margin:8px 0 0; }
   .sections-list li { padding:3px 0; font-size:13px; }
-  .sections-list li::before { content:"• "; color:#2563eb; font-weight:700; }
+  .sections-list li::before { content:"• "; color:#11766A; font-weight:700; }
   .footer { background:#f8fafc; padding:20px 30px; text-align:center; font-size:12px; color:#94a3b8; border-top:1px solid #e2e8f0; }
 </style>
 </head>

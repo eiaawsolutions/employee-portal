@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #FAF7F2; margin: 0; padding: 0; }
         .wrapper { max-width: 680px; margin: 32px auto; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .header { background: linear-gradient(135deg, #dc2626, #991b1b); padding: 28px 32px; }
         .header h1 { color: #fff; margin: 0; font-size: 20px; }
@@ -13,7 +13,7 @@
         .summary-box p { margin: 0; font-size: 14px; color: #7f1d1d; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #f8fafc; text-align: left; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; color: #475569; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #1e293b; vertical-align: top; }
+        td { padding: 10px 12px; border-bottom: 1px solid #FAF7F2; color: #1e293b; vertical-align: top; }
         tr:last-child td { border-bottom: none; }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-red    { background: #fee2e2; color: #dc2626; }

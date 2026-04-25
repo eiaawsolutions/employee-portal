@@ -11,7 +11,7 @@
 </div>
 
 <div class="card">
-    <div class="card-header bg-white py-3 d-flex align-items-center gap-2" style="border-left:4px solid #2563eb;">
+    <div class="card-header bg-white py-3 d-flex align-items-center gap-2" style="border-left:4px solid var(--primary);">
         <i class="bi bi-megaphone text-primary me-1"></i>
         <h6 class="mb-0 fw-bold">All Announcements</h6>
         <span class="ms-auto badge bg-primary rounded-pill">{{ $announcements->total() }}</span>
@@ -20,8 +20,8 @@
         @forelse($announcements as $a)
         <div class="p-3 {{ !$loop->last ? 'border-bottom' : '' }}">
             <div class="d-flex align-items-start gap-3">
-                <div style="width:44px;height:44px;background:#dbeafe;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="bi bi-megaphone-fill" style="font-size:18px;color:#2563eb;"></i>
+                <div style="width:44px;height:44px;background:var(--primary-tint);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="bi bi-megaphone-fill" style="font-size:18px;color:var(--primary-dark);"></i>
                 </div>
                 <div class="flex-fill">
                     <div class="d-flex align-items-start justify-content-between gap-2 flex-wrap">

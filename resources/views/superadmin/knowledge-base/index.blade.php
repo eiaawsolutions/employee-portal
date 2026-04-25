@@ -21,7 +21,7 @@
         display: flex; gap: 1rem; align-items: flex-start; height: 100%;
     }
     .topic-card:hover {
-        border-color: #2684FE; box-shadow: 0 4px 16px rgba(38,132,254,0.12);
+        border-color: var(--primary); box-shadow: 0 4px 16px rgba(31,168,150,0.12);
         transform: translateY(-2px); color: inherit; text-decoration: none;
     }
     .topic-icon {
@@ -32,7 +32,7 @@
     .topic-card h6 { font-weight: 700; margin: 0 0 4px; font-size: 15px; }
     .topic-card p { margin: 0; font-size: 13px; color: #64748b; line-height: 1.5; }
     [data-theme="dark"] .topic-card { border-color: #334155; background: #1e293b; }
-    [data-theme="dark"] .topic-card:hover { border-color: #2684FE; }
+    [data-theme="dark"] .topic-card:hover { border-color: var(--primary); }
     [data-theme="dark"] .topic-card p { color: #94a3b8; }
     [data-theme="dark"] .topic-card h6 { color: #f1f5f9; }
 </style>

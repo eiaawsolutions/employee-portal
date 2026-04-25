@@ -11,7 +11,7 @@
         .header h2 { margin:0 0 4px; font-size:20px; }
         .header p  { margin:0; font-size:13px; opacity:.85; }
         .body { padding:28px 30px; color:#334155; }
-        .info-box { background:#f1f5f9; border-radius:8px; padding:16px 20px; margin:20px 0; }
+        .info-box { background:#FAF7F2; border-radius:8px; padding:16px 20px; margin:20px 0; }
         .info-box table { width:100%; border-collapse:collapse; }
         .info-box td { padding:5px 0; font-size:14px; }
         .info-box td:first-child { color:#64748b; width:160px; font-weight:600; }

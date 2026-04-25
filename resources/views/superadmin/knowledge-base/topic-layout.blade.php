@@ -18,7 +18,7 @@
         text-decoration: none; border-left: 3px solid transparent; margin-bottom: 2px;
         border-radius: 0 6px 6px 0; transition: all 0.15s;
     }
-    .kb-nav a:hover, .kb-nav a.active { color: #2684FE; border-left-color: #2684FE; background: rgba(38,132,254,0.06); }
+    .kb-nav a:hover, .kb-nav a.active { color: var(--primary-dark); border-left-color: var(--primary); background: rgba(31,168,150,0.06); }
     .kb-section { margin-bottom: 2rem; scroll-margin-top: 80px; }
     .kb-section h4 { font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem;
         padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }

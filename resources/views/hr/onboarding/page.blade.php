@@ -211,7 +211,7 @@
 <div class="modal fade" id="sendInviteModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header" style="background:linear-gradient(135deg,#0052CC,#2684FE);">
+            <div class="modal-header" style="background: var(--ink); color: var(--bg);">
                 <h6 class="modal-title text-white fw-bold mb-0">
                     <i class="bi bi-envelope me-2"></i>Send Onboarding Link
                 </h6>
@@ -264,7 +264,7 @@
 <div class="modal fade" id="addOnboardingModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header" style="background:linear-gradient(135deg,#0052CC,#2684FE);">
+            <div class="modal-header" style="background: var(--ink); color: var(--bg);">
                 <h5 class="modal-title text-white fw-bold">
                     <i class="bi bi-person-plus me-2"></i>New Onboarding Record
                 </h5>
@@ -838,7 +838,7 @@
                     <div class="col-md-2">
                         <div class="card text-center p-3 h-100 {{ old($a['name']) ? 'border-primary' : '' }}"
                              style="cursor:pointer;" onclick="toggleAsset('{{ $a['name'] }}')">
-                            <i class="bi {{ $a['icon'] }}" style="font-size:28px;color:#2684FE;"></i>
+                            <i class="bi {{ $a['icon'] }}" style="font-size:28px;color:var(--primary-dark);"></i>
                             <div class="small fw-semibold mt-2">{{ $a['label'] }}</div>
                             <input type="checkbox" name="{{ $a['name'] }}" id="{{ $a['name'] }}" value="1"
                                    class="d-none" {{ old($a['name']) ? 'checked' : '' }}>
@@ -1123,7 +1123,7 @@
 <div class="modal fade" id="picModal{{ $ob->id }}" tabindex="-1">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
-            <div class="modal-header py-2" style="background:linear-gradient(135deg,#0052CC,#2684FE);">
+            <div class="modal-header py-2" style="background: var(--ink); color: var(--bg);">
                 <h6 class="modal-title text-white fw-bold mb-0">
                     <i class="bi bi-person-gear me-2"></i>Assign PIC
                 </h6>

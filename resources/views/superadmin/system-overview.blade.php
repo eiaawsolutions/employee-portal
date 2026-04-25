@@ -831,7 +831,7 @@
 <div class="flow-section" style="background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%); border: 1px solid #c7d2fe;" id="update-section">
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-            <h3 style="color:#1e40af;"><i class="bi bi-arrow-repeat me-2"></i>Dependency Update Checker</h3>
+            <h3 style="color:var(--primary-dark);"><i class="bi bi-arrow-repeat me-2"></i>Dependency Update Checker</h3>
             <p class="text-muted mb-0">Package versions compared against Packagist and npm registries. Auto-checked daily at 6:00 AM.</p>
         </div>
         <button class="refresh-btn dark" id="btn-refresh-updates">
