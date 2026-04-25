@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # EIAAW Workforce — Railway boot script.
 #
-# Boot sequence (idempotent on healthy DB; self-heals from a partial migration):
-#   1. Inspect the DB: does it have a `tenants` table?
-#      a. If yes → DB is healthy, skip schema load
-#      b. If no, BUT a `migrations` table exists → previous boot failed
-#         partway. Drop + recreate the public schema so we can start clean.
-#      c. If neither → fresh DB, no cleanup needed.
-#   2. If we reach here without a `tenants` table, load the pgsql baseline
-#      schema dump via `psql -v ON_ERROR_STOP=1`.
-#   3. Run `php artisan migrate --force` for any post-baseline additions.
+# Boot sequence (idempotent on healthy DB; self-heals from partial state):
+#   1. Inspect DB: tenants table present means DB is healthy.
+#   2. Inspect DB: migrations table without tenants means a previous boot
+#      failed partway. Drop+recreate the public schema so migrations can
+#      run cleanly.
+#   3. `php artisan migrate --force` runs every migration from scratch on
+#      the clean DB. The migrations themselves bootstrap the Claritas-era
+#      tables + the SaaS retrofit on top.
 #   4. Start the PHP server.
+#
+# We deliberately DON'T use the pgsql-schema.sql baseline dump — it was
+# generated when Cashier migrations had old timestamps, and renaming
+# them for correct order conflicts with the dump's recorded migration
+# names. Easier to run all migrations from empty DB; takes ~10 seconds.
 
 set -euo pipefail
 
@@ -27,16 +31,11 @@ has_table() {
 }
 
 if has_table tenants; then
-    echo "=== DB has tenants table — schema is loaded ==="
+    echo "=== DB healthy (tenants table present) ==="
 elif has_table migrations; then
-    echo "=== DB is in a partial state (migrations table without tenants) — wiping public schema ==="
+    echo "=== DB in partial state — wiping public schema for clean migration run ==="
     psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c \
         "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
-fi
-
-if ! has_table tenants; then
-    echo "=== Loading pgsql baseline schema ==="
-    psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f database/schema/pgsql-schema.sql
 fi
 
 echo "=== Running migrations ==="
