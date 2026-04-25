@@ -66,7 +66,7 @@ class CreatePlatformAdmin extends Command
 
             DB::table('tenant_users')->updateOrInsert(
                 ['tenant_id' => $hqTenantId, 'user_id' => $user->id],
-                ['role' => 'owner', 'updated_at' => now(), 'created_at' => now()]
+                ['tenant_role' => 'owner', 'joined_at' => now(), 'updated_at' => now(), 'created_at' => now()]
             );
 
             return $user->id;
