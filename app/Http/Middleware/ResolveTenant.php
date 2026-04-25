@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,6 +19,14 @@ use Symfony\Component\HttpFoundation\Response;
  *  - ep.eiaawsolutions.com                → marketing apex (no tenant)
  *  - localhost / 127.0.0.1                → fallback to ?tenant= query for dev
  *
+ * Apex fallback for platform admins:
+ *  - When the wildcard subdomain isn't set up at the edge yet,
+ *    isPlatformAdmin() users on the apex transparently bind to the
+ *    eiaaw-hq workspace so plan-gated routes (/assets, /reports, etc.)
+ *    work without requiring DNS work first. Remove this branch once
+ *    *.ep.eiaawsolutions.com resolves and SESSION_DOMAIN is set to
+ *    .ep.eiaawsolutions.com.
+ *
  * After resolving:
  *  - Sets Postgres session variable app.tenant_id for RLS enforcement
  *  - Refuses access to suspended tenants with a friendly 402 page
@@ -26,10 +35,11 @@ use Symfony\Component\HttpFoundation\Response;
 class ResolveTenant
 {
     private const RESERVED_SUBDOMAINS = ['app', 'admin', 'api', 'www', 'mail', 'static', 'assets'];
+    private const HQ_TENANT_SLUG = 'eiaaw-hq';
 
     public function handle(Request $request, Closure $next): Response
     {
-        $tenant = $this->resolveTenant($request);
+        $tenant = $this->resolveTenant($request) ?? $this->resolveApexFallback($request);
 
         if ($tenant) {
             if ($tenant->isSuspended()) {
@@ -41,6 +51,24 @@ class ResolveTenant
         }
 
         return $next($request);
+    }
+
+    /**
+     * Apex fallback: if there's no subdomain match but the request comes
+     * from an authenticated platform admin, treat the apex as the
+     * eiaaw-hq workspace. Bounded to authenticated isPlatformAdmin()
+     * users so anonymous apex traffic still hits the marketing/no-tenant
+     * branch as before.
+     */
+    private function resolveApexFallback(Request $request): ?Tenant
+    {
+        if (!Auth::check()) return null;
+        $user = Auth::user();
+        if (!method_exists($user, 'isPlatformAdmin') || !$user->isPlatformAdmin()) {
+            return null;
+        }
+
+        return Tenant::where('slug', self::HQ_TENANT_SLUG)->first();
     }
 
     private function resolveTenant(Request $request): ?Tenant
