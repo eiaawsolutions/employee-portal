@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Setup Two-Factor Authentication</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body { background: #E8F0FE; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 480px; overflow: hidden; }
-        .auth-header { background: linear-gradient(135deg, #2684FE, #60A5FA); padding: 30px; text-align: center; color: #fff; }
-        .auth-header h4 { font-weight: 700; margin: 0; }
-        .auth-body { padding: 30px; }
-        .form-control:focus { border-color: #2684FE; box-shadow: 0 0 0 3px rgba(38,132,254,0.15); }
-        .btn-primary { background: linear-gradient(135deg, #2684FE, #60A5FA); border: none; }
-        .secret-code { font-family: monospace; font-size: 1.1em; background: #f8f9fa; padding: 10px 15px; border-radius: 8px; letter-spacing: 2px; word-break: break-all; }
-    </style>
+    @include('auth.partials._shell-head', ['title' => 'Set up two-factor · ' . config('eiaaw.product_name', 'EIAAW Workforce')])
 </head>
 <body>
-    <div class="auth-card">
-        <div class="auth-header">
-            <i class="bi bi-shield-lock" style="font-size:40px;"></i>
-            <h4 class="mt-2">Setup Two-Factor Authentication</h4>
-            <p class="mb-0" style="opacity:0.8; font-size:14px;">Scan the QR code with your authenticator app</p>
-        </div>
-        <div class="auth-body">
+<div class="auth-shell">
+
+    @include('auth.partials._aside', [
+        'quote' => 'A second key for the people who hold the platform\'s <em>integration secrets</em> — and the keys to every workspace inside it.',
+    ])
+
+    <main class="auth-main">
+        <div class="auth-form">
+            <span class="eyebrow">Account security</span>
+            <h1>Add your <em>authenticator</em>.</h1>
+            <p class="lead">
+                Scan the QR code with Google Authenticator, 1Password, Authy, or any TOTP-compatible app. Then enter the 6-digit code below to confirm.
+            </p>
+
             @if(session('warning'))
-                <div class="alert alert-warning py-2"><i class="bi bi-shield-exclamation me-1"></i>{{ session('warning') }}</div>
+                <div class="alert alert-warning mb-3">{{ session('warning') }}</div>
             @endif
             @if($errors->any())
-                <div class="alert alert-danger py-2">{{ $errors->first() }}</div>
+                <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
             @endif
 
-            <div class="text-center mb-3">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($qrCodeUrl) }}" alt="QR Code" class="img-fluid rounded" style="max-width:200px;">
+            <div class="auth-qr-frame">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data={{ urlencode($qrCodeUrl) }}"
+                     alt="Two-factor QR code" loading="lazy">
             </div>
 
-            <p class="text-muted small text-center">Or enter this key manually in your authenticator app:</p>
-            <div class="secret-code text-center mb-4">{{ $secret }}</div>
+            <p style="text-align:center; font-size:13px; color:var(--mute); margin: 20px 0 8px;">
+                Or enter this key manually
+            </p>
+            <div class="auth-secret-code">{{ $secret }}</div>
+
+            <div class="auth-divider"></div>
 
             <form action="{{ route('two-factor.confirm') }}" method="POST">
                 @csrf
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Verification Code</label>
-                    <input type="text" name="code" class="form-control text-center @error('code') is-invalid @enderror"
-                           placeholder="000000" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
-                           autocomplete="one-time-code" required autofocus>
-                    @error('code')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <div class="form-text">Enter the 6-digit code from your authenticator app to verify setup.</div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-check-circle me-2"></i>Verify &amp; Enable
+                <label for="code" class="form-label">Verification code</label>
+                <input type="text" name="code" id="code"
+                       class="auth-otp-input"
+                       placeholder="000000" maxlength="6" pattern="[0-9]{6}"
+                       inputmode="numeric" autocomplete="one-time-code"
+                       required autofocus>
+                <p style="margin: 10px 0 24px; font-size: 12px; color: var(--mute);">
+                    Enter the 6-digit code your authenticator app generates right now.
+                </p>
+
+                <button type="submit" class="auth-submit">
+                    Verify &amp; enable
+                    <i class="bi bi-arrow-right"></i>
                 </button>
             </form>
 
-            <hr class="my-3">
-            <div class="text-center">
+            <p style="text-align:center; margin-top: 24px; font-size: 13px; color: var(--mute);">
                 @if(Auth::user()->mustSetupTwoFactor())
-                    <span class="text-muted small">Two-factor authentication is required for your role.</span>
+                    Two-factor authentication is required for your role.
                 @else
-                    <a href="{{ route('profile') }}" class="text-muted small">Cancel and return to profile</a>
+                    <a href="{{ route('profile') }}" class="auth-link">Cancel and return to profile</a>
                 @endif
-            </div>
+            </p>
+
+            <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>
         </div>
-    </div>
+    </main>
+
+</div>
 </body>
 </html>

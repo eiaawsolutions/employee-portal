@@ -1,92 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Two-Factor Authentication</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body { background: #E8F0FE; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 100%; max-width: 420px; overflow: hidden; }
-        .auth-header { background: linear-gradient(135deg, #2684FE, #60A5FA); padding: 30px; text-align: center; color: #fff; }
-        .auth-header h4 { font-weight: 700; margin: 0; }
-        .auth-body { padding: 30px; }
-        .form-control:focus { border-color: #2684FE; box-shadow: 0 0 0 3px rgba(38,132,254,0.15); }
-        .btn-login { background: linear-gradient(135deg, #2684FE, #60A5FA); border: none; color: #fff; padding: 12px; font-weight: 600; border-radius: 8px; }
-        .btn-login:hover { opacity: 0.9; color: #fff; }
-    </style>
+    @include('auth.partials._shell-head', ['title' => 'Verify · ' . config('eiaaw.product_name', 'EIAAW Workforce')])
 </head>
 <body>
-    <div class="auth-card">
-        <div class="auth-header">
-            <i class="bi bi-shield-lock" style="font-size:40px;"></i>
-            <h4 class="mt-2">Two-Factor Authentication</h4>
-            <p class="mb-0" style="opacity:0.8; font-size:14px;">Enter the code from your authenticator app</p>
-        </div>
-        <div class="auth-body">
+<div class="auth-shell">
+
+    @include('auth.partials._aside', [
+        'quote' => 'One more step. The <em>second key</em> proves it\'s really you, not just someone who knows your password.',
+    ])
+
+    <main class="auth-main">
+        <div class="auth-form">
+            <span class="eyebrow">Two-factor authentication</span>
+            <h1>Enter your <em>code</em>.</h1>
+            <p class="lead">From your authenticator app — Google Authenticator, 1Password, Authy, or similar.</p>
+
             @if($errors->any())
-                <div class="alert alert-danger py-2">{{ $errors->first() }}</div>
+                <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
             @endif
 
             <form action="{{ route('two-factor.verify') }}" method="POST" id="codeForm">
                 @csrf
-                <div class="mb-3" id="codeSection">
-                    <label class="form-label fw-semibold">Authentication Code</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-key"></i></span>
-                        <input type="text" name="code" class="form-control text-center"
-                               placeholder="000000" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
-                               autocomplete="one-time-code" autofocus>
-                    </div>
+
+                <div id="codeSection">
+                    <label for="code" class="form-label">Authentication code</label>
+                    <input type="text" name="code" id="code"
+                           class="auth-otp-input"
+                           placeholder="000000" maxlength="6" pattern="[0-9]{6}"
+                           inputmode="numeric" autocomplete="one-time-code" autofocus>
                 </div>
 
-                <div class="mb-3 d-none" id="recoverySection">
-                    <label class="form-label fw-semibold">Recovery Code</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-key"></i></span>
-                        <input type="text" name="recovery_code" class="form-control" placeholder="Enter recovery code">
-                    </div>
+                <div class="d-none" id="recoverySection">
+                    <label for="recovery_code" class="form-label">Recovery code</label>
+                    <input type="text" name="recovery_code" id="recovery_code"
+                           class="form-control"
+                           placeholder="xxxxxxxx-xxxxxxxx" autocomplete="off">
                 </div>
 
-                <button type="submit" class="btn btn-login w-100 mb-3">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Verify
+                <button type="submit" class="auth-submit" style="margin-top: 24px;">
+                    Verify
+                    <i class="bi bi-arrow-right"></i>
                 </button>
             </form>
 
-            <div class="text-center">
-                <a href="#" class="text-primary small" id="toggleRecovery">
+            <p style="text-align:center; margin-top: 18px;">
+                <a href="#" class="auth-link" id="toggleRecovery" style="font-size: 13px;">
                     Use a recovery code instead
                 </a>
-            </div>
-
-            <hr class="my-3">
-            <p class="text-center small text-muted mb-0">
-                <a href="{{ route('login') }}" class="text-muted">Back to login</a>
             </p>
+
+            <div class="auth-divider"></div>
+
+            <p style="text-align:center; font-size: 13px; color: var(--mute);">
+                <a href="{{ route('login') }}" class="auth-link">&larr; Back to sign in</a>
+            </p>
+
+            <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>
         </div>
-    </div>
-    <script nonce="{{ $cspNonce ?? '' }}">
-        document.getElementById('toggleRecovery').addEventListener('click', toggleRecoveryMode);
-        function toggleRecoveryMode(e) {
-            e.preventDefault();
-            var codeSection = document.getElementById('codeSection');
-            var recoverySection = document.getElementById('recoverySection');
-            var toggleLink = document.getElementById('toggleRecovery');
-            if (recoverySection.classList.contains('d-none')) {
-                recoverySection.classList.remove('d-none');
-                codeSection.classList.add('d-none');
-                codeSection.querySelector('input').value = '';
-                toggleLink.textContent = 'Use authenticator code instead';
-                recoverySection.querySelector('input').focus();
-            } else {
-                codeSection.classList.remove('d-none');
-                recoverySection.classList.add('d-none');
-                recoverySection.querySelector('input').value = '';
-                toggleLink.textContent = 'Use a recovery code instead';
-                codeSection.querySelector('input').focus();
-            }
+    </main>
+
+</div>
+<script nonce="{{ $cspNonce ?? '' }}">
+    document.getElementById('toggleRecovery').addEventListener('click', toggleRecoveryMode);
+    function toggleRecoveryMode(e) {
+        e.preventDefault();
+        var codeSection = document.getElementById('codeSection');
+        var recoverySection = document.getElementById('recoverySection');
+        var toggleLink = document.getElementById('toggleRecovery');
+        if (recoverySection.classList.contains('d-none')) {
+            recoverySection.classList.remove('d-none');
+            codeSection.classList.add('d-none');
+            codeSection.querySelector('input').value = '';
+            toggleLink.textContent = 'Use authenticator code instead';
+            recoverySection.querySelector('input').focus();
+        } else {
+            codeSection.classList.remove('d-none');
+            recoverySection.classList.add('d-none');
+            recoverySection.querySelector('input').value = '';
+            toggleLink.textContent = 'Use a recovery code instead';
+            codeSection.querySelector('input').focus();
         }
-    </script>
+    }
+</script>
 </body>
 </html>

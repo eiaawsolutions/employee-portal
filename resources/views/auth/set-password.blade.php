@@ -1,121 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Password — Employee Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    @include('auth.partials._shell-head', ['title' => 'Set password · ' . config('eiaaw.product_name', 'EIAAW Workforce')])
     <style>
-        body { background:#E8F0FE; min-height:100vh; display:flex; align-items:center; justify-content:center; }
-        .auth-card { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.3); width:100%; max-width:420px; overflow:hidden; }
-        .auth-header { background:linear-gradient(135deg,#2684FE,#60A5FA); padding:30px; text-align:center; color:#fff; }
-        .auth-header h4 { font-weight:700; margin:0; }
-        .auth-body { padding:30px; }
-        .form-control:focus { border-color:#2684FE; box-shadow:0 0 0 3px rgba(38,132,254,0.15); }
-        .btn-primary-grad { background:linear-gradient(135deg,#2684FE,#60A5FA); border:none; color:#fff; padding:12px; font-weight:600; border-radius:8px; }
-        .btn-primary-grad:hover { opacity:0.9; color:#fff; }
-        .strength-bar { height:4px; border-radius:4px; transition:background .2s, width .2s; }
-        .req-item { font-size:11px; }
-        .req-item.met { color:#059669; }
-        .req-item.unmet { color:#94a3b8; }
+        .strength-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .strength-bar { height: 4px; flex: 1; border-radius: 4px; background: var(--line-soft); transition: background 0.18s var(--ease); }
+        .req-list { list-style: none; padding: 0; margin: 8px 0 0; font-size: 12px; color: var(--mute); }
+        .req-list li { margin-bottom: 4px; transition: color 0.18s var(--ease); }
+        .req-list li.met { color: var(--success); }
+        .req-list li i { margin-right: 6px; }
+        .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--mute); cursor: pointer; padding: 6px; }
+        .pw-toggle:hover { color: var(--ink); }
+        .pw-wrapper { position: relative; }
+        .strength-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; }
+        .match-msg { font-size: 12px; margin-top: 6px; display: none; }
     </style>
 </head>
 <body>
-<div class="auth-card">
-    <div class="auth-header">
-        <i class="bi bi-lock-fill" style="font-size:40px;"></i>
-        <h4 class="mt-2">Set Your Password</h4>
-        <p class="mb-0 opacity-75" style="font-size:13px;">{{ $verified_email }}</p>
-    </div>
-    <div class="auth-body">
+<div class="auth-shell">
 
-        {{-- Back link --}}
-        <a href="{{ route('register') }}" class="btn btn-link p-0 mb-3 small text-muted text-decoration-none">
-            <i class="bi bi-arrow-left me-1"></i>Back
-        </a>
+    @include('auth.partials._aside', [
+        'quote' => 'Almost in. Pick a password your team\'s <em>compliance officer</em> would approve of — and you can still remember.',
+    ])
 
-        @if ($errors->any())
-            <div class="alert alert-danger py-2 small">
-                <i class="bi bi-exclamation-triangle me-2"></i>{{ $errors->first() }}
-            </div>
-        @endif
+    <main class="auth-main">
+        <div class="auth-form">
+            <span class="eyebrow">Activate account</span>
+            <h1>Set your <em>password</em>.</h1>
+            <p class="lead">Final step. Activating <strong>{{ $verified_email }}</strong>.</p>
 
-        <form action="{{ route('register') }}" method="POST" id="registerForm">
-            @csrf
-            {{-- Pass verified email through --}}
-            <input type="hidden" name="work_email" value="{{ $verified_email }}">
+            <a href="{{ route('register') }}" class="auth-link" style="font-size: 13px; display: inline-block; margin-bottom: 18px;">
+                &larr; Use a different email
+            </a>
 
-            {{-- Password --}}
-            <div class="mb-2">
-                <label class="form-label fw-semibold">Create Password</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-lock text-muted"></i></span>
-                    <input type="password" name="password" id="password"
-                           class="form-control @error('password') is-invalid @enderror"
-                           placeholder="Min. 8 characters, number &amp; symbol"
-                           oninput="checkStrength()"
-                           required>
-                    <button type="button" class="input-group-text bg-white border-start-0" onclick="togglePw('password','eyePw')">
-                        <i class="bi bi-eye text-muted" id="eyePw"></i>
-                    </button>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+            @if ($errors->any())
+                <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
+            @endif
 
-            {{-- Strength bar --}}
-            <div class="mb-3" id="strengthSection" style="display:none;">
-                <div class="d-flex gap-1 mb-1">
-                    <div class="strength-bar flex-fill" id="bar1" style="background:#e2e8f0;"></div>
-                    <div class="strength-bar flex-fill" id="bar2" style="background:#e2e8f0;"></div>
-                    <div class="strength-bar flex-fill" id="bar3" style="background:#e2e8f0;"></div>
-                </div>
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <div class="req-item unmet" id="req-length"><i class="bi bi-x-circle-fill me-1" style="font-size:10px;"></i>At least 8 characters</div>
-                        <div class="req-item unmet" id="req-number"><i class="bi bi-x-circle-fill me-1" style="font-size:10px;"></i>At least one number</div>
-                        <div class="req-item unmet" id="req-symbol"><i class="bi bi-x-circle-fill me-1" style="font-size:10px;"></i>At least one symbol (e.g. @, #, !)</div>
+            <form action="{{ route('register') }}" method="POST" id="registerForm">
+                @csrf
+                <input type="hidden" name="work_email" value="{{ $verified_email }}">
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Create password</label>
+                    <div class="pw-wrapper">
+                        <input type="password" name="password" id="password"
+                               class="form-control"
+                               placeholder="Min. 8 characters, number &amp; symbol"
+                               autocomplete="new-password" required>
+                        <button type="button" class="pw-toggle" data-target="password" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye" id="eyePw"></i>
+                        </button>
                     </div>
-                    <span class="fw-semibold" id="strengthLabel" style="font-size:11px;"></span>
+
+                    <div id="strengthSection" style="display:none; margin-top: 12px;">
+                        <div class="strength-row">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <ul class="req-list">
+                                <li id="req-length"><i class="bi bi-circle"></i>At least 8 characters</li>
+                                <li id="req-number"><i class="bi bi-circle"></i>At least one number</li>
+                                <li id="req-symbol"><i class="bi bi-circle"></i>At least one symbol (@, #, !, etc.)</li>
+                            </ul>
+                            <span class="strength-label" id="strengthLabel"></span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {{-- Confirm Password --}}
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Confirm Password</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-lock-fill text-muted"></i></span>
-                    <input type="password" name="password_confirmation" id="password_confirmation"
-                           class="form-control"
-                           placeholder="Re-enter your password"
-                           oninput="checkMatch()"
-                           required>
-                    <button type="button" class="input-group-text bg-white border-start-0" onclick="togglePw('password_confirmation','eyeCf')">
-                        <i class="bi bi-eye text-muted" id="eyeCf"></i>
-                    </button>
+                <div class="mb-4">
+                    <label for="password_confirmation" class="form-label">Confirm password</label>
+                    <div class="pw-wrapper">
+                        <input type="password" name="password_confirmation" id="password_confirmation"
+                               class="form-control"
+                               placeholder="Re-enter your password"
+                               autocomplete="new-password" required>
+                        <button type="button" class="pw-toggle" data-target="password_confirmation" aria-label="Toggle password visibility">
+                            <i class="bi bi-eye" id="eyeCf"></i>
+                        </button>
+                    </div>
+                    <div id="matchMsg" class="match-msg"></div>
                 </div>
-                <div id="matchMsg" class="mt-1" style="font-size:12px;display:none;"></div>
-            </div>
 
-            <button type="submit" class="btn btn-primary-grad w-100" id="submitBtn" disabled>
-                <i class="bi bi-person-check me-2"></i>Create Account
-            </button>
-        </form>
+                <button type="submit" class="auth-submit" id="submitBtn" disabled>
+                    Create account
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
 
-        <hr class="my-3">
-        <p class="text-center small text-muted mb-0">
-            Already have an account?
-            <a href="{{ route('login') }}" class="text-primary fw-semibold">Sign in</a>
-        </p>
-    </div>
+            <div class="auth-divider"></div>
+
+            <p style="text-align:center; font-size: 13px; color: var(--mute);">
+                Already activated? <a href="{{ route('login') }}" class="auth-link">Sign in</a>
+            </p>
+
+            <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>
+        </div>
+    </main>
+
 </div>
 
-<script nonce="{{ $cspNonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script nonce="{{ $cspNonce ?? '' }}">
-    const colors = ['#dc2626','#d97706','#2684FE','#059669'];
-    const labels = ['Weak','Fair','Good','Strong'];
+    const colors = ['#B4412B', '#C68A2E', '#1FA896', '#11766A'];
+    const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const t = document.getElementById(this.dataset.target);
+            const i = this.querySelector('i');
+            if (t.type === 'password') { t.type = 'text'; i.className = 'bi bi-eye-slash'; }
+            else { t.type = 'password'; i.className = 'bi bi-eye'; }
+        });
+    });
+
+    document.getElementById('password').addEventListener('input', checkStrength);
+    document.getElementById('password_confirmation').addEventListener('input', checkMatch);
 
     function checkStrength() {
         const pw = document.getElementById('password').value;
@@ -124,55 +125,48 @@
         if (pw.length === 0) { section.style.display = 'none'; updateBtn(); return; }
         section.style.display = 'block';
 
-        const hasLen    = pw.length >= 8;
-        const hasNum    = /[0-9]/.test(pw);
-        const hasSym    = /[^A-Za-z0-9]/.test(pw);
-        const score     = [hasLen, hasNum, hasSym].filter(Boolean).length;
-        const color     = colors[score];
+        const hasLen = pw.length >= 8;
+        const hasNum = /[0-9]/.test(pw);
+        const hasSym = /[^A-Za-z0-9]/.test(pw);
+        const score = [hasLen, hasNum, hasSym].filter(Boolean).length;
+        const color = colors[score];
 
-        // Update requirement rows
         setReq('req-length', hasLen);
         setReq('req-number', hasNum);
         setReq('req-symbol', hasSym);
 
-        // Update bars
         for (let i = 1; i <= 3; i++) {
-            document.getElementById('bar' + i).style.background = i <= score ? color : '#e2e8f0';
+            document.getElementById('bar' + i).style.background = i <= score ? color : 'var(--line-soft)';
         }
 
-        document.getElementById('strengthLabel').textContent = labels[score];
-        document.getElementById('strengthLabel').style.color  = color;
+        const lbl = document.getElementById('strengthLabel');
+        lbl.textContent = labels[score];
+        lbl.style.color = color;
 
         updateBtn();
+        checkMatch();
     }
 
     function setReq(id, met) {
         const el = document.getElementById(id);
-        el.className = 'req-item ' + (met ? 'met' : 'unmet');
-        el.querySelector('i').className = met
-            ? 'bi bi-check-circle-fill me-1'
-            : 'bi bi-x-circle-fill me-1';
-        el.querySelector('i').style.fontSize = '10px';
-        el.querySelector('i').style.color = met ? '#059669' : '#fca5a5';
+        el.classList.toggle('met', met);
+        el.querySelector('i').className = met ? 'bi bi-check-circle-fill' : 'bi bi-circle';
     }
 
     function checkMatch() {
         const pw = document.getElementById('password').value;
         const cf = document.getElementById('password_confirmation').value;
         const msg = document.getElementById('matchMsg');
-        const cf_input = document.getElementById('password_confirmation');
 
-        if (cf.length === 0) { msg.style.display = 'none'; cf_input.className = 'form-control'; updateBtn(); return; }
+        if (cf.length === 0) { msg.style.display = 'none'; updateBtn(); return; }
 
         msg.style.display = 'block';
         if (pw === cf) {
-            msg.textContent = '✓ Passwords match';
-            msg.style.color = '#059669';
-            cf_input.className = 'form-control is-valid';
+            msg.textContent = 'Passwords match.';
+            msg.style.color = 'var(--success)';
         } else {
-            msg.textContent = '✗ Passwords do not match';
-            msg.style.color = '#dc2626';
-            cf_input.className = 'form-control is-invalid';
+            msg.textContent = 'Passwords do not match.';
+            msg.style.color = 'var(--danger)';
         }
         updateBtn();
     }
@@ -185,18 +179,6 @@
         const hasSym = /[^A-Za-z0-9]/.test(pw);
         const allMet = hasLen && hasNum && hasSym && pw === cf && cf.length > 0;
         document.getElementById('submitBtn').disabled = !allMet;
-    }
-
-    function togglePw(fieldId, iconId) {
-        const field = document.getElementById(fieldId);
-        const icon  = document.getElementById(iconId);
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.className = 'bi bi-eye-slash text-muted';
-        } else {
-            field.type = 'password';
-            icon.className = 'bi bi-eye text-muted';
-        }
     }
 </script>
 </body>

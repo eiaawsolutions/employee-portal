@@ -1,69 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register — Employee Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body { background:#E8F0FE; min-height:100vh; display:flex; align-items:center; justify-content:center; }
-        .auth-card { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.3); width:100%; max-width:420px; overflow:hidden; }
-        .auth-header { background:linear-gradient(135deg,#2684FE,#60A5FA); padding:30px; text-align:center; color:#fff; }
-        .auth-header h4 { font-weight:700; margin:0; }
-        .auth-body { padding:30px; }
-        .form-control:focus { border-color:#2684FE; box-shadow:0 0 0 3px rgba(37,99,235,0.15); }
-        .btn-primary-grad { background:linear-gradient(135deg,#2684FE,#60A5FA); border:none; color:#fff; padding:12px; font-weight:600; border-radius:8px; }
-        .btn-primary-grad:hover { opacity:0.9; color:#fff; }
-    </style>
+    @include('auth.partials._shell-head', ['title' => 'Activate account · ' . config('eiaaw.product_name', 'EIAAW Workforce')])
 </head>
 <body>
-<div class="auth-card">
-    <div class="auth-header">
-        <i class="bi bi-building" style="font-size:40px;"></i>
-        <h4 class="mt-2">Create Account</h4>
-        <p class="mb-0 opacity-75" style="font-size:14px;">Employee Portal — Sign Up</p>
-    </div>
-    <div class="auth-body">
+<div class="auth-shell">
 
-        <div class="alert py-2 mb-3 small" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;color:#1e40af;">
-            <i class="bi bi-info-circle me-2"></i>
-            Use the work email assigned to you by IT to create your account.
-            If you cannot remember your email, please see the IT team.
-        </div>
+    @include('auth.partials._aside', [
+        'quote' => 'Already invited? Activate the account your <em>HR team set up</em> for you. New here? Try the trial signup instead.',
+    ])
 
-        @if ($errors->any())
-            <div class="alert alert-danger py-2 small">
-                <i class="bi bi-exclamation-triangle me-2"></i>{{ $errors->first() }}
+    <main class="auth-main">
+        <div class="auth-form">
+            <span class="eyebrow">Activate account</span>
+            <h1>Welcome to the <em>workspace</em>.</h1>
+            <p class="lead">Use the work email your HR or IT team assigned you. We'll verify it exists, then let you set a password.</p>
+
+            <div class="alert alert-info mb-3">
+                <i class="bi bi-info-circle me-2"></i>
+                If you don't have a work email yet, contact your HR or IT team — your account is created when they invite you.
             </div>
-        @endif
 
-        <form action="{{ route('register.checkEmail') }}" method="POST">
-            @csrf
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Work Email</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-envelope text-muted"></i></span>
-                    <input type="email" name="work_email"
-                           class="form-control @error('work_email') is-invalid @enderror"
+            @if ($errors->any())
+                <div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
+            @endif
+
+            <form action="{{ route('register.checkEmail') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="work_email" class="form-label">Work email</label>
+                    <input type="email" name="work_email" id="work_email"
+                           class="form-control"
                            value="{{ old('work_email') }}"
-                           placeholder="yourname@claritas.asia"
-                           required autofocus>
-                    @error('work_email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                           placeholder="you@yourcompany.com" required autofocus>
                 </div>
-            </div>
 
-            <button type="submit" class="btn btn-primary-grad w-100">
-                <i class="bi bi-arrow-right-circle me-2"></i>Continue
-            </button>
-        </form>
+                <button type="submit" class="auth-submit">
+                    Continue
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
 
-        <hr class="my-3">
-        <p class="text-center small text-muted mb-0">
-            Already have an account?
-            <a href="{{ route('login') }}" class="text-primary fw-semibold">Sign in</a>
-        </p>
-    </div>
-</d
+            <div class="auth-divider"></div>
+
+            <p style="text-align:center; font-size: 13px; color: var(--mute);">
+                Already activated? <a href="{{ route('login') }}" class="auth-link">Sign in</a>
+            </p>
+            <p style="text-align:center; font-size: 13px; color: var(--mute); margin-top: 8px;">
+                New customer? <a href="{{ route('signup.form') }}" class="auth-link">Start a 14-day trial</a>
+            </p>
+
+            <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>
