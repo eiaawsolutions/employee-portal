@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'EIAAW Workforce — AI · Human Partnerships for HR, Payroll & Finance')
-@section('description', 'The AI-native workforce platform for Malaysian and APAC mid-market teams. HR, payroll, claims, IT assets, and full accounting on one backbone. 14-day trial, no credit card.')
+@section('title', 'EIAAW Workforce — Run HR, IT & Finance, all in one platform')
+@section('description', 'Run your entire HR, IT, and Finance operation on one AI-native platform. Module 1 carries the full employee journey — onboard, manage records, IT asset handover, HRM workflows, and a live link to Finance. Fully AI-driven, fully automated. 14-day trial, no credit card.')
 
 @push('head')
 <style>
@@ -241,6 +241,160 @@
         font-size: 13.5px; color: var(--ink-2); line-height: 1.5;
     }
 
+    /* ── Floating-elegant imagery (hero + sections) ── */
+    @keyframes ln-float-a {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50%      { transform: translateY(-14px) rotate(-0.4deg); }
+    }
+    @keyframes ln-float-b {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50%      { transform: translateY(-10px) rotate(0.3deg); }
+    }
+    @keyframes ln-float-c {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+
+    .ln-figure {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        background: var(--bg-warm);
+        box-shadow:
+            0 2px 4px rgba(15,26,29,0.05),
+            0 16px 40px -12px rgba(15,26,29,0.18),
+            0 48px 96px -24px rgba(15,26,29,0.28),
+            0 80px 140px -40px rgba(15,26,29,0.22);
+        transition: transform 0.9s var(--ease), box-shadow 0.9s, filter 0.9s;
+        will-change: transform;
+    }
+    .ln-figure::after {
+        content: ''; position: absolute; inset: 0; border-radius: 20px;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.32);
+        pointer-events: none;
+    }
+    .ln-figure img {
+        width: 100%; height: 100%; display: block;
+        object-fit: cover;
+        filter: saturate(0.94) contrast(1.02);
+        transition: filter 0.9s var(--ease), transform 0.9s var(--ease);
+    }
+    .ln-figure:hover img { filter: saturate(1.06) contrast(1.05); transform: scale(1.03); }
+    .ln-figure:hover {
+        box-shadow:
+            0 4px 8px rgba(15,26,29,0.06),
+            0 24px 56px -12px rgba(15,26,29,0.22),
+            0 64px 120px -24px rgba(15,26,29,0.32),
+            0 100px 180px -40px rgba(15,26,29,0.28);
+    }
+
+    .ln-figure--float-a { animation: ln-float-a 7.5s ease-in-out infinite; }
+    .ln-figure--float-b { animation: ln-float-b 9s   ease-in-out infinite; animation-delay: 1.2s; }
+    .ln-figure--float-c { animation: ln-float-c 6s   ease-in-out infinite; animation-delay: 0.6s; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ln-figure--float-a,
+        .ln-figure--float-b,
+        .ln-figure--float-c { animation: none; }
+    }
+
+    /* Hero stack — two floating images, slightly overlapped */
+    .ln-hero-stack {
+        position: relative;
+        aspect-ratio: 4/5;
+        max-width: 460px;
+        margin-left: auto;
+    }
+    .ln-hero-stack .ln-figure { position: absolute; }
+    .ln-hero-stack .ln-figure--main {
+        inset: 0 0 18% 18%;
+        aspect-ratio: 3/4;
+    }
+    .ln-hero-stack .ln-figure--accent {
+        right: 0; top: 8%;
+        width: 56%; aspect-ratio: 4/5;
+        z-index: 2;
+    }
+    @media (max-width: 960px) {
+        .ln-hero-stack { max-width: 380px; margin: 12px auto 0; }
+    }
+
+    /* Module-1 storyline section */
+    .ln-module {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: clamp(32px, 6vw, 96px);
+        align-items: center;
+        margin-top: clamp(40px, 5vw, 64px);
+    }
+    .ln-module + .ln-module { margin-top: clamp(64px, 8vw, 120px); }
+    .ln-module--reverse { grid-template-columns: 1.05fr 1fr; }
+    .ln-module--reverse .ln-module-media { order: -1; }
+    @media (max-width: 860px) {
+        .ln-module,
+        .ln-module--reverse { grid-template-columns: 1fr; gap: 32px; }
+        .ln-module--reverse .ln-module-media { order: 0; }
+    }
+    .ln-module-eyebrow {
+        font-family: var(--mono); font-size: 11px;
+        text-transform: uppercase; letter-spacing: 0.16em;
+        color: var(--primary-dark); margin-bottom: 14px;
+        display: inline-flex; align-items: center; gap: 10px;
+    }
+    .ln-module-eyebrow::before {
+        content: ''; width: 24px; height: 1px; background: var(--primary); opacity: 0.6;
+    }
+    .ln-module-step {
+        font-family: var(--serif); font-style: italic; font-weight: 400;
+        font-size: clamp(54px, 6vw, 84px); line-height: 0.9;
+        color: var(--primary-dark); letter-spacing: -0.03em;
+        margin: 0 0 8px;
+    }
+    .ln-module h3 {
+        font-family: var(--sans); font-weight: 500;
+        font-size: clamp(26px, 2.6vw, 36px); line-height: 1.12;
+        letter-spacing: -0.025em; margin: 0 0 18px; color: var(--ink);
+    }
+    .ln-module h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--primary-dark); }
+    .ln-module p {
+        color: var(--ink-2); font-size: 16px; line-height: 1.65;
+        max-width: 520px; margin: 0 0 22px;
+    }
+    .ln-module-bullets { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .ln-module-bullets li {
+        color: var(--ink-2); font-size: 14.5px; line-height: 1.5;
+        padding-left: 22px; position: relative;
+    }
+    .ln-module-bullets li::before {
+        content: ''; position: absolute; left: 0; top: 9px;
+        width: 12px; height: 1px; background: var(--primary); opacity: 0.7;
+    }
+
+    .ln-module-media {
+        position: relative;
+        aspect-ratio: 5/4;
+        max-width: 540px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    .ln-module-media .ln-figure {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+    }
+    /* Soft halo behind module figure */
+    .ln-module-media::before {
+        content: ''; position: absolute;
+        inset: -8% -6% -10% -6%;
+        background:
+            radial-gradient(60% 60% at 30% 40%, rgba(31,168,150,0.14), transparent 70%),
+            radial-gradient(50% 50% at 80% 70%, rgba(17,118,106,0.10), transparent 70%);
+        pointer-events: none; z-index: 0;
+        filter: blur(10px);
+    }
+
+    /* AI mock — give the right column a floating image companion */
+    .ln-ai-mock { position: relative; }
+
     /* ── Final CTA ── */
     .ln-cta {
         text-align: center;
@@ -274,10 +428,10 @@
                     <span style="font-family: var(--mono); font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.14em;">Built for Malaysia &amp; APAC</span>
                 </div>
                 <h1 class="mk-display">
-                    Run HR, payroll, and finance <em>on one backbone</em> — with an AI partner that actually reads the data.
+                    Run your HR, IT, and Finance <em>all on one platform</em> — with AI partners that automate the work in between.
                 </h1>
                 <p class="ln-hero-lede">
-                    EIAAW Workforce is the AI-native platform for mid-market teams who outgrew spreadsheets but refuse the folksy SME tools. Four modules, one tenant, zero duplicated data — and an assistant that summarises approvals, drafts offboarding plans, and explains payslips in plain English.
+                    EIAAW Workforce carries the entire employee journey on one backbone — onboarding, employee records, IT asset hand-over, HRM workflows, and a live link to Finance. People, devices, payroll, and the ledger move together. No exports, no reconciliations, no SaaS sprawl.
                 </p>
                 <div class="ln-hero-ctas">
                     <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
@@ -286,17 +440,27 @@
             </div>
 
             <aside class="ln-hero-meta-side" aria-label="Product at a glance">
-                <div>
-                    <div class="ln-hero-stat">4 modules</div>
-                    <div class="ln-hero-stat-label">HR · Payroll · IT Assets · Accounting</div>
+                <div class="ln-hero-stack" aria-hidden="true">
+                    <div class="ln-figure ln-figure--main ln-figure--float-a">
+                        <img src="{{ asset('images/landing/hr-onboarding.jpg') }}" alt="" loading="eager" fetchpriority="high">
+                    </div>
+                    <div class="ln-figure ln-figure--accent ln-figure--float-b">
+                        <img src="{{ asset('images/landing/it-assets.jpg') }}" alt="" loading="eager">
+                    </div>
                 </div>
-                <div>
-                    <div class="ln-hero-stat">Postgres RLS</div>
-                    <div class="ln-hero-stat-label">Database-enforced tenant isolation</div>
-                </div>
-                <div>
-                    <div class="ln-hero-stat">14 days</div>
-                    <div class="ln-hero-stat-label">Growth-tier trial · no card required</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 32px;">
+                    <div>
+                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">HR</div>
+                        <div class="ln-hero-stat-label">Onboarding · Records · Leave</div>
+                    </div>
+                    <div>
+                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">IT</div>
+                        <div class="ln-hero-stat-label">Assets · Provisioning · AARF</div>
+                    </div>
+                    <div>
+                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">Finance</div>
+                        <div class="ln-hero-stat-label">Payroll · Claims · Ledger</div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -305,13 +469,100 @@
 
 <section class="ln-proof">
     <div class="mk-container ln-proof-inner">
-        <div class="ln-proof-label">Four modules, one tenant, zero duplicated data:</div>
+        <div class="ln-proof-label">One platform · One tenant · Zero duplicated data:</div>
         <div class="ln-proof-modules">
-            <span>M1 Employee Journey</span>
-            <span>M2 Asset Management</span>
-            <span>M3 HRM</span>
-            <span>M4 Finance</span>
-            <span>AI · Human Partnerships</span>
+            <span>HR Operations</span>
+            <span>IT Asset Management</span>
+            <span>Finance &amp; Payroll</span>
+            <span>AI Workflow Automation</span>
+        </div>
+    </div>
+</section>
+
+<section class="mk-section">
+    <div class="mk-container">
+        <div class="ln-sec-head">
+            <div class="eyebrow">Module 1 · The Employee Journey</div>
+            <div>
+                <h2>From offer-letter to exit interview, <em>one continuous flow.</em></h2>
+                <p style="max-width: 620px; margin-top: 24px;">Onboarding hands the employee to HR records, HR records hand devices to IT, IT hand entitlements to Finance — all without a single CSV export. Every step is AI-assisted; every change reaches the next module in real time.</p>
+            </div>
+        </div>
+
+        <div class="ln-module">
+            <div>
+                <div class="ln-module-eyebrow">Step 01 · Onboard &amp; Records</div>
+                <div class="ln-module-step">01.</div>
+                <h3>A new hire fills <em>once</em> — and HR, IT, and Finance all hear it.</h3>
+                <p>Section A–I of the invite form populates personal details, work details, education, dependents, and statutory data. The day they start, AI auto-activates the account, sends the welcome email, and stages the records into every downstream table — no HR clicks needed.</p>
+                <ul class="ln-module-bullets">
+                    <li>Tokenised public invite link with self-service photo + NRIC capture</li>
+                    <li>Auto-activation on start date with cascade into all tables</li>
+                    <li>Edit history with cryptographic re-acknowledgement on sensitive fields</li>
+                </ul>
+            </div>
+            <div class="ln-module-media">
+                <div class="ln-figure ln-figure--float-a">
+                    <img src="{{ asset('images/landing/employee-journey.jpg') }}" alt="Team welcoming a new hire on day one" loading="lazy">
+                </div>
+            </div>
+        </div>
+
+        <div class="ln-module ln-module--reverse">
+            <div>
+                <div class="ln-module-eyebrow">Step 02 · IT Asset Hand-over</div>
+                <div class="ln-module-step">02.</div>
+                <h3>HR books the asset, IT provisions it, <em>the inventory updates itself.</em></h3>
+                <p>The moment HR confirms a start date, the IT module sees the request. Laptops, phones, monitors, and licences are picked from inventory, assigned to the employee, and acknowledged via signed AARF link. On exit, the same chain runs in reverse — assets return, accounts disable, IT signs off before payroll is finalised.</p>
+                <ul class="ln-module-bullets">
+                    <li>Live asset inventory with tagged provisioning workflows</li>
+                    <li>AARF email with tokenised acknowledgement and audit trail</li>
+                    <li>Disposed-asset register feeds straight into Finance depreciation</li>
+                </ul>
+            </div>
+            <div class="ln-module-media">
+                <div class="ln-figure ln-figure--float-b">
+                    <img src="{{ asset('images/landing/it-assets.jpg') }}" alt="IT assets ready for provisioning" loading="lazy">
+                </div>
+            </div>
+        </div>
+
+        <div class="ln-module">
+            <div>
+                <div class="ln-module-eyebrow">Step 03 · HRM &amp; People Operations</div>
+                <div class="ln-module-step">03.</div>
+                <h3>Leave, attendance, claims, EA forms — <em>one employee, one timeline.</em></h3>
+                <p>Every HR action lives on the same employee record the IT and Finance modules already trust. Approvals route along the org chart, reminders fire on schedule, and a weekly sweep nudges anything pending — so nothing rots in someone's inbox.</p>
+                <ul class="ln-module-bullets">
+                    <li>Leave management with manager reminders + balance accruals</li>
+                    <li>Attendance, payslips, EA forms, and eClaim under one roof</li>
+                    <li>Auto pending-sweep emails every Wednesday for stalled approvals</li>
+                </ul>
+            </div>
+            <div class="ln-module-media">
+                <div class="ln-figure ln-figure--float-c">
+                    <img src="{{ asset('images/landing/hr-onboarding.jpg') }}" alt="HR team running people operations" loading="lazy">
+                </div>
+            </div>
+        </div>
+
+        <div class="ln-module ln-module--reverse">
+            <div>
+                <div class="ln-module-eyebrow">Step 04 · Linked to Finance</div>
+                <div class="ln-module-step">04.</div>
+                <h3>Approved claims become journal entries — <em>without a CSV in sight.</em></h3>
+                <p>The Finance module reads the same employee, the same approver chain, the same audit log. Approved expense claims post to the ledger, payroll runs against the live HR roster, asset disposals book against the right cost centre. Your accountants stop reconciling and start reviewing.</p>
+                <ul class="ln-module-bullets">
+                    <li>Chart of Accounts, GL, AR/AP, invoices &amp; POs in one workspace</li>
+                    <li>Approved eClaims auto-post to the GL with full traceability</li>
+                    <li>AI invoice scanning + budget drift alerts surface anomalies early</li>
+                </ul>
+            </div>
+            <div class="ln-module-media">
+                <div class="ln-figure ln-figure--float-a">
+                    <img src="{{ asset('images/landing/finance.jpg') }}" alt="Finance dashboards and ledger" loading="lazy">
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -330,7 +581,7 @@
             <article class="ln-three-cell">
                 <span class="mk-pill"><span class="mk-pill-dot"></span>01 · Isolation</span>
                 <h3>Tenant data is walled off at the <em>database</em>, not the app.</h3>
-                <p>Postgres Row-Level Security enforces `tenant_id` on every query at the driver level. No accidental cross-tenant leak is possible, even through a bugged controller.</p>
+                <p>Postgres Row-Level Security enforces tenant_id on every query at the driver level. No accidental cross-tenant leak is possible, even through a bugged controller.</p>
             </article>
             <article class="ln-three-cell">
                 <span class="mk-pill"><span class="mk-pill-dot"></span>02 · One backbone</span>
@@ -350,8 +601,8 @@
     <div class="mk-container">
         <div class="ln-ai">
             <div class="ln-ai-copy">
-                <div class="eyebrow">AI · Human Partnerships</div>
-                <h2>An assistant that knows <em>who is on leave next week</em> — because it reads your actual data.</h2>
+                <div class="eyebrow">Fully AI · Fully Automated</div>
+                <h2>The assistant that runs the in-between work — <em>so your team stops chasing approvals.</em></h2>
                 <p>Included in every tier. Retrieval-grounded on your tenant. Cites the records it used. Respects role-based access. Costs are capped per tenant with a circuit breaker so a runaway prompt never shocks your bill.</p>
                 <ul>
                     <li>Summarises pending approvals across leave, claims, and AARFs</li>
@@ -362,6 +613,11 @@
                 <a href="{{ route('marketing.features') }}" class="eiaaw-btn" style="background: var(--primary); color: var(--bg); border-color: var(--primary);">
                     See the assistant in detail →
                 </a>
+            </div>
+
+            <div style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 22px;">
+            <div class="ln-figure ln-figure--float-c" style="aspect-ratio: 16/10;">
+                <img src="{{ asset('images/landing/ai-automation.jpg') }}" alt="AI automating workforce workflows" loading="lazy">
             </div>
 
             <div class="ln-ai-mock" aria-label="Example AI conversation">
@@ -381,6 +637,7 @@
                 <div class="ln-ai-bubble-ai">
                     Delegated 2 invoice approvals to Hanna Tan (Finance Manager) for Apr 27 – Apr 29. An audit log entry was created. Want me to email Hanna a summary?
                 </div>
+            </div>
             </div>
         </div>
     </div>
@@ -418,8 +675,8 @@
 
 <section class="ln-cta">
     <div class="mk-container mk-container--narrow">
-        <h2>Spend your first week <em>importing, not configuring.</em></h2>
-        <p>Sign up with your work email, pick a workspace URL, set a password. Your tenant is provisioned with a 14-day Growth trial — no credit card.</p>
+        <h2>Run HR, IT, and Finance <em>on one platform</em> — starting this week.</h2>
+        <p>Sign up with your work email, pick a workspace URL, set a password. Your tenant is provisioned with a 14-day Growth trial — no credit card. AI workflows are switched on by default.</p>
         <div class="ln-cta-row">
             <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial</a>
             <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--outline">See pricing</a>
