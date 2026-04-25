@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // other consumer reads them. See config/secrets.php and docs/laravel-
         // infisical-integration in the eiaaw-secrets-mcp repo.
         App\Providers\SecretsServiceProvider::class,
+        // PlatformSettingsServiceProvider runs after Secrets so DB-stored values
+        // override env defaults at boot. Used for the SuperAdmin Integrations
+        // page (Resend, Stripe, Anthropic, OpenAI, R2, Sentry).
+        App\Providers\PlatformSettingsServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\CashierServiceProvider::class,
     ])

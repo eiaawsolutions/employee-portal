@@ -229,6 +229,22 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
         Route::post('/superadmin/sso', [\App\Http\Controllers\SsoConfigController::class, 'update'])->name('superadmin.sso.update')->middleware('throttle:10,60');
     });
 
+    // ══════════════════════════════════════════════════════════════════════
+    // PLATFORM-LEVEL INTEGRATIONS — EIAAW staff only (gated by EnsurePlatformAdmin)
+    // Resend, Stripe, Anthropic, OpenAI, Cloudflare R2, Sentry — encrypted at rest
+    // ══════════════════════════════════════════════════════════════════════
+    Route::middleware(\App\Http\Middleware\EnsurePlatformAdmin::class)->group(function () {
+        Route::get('/superadmin/integrations',
+            [\App\Http\Controllers\SuperAdminIntegrationsController::class, 'show'])
+            ->name('superadmin.integrations');
+        Route::post('/superadmin/integrations',
+            [\App\Http\Controllers\SuperAdminIntegrationsController::class, 'update'])
+            ->name('superadmin.integrations.update')->middleware('throttle:20,60');
+        Route::delete('/superadmin/integrations/{key}',
+            [\App\Http\Controllers\SuperAdminIntegrationsController::class, 'delete'])
+            ->name('superadmin.integrations.delete')->middleware('throttle:20,60');
+    });
+
     // Knowledge Base (Superadmin only — separate password)
     Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
     Route::post('/superadmin/knowledge-base/setup',    [KnowledgeBaseController::class, 'storePassword'])->name('superadmin.kb.setup.store');

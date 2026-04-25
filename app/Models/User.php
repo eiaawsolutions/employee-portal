@@ -70,6 +70,18 @@ class User extends Authenticatable
     public function isSuperadmin(): bool   { return $this->role === 'superadmin'; }
     public function isSystemAdmin(): bool  { return $this->role === 'system_admin'; }
 
+    /**
+     * EIAAW-staff-only platform admin. Configured via EIAAW_PLATFORM_ADMINS
+     * env var as a comma-separated list of work emails. Used to gate the
+     * superadmin Integrations page (Resend/Stripe/Anthropic keys).
+     */
+    public function isPlatformAdmin(): bool
+    {
+        $allowList = array_filter(array_map('trim',
+            explode(',', (string) env('EIAAW_PLATFORM_ADMINS', ''))));
+        return in_array(strtolower($this->work_email ?? ''), array_map('strtolower', $allowList), true);
+    }
+
     public function isHrOrIt(): bool
     {
         return $this->isHr() || $this->isIt() || $this->isSuperadmin() || $this->isSystemAdmin();
