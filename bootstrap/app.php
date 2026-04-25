@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withProviders([
+        // SecretsServiceProvider MUST be first — it resolves `secret://` handles
+        // in config paths BEFORE CashierServiceProvider, mail, storage, or any
+        // other consumer reads them. See config/secrets.php and docs/laravel-
+        // infisical-integration in the eiaaw-secrets-mcp repo.
+        App\Providers\SecretsServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\CashierServiceProvider::class,
     ])
