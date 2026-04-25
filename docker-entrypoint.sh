@@ -30,7 +30,15 @@ has_table() {
         2>/dev/null | grep -q 1
 }
 
-if has_table tenants; then
+# FORCE_WIPE_DB=true environment override — wipes the public schema
+# unconditionally before migrating. Use during early deploys when the
+# migration-order is still being stabilised. REMOVE this env var after
+# first successful production deploy to prevent accidental data loss.
+if [[ "${FORCE_WIPE_DB:-false}" == "true" ]]; then
+    echo "=== FORCE_WIPE_DB=true — wiping public schema ==="
+    psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c \
+        "DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO postgres; GRANT ALL ON SCHEMA public TO public;"
+elif has_table tenants; then
     echo "=== DB healthy (tenants table present) ==="
 elif has_table migrations; then
     echo "=== DB in partial state — wiping public schema for clean migration run ==="
