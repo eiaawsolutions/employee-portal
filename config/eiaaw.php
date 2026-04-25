@@ -9,11 +9,60 @@ return [
     'tagline' => 'AI · Human Partnerships',
 
     'marketing_host' => env('APP_MARKETING_HOST', 'ep.eiaawsolutions.com'),
-    'tenant_domain'  => env('APP_TENANT_DOMAIN', 'ep.eiaawsolutions.com'),
+    'tenant_domain'  => env('APP_TENANT_DOMAIN', 'eiaawsolutions.com'),
 
     'support_email' => env('SUPPORT_EMAIL', 'hello@eiaawsolutions.com'),
     'sales_email'   => env('SALES_EMAIL', 'sales@eiaawsolutions.com'),
     'company_legal' => 'EIAAW Solutions Sdn. Bhd.',
+
+    /*
+     * Reserved tenant slugs.
+     *
+     * With wildcard DNS (*.eiaawsolutions.com → Railway) every signup
+     * provisions instantly with zero infra calls. The trade-off is that
+     * the wildcard catches EVERY undefined subdomain, so we must reject
+     * slugs that would collide with platform infrastructure, security-
+     * sensitive names that could be used to phish operators or staff,
+     * and EIAAW-internal identifiers.
+     *
+     * This is the single source of truth — Tenant::isSlugAvailable() and
+     * SignupController both read from here. To extend, add to the array
+     * (no code change). To allow a previously-reserved slug, remove from
+     * the array AND verify no real subdomain is wired up at Cloudflare.
+     *
+     * Categories:
+     *   - infra  : matches existing CNAMEs in the eiaawsolutions.com zone
+     *              or common subdomain conventions (mail, www, etc.)
+     *   - eiaaw  : EIAAW-internal product/tenant identifiers
+     *   - auth   : security-sensitive names that could be used for phishing
+     *   - platform : standard SaaS hostnames a customer might confuse with
+     *                first-party EIAAW pages (admin, billing, support, …)
+     */
+    'reserved_slugs' => [
+        // infra (must match existing CNAMEs + standard hostnames)
+        'app', 'admin', 'api', 'www', 'mail', 'static', 'assets', 'cdn',
+        'ep', 'ads', 'sa',
+
+        // eiaaw internals
+        'eiaaw', 'eiaaw-hq', 'eiaaw-admin', 'workforce', 'system', 'hq',
+
+        // auth & security-sensitive (anti-phishing)
+        'auth', 'oauth', 'sso', 'saml', 'oidc', 'login', 'signin',
+        'signup', 'signout', 'logout', 'register', 'verify', 'webhook',
+        'webhooks', 'security', 'admin-portal',
+
+        // platform pages a customer would not own
+        'help', 'support', 'status', 'docs', 'documentation', 'blog',
+        'about', 'pricing', 'features', 'legal', 'terms', 'privacy',
+        'contact', 'sales', 'partners', 'jobs', 'careers',
+        'dashboard', 'billing', 'account', 'profile', 'settings',
+        'console', 'changelog',
+
+        // ops + monitoring + dev
+        'staging', 'dev', 'test', 'qa', 'beta', 'alpha', 'preview',
+        'sandbox', 'demo', 'monitor', 'monitoring', 'metrics', 'logs',
+        'health', 'ping', 'up',
+    ],
 
     'brand' => [
         'primary' => '#1FA896',

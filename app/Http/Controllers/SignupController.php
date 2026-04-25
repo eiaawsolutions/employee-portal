@@ -27,13 +27,6 @@ use Illuminate\Support\Facades\Validator;
  */
 class SignupController extends Controller
 {
-    private const RESERVED_SLUGS = [
-        'app', 'admin', 'api', 'www', 'mail', 'static', 'assets', 'help',
-        'support', 'status', 'docs', 'blog', 'about', 'pricing', 'features',
-        'security', 'legal', 'terms', 'privacy', 'contact',
-        'eiaaw', 'eiaaw-admin', 'workforce', 'system',
-    ];
-
     public function showForm()
     {
         $this->ensureMarketingApex();
@@ -60,19 +53,13 @@ class SignupController extends Controller
 
         $slug = strtolower($data['desired_slug']);
 
-        if (in_array($slug, self::RESERVED_SLUGS, true)) {
+        // Single availability check — covers reserved list, format,
+        // existing tenants (including soft-deleted), and pending invites.
+        // Reserved-slug list lives in config/eiaaw.php so it can be
+        // updated without redeploying controller code.
+        if (!Tenant::isSlugAvailable($slug)) {
             return back()->withInput()->withErrors([
-                'desired_slug' => 'That workspace URL is reserved. Please choose another.',
-            ]);
-        }
-
-        // Hard collision against existing tenants (live workspaces and
-        // pending invites) — no enumeration leak: we tell the user it's
-        // taken without revealing whether it's pending or live.
-        if (Tenant::withTrashed()->where('slug', $slug)->exists()
-            || SignupInvite::where('desired_slug', $slug)->exists()) {
-            return back()->withInput()->withErrors([
-                'desired_slug' => 'That workspace URL is already taken. Please choose another.',
+                'desired_slug' => 'That workspace URL is not available. Please choose another.',
             ]);
         }
 
@@ -130,15 +117,29 @@ class SignupController extends Controller
             'password' => ['required', 'string', 'min:12', 'confirmed'],
         ])->validate();
 
-        $tenant = $provisioner->provisionFromInvite($invite, $data['password']);
+        try {
+            $tenant = $provisioner->provisionFromInvite($invite, $data['password']);
+        } catch (\App\Exceptions\SlugUnavailableException $e) {
+            // Race lost — another signup grabbed the slug between the form
+            // submission and provisioning. Send the user back to the
+            // signup form to pick a fresh slug; the original invite is
+            // unconsumed so they can retry without losing email/name.
+            return redirect()->route('signup.form')
+                ->withInput([
+                    'work_email'   => $invite->work_email,
+                    'full_name'    => $invite->full_name,
+                    'company_name' => $invite->company_name,
+                    'plan'         => $invite->plan,
+                ])
+                ->withErrors(['desired_slug' => $e->getMessage()]);
+        }
 
-        // Build the redirect URL to the new tenant's subdomain.
-        // In production: https://{slug}.ep.eiaawsolutions.com/login
-        // In local dev: keep apex + ?tenant={slug} query param.
-        $apex = config('eiaaw.tenant_domain');
-        $url  = app()->environment('local')
+        // Redirect to the new tenant's subdomain login. In local dev there
+        // are no real subdomains; use the dev escape hatch (?tenant=slug)
+        // so ResolveTenant binds correctly.
+        $url = app()->environment('local')
             ? url('/login') . '?tenant=' . urlencode($tenant->slug)
-            : 'https://' . $tenant->slug . '.' . $apex . '/login';
+            : $tenant->workspaceUrl('/login');
 
         return redirect($url)->with('success',
             'Workspace created — sign in with your work email to start the trial.');

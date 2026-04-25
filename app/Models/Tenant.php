@@ -108,6 +108,63 @@ class Tenant extends Model
     }
 
     /**
+     * Fully-qualified workspace URL for this tenant. Used by the post-signup
+     * redirect, email links, and HQ tenant directory. Honours the configured
+     * tenant_domain so dev / staging / production all produce the right URL.
+     */
+    public function workspaceUrl(string $path = '/'): string
+    {
+        $domain = config('eiaaw.tenant_domain');
+        $path   = '/' . ltrim($path, '/');
+        return "https://{$this->slug}.{$domain}{$path}";
+    }
+
+    /**
+     * Reserved subdomain slugs — single source of truth in config/eiaaw.php.
+     * Returns lowercase strings. Used by isSlugAvailable() and the signup
+     * form validator.
+     */
+    public static function reservedSlugs(): array
+    {
+        return array_map('strtolower', (array) config('eiaaw.reserved_slugs', []));
+    }
+
+    /**
+     * Whether `$slug` can be used as a new tenant subdomain. Checks:
+     *   - Format (lowercase alphanumeric + hyphens, 3–60 chars, no leading/trailing hyphen)
+     *   - Not in the reserved list (config/eiaaw.php → reserved_slugs)
+     *   - No collision with an existing tenant (including soft-deleted)
+     *   - No collision with a pending SignupInvite
+     *
+     * Database uniqueness is also enforced by UNIQUE constraints on
+     * tenants.slug and signup_invites.desired_slug, so concurrent signups
+     * for the same slug fail loudly at INSERT time. This method exists
+     * for friendly form-validation errors before that point.
+     */
+    public static function isSlugAvailable(string $slug): bool
+    {
+        $slug = strtolower($slug);
+
+        if (!preg_match('/^[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?$/', $slug)) {
+            return false;
+        }
+
+        if (in_array($slug, self::reservedSlugs(), true)) {
+            return false;
+        }
+
+        if (self::withTrashed()->where('slug', $slug)->exists()) {
+            return false;
+        }
+
+        if (\App\Models\SignupInvite::where('desired_slug', $slug)->exists()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Current count of users in this tenant's tenant_users pivot. Cheap query
      * (count on a small pivot table); not cached — callers may cache if needed.
      */

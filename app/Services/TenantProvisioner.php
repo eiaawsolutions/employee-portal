@@ -31,6 +31,15 @@ class TenantProvisioner
      */
     public function provisionFromInvite(SignupInvite $invite, string $password): Tenant
     {
+        // Race-safe re-check: catches the narrow window between the
+        // signup form's availability check and this commit. The DB has
+        // a UNIQUE constraint as the ultimate guard, but raising a
+        // friendly exception here gives the controller a clean error
+        // path instead of a 500 from a constraint-violation.
+        if (!Tenant::isSlugAvailable($invite->desired_slug)) {
+            throw new \App\Exceptions\SlugUnavailableException($invite->desired_slug);
+        }
+
         return DB::transaction(function () use ($invite, $password) {
             // 1. Create the Tenant (no current_tenant context — this is platform-level).
             $tenant = TenantContext::asNone(function () use ($invite) {
