@@ -34,10 +34,10 @@
             border-right: 1px solid var(--line-soft);
             position: relative;
         }
+        /* Logo aligns with the SIGN IN eyebrow on the right (same Y offset). */
         .auth-aside-lockup {
-            position: absolute;
-            top: clamp(28px, 4vw, 56px);
-            left: clamp(28px, 4vw, 56px);
+            margin-top: var(--content-top);
+            margin-bottom: clamp(28px, 3.5vw, 48px);
         }
         .auth-aside-meta {
             position: absolute;
@@ -50,7 +50,6 @@
         .auth-aside-body {
             display: flex; flex-direction: column;
             gap: clamp(24px, 3vw, 40px);
-            margin-top: var(--content-top);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
