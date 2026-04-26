@@ -30,6 +30,16 @@
         .next-steps { background: var(--bg-warm); border: 1px solid var(--line-soft); border-radius: 12px; padding: 20px 24px; margin-top: 28px; font-size: 14px; color: var(--ink-2); line-height: 1.55; }
         .next-steps strong { color: var(--ink); }
         a { color: var(--primary-dark); }
+        .back-home {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 24px; padding: 10px 18px;
+            font-family: var(--sans); font-size: 14px; font-weight: 500;
+            color: var(--ink); text-decoration: none;
+            background: transparent; border: 1px solid var(--line-soft);
+            border-radius: 999px; transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .back-home:hover { background: var(--bg-warm); border-color: var(--primary-dark); }
+        .back-home svg { width: 14px; height: 14px; }
     </style>
 </head>
 <body>
@@ -58,6 +68,13 @@
             Still stuck? Email us at
             <a href="mailto:{{ config('eiaaw.support_email') }}">{{ config('eiaaw.support_email') }}</a>.
         </div>
+
+        <a href="{{ route('marketing.landing') }}" class="back-home">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 12L6 8l4-4"/>
+            </svg>
+            Back to homepage
+        </a>
 
         <p class="meta">EIAAW Solutions &middot; Made in Malaysia</p>
     </div>
