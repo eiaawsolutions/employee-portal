@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 540" role="img" aria-labelledby="hero-title hero-desc" preserveAspectRatio="xMidYMid meet">
+  <title id="hero-title">EIAAW Workforce — run an entire organisation with one click</title>
+  <desc id="hero-desc">Product dashboard preview showing three departments (HR, IT, Finance) running in parallel from a single command palette on the EIAAW Workforce platform.</desc>
+
+  <defs>
+    <linearGradient id="bg-warm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF7F2"/>
+      <stop offset="100%" stop-color="#F3EDE0"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22B8A5"/>
+      <stop offset="100%" stop-color="#11766A"/>
+    </linearGradient>
+    <linearGradient id="card-glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6"/>
+      <feOffset dx="0" dy="4" result="offset"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Frame background -->
+  <rect width="720" height="540" rx="20" fill="url(#bg-warm)"/>
+
+  <!-- Browser chrome -->
+  <rect x="32" y="32" width="656" height="476" rx="14" fill="#FFFFFF" stroke="#E6DFCF" stroke-width="1"/>
+  <rect x="32" y="32" width="656" height="36" rx="14" fill="#F8F3E8"/>
+  <rect x="32" y="60" width="656" height="8" fill="#F8F3E8"/>
+  <circle cx="52" cy="50" r="5" fill="#E0BFA0"/>
+  <circle cx="70" cy="50" r="5" fill="#EAD9B8"/>
+  <circle cx="88" cy="50" r="5" fill="#C8E0CF"/>
+  <rect x="120" y="42" width="240" height="16" rx="8" fill="#FFFFFF" stroke="#E6DFCF" stroke-width="1"/>
+  <text x="132" y="53" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9" fill="#7B8A8F" letter-spacing="0.05em">acme.eiaawsolutions.com</text>
+
+  <!-- Sidebar -->
+  <rect x="32" y="68" width="160" height="440" fill="#FAF7F2"/>
+  <rect x="32" y="68" width="160" height="440" fill="none" stroke="#E6DFCF" stroke-width="1"/>
+
+  <!-- Logo lockup -->
+  <rect x="48" y="84" width="22" height="22" rx="6" fill="url(#teal)"/>
+  <path d="M54 95 L58 99 L66 91" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="78" y="95" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#0F1A1D">EIAAW</text>
+  <text x="78" y="105" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#7B8A8F" letter-spacing="0.1em">WORKFORCE</text>
+
+  <!-- Sidebar nav -->
+  <g font-family="Inter, system-ui, sans-serif" font-size="10" fill="#3F4F54">
+    <rect x="48" y="132" width="128" height="24" rx="6" fill="#1FA896" opacity="0.10"/>
+    <circle cx="60" cy="144" r="2" fill="#11766A"/>
+    <text x="70" y="147" fill="#11766A" font-weight="600">Overview</text>
+
+    <text x="60" y="178" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.12em">HR</text>
+    <text x="60" y="196">Onboarding</text>
+    <text x="60" y="212">Employees</text>
+    <text x="60" y="228">Leave</text>
+    <text x="60" y="244">Payroll</text>
+    <text x="60" y="260">EA Forms</text>
+
+    <text x="60" y="288" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.12em">IT</text>
+    <text x="60" y="306">Asset Inventory</text>
+    <text x="60" y="322">AARF</text>
+    <text x="60" y="338">Provisioning</text>
+
+    <text x="60" y="366" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.12em">FINANCE</text>
+    <text x="60" y="384">General Ledger</text>
+    <text x="60" y="400">Invoices</text>
+    <text x="60" y="416">Claims</text>
+    <text x="60" y="432">Reports</text>
+  </g>
+
+  <!-- Main canvas header -->
+  <text x="216" y="100" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em">DASHBOARD · TODAY</text>
+  <text x="216" y="124" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">Run your organisation</text>
+  <text x="358" y="124" font-family="'Instrument Serif', Georgia, serif" font-size="22" font-style="italic" fill="#11766A" letter-spacing="-0.02em">— in one click.</text>
+
+  <!-- Three module cards -->
+  <g filter="url(#soft-shadow)">
+    <!-- HR card -->
+    <rect x="216" y="148" width="148" height="120" rx="12" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="228" y="160" width="22" height="22" rx="6" fill="#1FA896" opacity="0.14"/>
+    <text x="239" y="176" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#11766A" text-anchor="middle">HR</text>
+    <text x="228" y="200" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.1em">ACTIVE EMPLOYEES</text>
+    <text x="228" y="222" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">142</text>
+    <text x="228" y="245" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">Payroll · 3 days</text>
+    <text x="228" y="258" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">Leave queue · 4</text>
+
+    <!-- IT card -->
+    <rect x="372" y="148" width="148" height="120" rx="12" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="384" y="160" width="22" height="22" rx="6" fill="#1FA896" opacity="0.14"/>
+    <text x="395" y="176" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#11766A" text-anchor="middle">IT</text>
+    <text x="384" y="200" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.1em">ASSETS DEPLOYED</text>
+    <text x="384" y="222" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">318</text>
+    <text x="384" y="245" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">AARF pending · 2</text>
+    <text x="384" y="258" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">Returns · 1</text>
+
+    <!-- Finance card -->
+    <rect x="528" y="148" width="148" height="120" rx="12" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="540" y="160" width="22" height="22" rx="6" fill="#1FA896" opacity="0.14"/>
+    <text x="551" y="176" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#11766A" text-anchor="middle">FIN</text>
+    <text x="540" y="200" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.1em">MONTH-TO-DATE</text>
+    <text x="540" y="222" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">RM 412k</text>
+    <text x="540" y="245" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">Invoices · 24</text>
+    <text x="540" y="258" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">Claims · 7</text>
+  </g>
+
+  <!-- Activity stream -->
+  <text x="216" y="296" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em">LIVE ACTIVITY</text>
+
+  <g font-family="Inter, system-ui, sans-serif" font-size="10" fill="#3F4F54">
+    <circle cx="222" cy="316" r="3" fill="#1FA896"/>
+    <text x="234" y="319">New hire <tspan fill="#0F1A1D" font-weight="600">Aisha Rahman</tspan> activated · welcome email sent · IT auto-provisioned 2 assets</text>
+
+    <circle cx="222" cy="338" r="3" fill="#1FA896"/>
+    <text x="234" y="341">Expense claim <tspan fill="#0F1A1D" font-weight="600">CL-2891</tspan> approved · auto-posted to GL · journal entry created</text>
+
+    <circle cx="222" cy="360" r="3" fill="#1FA896"/>
+    <text x="234" y="363">AARF acknowledged by <tspan fill="#0F1A1D" font-weight="600">Daniel Lim</tspan> · MacBook Pro · asset locked to employee record</text>
+
+    <circle cx="222" cy="382" r="3" fill="#1FA896"/>
+    <text x="234" y="385">Payroll preview ready · 142 employees · EPF / SOCSO / EIS / PCB calculated</text>
+
+    <circle cx="222" cy="404" r="3" fill="#22B8A5"/>
+    <text x="234" y="407">Offboarding queued · IT asset return · final payroll · clearance certificate</text>
+  </g>
+
+  <!-- Command palette anchored at bottom -->
+  <g filter="url(#soft-shadow)">
+    <rect x="216" y="436" width="460" height="56" rx="14" fill="url(#card-glass)" stroke="#11766A" stroke-width="1"/>
+    <circle cx="240" cy="464" r="10" fill="url(#teal)"/>
+    <path d="M236 464 L239 467 L245 461" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="260" y="460" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#0F1A1D">Run today's operations</text>
+    <text x="260" y="474" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#7B8A8F">Onboard · Provision · Pay · Reconcile · Close — one click</text>
+    <rect x="572" y="448" width="92" height="32" rx="9" fill="url(#teal)"/>
+    <text x="618" y="468" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF" text-anchor="middle">Run →</text>
+  </g>
+</svg>

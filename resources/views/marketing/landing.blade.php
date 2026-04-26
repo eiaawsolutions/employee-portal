@@ -170,6 +170,122 @@
             ],
         ],
     ];
+
+    // WebSite + SearchAction — earns a sitelinks search box in Google.
+    $websiteSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => 'EIAAW Workforce',
+        'alternateName' => 'EIAAW Solutions Workforce',
+        'url' => $canonical,
+        'inLanguage' => ['en-MY', 'en', 'ms'],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'EIAAW Solutions Sdn. Bhd.',
+            'url' => $canonical,
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('brand/logo-full.png'),
+            ],
+        ],
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => [
+                '@type' => 'EntryPoint',
+                'urlTemplate' => rtrim($canonical, '/').'/faq?q={search_term_string}',
+            ],
+            'query-input' => 'required name=search_term_string',
+        ],
+    ];
+
+    // Service × 3 — each pillar gets its own AI-overview / rich-result eligibility.
+    $serviceSchemas = [
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => 'EIAAW Workforce — HR & People Operations',
+            'serviceType' => 'Human Resources Management Software',
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'areaServed' => [
+                ['@type' => 'Country', 'name' => 'Malaysia'],
+                ['@type' => 'Country', 'name' => 'Singapore'],
+                ['@type' => 'Country', 'name' => 'Indonesia'],
+                ['@type' => 'Country', 'name' => 'Thailand'],
+                ['@type' => 'Country', 'name' => 'Philippines'],
+                ['@type' => 'Country', 'name' => 'Vietnam'],
+            ],
+            'description' => 'Full HRM suite: onboarding, employee records, offboarding, leave management with accruals, attendance, payroll with EA forms, and Malaysian statutory submissions (EPF, SOCSO, EIS, PCB) for LHDN, KWSP, PERKESO, HRDC.',
+            'url' => rtrim($canonical, '/').'/features#hr',
+        ],
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => 'EIAAW Workforce — IT Asset Management',
+            'serviceType' => 'IT Asset Management Software',
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'areaServed' => [
+                ['@type' => 'Country', 'name' => 'Malaysia'],
+                ['@type' => 'Country', 'name' => 'Singapore'],
+                ['@type' => 'Country', 'name' => 'Indonesia'],
+                ['@type' => 'Country', 'name' => 'Thailand'],
+                ['@type' => 'Country', 'name' => 'Philippines'],
+                ['@type' => 'Country', 'name' => 'Vietnam'],
+            ],
+            'description' => 'Live asset inventory with full lifecycle tracking. Auto-acceptance AARF on assignment, auto-return AARF on offboarding, tokenised email acknowledgement with audit trail, disposed-asset register feeding Finance depreciation.',
+            'url' => rtrim($canonical, '/').'/features#it',
+        ],
+        [
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => 'EIAAW Workforce — Full Accounting',
+            'serviceType' => 'Accounting & Financial Management Software',
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'areaServed' => [
+                ['@type' => 'Country', 'name' => 'Malaysia'],
+                ['@type' => 'Country', 'name' => 'Singapore'],
+                ['@type' => 'Country', 'name' => 'Indonesia'],
+                ['@type' => 'Country', 'name' => 'Thailand'],
+                ['@type' => 'Country', 'name' => 'Philippines'],
+                ['@type' => 'Country', 'name' => 'Vietnam'],
+            ],
+            'description' => 'Full-fledged accounting platform: Chart of Accounts, General Ledger, AR/AP, invoices, purchase orders, banking & reconciliation, fixed assets & depreciation, budgeting, tax returns, AI invoice scanning, and approved-claim auto-posting.',
+            'url' => rtrim($canonical, '/').'/features#finance',
+        ],
+    ];
+
+    // LocalBusiness — Kuala Lumpur geo signal for local-pack & Google Business surfaces.
+    $localBusinessSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'LocalBusiness',
+        '@id' => rtrim($canonical, '/').'#localbusiness',
+        'name' => 'EIAAW Solutions Sdn. Bhd.',
+        'image' => asset('brand/logo-full.png'),
+        'url' => $canonical,
+        'telephone' => '',
+        'email' => config('eiaaw.sales_email', 'sales@eiaawsolutions.com'),
+        'address' => [
+            '@type' => 'PostalAddress',
+            'addressLocality' => 'Kuala Lumpur',
+            'addressRegion' => 'Federal Territory of Kuala Lumpur',
+            'addressCountry' => 'MY',
+        ],
+        'geo' => [
+            '@type' => 'GeoCoordinates',
+            'latitude' => 3.1390,
+            'longitude' => 101.6869,
+        ],
+        'areaServed' => [
+            ['@type' => 'Country', 'name' => 'Malaysia'],
+            ['@type' => 'Country', 'name' => 'Singapore'],
+            ['@type' => 'Country', 'name' => 'Indonesia'],
+            ['@type' => 'Country', 'name' => 'Thailand'],
+            ['@type' => 'Country', 'name' => 'Philippines'],
+            ['@type' => 'Country', 'name' => 'Vietnam'],
+        ],
+        'priceRange' => '$$',
+        'currenciesAccepted' => 'USD, MYR',
+        'paymentAccepted' => 'Credit Card, Bank Transfer',
+    ];
 @endphp
 
 <link rel="canonical" href="{{ $canonical }}">
@@ -214,16 +330,27 @@
 {{-- JSON-LD: BreadcrumbList --}}
 <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($breadcrumbSchema, $jsonFlags) !!}</script>
 
+{{-- JSON-LD: WebSite + SearchAction (sitelinks search box) --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($websiteSchema, $jsonFlags) !!}</script>
+
+{{-- JSON-LD: Service per pillar (HR, IT, Accounting) — each gets its own AI-overview eligibility --}}
+@foreach($serviceSchemas as $svc)
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($svc, $jsonFlags) !!}</script>
+@endforeach
+
+{{-- JSON-LD: LocalBusiness (KL geo signal) --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($localBusinessSchema, $jsonFlags) !!}</script>
+
 <style>
     /* ── Hero ── */
     .ln-hero {
-        padding: clamp(72px, 10vw, 140px) 0 clamp(72px, 10vw, 120px);
+        padding: clamp(64px, 8vw, 110px) 0 clamp(56px, 8vw, 96px);
         position: relative; overflow: hidden;
     }
     .ln-hero::before {
         content: ''; position: absolute;
         inset: auto -10% -30% -10%;
-        height: 420px;
+        height: 460px;
         background:
             radial-gradient(60% 60% at 20% 40%, rgba(31,168,150,0.10), transparent 70%),
             radial-gradient(50% 50% at 80% 60%, rgba(17,118,106,0.08), transparent 70%);
@@ -231,42 +358,156 @@
     }
     .ln-hero-grid {
         display: grid;
-        grid-template-columns: 1.35fr 1fr;
-        gap: clamp(32px, 5vw, 80px);
-        align-items: end;
+        grid-template-columns: 1.05fr 1fr;
+        gap: clamp(32px, 5vw, 72px);
+        align-items: center;
         position: relative; z-index: 1;
     }
-    @media (max-width: 960px) {
-        .ln-hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    @media (max-width: 1080px) {
+        .ln-hero-grid { grid-template-columns: 1fr; gap: 48px; align-items: start; }
     }
-    .ln-hero-meta { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 28px; }
+    .ln-hero-meta { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
     .ln-hero-meta .mk-pill {
         background: var(--surface); color: var(--primary-dark);
         border: 1px solid var(--line);
     }
-    .ln-hero h1 { margin-bottom: 28px; }
+    .ln-hero h1 {
+        margin: 0 0 28px;
+        font-size: clamp(38px, 5.4vw, 68px);
+        line-height: 1.02;
+        max-width: 14ch;
+    }
     .ln-hero-lede {
-        font-size: clamp(17px, 1.7vw, 20px);
-        line-height: 1.55;
+        font-size: clamp(16px, 1.4vw, 18px);
+        line-height: 1.6;
         color: var(--ink-2);
-        max-width: 540px;
-        margin-bottom: 36px;
+        max-width: 52ch;
+        margin: 0 0 22px;
     }
-    .ln-hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
-    .ln-hero-meta-side {
-        display: flex; flex-direction: column; gap: 18px;
-        padding-bottom: 8px;
+    .ln-hero-lede strong {
+        color: var(--ink); font-weight: 600;
     }
-    .ln-hero-stat {
-        font-family: var(--serif); font-size: clamp(40px, 4.5vw, 58px);
-        line-height: 0.95; color: var(--ink);
-        font-style: italic; font-weight: 400;
-        letter-spacing: -0.02em;
-    }
-    .ln-hero-stat-label {
+    .ln-hero-pillars {
+        display: flex; flex-wrap: wrap; gap: 8px 18px;
+        margin: 0 0 32px;
         font-family: var(--mono); font-size: 11px;
         text-transform: uppercase; letter-spacing: 0.14em;
-        color: var(--mute); margin-top: 10px;
+        color: var(--mute);
+    }
+    .ln-hero-pillars span {
+        display: inline-flex; align-items: center; gap: 8px;
+    }
+    .ln-hero-pillars span::before {
+        content: ''; width: 6px; height: 6px; border-radius: 50%;
+        background: var(--primary); opacity: 0.7;
+    }
+    .ln-hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; }
+    .ln-hero-trust {
+        font-family: var(--mono); font-size: 11px;
+        text-transform: uppercase; letter-spacing: 0.14em;
+        color: var(--mute);
+    }
+
+    /* ── Hero product mock — layered, floating, shadow-rich ── */
+    @keyframes ln-hero-float-main {
+        0%, 100% { transform: translate3d(0, 0, 0) rotate(-0.2deg); }
+        50%      { transform: translate3d(0, -12px, 0) rotate(0.1deg); }
+    }
+    @keyframes ln-hero-float-card {
+        0%, 100% { transform: translate3d(0, 0, 0) rotate(0.4deg); }
+        50%      { transform: translate3d(0, -18px, 0) rotate(-0.2deg); }
+    }
+    @keyframes ln-hero-pulse {
+        0%, 100% { opacity: 0.55; transform: scale(1); }
+        50%      { opacity: 0.85; transform: scale(1.04); }
+    }
+
+    .ln-hero-mock {
+        position: relative;
+        width: 100%;
+        max-width: 620px;
+        aspect-ratio: 4/3.4;
+        margin-left: auto;
+        isolation: isolate;
+    }
+    @media (max-width: 1080px) {
+        .ln-hero-mock { margin: 0 auto; max-width: 560px; }
+    }
+
+    /* Ambient glow behind the whole composition */
+    .ln-hero-mock::before {
+        content: '';
+        position: absolute;
+        inset: 6% -4% -6% -4%;
+        background:
+            radial-gradient(48% 60% at 60% 55%, rgba(34,184,165,0.22), transparent 72%),
+            radial-gradient(40% 50% at 25% 30%, rgba(17,118,106,0.18), transparent 72%);
+        filter: blur(28px);
+        z-index: 0;
+        animation: ln-hero-pulse 6s ease-in-out infinite;
+        will-change: opacity, transform;
+    }
+
+    /* Primary product mock — multi-layer cinematic shadow */
+    .ln-hero-mock-main {
+        position: absolute;
+        inset: 0 8% 12% 0;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow:
+            0 1px 2px rgba(15, 26, 29, 0.04),
+            0 4px 8px rgba(15, 26, 29, 0.05),
+            0 16px 32px -8px rgba(15, 26, 29, 0.14),
+            0 36px 64px -16px rgba(15, 26, 29, 0.22),
+            0 80px 140px -28px rgba(15, 26, 29, 0.28);
+        animation: ln-hero-float-main 8s ease-in-out infinite;
+        will-change: transform;
+        z-index: 1;
+        transform: translateZ(0);
+    }
+    .ln-hero-mock-main::after {
+        content: '';
+        position: absolute; inset: 0;
+        border-radius: 18px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        pointer-events: none;
+    }
+    .ln-hero-mock-main img,
+    .ln-hero-mock-main svg {
+        width: 100%; height: 100%; display: block;
+    }
+
+    /* Floating "one-click" command-palette card — overlaid bottom-right */
+    .ln-hero-mock-card {
+        position: absolute;
+        right: -2%;
+        bottom: -2%;
+        width: 46%;
+        aspect-ratio: 320/360;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+            0 1px 3px rgba(15, 26, 29, 0.08),
+            0 12px 28px -6px rgba(15, 26, 29, 0.28),
+            0 36px 80px -16px rgba(15, 26, 29, 0.40),
+            0 0 0 1px rgba(255, 255, 255, 0.05);
+        animation: ln-hero-float-card 6.5s ease-in-out infinite;
+        animation-delay: 0.8s;
+        will-change: transform;
+        z-index: 2;
+        transform: translateZ(0);
+    }
+    .ln-hero-mock-card img,
+    .ln-hero-mock-card svg { width: 100%; height: 100%; display: block; }
+
+    @media (max-width: 600px) {
+        .ln-hero-mock-card { width: 58%; right: -4%; bottom: -4%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .ln-hero-mock::before,
+        .ln-hero-mock-main,
+        .ln-hero-mock-card { animation: none; }
     }
 
     /* ── Social proof strip ── */
@@ -508,27 +749,6 @@
         .ln-figure--float-c { animation: none; }
     }
 
-    /* Hero stack — two floating images, slightly overlapped */
-    .ln-hero-stack {
-        position: relative;
-        aspect-ratio: 4/5;
-        max-width: 460px;
-        margin-left: auto;
-    }
-    .ln-hero-stack .ln-figure { position: absolute; }
-    .ln-hero-stack .ln-figure--main {
-        inset: 0 0 18% 18%;
-        aspect-ratio: 3/4;
-    }
-    .ln-hero-stack .ln-figure--accent {
-        right: 0; top: 8%;
-        width: 56%; aspect-ratio: 4/5;
-        z-index: 2;
-    }
-    @media (max-width: 960px) {
-        .ln-hero-stack { max-width: 380px; margin: 12px auto 0; }
-    }
-
     /* Module-1 storyline section */
     .ln-module {
         display: grid;
@@ -629,7 +849,7 @@
 
 @section('content')
 
-<section class="ln-hero">
+<section class="ln-hero" aria-labelledby="hero-heading">
     <div class="mk-container">
         <div class="ln-hero-grid">
             <div>
@@ -637,41 +857,42 @@
                     <span class="mk-pill"><span class="mk-pill-dot"></span>AI · Human Partnerships</span>
                     <span style="font-family: var(--mono); font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.14em;">Built for Malaysia &amp; APAC</span>
                 </div>
-                <h1 class="mk-display">
-                    EIAAW Workforce — three departments, <em>one platform.</em>
+
+                <h1 id="hero-heading" class="mk-display">
+                    Run an entire organisation <em>in one click.</em>
                 </h1>
+
                 <p class="ln-hero-lede">
-                    HR, IT, and Accounting on a single AI-native backbone. The full employee journey — onboard, manage, offboard — runs end-to-end alongside an automated IT asset workflow with auto acceptance and return AARFs, a complete HRM suite (leave, payroll, EA forms, attendance, government statutory submissions), and a full-fledged accounting platform. Three departments. One tenant. Zero CSV exports. More modules in active development.
+                    <strong>EIAAW Workforce</strong> unifies three departments — HR, IT, and Accounting — on a single AI-native backbone. The employee journey, IT asset workflow, full HRM, and a full-fledged accounting ledger move together. One tenant. Zero CSV exports. More modules shipping every cycle.
                 </p>
+
+                <div class="ln-hero-pillars" aria-label="Departments included">
+                    <span>HR · onboarding · payroll · EA · statutory</span>
+                    <span>IT · assets · auto AARF</span>
+                    <span>Finance · GL · invoices · claims</span>
+                </div>
+
                 <div class="ln-hero-ctas">
                     <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
                     <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See every feature →</a>
                 </div>
+
+                <div class="ln-hero-trust">
+                    Postgres RLS isolation · PDPA-aligned · EPF / SOCSO / EIS / PCB ready
+                </div>
             </div>
 
-            <aside class="ln-hero-meta-side" aria-label="Product at a glance">
-                <div class="ln-hero-stack" aria-hidden="true">
-                    <div class="ln-figure ln-figure--main ln-figure--float-a">
-                        <img src="{{ asset('images/landing/hr-onboarding.jpg') }}" alt="" loading="eager" fetchpriority="high">
-                    </div>
-                    <div class="ln-figure ln-figure--accent ln-figure--float-b">
-                        <img src="{{ asset('images/landing/it-assets.jpg') }}" alt="" loading="eager">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 32px;">
-                    <div>
-                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">HR</div>
-                        <div class="ln-hero-stat-label">Onboarding · Records · Leave</div>
-                    </div>
-                    <div>
-                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">IT</div>
-                        <div class="ln-hero-stat-label">Assets · Provisioning · AARF</div>
-                    </div>
-                    <div>
-                        <div class="ln-hero-stat" style="font-size: clamp(28px, 2.6vw, 36px);">Finance</div>
-                        <div class="ln-hero-stat-label">Payroll · Claims · Ledger</div>
-                    </div>
-                </div>
+            <aside class="ln-hero-mock" aria-label="Product preview: EIAAW Workforce dashboard with one-click platform run">
+                <figure class="ln-hero-mock-main">
+                    <img src="{{ asset('images/landing/platform-hero.svg') }}"
+                         alt="EIAAW Workforce dashboard preview — sidebar listing HR, IT, and Finance modules; main canvas showing 142 active employees, 318 deployed assets, RM 412k month-to-date revenue, a live activity stream covering onboarding, expense-claim posting, AARF acknowledgement and payroll preview, with a Run today's operations command palette anchored at the bottom."
+                         width="720" height="540" loading="eager" fetchpriority="high">
+                </figure>
+                <figure class="ln-hero-mock-card" aria-hidden="true">
+                    <img src="{{ asset('images/landing/one-click-card.svg') }}"
+                         alt=""
+                         width="320" height="360" loading="eager">
+                </figure>
             </aside>
         </div>
     </div>
