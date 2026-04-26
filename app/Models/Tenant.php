@@ -141,7 +141,7 @@ class Tenant extends Model
      * for the same slug fail loudly at INSERT time. This method exists
      * for friendly form-validation errors before that point.
      */
-    public static function isSlugAvailable(string $slug): bool
+    public static function isSlugAvailable(string $slug, ?int $ignoreInviteId = null): bool
     {
         $slug = strtolower($slug);
 
@@ -157,7 +157,11 @@ class Tenant extends Model
             return false;
         }
 
-        if (\App\Models\SignupInvite::where('desired_slug', $slug)->exists()) {
+        $inviteQuery = \App\Models\SignupInvite::where('desired_slug', $slug);
+        if ($ignoreInviteId !== null) {
+            $inviteQuery->where('id', '!=', $ignoreInviteId);
+        }
+        if ($inviteQuery->exists()) {
             return false;
         }
 

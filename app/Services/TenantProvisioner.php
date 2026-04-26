@@ -36,7 +36,7 @@ class TenantProvisioner
         // a UNIQUE constraint as the ultimate guard, but raising a
         // friendly exception here gives the controller a clean error
         // path instead of a 500 from a constraint-violation.
-        if (!Tenant::isSlugAvailable($invite->desired_slug)) {
+        if (!Tenant::isSlugAvailable($invite->desired_slug, $invite->id)) {
             throw new \App\Exceptions\SlugUnavailableException($invite->desired_slug);
         }
 
