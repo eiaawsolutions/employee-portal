@@ -66,8 +66,10 @@ Route::middleware('apex')->group(function () {
     Route::get('/privacy',          [MarketingController::class, 'privacy'])->name('marketing.privacy');
     Route::get('/dpa',              [MarketingController::class, 'dpa'])->name('marketing.dpa');
 
-    // SEO · sitemap.xml — dynamic, generated from route names so it can't drift.
-    Route::get('/sitemap.xml',      [MarketingController::class, 'sitemap'])->name('marketing.sitemap');
+    // sitemap.xml is generated as a static file in public/ by the
+    // sitemap:generate artisan command at build time (see nixpacks.toml).
+    // Railway's edge intercepts *.xml requests before Laravel can route
+    // them, so a dynamic route here would never fire.
 
     Route::get('/find-workspace',   [FindWorkspaceController::class, 'show'])->name('marketing.find-workspace');
     Route::post('/find-workspace',  [FindWorkspaceController::class, 'lookup'])->name('marketing.find-workspace.lookup')->middleware('throttle:5,1');
