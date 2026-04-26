@@ -60,7 +60,7 @@
             perspective: 1200px;
         }
         .auth-aside-hero img {
-            max-width: 100%; height: auto; max-height: 44vh;
+            max-width: 88%; height: auto; max-height: 32vh;
             display: block;
             filter:
                 drop-shadow(0 40px 50px rgba(15, 26, 29, 0.28))
