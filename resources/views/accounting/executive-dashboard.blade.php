@@ -19,139 +19,244 @@
 {{-- Financial Ratios --}}
 @include('partials.dashboard-widgets-style')
 <div class="section-header">
-    <div class="section-icon" style="background:#f0fdf4;"><i class="bi bi-bar-chart-line-fill" style="font-size:16px;color:#16a34a;"></i></div>
     <h6>Financial Ratios &amp; KPIs</h6>
 </div>
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ratios['currentRatio'] ?? 0) >= 1 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-speedometer" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:26px;">{{ number_format($ratios['currentRatio'] ?? 0, 2) }}</div><div class="widget-label">Current Ratio</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-speedometer"></i></div>
+                    <div>
+                        <div class="widget-number" style="color:{{ ($ratios['currentRatio'] ?? 0) >= 1 ? 'var(--success)' : 'var(--danger)' }};">{{ number_format($ratios['currentRatio'] ?? 0, 2) }}</div>
+                        <div class="widget-label">Current Ratio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ratios['profitMargin'] ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-percent" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:26px;">{{ number_format(($ratios['profitMargin'] ?? 0) * 100, 1) }}%</div><div class="widget-label">Profit Margin</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-percent"></i></div>
+                    <div>
+                        <div class="widget-number" style="color:{{ ($ratios['profitMargin'] ?? 0) >= 0 ? 'var(--success)' : 'var(--danger)' }};">{{ number_format(($ratios['profitMargin'] ?? 0) * 100, 1) }}%</div>
+                        <div class="widget-label">Profit Margin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-up-arrow" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdRevenue ?? 0, 0) }}</div><div class="widget-label">YTD Revenue</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($ytdRevenue ?? 0, 0) }}</div>
+                        <div class="widget-label">YTD Revenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-down-arrow" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdExpenses ?? 0, 0) }}</div><div class="widget-label">YTD Expenses</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-graph-down-arrow"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($ytdExpenses ?? 0, 0) }}</div>
+                        <div class="widget-label">YTD Expenses</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($ytdNetProfit ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-trophy-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($ytdNetProfit ?? 0, 0) }}</div><div class="widget-label">YTD Net Profit</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-trophy-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;color:{{ ($ytdNetProfit ?? 0) >= 0 ? 'var(--success)' : 'var(--danger)' }};">RM {{ number_format($ytdNetProfit ?? 0, 0) }}</div>
+                        <div class="widget-label">YTD Net Profit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-2">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-bank2" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:18px;">RM {{ number_format($cashPosition ?? 0, 0) }}</div><div class="widget-label">Cash Position</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bank2"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($cashPosition ?? 0, 0) }}</div>
+                        <div class="widget-label">Cash Position</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {{-- Charts Row --}}
+<div class="section-header"><h6>Trend Analysis</h6></div>
 <div class="row g-3 mb-4">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Monthly Revenue vs Expenses (12 Months)</strong></div>
-            <div class="card-body"><canvas id="monthlyTrend" height="100"></canvas></div>
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Monthly Revenue vs Expenses</div>
+                        <div class="widget-label">12 Months</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="monthlyTrend" height="100"></canvas></div>
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card h-100">
-            <div class="card-header bg-white"><strong>Expense Breakdown</strong></div>
-            <div class="card-body"><canvas id="expenseBreakdown" height="200"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-pie-chart-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Expense Breakdown</div>
+                        <div class="widget-label">By Category</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="expenseBreakdown" height="200"></canvas></div>
         </div>
     </div>
 </div>
 
 {{-- Aged AR & AP --}}
+<div class="section-header"><h6>Aged AR &amp; AP</h6></div>
 <div class="row g-3 mb-4">
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Aged Receivables</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-sm mb-0" style="font-size:13px;">
-                    <thead><tr><th>Customer</th><th class="text-end">Current</th><th class="text-end">31-60</th><th class="text-end">61-90</th><th class="text-end">90+</th><th class="text-end">Total</th></tr></thead>
-                    <tbody>
-                    @forelse($agedReceivables ?? [] as $ar)
-                        <tr>
-                            <td>{{ $ar['customer'] }}</td>
-                            <td class="text-end">{{ number_format($ar['current'] ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($ar['31_60'] ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($ar['61_90'] ?? 0, 2) }}</td>
-                            <td class="text-end text-danger">{{ number_format($ar['over_90'] ?? 0, 2) }}</td>
-                            <td class="text-end fw-bold">{{ number_format($ar['total'] ?? 0, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="6" class="text-center text-muted py-3">No outstanding receivables</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-arrow-down-left-circle-fill"></i></div>
+                    <div>
+                        <div class="widget-number">{{ count($agedReceivables ?? []) }}</div>
+                        <div class="widget-label">Aged Receivables</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body" style="padding:0;">
+                @if(empty($agedReceivables))
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-arrow-down-left-circle-fill" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No outstanding receivables</div>
+                    </div>
+                @else
+                    <table class="table table-sm mb-0" style="font-size:13px;">
+                        <thead><tr><th>Customer</th><th class="text-end">Current</th><th class="text-end">31-60</th><th class="text-end">61-90</th><th class="text-end">90+</th><th class="text-end">Total</th></tr></thead>
+                        <tbody>
+                        @foreach($agedReceivables as $ar)
+                            <tr>
+                                <td>{{ $ar['customer'] }}</td>
+                                <td class="text-end">{{ number_format($ar['current'] ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($ar['31_60'] ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($ar['61_90'] ?? 0, 2) }}</td>
+                                <td class="text-end" style="color:var(--danger);">{{ number_format($ar['over_90'] ?? 0, 2) }}</td>
+                                <td class="text-end fw-bold">{{ number_format($ar['total'] ?? 0, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Aged Payables</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-sm mb-0" style="font-size:13px;">
-                    <thead><tr><th>Vendor</th><th class="text-end">Current</th><th class="text-end">31-60</th><th class="text-end">61-90</th><th class="text-end">90+</th><th class="text-end">Total</th></tr></thead>
-                    <tbody>
-                    @forelse($agedPayables ?? [] as $ap)
-                        <tr>
-                            <td>{{ $ap['vendor'] }}</td>
-                            <td class="text-end">{{ number_format($ap['current'] ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($ap['31_60'] ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($ap['61_90'] ?? 0, 2) }}</td>
-                            <td class="text-end text-danger">{{ number_format($ap['over_90'] ?? 0, 2) }}</td>
-                            <td class="text-end fw-bold">{{ number_format($ap['total'] ?? 0, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="6" class="text-center text-muted py-3">No outstanding payables</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
+                    <div>
+                        <div class="widget-number">{{ count($agedPayables ?? []) }}</div>
+                        <div class="widget-label">Aged Payables</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body" style="padding:0;">
+                @if(empty($agedPayables))
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-arrow-up-right-circle-fill" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No outstanding payables</div>
+                    </div>
+                @else
+                    <table class="table table-sm mb-0" style="font-size:13px;">
+                        <thead><tr><th>Vendor</th><th class="text-end">Current</th><th class="text-end">31-60</th><th class="text-end">61-90</th><th class="text-end">90+</th><th class="text-end">Total</th></tr></thead>
+                        <tbody>
+                        @foreach($agedPayables as $ap)
+                            <tr>
+                                <td>{{ $ap['vendor'] }}</td>
+                                <td class="text-end">{{ number_format($ap['current'] ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($ap['31_60'] ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($ap['61_90'] ?? 0, 2) }}</td>
+                                <td class="text-end" style="color:var(--danger);">{{ number_format($ap['over_90'] ?? 0, 2) }}</td>
+                                <td class="text-end fw-bold">{{ number_format($ap['total'] ?? 0, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
 {{-- Balance Sheet Summary --}}
+<div class="section-header"><h6>Balance Sheet</h6></div>
 <div class="row g-3">
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Balance Sheet - Assets</strong></div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Total Assets</span><strong>RM {{ number_format($balanceSheet['totalAssets'] ?? 0, 2) }}</strong></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-buildings"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($balanceSheet['totalAssets'] ?? 0, 2) }}</div>
+                        <div class="widget-label">Total Assets</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Balance Sheet - Liabilities</strong></div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Total Liabilities</span><strong>RM {{ number_format($balanceSheet['totalLiabilities'] ?? 0, 2) }}</strong></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-clipboard-data"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($balanceSheet['totalLiabilities'] ?? 0, 2) }}</div>
+                        <div class="widget-label">Total Liabilities</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Balance Sheet - Equity</strong></div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between"><span>Total Equity</span><strong>RM {{ number_format($balanceSheet['totalEquity'] ?? 0, 2) }}</strong></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-piggy-bank-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:20px;">RM {{ number_format($balanceSheet['totalEquity'] ?? 0, 2) }}</div>
+                        <div class="widget-label">Total Equity</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

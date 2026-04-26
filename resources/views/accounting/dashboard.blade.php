@@ -26,135 +26,248 @@
 </div>
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-up-arrow" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($monthlyRevenue ?? 0, 2) }}</div><div class="widget-label">Monthly Revenue</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;">RM {{ number_format($monthlyRevenue ?? 0, 2) }}</div>
+                        <div class="widget-label">Monthly Revenue</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-graph-down-arrow" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($monthlyExpenses ?? 0, 2) }}</div><div class="widget-label">Monthly Expenses</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-graph-down-arrow"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;">RM {{ number_format($monthlyExpenses ?? 0, 2) }}</div>
+                        <div class="widget-label">Monthly Expenses</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#1FA896,#11766A);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-down-left-circle-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalReceivable ?? 0, 2) }}</div><div class="widget-label">Receivable Outstanding</div>
-            @if(($overdueInvoices ?? 0) > 0)<div style="margin-top:4px;"><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">{{ $overdueInvoices }} overdue</span></div>@endif
-            </div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-arrow-down-left-circle-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;">RM {{ number_format($totalReceivable ?? 0, 2) }}</div>
+                        <div class="widget-label">Receivable Outstanding</div>
+                        @if(($overdueInvoices ?? 0) > 0)
+                            <div class="status-pills" style="margin-top:6px;"><span class="status-pill">{{ $overdueInvoices }} overdue</span></div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-up-right-circle-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalPayable ?? 0, 2) }}</div><div class="widget-label">Payable Outstanding</div>
-            @if(($overdueBills ?? 0) > 0)<div style="margin-top:4px;"><span style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;">{{ $overdueBills }} overdue</span></div>@endif
-            </div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-arrow-up-right-circle-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;">RM {{ number_format($totalPayable ?? 0, 2) }}</div>
+                        <div class="widget-label">Payable Outstanding</div>
+                        @if(($overdueBills ?? 0) > 0)
+                            <div class="status-pills" style="margin-top:6px;"><span class="status-pill">{{ $overdueBills }} overdue</span></div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,{{ ($netProfit ?? 0) >= 0 ? '#22c55e,#15803d' : '#ef4444,#b91c1c' }});padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-trophy-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($netProfit ?? 0, 2) }}</div><div class="widget-label">Net Profit (YTD)</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-trophy-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;color:{{ ($netProfit ?? 0) >= 0 ? 'var(--success)' : 'var(--danger)' }};">RM {{ number_format($netProfit ?? 0, 2) }}</div>
+                        <div class="widget-label">Net Profit (YTD)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#22B8A5,#0A4D47);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-bank2" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:20px;">RM {{ number_format($totalBankBalance ?? 0, 2) }}</div><div class="widget-label">Bank Balances</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bank2"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:22px;">RM {{ number_format($totalBankBalance ?? 0, 2) }}</div>
+                        <div class="widget-label">Bank Balances</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#0F1A1D,#2A3438);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-file-earmark-text-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:26px;">{{ $pendingInvoices ?? 0 }}</div><div class="widget-label">Pending Invoices</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                    <div>
+                        <div class="widget-number">{{ $pendingInvoices ?? 0 }}</div>
+                        <div class="widget-label">Pending Invoices</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card dash-widget h-100" style="min-height:auto;"><div class="widget-header" style="background:linear-gradient(135deg,#f97316,#c2410c);padding:16px 18px 12px;">
-            <div class="d-flex align-items-center gap-3"><div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-file-earmark-minus-fill" style="font-size:18px;"></i></div>
-            <div><div class="widget-number" style="font-size:26px;">{{ $pendingBills ?? 0 }}</div><div class="widget-label">Pending Bills</div></div></div>
-        </div></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-file-earmark-minus-fill"></i></div>
+                    <div>
+                        <div class="widget-number">{{ $pendingBills ?? 0 }}</div>
+                        <div class="widget-label">Pending Bills</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {{-- Revenue Trend Chart --}}
+<div class="section-header"><h6>Revenue Trend</h6></div>
 <div class="row g-3 mb-4">
     <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header bg-white"><strong>12-Month Revenue vs Expenses</strong></div>
-            <div class="card-body">
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">12-Month Revenue vs Expenses</div>
+                        <div class="widget-label">Trailing 12 months</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
                 <canvas id="revenueTrendChart" height="120"></canvas>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card h-100">
-            <div class="card-header bg-white"><strong>Recent Invoices</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0" style="font-size:13px;">
-                    <thead><tr><th>Invoice</th><th>Customer</th><th class="text-end">Amount</th></tr></thead>
-                    <tbody>
-                    @forelse($recentInvoices ?? [] as $inv)
-                        <tr>
-                            <td>{{ $inv->invoice_number }}</td>
-                            <td>{{ $inv->customer->name ?? '-' }}</td>
-                            <td class="text-end">{{ number_format($inv->total, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="3" class="text-muted text-center py-3">No invoices yet</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-receipt"></i></div>
+                    <div>
+                        <div class="widget-number">{{ ($recentInvoices ?? collect())->count() }}</div>
+                        <div class="widget-label">Recent Invoices</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body" style="padding:0;">
+                @if(($recentInvoices ?? collect())->isEmpty())
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-receipt" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No invoices yet</div>
+                    </div>
+                @else
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px;">
+                        <thead><tr><th>Invoice</th><th>Customer</th><th class="text-end">Amount</th></tr></thead>
+                        <tbody>
+                        @foreach($recentInvoices as $inv)
+                            <tr>
+                                <td>{{ $inv->invoice_number }}</td>
+                                <td>{{ $inv->customer->name ?? '-' }}</td>
+                                <td class="text-end">{{ number_format($inv->total, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
+<div class="section-header"><h6>Recent Activity</h6></div>
 <div class="row g-3">
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Recent Bills</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0" style="font-size:13px;">
-                    <thead><tr><th>Bill #</th><th>Vendor</th><th>Due</th><th class="text-end">Amount</th></tr></thead>
-                    <tbody>
-                    @forelse($recentBills ?? [] as $bill)
-                        <tr>
-                            <td>{{ $bill->bill_number }}</td>
-                            <td>{{ $bill->vendor->name ?? '-' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($bill->due_date)->format('d M') }}</td>
-                            <td class="text-end">{{ number_format($bill->total, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="4" class="text-muted text-center py-3">No bills yet</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-file-earmark-minus"></i></div>
+                    <div>
+                        <div class="widget-number">{{ ($recentBills ?? collect())->count() }}</div>
+                        <div class="widget-label">Recent Bills</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body" style="padding:0;">
+                @if(($recentBills ?? collect())->isEmpty())
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-file-earmark-minus" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No bills yet</div>
+                    </div>
+                @else
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px;">
+                        <thead><tr><th>Bill #</th><th>Vendor</th><th>Due</th><th class="text-end">Amount</th></tr></thead>
+                        <tbody>
+                        @foreach($recentBills as $bill)
+                            <tr>
+                                <td>{{ $bill->bill_number }}</td>
+                                <td>{{ $bill->vendor->name ?? '-' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($bill->due_date)->format('d M') }}</td>
+                                <td class="text-end">{{ number_format($bill->total, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
     <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header bg-white"><strong>Bank Accounts</strong></div>
-            <div class="card-body p-0">
-                <table class="table table-sm table-hover mb-0" style="font-size:13px;">
-                    <thead><tr><th>Bank</th><th>Account</th><th class="text-end">Balance</th></tr></thead>
-                    <tbody>
-                    @forelse($bankAccounts ?? [] as $ba)
-                        <tr>
-                            <td>{{ $ba->bank_name }}</td>
-                            <td>{{ $ba->account_name }}</td>
-                            <td class="text-end fw-semibold">{{ number_format($ba->current_balance, 2) }}</td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="3" class="text-muted text-center py-3">No bank accounts</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bank2"></i></div>
+                    <div>
+                        <div class="widget-number">{{ ($bankAccounts ?? collect())->count() }}</div>
+                        <div class="widget-label">Bank Accounts</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body" style="padding:0;">
+                @if(($bankAccounts ?? collect())->isEmpty())
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-bank2" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No bank accounts</div>
+                    </div>
+                @else
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px;">
+                        <thead><tr><th>Bank</th><th>Account</th><th class="text-end">Balance</th></tr></thead>
+                        <tbody>
+                        @foreach($bankAccounts as $ba)
+                            <tr>
+                                <td>{{ $ba->bank_name }}</td>
+                                <td>{{ $ba->account_name }}</td>
+                                <td class="text-end fw-semibold">{{ number_format($ba->current_balance, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>

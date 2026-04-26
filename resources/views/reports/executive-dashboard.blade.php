@@ -4,11 +4,8 @@
 
 @push('styles')
 <style>
-    .chart-card .card-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 13px; }
-    .mini-table th { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; border-top: none; }
-    .mini-table td { font-size: 13px; }
-    .dash-widget .status-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-    .dash-widget .status-pill { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,.2); color: #fff; }
+    .mini-table th { font-family: var(--mono); font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute); border-top: none; }
+    .mini-table td { font-size: 13px; color: var(--ink-2); }
 </style>
 @endpush
 
@@ -20,19 +17,16 @@
 {{-- ROW 1: TOP-LINE KPIs --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 <div class="section-header">
-    <div class="section-icon" style="background:#eff6ff;">
-        <i class="bi bi-speedometer2" style="font-size:16px;color:#2563eb;"></i>
-    </div>
     <h6>Key Performance Indicators &mdash; {{ $year }}</h6>
 </div>
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-people-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-people-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalActive) }}</div>
+                        <div class="widget-number">{{ number_format($totalActive) }}</div>
                         <div class="widget-label">Active Employees</div>
                     </div>
                 </div>
@@ -41,11 +35,11 @@
     </div>
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-person-plus-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-person-plus-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalNewHires) }}</div>
+                        <div class="widget-number">{{ number_format($totalNewHires) }}</div>
                         <div class="widget-label">New Hires YTD</div>
                     </div>
                 </div>
@@ -54,11 +48,11 @@
     </div>
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-person-dash-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-person-dash-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ number_format($totalExits) }}</div>
+                        <div class="widget-number">{{ number_format($totalExits) }}</div>
                         <div class="widget-label">Exits YTD</div>
                     </div>
                 </div>
@@ -67,11 +61,11 @@
     </div>
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-arrow-repeat" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-arrow-repeat"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ $turnoverRate }}%</div>
+                        <div class="widget-number">{{ $turnoverRate }}%</div>
                         <div class="widget-label">Turnover Rate</div>
                     </div>
                 </div>
@@ -80,9 +74,9 @@
     </div>
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-cash-stack" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-cash-stack"></i></div>
                     <div>
                         <div class="widget-number" style="font-size:20px;">RM {{ number_format($payrollStats->gross ?? 0, 0) }}</div>
                         <div class="widget-label">YTD Gross Payroll</div>
@@ -93,9 +87,9 @@
     </div>
     <div class="col-6 col-md-3 col-xl-2">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#06b6d4,#0891b2);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-wallet2" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-wallet2"></i></div>
                     <div>
                         <div class="widget-number" style="font-size:20px;">RM {{ number_format($avgSalary ?? 0, 0) }}</div>
                         <div class="widget-label">Average Salary</div>
@@ -112,11 +106,11 @@
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#14b8a6,#0f766e);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar-check-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-calendar-check-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ $attendanceRate }}%</div>
+                        <div class="widget-number">{{ $attendanceRate }}%</div>
                         <div class="widget-label">Attendance Rate</div>
                     </div>
                 </div>
@@ -125,11 +119,11 @@
     </div>
     <div class="col-6 col-md-3">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#ec4899,#be185d);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-calendar2-week-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-calendar2-week-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ number_format($leaveStats->total_days_taken ?? 0, 0) }}</div>
+                        <div class="widget-number">{{ number_format($leaveStats->total_days_taken ?? 0, 0) }}</div>
                         <div class="widget-label">Leave Days YTD</div>
                     </div>
                 </div>
@@ -138,13 +132,13 @@
     </div>
     <div class="col-6 col-md-3">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#f97316,#c2410c);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-laptop-fill" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-laptop-fill"></i></div>
                     <div>
-                        <div class="widget-number" style="font-size:26px;">{{ number_format($assetStats['total']) }}</div>
+                        <div class="widget-number">{{ number_format($assetStats['total']) }}</div>
                         <div class="widget-label">Total Assets</div>
-                        <div class="status-pills">
+                        <div class="status-pills" style="margin-top:6px;">
                             <span class="status-pill">{{ $assetStats['available'] }} avail</span>
                             <span class="status-pill">{{ $assetStats['assigned'] }} in use</span>
                         </div>
@@ -155,14 +149,14 @@
     </div>
     <div class="col-6 col-md-3">
         <div class="card dash-widget h-100" style="min-height:auto;">
-            <div class="widget-header" style="background:linear-gradient(135deg,#a855f7,#7c3aed);padding:16px 18px 12px;">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="widget-icon" style="width:40px;height:40px;border-radius:10px;"><i class="bi bi-receipt-cutoff" style="font-size:18px;"></i></div>
+                    <div class="widget-icon"><i class="bi bi-receipt-cutoff"></i></div>
                     <div>
                         <div class="widget-number" style="font-size:20px;">RM {{ number_format($claimsStats->approved_amount ?? 0, 0) }}</div>
                         <div class="widget-label">Claims Approved YTD</div>
                         @if(($claimsStats->pending_amount ?? 0) > 0)
-                        <div class="status-pills"><span class="status-pill">RM {{ number_format($claimsStats->pending_amount, 0) }} pending</span></div>
+                            <div class="status-pills" style="margin-top:6px;"><span class="status-pill">RM {{ number_format($claimsStats->pending_amount, 0) }} pending</span></div>
                         @endif
                     </div>
                 </div>
@@ -175,53 +169,104 @@
 {{-- ROW 3: CHARTS --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 
+<div class="section-header"><h6>Headcount &amp; Employment</h6></div>
 <div class="row g-3 mb-4">
     {{-- Headcount Trend (Hires vs Exits) --}}
     <div class="col-lg-8">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-graph-up me-1"></i>Headcount Movement — {{ $year }}</div>
-            <div class="card-body"><canvas id="headcountChart" height="260"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-graph-up"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Headcount Movement</div>
+                        <div class="widget-label">{{ $year }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="headcountChart" height="260"></canvas></div>
         </div>
     </div>
     {{-- Employment Type --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-pie-chart me-1"></i>Employment Type</div>
-            <div class="card-body d-flex align-items-center justify-content-center"><canvas id="empTypeChart" height="220"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-pie-chart"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Employment Type</div>
+                        <div class="widget-label">Distribution</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body d-flex align-items-center justify-content-center"><canvas id="empTypeChart" height="220"></canvas></div>
         </div>
     </div>
 </div>
 
+<div class="section-header"><h6>Payroll &amp; Demographics</h6></div>
 <div class="row g-3 mb-4">
     {{-- Payroll Trend --}}
     <div class="col-lg-8">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-bar-chart me-1"></i>Monthly Gross Payroll — {{ $year }}</div>
-            <div class="card-body"><canvas id="payrollChart" height="260"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bar-chart"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Monthly Gross Payroll</div>
+                        <div class="widget-label">{{ $year }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="payrollChart" height="260"></canvas></div>
         </div>
     </div>
     {{-- Gender Distribution --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-gender-ambiguous me-1"></i>Gender Distribution</div>
-            <div class="card-body d-flex align-items-center justify-content-center"><canvas id="genderChart" height="220"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-gender-ambiguous"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Gender Distribution</div>
+                        <div class="widget-label">Workforce</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body d-flex align-items-center justify-content-center"><canvas id="genderChart" height="220"></canvas></div>
         </div>
     </div>
 </div>
 
+<div class="section-header"><h6>Department &amp; Tenure</h6></div>
 <div class="row g-3 mb-4">
     {{-- Department Distribution --}}
     <div class="col-lg-6">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-building me-1"></i>Headcount by Department</div>
-            <div class="card-body"><canvas id="deptChart" height="280"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-building"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Headcount by Department</div>
+                        <div class="widget-label">Active employees</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="deptChart" height="280"></canvas></div>
         </div>
     </div>
     {{-- Tenure Distribution --}}
     <div class="col-lg-6">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-hourglass-split me-1"></i>Tenure Distribution</div>
-            <div class="card-body"><canvas id="tenureChart" height="280"></canvas></div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-hourglass-split"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Tenure Distribution</div>
+                        <div class="widget-label">Years of service</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body"><canvas id="tenureChart" height="280"></canvas></div>
         </div>
     </div>
 </div>
@@ -229,12 +274,21 @@
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 {{-- ROW 4: Company Distribution + Leave by Type + Claims by Category --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
+<div class="section-header"><h6>Company &amp; Activity Breakdown</h6></div>
 <div class="row g-3 mb-4">
     {{-- Company Distribution --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-buildings me-1"></i>Headcount by Company</div>
-            <div class="card-body">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-buildings"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Headcount by Company</div>
+                        <div class="widget-label">Active distribution</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
                 <table class="table table-sm mini-table mb-0">
                     <thead><tr><th>Company</th><th class="text-end">Count</th><th class="text-end">%</th></tr></thead>
                     <tbody>
@@ -252,44 +306,74 @@
     </div>
     {{-- Leave by Type --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-calendar-x me-1"></i>Leave Taken by Type</div>
-            <div class="card-body">
-                <table class="table table-sm mini-table mb-0">
-                    <thead><tr><th>Type</th><th class="text-end">Days</th><th class="text-end">Count</th></tr></thead>
-                    <tbody>
-                    @forelse($leaveByType as $row)
-                    <tr>
-                        <td>{{ $row->type_name }}</td>
-                        <td class="text-end fw-semibold">{{ number_format($row->total_days, 1) }}</td>
-                        <td class="text-end">{{ $row->count }}</td>
-                    </tr>
-                    @empty
-                    <tr><td colspan="3" class="text-muted text-center">No data</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-calendar-x"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Leave Taken by Type</div>
+                        <div class="widget-label">{{ $year }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
+                @if(($leaveByType ?? collect())->isEmpty())
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-calendar-x" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No leave data</div>
+                    </div>
+                @else
+                    <table class="table table-sm mini-table mb-0">
+                        <thead><tr><th>Type</th><th class="text-end">Days</th><th class="text-end">Count</th></tr></thead>
+                        <tbody>
+                        @foreach($leaveByType as $row)
+                        <tr>
+                            <td>{{ $row->type_name }}</td>
+                            <td class="text-end fw-semibold">{{ number_format($row->total_days, 1) }}</td>
+                            <td class="text-end">{{ $row->count }}</td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
     {{-- Claims by Category --}}
     <div class="col-lg-4">
-        <div class="card chart-card h-100">
-            <div class="card-header py-2"><i class="bi bi-receipt me-1"></i>Claims by Category</div>
-            <div class="card-body">
-                <table class="table table-sm mini-table mb-0">
-                    <thead><tr><th>Category</th><th class="text-end">Amount (RM)</th></tr></thead>
-                    <tbody>
-                    @forelse($claimsByCategory as $row)
-                    <tr>
-                        <td>{{ $row->category }}</td>
-                        <td class="text-end fw-semibold">{{ number_format($row->total, 2) }}</td>
-                    </tr>
-                    @empty
-                    <tr><td colspan="2" class="text-muted text-center">No data</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-receipt"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Claims by Category</div>
+                        <div class="widget-label">Approved YTD</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
+                @if(($claimsByCategory ?? collect())->isEmpty())
+                    <div class="text-center py-4">
+                        <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                            <i class="bi bi-receipt" style="font-size:18px;color:var(--primary-dark);"></i>
+                        </div>
+                        <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No claim data</div>
+                    </div>
+                @else
+                    <table class="table table-sm mini-table mb-0">
+                        <thead><tr><th>Category</th><th class="text-end">Amount (RM)</th></tr></thead>
+                        <tbody>
+                        @foreach($claimsByCategory as $row)
+                        <tr>
+                            <td>{{ $row->category }}</td>
+                            <td class="text-end fw-semibold">{{ number_format($row->total, 2) }}</td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>
@@ -298,12 +382,21 @@
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
 {{-- ROW 5: Statutory + Onboarding Pipeline + Asset Summary --}}
 {{-- ═══════════════════════════════════════════════════════════════════ --}}
+<div class="section-header"><h6>Statutory, Pipeline &amp; Assets</h6></div>
 <div class="row g-3 mb-4 align-items-start">
     {{-- Statutory Contributions --}}
     <div class="col-lg-4">
-        <div class="card chart-card">
-            <div class="card-header py-2"><i class="bi bi-bank me-1"></i>Statutory Contributions YTD</div>
-            <div class="card-body">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-bank"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Statutory Contributions</div>
+                        <div class="widget-label">YTD</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
                 @php $st = $statutoryTotals; @endphp
                 <table class="table table-sm mini-table mb-0">
                     <thead><tr><th>Contribution</th><th class="text-end">Employee (RM)</th><th class="text-end">Employer (RM)</th></tr></thead>
@@ -327,35 +420,43 @@
     </div>
     {{-- Onboarding Pipeline --}}
     <div class="col-lg-4">
-        <div class="card chart-card">
-            <div class="card-header py-2"><i class="bi bi-funnel me-1"></i>Onboarding Pipeline</div>
-            <div class="card-body">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-funnel"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Onboarding Pipeline</div>
+                        <div class="widget-label">Current state</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
                 <div class="d-flex flex-column gap-3">
                     <div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small fw-semibold">Pending</span>
-                            <span class="badge bg-warning text-dark">{{ $pipelineStats['pending'] }}</span>
+                            <span class="breakdown-badge">{{ $pipelineStats['pending'] }}</span>
                         </div>
-                        <div class="progress" style="height:8px;">
-                            <div class="progress-bar bg-warning" style="width:{{ max(($pipelineStats['pending']/max(array_sum($pipelineStats),1))*100,2) }}%"></div>
+                        <div class="progress" style="height:8px;background:var(--bg-warm);">
+                            <div class="progress-bar" style="width:{{ max(($pipelineStats['pending']/max(array_sum($pipelineStats),1))*100,2) }}%;background:var(--warn);"></div>
                         </div>
                     </div>
                     <div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small fw-semibold">Active (In Progress)</span>
-                            <span class="badge bg-primary">{{ $pipelineStats['active'] }}</span>
+                            <span class="breakdown-badge">{{ $pipelineStats['active'] }}</span>
                         </div>
-                        <div class="progress" style="height:8px;">
-                            <div class="progress-bar bg-primary" style="width:{{ max(($pipelineStats['active']/max(array_sum($pipelineStats),1))*100,2) }}%"></div>
+                        <div class="progress" style="height:8px;background:var(--bg-warm);">
+                            <div class="progress-bar" style="width:{{ max(($pipelineStats['active']/max(array_sum($pipelineStats),1))*100,2) }}%;background:var(--primary);"></div>
                         </div>
                     </div>
                     <div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="small fw-semibold">Completed ({{ $year }})</span>
-                            <span class="badge bg-success">{{ $pipelineStats['completed'] }}</span>
+                            <span class="breakdown-badge">{{ $pipelineStats['completed'] }}</span>
                         </div>
-                        <div class="progress" style="height:8px;">
-                            <div class="progress-bar bg-success" style="width:{{ max(($pipelineStats['completed']/max(array_sum($pipelineStats),1))*100,2) }}%"></div>
+                        <div class="progress" style="height:8px;background:var(--bg-warm);">
+                            <div class="progress-bar" style="width:{{ max(($pipelineStats['completed']/max(array_sum($pipelineStats),1))*100,2) }}%;background:var(--success);"></div>
                         </div>
                     </div>
                 </div>
@@ -364,15 +465,23 @@
     </div>
     {{-- Asset Summary --}}
     <div class="col-lg-4">
-        <div class="card chart-card">
-            <div class="card-header py-2"><i class="bi bi-laptop me-1"></i>Asset Portfolio</div>
-            <div class="card-body">
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi bi-laptop"></i></div>
+                    <div>
+                        <div class="widget-number" style="font-size:18px;">Asset Portfolio</div>
+                        <div class="widget-label">By status</div>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
                 <div style="position:relative;height:220px;">
                     <canvas id="assetStatusChart"></canvas>
                 </div>
-                <div class="d-flex justify-content-between mt-3 small">
-                    <div><span class="text-muted">Total Value:</span> <strong>RM {{ number_format($assetCostTotal, 0) }}</strong></div>
-                    <div><span class="text-muted">Monthly Rental:</span> <strong>RM {{ number_format($rentalCostMonthly, 0) }}</strong></div>
+                <div class="d-flex justify-content-between mt-3 small" style="color:var(--ink-2);">
+                    <div><span style="color:var(--mute);">Total Value:</span> <strong>RM {{ number_format($assetCostTotal, 0) }}</strong></div>
+                    <div><span style="color:var(--mute);">Monthly Rental:</span> <strong>RM {{ number_format($rentalCostMonthly, 0) }}</strong></div>
                 </div>
             </div>
         </div>

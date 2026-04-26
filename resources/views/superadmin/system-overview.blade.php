@@ -3,6 +3,7 @@
 @section('page-title', 'System Overview')
 
 @section('content')
+@include('partials.dashboard-widgets-style')
 <style>
     .overview-hero {
         background: linear-gradient(135deg, #0b5ed7 0%, #0d6efd 40%, #6610f2 100%);
@@ -842,30 +843,58 @@
     {{-- Summary row --}}
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
-                <div class="fw-bold fs-3 text-primary" id="pkg-total">{{ $updateCheck['total_packages'] }}</div>
-                <div class="text-muted" style="font-size:0.8rem;">Total Packages</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
-                <div class="fw-bold fs-3 text-success" id="pkg-uptodate">{{ $updateCheck['up_to_date'] }}</div>
-                <div class="text-muted" style="font-size:0.8rem;">Up to Date</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
-                <div class="fw-bold fs-3 text-warning" id="pkg-outdated">{{ $updateCheck['outdated'] }}</div>
-                <div class="text-muted" style="font-size:0.8rem;">Updates Available</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
-                <div class="text-muted mb-1" style="font-size:0.75rem;">Dependency Health</div>
-                <div class="health-bar mb-1">
-                    <div class="health-bar-fill" id="health-bar-fill" style="width:{{ $updateCheck['health'] }}%;background:{{ $updateCheck['health'] >= 80 ? '#198754' : ($updateCheck['health'] >= 60 ? '#ffc107' : '#dc3545') }};"></div>
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-box-seam"></i></div>
+                        <div>
+                            <div class="widget-number" id="pkg-total">{{ $updateCheck['total_packages'] }}</div>
+                            <div class="widget-label">Total Packages</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="fw-bold" id="health-value" style="color:{{ $updateCheck['health'] >= 80 ? '#198754' : ($updateCheck['health'] >= 60 ? '#ffc107' : '#dc3545') }};">{{ $updateCheck['health'] }}%</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-check-circle-fill"></i></div>
+                        <div>
+                            <div class="widget-number" id="pkg-uptodate" style="color:var(--success);">{{ $updateCheck['up_to_date'] }}</div>
+                            <div class="widget-label">Up to Date</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-arrow-up-circle-fill"></i></div>
+                        <div>
+                            <div class="widget-number" id="pkg-outdated" style="color:var(--warn);">{{ $updateCheck['outdated'] }}</div>
+                            <div class="widget-label">Updates Available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-heart-pulse-fill"></i></div>
+                        <div style="flex:1;">
+                            <div class="widget-number" id="health-value" style="color:{{ $updateCheck['health'] >= 80 ? 'var(--success)' : ($updateCheck['health'] >= 60 ? 'var(--warn)' : 'var(--danger)') }};">{{ $updateCheck['health'] }}%</div>
+                            <div class="widget-label">Dependency Health</div>
+                            <div class="health-bar mt-2">
+                                <div class="health-bar-fill" id="health-bar-fill" style="width:{{ $updateCheck['health'] }}%;background:{{ $updateCheck['health'] >= 80 ? 'var(--success)' : ($updateCheck['health'] >= 60 ? 'var(--warn)' : 'var(--danger)') }};"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1005,14 +1034,20 @@
 {{-- ═══════════════════════════════════════════════════════════ --}}
 {{-- LIVE STATS --}}
 {{-- ═══════════════════════════════════════════════════════════ --}}
-<h3 class="fw-bold mb-3"><i class="bi bi-bar-chart text-primary me-2"></i>Live System Statistics</h3>
+<div class="section-header"><h6>Live System Statistics</h6></div>
 <div class="row g-3 mb-4">
     @foreach($meta['live_stats'] as $stat)
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="card border-0 shadow-sm text-center p-3" style="border-radius:0.75rem;">
-            <i class="bi {{ $stat['icon'] }}" style="font-size:2rem; color:{{ $stat['color'] }};"></i>
-            <div class="fw-bold fs-3 mt-2" style="color:{{ $stat['color'] }};">{{ $stat['value'] }}</div>
-            <div class="text-muted" style="font-size:0.8rem;">{{ $stat['label'] }}</div>
+        <div class="card dash-widget h-100" style="min-height:auto;">
+            <div class="widget-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="widget-icon"><i class="bi {{ $stat['icon'] }}"></i></div>
+                    <div>
+                        <div class="widget-number">{{ $stat['value'] }}</div>
+                        <div class="widget-label">{{ $stat['label'] }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     @endforeach
@@ -1233,12 +1268,14 @@
             document.getElementById('pkg-total').textContent = data.total_packages;
             document.getElementById('pkg-uptodate').textContent = data.up_to_date;
             document.getElementById('pkg-outdated').textContent = data.outdated;
-            document.getElementById('health-value').textContent = data.health + '%';
             document.getElementById('update-timestamp').textContent = data.checked_at;
 
             const fill = document.getElementById('health-bar-fill');
             fill.style.width = data.health + '%';
-            fill.style.background = data.health >= 80 ? '#198754' : (data.health >= 60 ? '#ffc107' : '#dc3545');
+            fill.style.background = data.health >= 80 ? 'var(--success)' : (data.health >= 60 ? 'var(--warn)' : 'var(--danger)');
+            const healthVal = document.getElementById('health-value');
+            healthVal.textContent = data.health + '%';
+            healthVal.style.color = data.health >= 80 ? 'var(--success)' : (data.health >= 60 ? 'var(--warn)' : 'var(--danger)');
 
             // Rebuild package list
             const list = document.getElementById('package-list');

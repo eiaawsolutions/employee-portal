@@ -4,6 +4,7 @@
 @section('page-title', 'Tenants')
 
 @section('content')
+@include('partials.dashboard-widgets-style')
 <style>
     .tenants-wrap { max-width: 1180px; margin: 24px auto; padding: 0 clamp(16px, 3vw, 28px); }
     .tenants-head { margin-bottom: 24px; }
@@ -11,13 +12,6 @@
     .tenants-head h1 { font-family: var(--sans); font-weight: 500; font-size: clamp(24px, 2.6vw, 32px); letter-spacing: -0.02em; margin: 0 0 6px; color: var(--ink); }
     .tenants-head h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--primary-dark); }
     .tenants-head p { color: var(--ink-2); font-size: 15px; max-width: 640px; margin: 0; line-height: 1.5; }
-
-    .stat-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin: 24px 0 28px; }
-    .stat-card { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 14px; padding: 18px 18px; }
-    .stat-card .label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mute); margin-bottom: 6px; }
-    .stat-card .value { font-family: var(--sans); font-size: 28px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; line-height: 1; }
-    .stat-card.warn .value { color: var(--warn); }
-    .stat-card.danger .value { color: var(--danger); }
 
     .filter-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
     .filter-row input, .filter-row select {
@@ -59,11 +53,7 @@
     .empty-state { text-align: center; padding: 60px 20px; color: var(--mute); }
     .empty-state h3 { color: var(--ink); font-weight: 500; margin: 12px 0 6px; }
 
-    @media (max-width: 1024px) {
-        .stat-row { grid-template-columns: repeat(3, 1fr); }
-    }
     @media (max-width: 640px) {
-        .stat-row { grid-template-columns: repeat(2, 1fr); }
         .tenant-table { font-size: 13px; }
         .tenant-table th:nth-child(3), .tenant-table td:nth-child(3) { display: none; }
     }
@@ -80,13 +70,86 @@
         <div class="alert alert-success" style="background: rgba(47,140,110,0.08); color: var(--success); padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 13.5px;">{{ session('status') }}</div>
     @endif
 
-    <div class="stat-row">
-        <div class="stat-card"><div class="label">Total</div><div class="value">{{ number_format($stats['total']) }}</div></div>
-        <div class="stat-card"><div class="label">Active</div><div class="value">{{ number_format($stats['active']) }}</div></div>
-        <div class="stat-card warn"><div class="label">Suspended</div><div class="value">{{ number_format($stats['suspended']) }}</div></div>
-        <div class="stat-card"><div class="label">Canceled</div><div class="value">{{ number_format($stats['canceled']) }}</div></div>
-        <div class="stat-card"><div class="label">In trial</div><div class="value">{{ number_format($stats['in_trial']) }}</div></div>
-        <div class="stat-card danger"><div class="label">Past due</div><div class="value">{{ number_format($stats['past_due']) }}</div></div>
+    <div class="section-header"><h6>Tenant Overview</h6></div>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-buildings"></i></div>
+                        <div>
+                            <div class="widget-number">{{ number_format($stats['total']) }}</div>
+                            <div class="widget-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-check-circle-fill"></i></div>
+                        <div>
+                            <div class="widget-number">{{ number_format($stats['active']) }}</div>
+                            <div class="widget-label">Active</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-pause-circle-fill"></i></div>
+                        <div>
+                            <div class="widget-number" style="color:{{ $stats['suspended'] > 0 ? 'var(--warn)' : 'var(--ink)' }};">{{ number_format($stats['suspended']) }}</div>
+                            <div class="widget-label">Suspended</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-x-circle"></i></div>
+                        <div>
+                            <div class="widget-number">{{ number_format($stats['canceled']) }}</div>
+                            <div class="widget-label">Canceled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-hourglass-split"></i></div>
+                        <div>
+                            <div class="widget-number">{{ number_format($stats['in_trial']) }}</div>
+                            <div class="widget-label">In Trial</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="widget-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                        <div>
+                            <div class="widget-number" style="color:{{ $stats['past_due'] > 0 ? 'var(--danger)' : 'var(--ink)' }};">{{ number_format($stats['past_due']) }}</div>
+                            <div class="widget-label">Past Due</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <form method="GET" action="{{ route('superadmin.tenants.index') }}" class="filter-row">
