@@ -30,11 +30,6 @@
             border-right: 1px solid var(--line-soft);
             position: relative;
         }
-        .auth-aside-lockup {
-            position: absolute;
-            top: clamp(28px, 4vw, 56px);
-            left: clamp(28px, 4vw, 56px);
-        }
         .auth-aside-meta {
             position: absolute;
             bottom: clamp(28px, 4vw, 56px);
@@ -43,8 +38,11 @@
         .auth-aside-body {
             flex: 1;
             display: flex; flex-direction: column; justify-content: center;
-            gap: clamp(24px, 3vw, 36px);
-            padding: clamp(80px, 10vw, 120px) 0;
+            gap: clamp(20px, 2.4vw, 32px);
+            padding-bottom: clamp(60px, 8vw, 100px);
+        }
+        .auth-aside-lockup {
+            margin-bottom: clamp(8px, 1vw, 16px);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
@@ -216,15 +214,15 @@
 <div class="auth-shell">
 
     <aside class="auth-aside">
-        <a href="{{ url('/') }}" class="eiaaw-lockup auth-aside-lockup">
-            <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
-            <span class="eiaaw-lockup-text">
-                <strong>EIAAW Workforce</strong>
-                <small>AI &middot; Human Partnerships</small>
-            </span>
-        </a>
-
         <div class="auth-aside-body">
+            <a href="{{ url('/') }}" class="eiaaw-lockup auth-aside-lockup">
+                <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
+                <span class="eiaaw-lockup-text">
+                    <strong>EIAAW Workforce</strong>
+                    <small>AI &middot; Human Partnerships</small>
+                </span>
+            </a>
+
             <div class="auth-aside-quote">
                 Run an entire organisation <em>in one click</em> with <strong>EIAAW&nbsp;Workforce</strong>.
             </div>
