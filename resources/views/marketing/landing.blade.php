@@ -889,7 +889,7 @@
                 </div>
 
                 <div class="ln-hero-ctas">
-                    <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
+                    <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
                     <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See every feature →</a>
                 </div>
 
@@ -1175,8 +1175,8 @@
         <h2>Run HR, IT, and Finance <em>on one platform</em> — starting this week.</h2>
         <p>Sign up with your work email, pick a workspace URL, set a password. Your tenant is provisioned with a 14-day Growth trial — no credit card. AI workflows are switched on by default.</p>
         <div class="ln-cta-row">
-            <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial</a>
-            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--outline">See pricing</a>
+            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose plan & start trial</a>
+            <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See features</a>
         </div>
         <div class="ln-cta-note">No credit card · 14-day Growth trial · Postgres RLS isolation</div>
     </div>

@@ -39,7 +39,9 @@ class GenerateSitemap extends Command
             ['loc' => route('marketing.pricing'),        'changefreq' => 'monthly', 'priority' => '0.9'],
             ['loc' => route('marketing.security'),       'changefreq' => 'monthly', 'priority' => '0.7'],
             ['loc' => route('marketing.faq'),            'changefreq' => 'monthly', 'priority' => '0.7'],
-            ['loc' => route('signup.form'),              'changefreq' => 'monthly', 'priority' => '0.8'],
+            // /signup intentionally excluded — it 302-redirects to /pricing when no
+            // ?plan= is supplied (post 2026-04 flow change), and crawlers shouldn't
+            // index a redirect target that already lives in this sitemap.
             ['loc' => route('marketing.find-workspace'), 'changefreq' => 'yearly',  'priority' => '0.4'],
             ['loc' => route('marketing.terms'),          'changefreq' => 'yearly',  'priority' => '0.3'],
             ['loc' => route('marketing.privacy'),        'changefreq' => 'yearly',  'priority' => '0.3'],

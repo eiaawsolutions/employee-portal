@@ -9,6 +9,18 @@
         padding: clamp(60px, 8vw, 100px) 0 clamp(36px, 5vw, 56px);
         text-align: center;
     }
+    .pr-intent-nudge {
+        display: inline-block;
+        margin: 0 auto 24px;
+        padding: 10px 18px;
+        background: var(--primary-tint);
+        color: var(--primary-dark);
+        border: 1px solid rgba(31,168,150,0.3);
+        border-radius: 999px;
+        font-size: 13.5px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+    }
     .pr-hero .eyebrow { justify-content: center; }
     .pr-hero h1 { margin: 18px auto 20px; max-width: 900px; text-align: center; }
     .pr-hero p { color: var(--ink-2); font-size: 17px; max-width: 620px; margin: 0 auto; }
@@ -212,6 +224,11 @@
 
 <section class="pr-hero">
     <div class="mk-container mk-container--narrow">
+        @if(session('signup_intent') === 'choose_plan_first')
+            <div class="pr-intent-nudge" role="status">
+                Pick your plan first — your 14-day trial starts after you confirm by email.
+            </div>
+        @endif
         <span class="eyebrow">Pricing</span>
         <h1 class="mk-display">Four modules, <em>per active employee.</em></h1>
         <p>

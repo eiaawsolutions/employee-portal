@@ -7,6 +7,7 @@ use App\Models\SignupInvite;
 use App\Models\Tenant;
 use App\Services\TenantProvisioner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -27,10 +28,21 @@ use Illuminate\Support\Facades\Validator;
  */
 class SignupController extends Controller
 {
-    public function showForm()
+    public function showForm(Request $request)
     {
         $this->ensureMarketingApex();
-        return view('signup.form');
+
+        $plan = $this->normalizePlan($request->query('plan'));
+
+        // No plan picked yet → bounce to /pricing so the user makes an explicit
+        // choice before handing over their email. /pricing CTAs link back here
+        // with ?plan=starter|growth|scale.
+        if ($plan === null) {
+            return redirect()->route('marketing.pricing')
+                ->with('signup_intent', 'choose_plan_first');
+        }
+
+        return view('signup.form', ['plan' => $plan]);
     }
 
     public function start(Request $request, TenantProvisioner $provisioner)
@@ -48,7 +60,7 @@ class SignupController extends Controller
                 'max:60',
                 'regex:/^[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?$/',
             ],
-            'plan'         => ['nullable', 'in:starter,growth,scale'],
+            'plan'         => ['required', 'in:starter,growth,scale'],
         ])->validate();
 
         $slug = strtolower($data['desired_slug']);
@@ -71,7 +83,7 @@ class SignupController extends Controller
                 'full_name'         => $data['full_name'],
                 'company_name'      => $data['company_name'],
                 'desired_slug'      => $slug,
-                'plan'              => $data['plan'] ?? 'growth',
+                'plan'              => $data['plan'],
                 'confirmation_token' => Str::random(48),
                 'expires_at'        => now()->addDay(),
                 'signup_ip'         => $request->ip(),
@@ -80,17 +92,31 @@ class SignupController extends Controller
             ]
         );
 
-        // Send confirmation email — if Mailable doesn't exist yet (Wk2 design
-        // pass), the queue will gracefully record the failure rather than 500.
+        // Send confirmation email. Failures here are user-blocking (no email →
+        // no way to confirm), so we log full context and tell the user instead
+        // of pretending the email went out.
+        $mailSent = true;
         try {
-            Mail::to($invite->work_email)->queue(new SignupConfirmationMail($invite));
+            Mail::to($invite->work_email)->send(new SignupConfirmationMail($invite));
         } catch (\Throwable $e) {
-            // Don't expose mail errors to the user; the invite row is created.
+            $mailSent = false;
+            Log::error('signup.confirmation_mail_failed', [
+                'invite_id'  => $invite->id,
+                'work_email' => $invite->work_email,
+                'plan'       => $invite->plan,
+                'mailer'     => config('mail.default'),
+                'host'       => config('mail.mailers.smtp.host'),
+                'from'       => config('mail.from.address'),
+                'error'      => $e->getMessage(),
+                'class'      => get_class($e),
+            ]);
             report($e);
         }
 
         return redirect()->route('signup.sent')
-            ->with('signup_email', $invite->work_email);
+            ->with('signup_email', $invite->work_email)
+            ->with('signup_plan', $invite->plan)
+            ->with('signup_mail_sent', $mailSent);
     }
 
     public function showSent()
@@ -124,7 +150,7 @@ class SignupController extends Controller
             // submission and provisioning. Send the user back to the
             // signup form to pick a fresh slug; the original invite is
             // unconsumed so they can retry without losing email/name.
-            return redirect()->route('signup.form')
+            return redirect()->route('signup.form', ['plan' => $invite->plan])
                 ->withInput([
                     'work_email'   => $invite->work_email,
                     'full_name'    => $invite->full_name,
@@ -162,6 +188,17 @@ class SignupController extends Controller
         }
 
         return $invite;
+    }
+
+    /**
+     * Normalize an incoming plan param. Returns the plan slug if valid,
+     * null if missing/unrecognised. We never silently default to growth —
+     * that hid the "user didn't actually choose a plan" bug.
+     */
+    private function normalizePlan(?string $plan): ?string
+    {
+        $plan = strtolower(trim((string) $plan));
+        return in_array($plan, ['starter', 'growth', 'scale'], true) ? $plan : null;
     }
 
     private function ensureMarketingApex(): void

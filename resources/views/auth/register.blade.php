@@ -47,7 +47,7 @@
                 Already activated? <a href="{{ route('login') }}" class="auth-link">Sign in</a>
             </p>
             <p style="text-align:center; font-size: 13px; color: var(--mute); margin-top: 8px;">
-                New customer? <a href="{{ route('signup.form') }}" class="auth-link">Start a 14-day trial</a>
+                New customer? <a href="{{ route('marketing.pricing') }}" class="auth-link">Start a 14-day trial</a>
             </p>
 
             <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>

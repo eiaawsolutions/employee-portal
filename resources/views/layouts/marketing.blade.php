@@ -209,7 +209,7 @@
 
         <div class="mk-nav-cta">
             <a href="{{ route('login') }}" class="sign-in">Sign in</a>
-            <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">
+            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">
                 Start 14-day trial
             </a>
             <button class="mk-nav-mobile-toggle" aria-label="Open menu" type="button" id="mk-nav-toggle">
@@ -230,7 +230,7 @@
                 <a href="{{ route('login') }}">Sign in</a>
                 <a href="{{ route('marketing.find-workspace') }}">Find your workspace</a>
             </nav>
-            <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary" style="width: 100%; justify-content: center;">Start 14-day trial</a>
+            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary" style="width: 100%; justify-content: center;">Start 14-day trial</a>
         </div>
     </div>
 </header>
@@ -266,7 +266,7 @@
             <div class="mk-footer-col">
                 <h4>Account</h4>
                 <ul>
-                    <li><a href="{{ route('signup.form') }}">Start trial</a></li>
+                    <li><a href="{{ route('marketing.pricing') }}">Start trial</a></li>
                     <li><a href="{{ route('marketing.find-workspace') }}">Find workspace</a></li>
                     <li><a href="mailto:{{ config('eiaaw.support_email') }}">Support</a></li>
                 </ul>

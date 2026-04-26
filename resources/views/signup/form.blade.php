@@ -63,6 +63,21 @@
         .legal { font-size: 11.5px; color: var(--mute); margin-top: 22px; line-height: 1.55; }
         .legal a { color: var(--primary-dark); }
         .alert-danger { background: #FBE9E4; border: 1px solid var(--danger); color: var(--danger); border-radius: 10px; font-size: 13.5px; padding: 10px 14px; margin-bottom: 16px; }
+        .plan-summary {
+            background: var(--bg-warm);
+            border: 1px solid var(--line-soft);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 0 0 22px;
+        }
+        .plan-summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .plan-summary-label { font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--mute); }
+        .plan-summary-change { font-size: 12px; color: var(--primary-dark); text-decoration: none; }
+        .plan-summary-change:hover { text-decoration: underline; }
+        .plan-summary-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+        .plan-summary-row strong { font-size: 17px; font-weight: 600; color: var(--ink); }
+        .plan-summary-price { font-size: 12.5px; color: var(--ink-2); }
+        .plan-summary-trial { font-size: 12px; color: var(--primary-dark); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.02em; }
         .aside-hero { font-family: var(--sans); font-weight: 500; font-size: clamp(28px, 3vw, 40px); line-height: 1.1; letter-spacing: -0.02em; max-width: 22ch; }
         .aside-hero em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--primary-dark); }
         .aside-bullets { list-style: none; padding: 0; margin: 32px 0 0; font-size: 14px; color: var(--ink-2); }
@@ -109,14 +124,34 @@
     <main class="auth-main">
         <form action="{{ route('signup.start') }}" method="POST" class="auth-form">
             @csrf
+            <input type="hidden" name="plan" value="{{ $plan }}">
 
             <span class="eyebrow">New workspace</span>
             <h1>Tell us where to send the <em>confirmation link</em>.</h1>
-            <p class="lead">We'll email a link to confirm your address and set your password. The trial begins after you confirm.</p>
+            <p class="lead">We'll email a link to confirm your address and set your password. The 14-day trial begins after you confirm.</p>
 
-            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug']))
+            @php $tier = config('eiaaw.pricing.tiers.' . $plan, []); @endphp
+            <div class="plan-summary">
+                <div class="plan-summary-line">
+                    <span class="plan-summary-label">Selected plan</span>
+                    <a href="{{ route('marketing.pricing') }}" class="plan-summary-change">Change</a>
+                </div>
+                <div class="plan-summary-row">
+                    <strong>{{ $tier['name'] ?? ucfirst($plan) }}</strong>
+                    @if(!empty($tier['monthly_usd']))
+                        <span class="plan-summary-price">US${{ $tier['monthly_usd'] }}/active employee/mo after trial</span>
+                    @endif
+                </div>
+                <div class="plan-summary-trial">14-day free trial · no credit card required</div>
+            </div>
+
+            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug','plan']))
                 <div class="alert-danger">{{ $errors->first() }}</div>
             @endif
+
+            @error('plan')
+                <div class="alert-danger">{{ $message }}</div>
+            @enderror
 
             <div class="field">
                 <label for="full_name">Your name</label>
