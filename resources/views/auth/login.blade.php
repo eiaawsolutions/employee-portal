@@ -35,14 +35,17 @@
             bottom: clamp(28px, 4vw, 56px);
             left: clamp(28px, 4vw, 56px);
         }
+        .auth-aside-lockup {
+            position: absolute;
+            top: clamp(28px, 4vw, 56px);
+            left: clamp(28px, 4vw, 56px);
+        }
         .auth-aside-body {
             flex: 1;
             display: flex; flex-direction: column; justify-content: center;
             gap: clamp(20px, 2.4vw, 32px);
+            padding-top: clamp(80px, 10vw, 120px);
             padding-bottom: clamp(60px, 8vw, 100px);
-        }
-        .auth-aside-lockup {
-            margin-bottom: clamp(8px, 1vw, 16px);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
@@ -127,12 +130,15 @@
             color: var(--mute);
         }
         .auth-main {
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
             padding: clamp(28px, 4vw, 56px);
+            padding-top: clamp(28px, 4vw, 56px);
             background: var(--surface);
         }
         .auth-form {
             width: 100%; max-width: 380px;
+            /* Align "SIGN IN" eyebrow with the logo on the left aside */
+            padding-top: clamp(8px, 1.2vw, 18px);
         }
         .auth-form h1 {
             font-family: var(--sans); font-weight: 500;
@@ -214,15 +220,15 @@
 <div class="auth-shell">
 
     <aside class="auth-aside">
-        <div class="auth-aside-body">
-            <a href="{{ url('/') }}" class="eiaaw-lockup auth-aside-lockup">
-                <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
-                <span class="eiaaw-lockup-text">
-                    <strong>EIAAW Workforce</strong>
-                    <small>AI &middot; Human Partnerships</small>
-                </span>
-            </a>
+        <a href="{{ url('/') }}" class="eiaaw-lockup auth-aside-lockup">
+            <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
+            <span class="eiaaw-lockup-text">
+                <strong>EIAAW Workforce</strong>
+                <small>AI &middot; Human Partnerships</small>
+            </span>
+        </a>
 
+        <div class="auth-aside-body">
             <div class="auth-aside-quote">
                 Run an entire organisation <em>in one click</em> with <strong>EIAAW&nbsp;Workforce</strong>.
             </div>
