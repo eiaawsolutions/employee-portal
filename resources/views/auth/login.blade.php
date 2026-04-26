@@ -23,10 +23,14 @@
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         }
+        /* Both columns flow from the top with the SAME top offset, so the
+           italic quote on the left lands on the same Y as "SIGN IN" on the right. */
+        .auth-shell { --content-top: clamp(110px, 18vh, 220px); }
+
         .auth-aside {
             background: var(--bg-warm);
             padding: clamp(28px, 4vw, 56px);
-            display: flex; flex-direction: column; justify-content: center;
+            display: flex; flex-direction: column;
             border-right: 1px solid var(--line-soft);
             position: relative;
         }
@@ -45,7 +49,8 @@
         }
         .auth-aside-body {
             display: flex; flex-direction: column;
-            gap: clamp(20px, 2.4vw, 32px);
+            gap: clamp(24px, 3vw, 40px);
+            margin-top: var(--content-top);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
@@ -125,12 +130,13 @@
             .auth-aside-hero::after { animation: none; }
         }
         .auth-main {
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
             padding: clamp(28px, 4vw, 56px);
             background: var(--surface);
         }
         .auth-form {
             width: 100%; max-width: 380px;
+            margin-top: var(--content-top);
         }
         .auth-form h1 {
             font-family: var(--sans); font-weight: 500;
