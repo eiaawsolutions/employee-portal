@@ -25,10 +25,26 @@
         }
         .auth-aside {
             background: var(--bg-warm);
-            padding: clamp(40px, 5vw, 72px) clamp(28px, 4vw, 56px);
-            display: flex; flex-direction: column; justify-content: space-between;
+            padding: clamp(28px, 4vw, 56px);
+            display: flex; flex-direction: column;
             border-right: 1px solid var(--line-soft);
-            gap: clamp(28px, 4vw, 44px);
+            position: relative;
+        }
+        .auth-aside-lockup {
+            position: absolute;
+            top: clamp(28px, 4vw, 56px);
+            left: clamp(28px, 4vw, 56px);
+        }
+        .auth-aside-meta {
+            position: absolute;
+            bottom: clamp(28px, 4vw, 56px);
+            left: clamp(28px, 4vw, 56px);
+        }
+        .auth-aside-body {
+            flex: 1;
+            display: flex; flex-direction: column; justify-content: center;
+            gap: clamp(24px, 3vw, 36px);
+            padding: clamp(80px, 10vw, 120px) 0;
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
@@ -45,11 +61,11 @@
         }
         .auth-aside-hero {
             display: flex; align-items: center; justify-content: center;
-            flex: 1; min-height: 0;
+            min-height: 0;
             perspective: 1200px;
         }
         .auth-aside-hero img {
-            max-width: 100%; height: auto; max-height: 52vh;
+            max-width: 100%; height: auto; max-height: 44vh;
             display: block;
             filter:
                 drop-shadow(0 40px 50px rgba(15, 26, 29, 0.28))
@@ -200,7 +216,7 @@
 <div class="auth-shell">
 
     <aside class="auth-aside">
-        <a href="{{ url('/') }}" class="eiaaw-lockup">
+        <a href="{{ url('/') }}" class="eiaaw-lockup auth-aside-lockup">
             <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
             <span class="eiaaw-lockup-text">
                 <strong>EIAAW Workforce</strong>
@@ -208,14 +224,16 @@
             </span>
         </a>
 
-        <div class="auth-aside-quote">
-            Run an entire organisation <em>in one click</em> with <strong>EIAAW&nbsp;Workforce</strong>.
-        </div>
+        <div class="auth-aside-body">
+            <div class="auth-aside-quote">
+                Run an entire organisation <em>in one click</em> with <strong>EIAAW&nbsp;Workforce</strong>.
+            </div>
 
-        <div class="auth-aside-hero">
-            <img src="{{ asset('brand/login-hero.svg') }}"
-                 alt="EIAAW Workforce dashboard with Run organisation assistant"
-                 loading="lazy">
+            <div class="auth-aside-hero">
+                <img src="{{ asset('brand/login-hero.svg') }}"
+                     alt="EIAAW Workforce dashboard with Run organisation assistant"
+                     loading="lazy">
+            </div>
         </div>
 
         <div class="auth-aside-meta">

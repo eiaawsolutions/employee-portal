@@ -743,10 +743,26 @@
     .ln-figure--float-b { animation: ln-float-b 9s   ease-in-out infinite; animation-delay: 1.2s; }
     .ln-figure--float-c { animation: ln-float-c 6s   ease-in-out infinite; animation-delay: 0.6s; }
 
+    /* Plain badge variant: same float + hover lift, no card chrome */
+    .ln-badge-float {
+        display: block; width: 100%; max-width: 320px; height: auto;
+        margin-top: 28px;
+        filter: drop-shadow(0 8px 20px rgba(15,26,29,0.08));
+        transition: transform 0.9s var(--ease), filter 0.9s var(--ease);
+        animation: ln-float-b 9s ease-in-out infinite;
+        animation-delay: 1.2s;
+        will-change: transform;
+    }
+    .ln-badge-float:hover {
+        transform: scale(1.03);
+        filter: drop-shadow(0 12px 28px rgba(15,26,29,0.14));
+    }
+
     @media (prefers-reduced-motion: reduce) {
         .ln-figure--float-a,
         .ln-figure--float-b,
-        .ln-figure--float-c { animation: none; }
+        .ln-figure--float-c,
+        .ln-badge-float { animation: none; }
     }
 
     /* Module-1 storyline section */
@@ -919,7 +935,7 @@
                 <img src="{{ asset('images/landing/journey-badge.svg') }}"
                      alt="Invite link drops into a unified employee record that fans out to HR, IT and Finance"
                      loading="lazy"
-                     style="display:block; margin-top: 28px; width: 100%; max-width: 320px; height: auto;">
+                     class="ln-badge-float">
             </div>
             <div>
                 <h2>Onboard, manage, offboard — <em>one continuous flow</em> across HR, IT, and Accounting.</h2>
