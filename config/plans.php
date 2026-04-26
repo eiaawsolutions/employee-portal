@@ -10,7 +10,7 @@
  *   M4 Finance           — full accounting (CoA, GL, AR/AP, tax, fixed assets, budgets)
  *
  *   Starter     — M1                     — USD 6 / active employee / month
- *   Growth      — M1 + M2 + M4           — USD 14
+ *   Growth      — M1 + M2 + M3           — USD 14
  *   Scale       — M1 + M2 + M3 + M4      — USD 29
  *   Enterprise  — Scale + SSO + dedicated DB + audit export  — Custom
  *
@@ -45,7 +45,7 @@ return [
         'price_usd_monthly' => 14,
         'min_seats' => 5,
         'ai_budget_usd' => (float) env('AI_BUDGET_GROWTH_USD', 15),
-        'modules' => ['M1', 'M2', 'M4'],
+        'modules' => ['M1', 'M2', 'M3'],
         'features' => [
             // Inherits Starter (M1)
             'core.employees',
@@ -57,8 +57,13 @@ return [
             'it.assets',
             'it.aarf',
             'it.offboarding',
-            // M4 — Finance
-            'finance.accounting',
+            // M3 — HRM
+            'core.leave',
+            'core.attendance',
+            'hr.eclaim',
+            'hr.payroll',
+            'hr.payslips',
+            'hr.ea_forms',
             'ai.basic',
         ],
     ],
@@ -70,7 +75,7 @@ return [
         'ai_budget_usd' => (float) env('AI_BUDGET_SCALE_USD', 40),
         'modules' => ['M1', 'M2', 'M3', 'M4'],
         'features' => [
-            // Inherits Growth
+            // Inherits Growth (M1 + M2 + M3)
             'core.employees',
             'core.onboarding',
             'core.offboarding',
@@ -79,14 +84,14 @@ return [
             'it.assets',
             'it.aarf',
             'it.offboarding',
-            'finance.accounting',
-            // M3 — HRM
             'core.leave',
             'core.attendance',
             'hr.eclaim',
             'hr.payroll',
             'hr.payslips',
             'hr.ea_forms',
+            // M4 — Finance
+            'finance.accounting',
             'admin.knowledge_base',
             'ai.advanced',
         ],

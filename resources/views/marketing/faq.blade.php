@@ -141,7 +141,7 @@
             'number' => '05',
             'title'  => 'Onboarding',
             'items'  => [
-                ['How long does implementation take?', 'Starter / Growth: self-serve in a day. Scale (full accounting): usually 2–4 weeks with our implementation team for CoA migration, opening balances, and integration setup.'],
+                ['How long does implementation take?', 'Starter: self-serve in a day. Growth (HRM + assets): self-serve in 1–3 days, longer if you have an existing payroll history to import. Scale (adds full accounting): usually 2–4 weeks with our implementation team for CoA migration, opening balances, and integration setup.'],
                 ['Can I trial with real employee data?', 'Yes. You own the data you import, even during trial. If you don\'t convert, export + delete takes one click.'],
                 ['Do you support single sign-on?', 'Yes on Enterprise — SAML 2.0 and OIDC. Starter / Growth / Scale use email + password with optional TOTP 2FA.'],
                 ['What integrations do you have?', 'At launch: Stripe, Slack (notifications), Gmail/Outlook (email). Q3 2026: Xero, QuickBooks, ADP. Enterprise custom integrations via API.'],

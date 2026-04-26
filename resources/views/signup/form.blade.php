@@ -111,7 +111,7 @@
             </p>
 
             <ul class="aside-bullets">
-                <li>Full HR, payroll, claims, assets, accounting</li>
+                <li>Full HR, payroll, claims, leave, attendance, IT assets</li>
                 <li>AI assistant trained on your workspace</li>
                 <li>Up to 5 users free during trial</li>
                 <li>Cancel anytime; auto-converts to Starter on day&nbsp;15</li>

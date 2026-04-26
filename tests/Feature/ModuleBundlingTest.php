@@ -5,12 +5,12 @@ namespace Tests\Feature;
 use Tests\TestCase;
 
 /**
- * Locks the Session 11 four-module bundling into place.
+ * Locks the four-module bundling into place.
  *
  *   M1 Employee Journey  → Starter+
  *   M2 Asset Management  → Growth+
- *   M3 HRM               → Scale+
- *   M4 Finance           → Growth+
+ *   M3 HRM               → Growth+
+ *   M4 Finance           → Scale only (+ Enterprise)
  *
  * Any future edit to config/plans.php that moves a feature across tiers
  * must update this test intentionally. That's the whole point.
@@ -37,8 +37,8 @@ class ModuleBundlingTest extends TestCase
     {
         $m1 = ['starter', 'growth', 'scale', 'enterprise'];     // M1 starts at Starter
         $m2 = ['growth', 'scale', 'enterprise'];                // M2 starts at Growth
-        $m3 = ['scale', 'enterprise'];                          // M3 starts at Scale
-        $m4 = ['growth', 'scale', 'enterprise'];                // M4 starts at Growth
+        $m3 = ['growth', 'scale', 'enterprise'];                // M3 starts at Growth
+        $m4 = ['scale', 'enterprise'];                          // M4 (Finance) is Scale-only
         $ent = ['enterprise'];
 
         return [

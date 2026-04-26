@@ -264,15 +264,15 @@
                 <div class="pr-module-from">Included from Growth</div>
             </div>
             <div class="pr-module">
-                <div class="pr-module-tag">Module 4</div>
-                <h3>Finance</h3>
-                <p>Full accounting — CoA, GL, AR/AP, budgets, tax returns, AI invoice scanning.</p>
-                <div class="pr-module-from">Included from Growth</div>
-            </div>
-            <div class="pr-module">
                 <div class="pr-module-tag">Module 3</div>
                 <h3>HRM</h3>
                 <p>Leave, attendance, claims, payroll, payslips, EA forms.</p>
+                <div class="pr-module-from">Included from Growth</div>
+            </div>
+            <div class="pr-module">
+                <div class="pr-module-tag">Module 4</div>
+                <h3>Finance</h3>
+                <p>Full accounting — CoA, GL, AR/AP, budgets, tax returns, AI invoice scanning.</p>
                 <div class="pr-module-from">Included from Scale</div>
             </div>
         </div>
@@ -344,8 +344,8 @@
                 <p>Anyone with an active record in your workspace on the day we bill. Invited-but-not-started users, terminated employees, and deactivated accounts don't count.</p>
             </div>
             <div class="pr-faq">
-                <h4>Why is Growth cheaper than Scale if it has Finance?</h4>
-                <p>Growth includes Finance and Assets but leaves out HRM (leave, attendance, payroll, EA forms). Scale is the complete platform — HRM is the most labour-intensive module to operate and run, which is reflected in the price.</p>
+                <h4>What's the difference between Growth and Scale?</h4>
+                <p>Growth bundles Employee Journey, IT Assets, and full HRM (leave, attendance, claims, payroll, EA forms) — everything most teams need to run people operations end-to-end. Scale adds Module 4 — full-fledged accounting (CoA, GL, AR/AP, budgets, tax returns, AI invoice scanning, claim → ledger auto-posting). Pick Scale when finance and HR run on the same backbone.</p>
             </div>
             <div class="pr-faq">
                 <h4>Do I need a credit card for the trial?</h4>

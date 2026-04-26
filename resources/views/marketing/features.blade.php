@@ -147,8 +147,8 @@
         <nav class="ft-toc" aria-label="Jump to module">
             <a href="#employee-journey">M1 · Employee Journey</a>
             <a href="#assets">M2 · Asset Management</a>
-            <a href="#finance">M4 · Finance</a>
             <a href="#hrm">M3 · HRM</a>
+            <a href="#finance">M4 · Finance</a>
             <a href="#ai">AI Assistant</a>
         </nav>
     </div>
@@ -214,44 +214,16 @@
         </div>
     </section>
 
-    <!-- ─── M4 FINANCE (Growth+) ─── -->
-    <section class="ft-mod" id="finance">
-        <div class="ft-mod-copy">
-            <span class="eyebrow">M4 · Finance · Growth+</span>
-            <h2>Ledger, AR, AP, budgets, tax returns — <em>on the same backbone.</em></h2>
-            <p>Approved claims, fixed-asset depreciation, and (on Scale) payroll runs all flow into the same chart of accounts. No monthly export to a separate bookkeeping tool.</p>
-            <ul>
-                <li>Chart of Accounts with opening-balance migration from your old system</li>
-                <li>Accounts Receivable / Payable with ageing and dunning</li>
-                <li>Bank reconciliation with AI auto-match</li>
-                <li>Budgets with per-line variance alerts</li>
-                <li>Tax returns (SST / GST-ready) and fiscal period close</li>
-                <li>AI invoice scanning — receipts and vendor bills auto-coded to GL</li>
-            </ul>
-        </div>
-        <div class="ft-mock">
-            <div class="ft-mock-head">
-                <span class="ft-mock-head-dot">General Ledger · April</span>
-                <span>Period open</span>
-            </div>
-            <div class="ft-mock-row"><strong>Revenue</strong> <span>$530k</span> <span class="tag tag--approved">Posted</span></div>
-            <div class="ft-mock-row"><strong>Operating expenses</strong> <span>$402k</span> <span class="tag tag--primary">Open</span></div>
-            <div class="ft-mock-row"><strong>Payroll (Scale)</strong> <span>$221k</span> <span class="tag tag--approved">Posted</span></div>
-            <div class="ft-mock-row"><strong>Claims (18)</strong> <span>$3,540</span> <span class="tag tag--primary">Auto-posted</span></div>
-            <div class="ft-mock-row"><strong>Depreciation</strong> <span>$2,010</span> <span class="tag tag--pending">Scheduled</span></div>
-        </div>
-    </section>
-
-    <!-- ─── M3 HRM (Scale+) ─── -->
+    <!-- ─── M3 HRM (Growth+) ─── -->
     <section class="ft-mod" id="hrm">
         <div class="ft-mod-copy">
-            <span class="eyebrow">M3 · HRM · Scale+</span>
+            <span class="eyebrow">M3 · HRM · Growth+</span>
             <h2>Leave, attendance, claims, payroll — <em>one source of truth.</em></h2>
             <p>Payroll pulls from attendance, leave, and approved claims automatically — no export/import cycle. EA forms export in the format LHDN expects.</p>
             <ul>
                 <li>Leave workflow — apply, approve, balances, entitlements, public holidays</li>
                 <li>Attendance &amp; timesheet with anomaly flags</li>
-                <li>Expense claims (eClaim) — receipt upload, multi-step approval, claim-to-ledger auto-posting</li>
+                <li>Expense claims (eClaim) — receipt upload, multi-step approval</li>
                 <li>Advanced payroll — EPF, SOCSO, EIS, PCB calculated per Malaysian statutory tables</li>
                 <li>Delta payslips — "why did this month change?" explained per line</li>
                 <li>EA form generator (LHDN-compliant) with per-employee distribution</li>
@@ -271,6 +243,35 @@
             <div class="ft-mock-row"><strong>SOCSO + EIS</strong> <span>$4,680 · 142 employees</span> <span class="tag tag--approved">Ready</span></div>
             <div class="ft-mock-row"><strong>PCB (tax)</strong> <span>$7,624 · 118 taxable</span> <span class="tag tag--approved">Ready</span></div>
             <div class="ft-mock-row"><strong>Anomaly</strong> <span>1 employee · OT &gt; 60% of base</span> <span class="tag tag--pending">Review</span></div>
+        </div>
+    </section>
+
+    <!-- ─── M4 FINANCE (Scale+) ─── -->
+    <section class="ft-mod" id="finance">
+        <div class="ft-mod-copy">
+            <span class="eyebrow">M4 · Finance · Scale only</span>
+            <h2>Ledger, AR, AP, budgets, tax returns — <em>on the same backbone.</em></h2>
+            <p>Approved claims, fixed-asset depreciation, and payroll runs all flow into the same chart of accounts. No monthly export to a separate bookkeeping tool.</p>
+            <ul>
+                <li>Chart of Accounts with opening-balance migration from your old system</li>
+                <li>Accounts Receivable / Payable with ageing and dunning</li>
+                <li>Bank reconciliation with AI auto-match</li>
+                <li>Budgets with per-line variance alerts</li>
+                <li>Tax returns (SST / GST-ready) and fiscal period close</li>
+                <li>AI invoice scanning — receipts and vendor bills auto-coded to GL</li>
+                <li>Claim → ledger auto-posting from the HRM eClaim workflow</li>
+            </ul>
+        </div>
+        <div class="ft-mock">
+            <div class="ft-mock-head">
+                <span class="ft-mock-head-dot">General Ledger · April</span>
+                <span>Period open</span>
+            </div>
+            <div class="ft-mock-row"><strong>Revenue</strong> <span>$530k</span> <span class="tag tag--approved">Posted</span></div>
+            <div class="ft-mock-row"><strong>Operating expenses</strong> <span>$402k</span> <span class="tag tag--primary">Open</span></div>
+            <div class="ft-mock-row"><strong>Payroll posting</strong> <span>$221k</span> <span class="tag tag--approved">Posted</span></div>
+            <div class="ft-mock-row"><strong>Claims (18)</strong> <span>$3,540</span> <span class="tag tag--primary">Auto-posted</span></div>
+            <div class="ft-mock-row"><strong>Depreciation</strong> <span>$2,010</span> <span class="tag tag--pending">Scheduled</span></div>
         </div>
     </section>
 

@@ -33,8 +33,8 @@ Per active employee per month (USD). Annual = monthly × 10 (2 months free).
 14-day free trial on Growth — no credit card required.
 
 - **Starter** — $6/emp/mo · Module 1 only (employee journey)
-- **Growth** — $14/emp/mo · M1 + M2 (asset management) + M4 (accounting)
-- **Scale** — $29/emp/mo · Everything (M1 + M2 + M3 HRM + M4 accounting)
+- **Growth** — $14/emp/mo · M1 + M2 (asset management) + M3 (HRM — leave, attendance, claims, payroll, EA forms)
+- **Scale** — $29/emp/mo · Everything (M1 + M2 + M3 HRM + M4 full accounting)
 - **Enterprise** — Custom · Scale + SSO + dedicated database + audit export + SLA
 
 ## Built for

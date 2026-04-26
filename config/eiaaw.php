@@ -83,8 +83,8 @@ return [
      *
      * Tier bundles:
      *   Starter     $6   — M1 only
-     *   Growth      $14  — M1 + M2 + M4
-     *   Scale       $29  — M1 + M2 + M3 + M4 (everything)
+     *   Growth      $14  — M1 + M2 + M3 (Employee Journey + Assets + HRM)
+     *   Scale       $29  — M1 + M2 + M3 + M4 (adds Finance — everything)
      *   Enterprise  Custom — Scale + SSO + dedicated DB + audit export + SLA
      *
      * Annual = monthly × 10 (2 months free). Stripe Price IDs populated via
@@ -123,36 +123,40 @@ return [
                 ],
                 'excluded' => [
                     'Asset inventory (Growth tier)',
-                    'Accounting (Growth tier)',
-                    'Leave, payroll & attendance (Scale tier)',
+                    'Leave, payroll & attendance (Growth tier)',
+                    'Full accounting (Scale tier)',
                 ],
             ],
             'growth' => [
                 'name' => 'Growth',
-                'tagline' => 'Employee records plus IT assets plus full accounting — one backbone for operations and finance.',
+                'tagline' => 'Employee records plus IT assets plus full HRM — leave, payroll, claims, EA forms on one backbone.',
                 'monthly_usd' => 14,
                 'stripe_prices' => [
                     'monthly' => env('STRIPE_PRICE_GROWTH_USD_MONTHLY'),
                     'annual'  => env('STRIPE_PRICE_GROWTH_USD_ANNUAL'),
                 ],
-                'headcount_label' => 'Modules 1 + 2 + 4',
+                'headcount_label' => 'Modules 1 + 2 + 3',
                 'featured' => true,
                 'badge' => 'Most popular',
                 'cta' => ['label' => 'Start 14-day trial', 'route' => 'signup.form', 'plan' => 'growth'],
-                'modules_included' => ['M1 Employee Journey', 'M2 Asset Management', 'M4 Finance'],
+                'modules_included' => ['M1 Employee Journey', 'M2 Asset Management', 'M3 HRM'],
                 'features' => [
                     'Everything in Starter',
                     'IT asset inventory with AARF acknowledgement',
                     'IT offboarding checklist generated from assigned assets',
                     'Software licence seat tracking & expiry alerts',
-                    'Full accounting — Chart of Accounts, GL, AR/AP, budgets, tax returns',
-                    'AI invoice scanning & auto-reconciliation',
+                    'Leave workflow — apply, approve, balances, entitlements',
+                    'Attendance & timesheet',
+                    'Expense claims (eClaim) with multi-step approvals',
+                    'Advanced payroll — EPF, SOCSO, EIS, PCB',
+                    'Payslip delivery & EA form export (LHDN-ready)',
                     'AI assistant (1,000 messages/mo)',
                     'Priority email support — 4 business-hour response',
                 ],
                 'excluded' => [
-                    'Leave, attendance, payroll & EA forms (Scale tier)',
-                    'Expense claims workflow (Scale tier)',
+                    'Full accounting — CoA, GL, AR/AP, budgets, tax returns (Scale tier)',
+                    'AI invoice scanning & auto-reconciliation (Scale tier)',
+                    'Claim → ledger auto-posting (Scale tier)',
                     'SSO (SAML / OIDC) (Enterprise tier)',
                 ],
             ],
@@ -170,13 +174,12 @@ return [
                 'modules_included' => ['M1 Employee Journey', 'M2 Asset Management', 'M3 HRM', 'M4 Finance'],
                 'features' => [
                     'Everything in Growth',
-                    'Leave workflow — apply, approve, balances, entitlements',
-                    'Attendance & timesheet',
-                    'Expense claims (eClaim) with multi-step approvals',
-                    'Advanced payroll — EPF, SOCSO, EIS, PCB',
-                    'Payslip delivery & EA form export (LHDN-ready)',
+                    'Full accounting — Chart of Accounts, GL, AR/AP, budgets, tax returns',
+                    'AI invoice scanning & auto-reconciliation',
                     'Claim → ledger auto-posting',
                     'Anomaly detection on claims, attendance, payroll',
+                    'Bank reconciliation with AI auto-match',
+                    'Fixed-asset depreciation feeding the GL',
                     'AI assistant (5,000 messages/mo, financial-close copilot)',
                     'Slack-channel support — 2 business-hour response',
                 ],
