@@ -208,7 +208,7 @@
         </nav>
 
         <div class="mk-nav-cta">
-            <a href="{{ route('marketing.find-workspace') }}" class="sign-in">Sign in</a>
+            <a href="{{ route('login') }}" class="sign-in">Sign in</a>
             <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">
                 Start 14-day trial
             </a>
@@ -227,7 +227,8 @@
                 <a href="{{ route('marketing.pricing') }}">Pricing</a>
                 <a href="{{ route('marketing.security') }}">Security</a>
                 <a href="{{ route('marketing.faq') }}">FAQ</a>
-                <a href="{{ route('marketing.find-workspace') }}">Sign in</a>
+                <a href="{{ route('login') }}">Sign in</a>
+                <a href="{{ route('marketing.find-workspace') }}">Find your workspace</a>
             </nav>
             <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary" style="width: 100%; justify-content: center;">Start 14-day trial</a>
         </div>

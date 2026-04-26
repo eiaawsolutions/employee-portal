@@ -105,6 +105,21 @@
             margin-top: 40px; font-family: var(--mono); font-size: 10px;
             text-transform: uppercase; letter-spacing: 0.12em; color: var(--mute);
         }
+        .auth-helpers {
+            margin-top: 24px; padding-top: 20px;
+            border-top: 1px solid var(--line-soft);
+            display: flex; flex-wrap: wrap; gap: 14px 22px;
+            justify-content: space-between; align-items: center;
+            font-size: 13px;
+        }
+        .auth-helpers a {
+            color: var(--ink-2); text-decoration: none; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: color 0.18s var(--ease);
+        }
+        .auth-helpers a:hover { color: var(--primary-dark); }
+        .auth-helpers .auth-helper-find { color: var(--primary-dark); }
+        .auth-helpers .auth-helper-find:hover { color: var(--ink); }
 
         @media (max-width: 880px) {
             .auth-shell { grid-template-columns: 1fr; }
@@ -219,6 +234,21 @@
                     </div>
                 </div>
             @endif
+
+            @unless(app()->bound('current_tenant'))
+                {{-- Apex-only helpers. On a tenant subdomain the user already
+                     knows the workspace, so these links would be noise. --}}
+                <div class="auth-helpers">
+                    <a href="{{ route('marketing.find-workspace') }}" class="auth-helper-find">
+                        <span aria-hidden="true">⌕</span>
+                        Find your workspace
+                    </a>
+                    <a href="{{ url('/') }}">
+                        <span aria-hidden="true">←</span>
+                        Back to home
+                    </a>
+                </div>
+            @endunless
 
             <p class="text-center mt-4 mb-0" style="font-size:13px;color:var(--ink-2);">
                 New to {{ config('eiaaw.product_name', 'EIAAW Workforce') }}?

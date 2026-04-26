@@ -72,9 +72,8 @@
   </g>
 
   <!-- Main canvas header -->
-  <text x="216" y="100" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em">DASHBOARD · TODAY</text>
-  <text x="216" y="124" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">Run your organisation</text>
-  <text x="358" y="124" font-family="'Instrument Serif', Georgia, serif" font-size="22" font-style="italic" fill="#11766A" letter-spacing="-0.02em">— in one click.</text>
+  <text x="216" y="96" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em">DASHBOARD · TODAY</text>
+  <text x="216" y="120" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em">Run your organisation <tspan font-family="'Instrument Serif', Georgia, serif" font-size="20" font-style="italic" fill="#11766A">— in one click.</tspan></text>
 
   <!-- Three module cards -->
   <g filter="url(#soft-shadow)">
