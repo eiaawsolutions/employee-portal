@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 480" role="img" aria-labelledby="ej-title ej-desc" preserveAspectRatio="xMidYMid meet">
+  <title id="ej-title">EIAAW Workforce — automated employee journey</title>
+  <desc id="ej-desc">A new hire fills the invite form once; the record cascades into HR, IT and Finance automatically — onboarding, asset acceptance, payroll, EA forms and offboarding all on one timeline.</desc>
+
+  <defs>
+    <linearGradient id="ej-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF7F2"/>
+      <stop offset="100%" stop-color="#F1EAD9"/>
+    </linearGradient>
+    <linearGradient id="ej-teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22B8A5"/>
+      <stop offset="100%" stop-color="#11766A"/>
+    </linearGradient>
+    <linearGradient id="ej-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.94"/>
+    </linearGradient>
+    <linearGradient id="ej-progress" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22B8A5"/>
+      <stop offset="100%" stop-color="#11766A"/>
+    </linearGradient>
+    <filter id="ej-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+      <feOffset dx="0" dy="3" result="offset"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.20"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="ej-shadow-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offset"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.14"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="600" height="480" rx="20" fill="url(#ej-bg)"/>
+
+  <!-- Decorative connecting flow line, top to bottom -->
+  <path d="M 80 90 Q 60 200 90 280 Q 130 360 105 430"
+        stroke="#22B8A5" stroke-width="1.4" fill="none"
+        stroke-linecap="round" stroke-dasharray="2 6" opacity="0.35"/>
+  <path d="M 520 70 Q 540 180 510 270 Q 470 360 500 430"
+        stroke="#22B8A5" stroke-width="1.4" fill="none"
+        stroke-linecap="round" stroke-dasharray="2 6" opacity="0.28"/>
+
+  <!-- ───── Card 1 · Invite form (top-left) ───── -->
+  <g filter="url(#ej-shadow)" transform="translate(40, 40)">
+    <rect width="248" height="116" rx="14" fill="url(#ej-card)" stroke="#E6DFCF" stroke-width="1"/>
+    <!-- header -->
+    <rect x="14" y="14" width="40" height="14" rx="3" fill="#1FA896" opacity="0.12"/>
+    <text x="34" y="24" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="7" fill="#11766A" letter-spacing="0.12em" text-anchor="middle">SECTION A</text>
+    <text x="14" y="46" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="#0F1A1D">New hire invite form</text>
+    <text x="14" y="60" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#7B8A8F">Filled once · cascades to every system</text>
+    <!-- form lines -->
+    <rect x="14" y="72" width="100" height="6" rx="2" fill="#EDE5D2"/>
+    <rect x="14" y="84" width="140" height="6" rx="2" fill="#EDE5D2"/>
+    <rect x="14" y="96" width="80"  height="6" rx="2" fill="#EDE5D2"/>
+    <!-- progress bar -->
+    <rect x="160" y="72" width="74" height="34" rx="6" fill="#FAF7F2" stroke="#E6DFCF" stroke-width="1"/>
+    <rect x="166" y="84" width="62" height="4" rx="2" fill="#EDE5D2"/>
+    <rect x="166" y="84" width="50" height="4" rx="2" fill="url(#ej-progress)"/>
+    <text x="166" y="100" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#7B8A8F" letter-spacing="0.06em">81% COMPLETE</text>
+  </g>
+
+  <!-- ───── Avatar / signature card (top-right) ───── -->
+  <g filter="url(#ej-shadow-soft)" transform="translate(330, 50)">
+    <rect width="220" height="96" rx="14" fill="url(#ej-card)" stroke="#E6DFCF" stroke-width="1"/>
+    <!-- avatar circle -->
+    <circle cx="38" cy="48" r="24" fill="#E8F3F0"/>
+    <circle cx="38" cy="42" r="8" fill="#11766A" opacity="0.85"/>
+    <path d="M 22 64 Q 38 50 54 64 L 54 72 L 22 72 Z" fill="#11766A" opacity="0.85"/>
+    <!-- signed badge -->
+    <text x="76" y="34" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#0F1A1D">Aisha Rahman</text>
+    <text x="76" y="48" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#7B8A8F">Marketing Executive · Start 1 May</text>
+    <!-- e-signature line -->
+    <path d="M 76 62 Q 90 58 100 62 T 130 62 Q 142 60 152 64" stroke="#11766A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <text x="76" y="80" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="7" fill="#7B8A8F" letter-spacing="0.1em">SIGNED · TOKEN VERIFIED</text>
+  </g>
+
+  <!-- ───── Center hub: cascading record (the heart of the illustration) ───── -->
+  <g filter="url(#ej-shadow)" transform="translate(140, 180)">
+    <rect width="320" height="140" rx="16" fill="#FFFFFF" stroke="#E6DFCF" stroke-width="1"/>
+
+    <!-- Hub label -->
+    <text x="20" y="28" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="8" fill="#9CA8AC" letter-spacing="0.16em">EMPLOYEE RECORD · ACTIVATED</text>
+
+    <!-- 3 columns: HR · IT · FIN -->
+    <!-- HR pill -->
+    <g transform="translate(20, 44)">
+      <rect width="88" height="76" rx="10" fill="#FAF7F2" stroke="#E6DFCF" stroke-width="1"/>
+      <rect x="10" y="10" width="22" height="22" rx="6" fill="url(#ej-teal)"/>
+      <path d="M 16 21 L 19 24 L 26 17" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="38" y="20" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" letter-spacing="0.08em">HR</text>
+      <text x="38" y="30" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#7B8A8F">People Ops</text>
+      <text x="10" y="50" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Onboarding ✓</text>
+      <text x="10" y="60" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Leave accruals</text>
+      <text x="10" y="70" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Payroll · EA</text>
+    </g>
+
+    <!-- IT pill -->
+    <g transform="translate(116, 44)">
+      <rect width="88" height="76" rx="10" fill="#FAF7F2" stroke="#E6DFCF" stroke-width="1"/>
+      <rect x="10" y="10" width="22" height="22" rx="6" fill="url(#ej-teal)"/>
+      <rect x="14" y="14" width="14" height="10" rx="1.5" fill="none" stroke="#FFFFFF" stroke-width="1.6"/>
+      <rect x="17" y="25" width="8"  height="2"  rx="0.5" fill="#FFFFFF"/>
+      <text x="38" y="20" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" letter-spacing="0.08em">IT</text>
+      <text x="38" y="30" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#7B8A8F">Asset Mgmt</text>
+      <text x="10" y="50" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">AARF signed ✓</text>
+      <text x="10" y="60" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">MacBook · phone</text>
+      <text x="10" y="70" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Provisioning</text>
+    </g>
+
+    <!-- FIN pill -->
+    <g transform="translate(212, 44)">
+      <rect width="88" height="76" rx="10" fill="#FAF7F2" stroke="#E6DFCF" stroke-width="1"/>
+      <rect x="10" y="10" width="22" height="22" rx="6" fill="url(#ej-teal)"/>
+      <path d="M 15 26 L 18 22 L 22 24 L 27 17" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="38" y="20" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" letter-spacing="0.08em">FIN</text>
+      <text x="38" y="30" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#7B8A8F">Accounting</text>
+      <text x="10" y="50" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">GL posting</text>
+      <text x="10" y="60" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Cost centre</text>
+      <text x="10" y="70" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#3F4F54">Statutory ✓</text>
+    </g>
+  </g>
+
+  <!-- Connector arrows: invite-card → hub, signature-card → hub, hub → timeline -->
+  <g stroke="#11766A" stroke-width="1.4" fill="none" opacity="0.7">
+    <!-- top-left invite to hub top -->
+    <path d="M 164 156 Q 200 170 230 178" stroke-linecap="round"/>
+    <polygon points="230,178 224,176 226,182" fill="#11766A" opacity="0.7" stroke="none"/>
+    <!-- top-right signature to hub top -->
+    <path d="M 440 146 Q 410 165 380 178" stroke-linecap="round"/>
+    <polygon points="380,178 386,177 384,183" fill="#11766A" opacity="0.7" stroke="none"/>
+  </g>
+
+  <!-- ───── Timeline at bottom: the lifecycle ───── -->
+  <g transform="translate(48, 360)">
+    <text x="0" y="0" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="8" fill="#9CA8AC" letter-spacing="0.16em">ONE CONTINUOUS FLOW</text>
+
+    <!-- Track -->
+    <line x1="0" y1="36" x2="504" y2="36" stroke="#E6DFCF" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="36" x2="404" y2="36" stroke="url(#ej-progress)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Nodes -->
+    <g font-family="Inter, system-ui, sans-serif" font-size="9" fill="#3F4F54">
+      <circle cx="0"   cy="36" r="6" fill="#11766A"/>
+      <circle cx="0"   cy="36" r="2.4" fill="#FFFFFF"/>
+      <text x="0"   y="60" text-anchor="start" font-weight="600" fill="#0F1A1D">Invite</text>
+      <text x="0"   y="72" text-anchor="start" fill="#7B8A8F">Self-service link</text>
+
+      <circle cx="126" cy="36" r="6" fill="#11766A"/>
+      <circle cx="126" cy="36" r="2.4" fill="#FFFFFF"/>
+      <text x="126" y="60" text-anchor="middle" font-weight="600" fill="#0F1A1D">Activate</text>
+      <text x="126" y="72" text-anchor="middle" fill="#7B8A8F">Day one · auto</text>
+
+      <circle cx="252" cy="36" r="6" fill="#11766A"/>
+      <circle cx="252" cy="36" r="2.4" fill="#FFFFFF"/>
+      <text x="252" y="60" text-anchor="middle" font-weight="600" fill="#0F1A1D">Manage</text>
+      <text x="252" y="72" text-anchor="middle" fill="#7B8A8F">Leave · pay · assets</text>
+
+      <circle cx="378" cy="36" r="6" fill="#22B8A5"/>
+      <circle cx="378" cy="36" r="2.4" fill="#FFFFFF"/>
+      <text x="378" y="60" text-anchor="middle" font-weight="600" fill="#0F1A1D">Pay &amp; report</text>
+      <text x="378" y="72" text-anchor="middle" fill="#7B8A8F">EA · EPF · SOCSO</text>
+
+      <circle cx="504" cy="36" r="6" fill="#FFFFFF" stroke="#11766A" stroke-width="1.6"/>
+      <text x="504" y="60" text-anchor="end" font-weight="600" fill="#0F1A1D">Offboard</text>
+      <text x="504" y="72" text-anchor="end" fill="#7B8A8F">Reverse cascade</text>
+    </g>
+  </g>
+</svg>

@@ -19,11 +19,23 @@
       <stop offset="0%" stop-color="#22B8A5" stop-opacity="0.28"/>
       <stop offset="100%" stop-color="#22B8A5" stop-opacity="0"/>
     </radialGradient>
-    <filter id="lh-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
-      <feOffset dx="0" dy="12" result="offset"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="lh-shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="14"/>
+      <feOffset dx="0" dy="18" result="offset"/>
+      <feComponentTransfer result="shadow"><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="lh-shadow-strong" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+      <feOffset dx="0" dy="24" result="offset"/>
+      <feComponentTransfer result="shadow"><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
 
@@ -78,7 +90,7 @@
   </g>
 
   <!-- Floating one-click command card, overlapping bottom-right -->
-  <g transform="rotate(2 320 460)" filter="url(#lh-shadow)">
+  <g transform="rotate(2 320 460)" filter="url(#lh-shadow-strong)">
     <rect x="180" y="380" width="280" height="170" rx="18" fill="url(#lh-ink)"/>
     <rect x="180" y="380" width="280" height="170" rx="18" fill="none" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="1"/>
 

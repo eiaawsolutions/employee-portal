@@ -15,12 +15,16 @@
         .auth-shell { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
         .auth-aside {
             background: var(--bg-warm);
-            padding: clamp(40px, 5vw, 72px) clamp(28px, 4vw, 56px);
-            display: flex; flex-direction: column; justify-content: space-between;
+            padding: clamp(28px, 4vw, 56px);
+            display: flex; align-items: center; justify-content: center;
             border-right: 1px solid var(--line-soft);
+            position: relative;
         }
-        .auth-main { display: flex; align-items: center; justify-content: center; padding: clamp(28px, 4vw, 56px); background: var(--surface); }
+        .aside-inner { width: 100%; max-width: 460px; }
+        .aside-lockup { display: inline-flex; margin-bottom: 28px; }
+        .auth-main { display: flex; align-items: center; justify-content: center; padding: clamp(28px, 4vw, 56px); background: var(--surface); position: relative; }
         .auth-form { width: 100%; max-width: 460px; }
+        .auth-form .eyebrow { display: block; margin-bottom: 4px; }
         .auth-form h1 {
             font-family: var(--sans); font-weight: 500;
             font-size: clamp(32px, 3.5vw, 44px); line-height: 1.05;
@@ -65,7 +69,12 @@
         .aside-bullets li { padding: 10px 0; border-bottom: 1px solid var(--line-soft); display: flex; align-items: flex-start; gap: 10px; }
         .aside-bullets li:last-child { border-bottom: none; }
         .aside-bullets li::before { content: '✓'; color: var(--primary-dark); font-weight: 600; flex-shrink: 0; }
-        .aside-meta { font-family: var(--mono); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--mute); margin-top: auto; }
+        .aside-meta {
+            font-family: var(--mono); font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.14em; color: var(--mute);
+            position: absolute; left: clamp(28px, 4vw, 56px); bottom: clamp(28px, 4vw, 40px);
+            margin: 0;
+        }
         @media (max-width: 880px) { .auth-shell { grid-template-columns: 1fr; } .auth-aside { display: none; } }
     </style>
 </head>
@@ -73,15 +82,15 @@
 <div class="auth-shell">
 
     <aside class="auth-aside">
-        <a href="/" class="eiaaw-lockup">
-            <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
-            <span class="eiaaw-lockup-text">
-                <strong>EIAAW Workforce</strong>
-                <small>AI &middot; Human Partnerships</small>
-            </span>
-        </a>
+        <div class="aside-inner">
+            <a href="/" class="eiaaw-lockup aside-lockup">
+                <img src="{{ asset('brand/shield.png') }}" alt="EIAAW Workforce">
+                <span class="eiaaw-lockup-text">
+                    <strong>EIAAW Workforce</strong>
+                    <small>AI &middot; Human Partnerships</small>
+                </span>
+            </a>
 
-        <div>
             <p class="aside-hero">
                 Start your <em>14-day trial</em> in two minutes — no card, full feature access.
             </p>

@@ -46,10 +46,66 @@
         .auth-aside-hero {
             display: flex; align-items: center; justify-content: center;
             flex: 1; min-height: 0;
+            perspective: 1200px;
         }
         .auth-aside-hero img {
             max-width: 100%; height: auto; max-height: 52vh;
             display: block;
+            filter:
+                drop-shadow(0 40px 50px rgba(15, 26, 29, 0.28))
+                drop-shadow(0 18px 24px rgba(15, 26, 29, 0.18))
+                drop-shadow(0 4px 8px rgba(31, 168, 150, 0.12));
+            animation: auth-hero-float 5s ease-in-out infinite;
+            transform-origin: 50% 70%;
+            will-change: transform, filter;
+        }
+        .auth-aside-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            width: 60%;
+            height: 22px;
+            background: radial-gradient(ellipse at center,
+                rgba(15, 26, 29, 0.22) 0%,
+                rgba(15, 26, 29, 0.08) 45%,
+                transparent 70%);
+            transform: translateX(-50%);
+            filter: blur(6px);
+            animation: auth-hero-shadow 5s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .auth-aside-hero { position: relative; }
+        @keyframes auth-hero-float {
+            0%, 100% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+                filter:
+                    drop-shadow(0 40px 50px rgba(15, 26, 29, 0.28))
+                    drop-shadow(0 18px 24px rgba(15, 26, 29, 0.18))
+                    drop-shadow(0 4px 8px rgba(31, 168, 150, 0.12));
+            }
+            50% {
+                transform: translate3d(0, -22px, 0) rotate(-0.6deg);
+                filter:
+                    drop-shadow(0 60px 70px rgba(15, 26, 29, 0.34))
+                    drop-shadow(0 26px 34px rgba(15, 26, 29, 0.22))
+                    drop-shadow(0 6px 12px rgba(31, 168, 150, 0.16));
+            }
+        }
+        @keyframes auth-hero-shadow {
+            0%, 100% {
+                transform: translateX(-50%) scaleX(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(-50%) scaleX(0.82);
+                opacity: 0.65;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .auth-aside-hero img { animation: none; }
+            .auth-aside-hero::after { animation: none; }
         }
         .auth-aside-meta {
             font-family: var(--mono); font-size: 11px; font-weight: 500;

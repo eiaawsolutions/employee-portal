@@ -914,7 +914,13 @@
 <section class="mk-section">
     <div class="mk-container">
         <div class="ln-sec-head">
-            <div class="eyebrow">The Automated Employee Journey</div>
+            <div>
+                <div class="eyebrow">The Automated Employee Journey</div>
+                <img src="{{ asset('images/landing/journey-badge.svg') }}"
+                     alt="Invite link drops into a unified employee record that fans out to HR, IT and Finance"
+                     loading="lazy"
+                     style="display:block; margin-top: 28px; width: 100%; max-width: 320px; height: auto;">
+            </div>
             <div>
                 <h2>Onboard, manage, offboard — <em>one continuous flow</em> across HR, IT, and Accounting.</h2>
                 <p style="max-width: 620px; margin-top: 24px;">A new hire fills the invite form once. From that moment, every downstream system — HR records, IT assets, payroll, EA forms, statutory submissions, the general ledger — moves in step. No exports. No reconciliations. No SaaS sprawl.</p>
@@ -938,7 +944,7 @@
             </div>
             <div class="ln-module-media">
                 <div class="ln-figure ln-figure--float-a">
-                    <img src="{{ asset('images/landing/employee-journey.jpg') }}" alt="HR onboarding a new hire on day one across the EIAAW Workforce platform" loading="lazy">
+                    <img src="{{ asset('images/landing/employee-journey.svg') }}" alt="A new hire fills the invite form once — the record cascades into HR, IT and Finance with onboarding, asset acceptance, payroll and offboarding on one timeline" loading="lazy">
                 </div>
             </div>
         </div>
