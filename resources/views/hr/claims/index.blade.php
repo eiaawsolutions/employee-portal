@@ -8,19 +8,17 @@
     {{-- Stats Cards --}}
     @include('partials.dashboard-widgets-style')
     <div class="section-header">
-        <div class="section-icon" style="background:#fef3c7;">
-            <i class="bi bi-receipt-cutoff" style="font-size:16px;color:#d97706;"></i>
-        </div>
+        <div class="section-icon"><i class="bi bi-receipt-cutoff"></i></div>
         <h6>Claims Overview</h6>
     </div>
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="card dash-widget h-100">
-                <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
                     <div class="d-flex align-items-center gap-3">
                         <div class="widget-icon"><i class="bi bi-hourglass-split"></i></div>
                         <div>
-                            <div class="widget-number">{{ $stats['pending'] ?? 0 }}</div>
+                            <div class="widget-number" style="color:{{ ($stats['pending'] ?? 0) > 0 ? 'var(--warn)' : 'var(--ink)' }};">{{ $stats['pending'] ?? 0 }}</div>
                             <div class="widget-label">Pending Review</div>
                         </div>
                     </div>
@@ -28,8 +26,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card dash-widget h-100">
-                <div class="widget-header" style="background:linear-gradient(135deg,#22c55e,#15803d);">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
                     <div class="d-flex align-items-center gap-3">
                         <div class="widget-icon"><i class="bi bi-check-circle-fill"></i></div>
                         <div>
@@ -41,12 +39,12 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card dash-widget h-100">
-                <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
                     <div class="d-flex align-items-center gap-3">
                         <div class="widget-icon"><i class="bi bi-cash-stack"></i></div>
                         <div>
-                            <div class="widget-number" style="font-size:24px;">RM {{ number_format($stats['total_approved'] ?? 0, 2) }}</div>
+                            <div class="widget-number" style="font-size:22px;">RM {{ number_format($stats['total_approved'] ?? 0, 2) }}</div>
                             <div class="widget-label">Approved This Month</div>
                         </div>
                     </div>
@@ -54,8 +52,8 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card dash-widget h-100">
-                <div class="widget-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+            <div class="card dash-widget h-100" style="min-height:auto;">
+                <div class="widget-header">
                     <div class="d-flex align-items-center gap-3">
                         <div class="widget-icon"><i class="bi bi-receipt"></i></div>
                         <div>

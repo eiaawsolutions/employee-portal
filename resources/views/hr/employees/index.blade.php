@@ -29,9 +29,7 @@
 
 {{-- ── Summary Cards ──────────────────────────────────────────────────── --}}
 <div class="section-header">
-    <div class="section-icon" style="background:#eff6ff;">
-        <i class="bi bi-people-fill" style="font-size:16px;color:#2563eb;"></i>
-    </div>
+    <div class="section-icon"><i class="bi bi-people-fill"></i></div>
     <h6>Employee Overview</h6>
 </div>
 <div class="row g-3 mb-4">
@@ -39,7 +37,7 @@
     {{-- Card 1: By Company --}}
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
-            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-building-fill"></i></div>
                     <div>
@@ -53,10 +51,15 @@
                 @forelse($statsByCompany as $company => $total)
                 <div class="breakdown-row">
                     <span>{{ $company }}</span>
-                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $total }}</span>
+                    <span class="breakdown-badge">{{ $total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No data</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-building" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data</div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -65,7 +68,7 @@
     {{-- Card 2: By Department (filterable by company) --}}
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
-            <div class="widget-header" style="background:linear-gradient(135deg,#10b981,#047857);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-diagram-3-fill"></i></div>
                     <div class="flex-grow-1">
@@ -87,10 +90,15 @@
                 @forelse($deptAllTotals as $dept => $count)
                 <div class="breakdown-row">
                     <span>{{ $dept }}</span>
-                    <span class="breakdown-badge" style="background:#10b981;">{{ $count }}</span>
+                    <span class="breakdown-badge">{{ $count }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No data</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-diagram-3" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data</div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -99,7 +107,7 @@
     {{-- Card 3: By Employment Type (filterable by company) --}}
     <div class="col-12 col-sm-6 col-md-4">
         <div class="card dash-widget h-100">
-            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-badge-fill"></i></div>
                     <div class="flex-grow-1">
@@ -121,10 +129,15 @@
                 @forelse($typeAllTotals as $type => $count)
                 <div class="breakdown-row">
                     <span>{{ ucfirst($type) }}</span>
-                    <span class="breakdown-badge" style="background:#f59e0b;">{{ $count }}</span>
+                    <span class="breakdown-badge">{{ $count }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No data</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-person-badge" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data</div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -395,7 +408,10 @@
 
         var keys = Object.keys(data);
         if (!keys.length) {
-            container.innerHTML = '<div class="breakdown-title">—</div><div class="text-muted small text-center py-2">No data</div>';
+            container.innerHTML = '<div class="breakdown-title">—</div><div class="text-center py-4">'
+                + '<div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">'
+                + '<i class="bi bi-bar-chart" style="font-size:18px;color:var(--primary-dark);"></i></div>'
+                + '<div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data</div></div>';
             return;
         }
         keys.sort(function(a, b) { return data[b] - data[a]; });
@@ -406,7 +422,7 @@
             var display = formatter ? formatter(k) : k;
             html += '<div class="breakdown-row">'
                   + '<span>' + display + '</span>'
-                  + '<span class="breakdown-badge" style="background:' + badgeColor + ';">' + data[k] + '</span>'
+                  + '<span class="breakdown-badge">' + data[k] + '</span>'
                   + '</div>';
         });
         container.innerHTML = html;
@@ -418,11 +434,11 @@
         deptFilter.addEventListener('change', function () {
             var co = this.value;
             if (!co) {
-                renderList(deptBody, deptAll, '#10b981', deptGrand);
+                renderList(deptBody, deptAll, null, deptGrand);
             } else {
                 var depts = deptMap[co] || {};
                 var t = 0; for (var d in depts) t += depts[d];
-                renderList(deptBody, depts, '#10b981', t);
+                renderList(deptBody, depts, null, t);
             }
         });
     }
@@ -433,11 +449,11 @@
         typeFilter.addEventListener('change', function () {
             var co = this.value;
             if (!co) {
-                renderList(typeBody, typeAll, '#f59e0b', typeGrand, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
+                renderList(typeBody, typeAll, null, typeGrand, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
             } else {
                 var types = typeMap[co] || {};
                 var t = 0; for (var k in types) t += types[k];
-                renderList(typeBody, types, '#f59e0b', t, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
+                renderList(typeBody, types, null, t, function(k) { return k.charAt(0).toUpperCase() + k.slice(1); });
             }
         });
     }

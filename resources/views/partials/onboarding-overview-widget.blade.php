@@ -2,9 +2,7 @@
 @include('partials.dashboard-widgets-style')
 
 <div class="section-header">
-    <div class="section-icon" style="background:#eff6ff;">
-        <i class="bi bi-person-plus" style="font-size:16px;color:#2563eb;"></i>
-    </div>
+    <div class="section-icon"><i class="bi bi-person-plus"></i></div>
     <h6>Onboarding Overview</h6>
 </div>
 <div class="row g-3 mb-4">
@@ -16,7 +14,7 @@
     {{-- 1. Total Onboard Year to Date --}}
     <div class="col-md-6">
         <div class="card dash-widget h-100" id="card-ob-ytd">
-            <div class="widget-header" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-plus-fill"></i></div>
                     <div class="flex-grow-1">
@@ -38,10 +36,15 @@
                 @forelse($onboardingsByCompany as $row)
                 <div class="breakdown-row ob-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
-                    <span class="breakdown-badge" style="background:#3b82f6;">{{ $row->total }}</span>
+                    <span class="breakdown-badge">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No data yet</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-person-plus" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data yet</div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -54,7 +57,7 @@
     {{-- 2. New Joiners This Month --}}
     <div class="col-md-6">
         <div class="card dash-widget h-100" id="card-ob-joiners">
-            <div class="widget-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-calendar-plus-fill"></i></div>
                     <div class="flex-grow-1">
@@ -76,10 +79,15 @@
                 @forelse($newJoinersByCompany as $row)
                 <div class="breakdown-row ob-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
-                    <span class="breakdown-badge" style="background:#f59e0b;">{{ $row->total }}</span>
+                    <span class="breakdown-badge">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2 ob-empty">No new joiners this month</div>
+                <div class="text-center py-4 ob-empty">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-calendar-plus" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No new joiners this month</div>
+                </div>
                 @endforelse
             </div>
         </div>

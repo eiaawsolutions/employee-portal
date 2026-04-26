@@ -6,129 +6,150 @@
 @include('partials.dashboard-widgets-style')
 <style>
     .overview-hero {
-        background: linear-gradient(135deg, #0b5ed7 0%, #0d6efd 40%, #6610f2 100%);
-        border-radius: 1rem;
-        color: #fff;
-        padding: 3rem 2rem;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-warm) 100%);
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
+        color: var(--ink);
+        padding: 2.4rem 2rem;
         margin-bottom: 2rem;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 1px 2px rgba(15,26,29,0.04), 0 8px 24px -10px rgba(15,26,29,0.10);
     }
-    .overview-hero::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 500px;
-        height: 500px;
-        background: rgba(255,255,255,0.05);
-        border-radius: 50%;
+    .overview-hero h1 {
+        font-family: var(--sans); font-weight: 500;
+        font-size: clamp(28px, 2.8vw, 36px); letter-spacing: -0.02em;
+        color: var(--ink); margin: 0 0 0.75rem;
     }
-    .overview-hero::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: 10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255,255,255,0.03);
-        border-radius: 50%;
+    .overview-hero h1 i { color: var(--primary-dark); }
+    .overview-hero .lead {
+        font-family: var(--sans); font-size: 14.5px; line-height: 1.65;
+        color: var(--ink-2); max-width: 760px;
     }
-    .overview-hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; }
-    .overview-hero .lead { font-size: 1.1rem; opacity: 0.9; max-width: 700px; }
     .stat-pill {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(10px);
-        border-radius: 2rem;
-        padding: 0.5rem 1.2rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-        border: 1px solid rgba(255,255,255,0.2);
+        gap: 0.45rem;
+        background: var(--surface);
+        border: 1px solid var(--line-soft);
+        border-radius: 999px;
+        padding: 0.45rem 0.9rem 0.45rem 0.55rem;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--mute);
     }
-    .stat-pill .num { font-size: 1.3rem; font-weight: 800; }
+    .stat-pill .num {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        background: var(--primary-tint);
+        border: 1px solid rgba(17,118,106,0.14);
+        color: var(--primary-dark);
+        padding: 2px 8px;
+        border-radius: 999px;
+        text-transform: none;
+    }
 
     .module-card {
-        border: none;
-        border-radius: 1rem;
-        transition: all 0.3s ease;
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
+        transition: transform .35s var(--ease), box-shadow .35s var(--ease);
         overflow: hidden;
         height: 100%;
+        background: var(--surface);
+        box-shadow: 0 1px 2px rgba(15,26,29,0.04), 0 8px 24px -10px rgba(15,26,29,0.10);
     }
     .module-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 2px 4px rgba(15,26,29,0.06), 0 16px 36px -12px rgba(15,26,29,0.16);
     }
     .module-card .card-header {
-        padding: 1.25rem 1.5rem;
-        border-bottom: none;
-        font-weight: 700;
-        font-size: 1rem;
+        padding: 22px 24px 18px;
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-warm) 100%);
+        border-bottom: 1px solid var(--line-soft);
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 14.5px;
+        color: var(--ink);
+        letter-spacing: -0.01em;
         display: flex;
         align-items: center;
         gap: 0.75rem;
     }
-    .module-card .card-header i { font-size: 1.5rem; }
-    .module-card .card-body { padding: 1rem 1.5rem 1.5rem; }
+    .module-card .card-header i {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        background: var(--primary-tint);
+        border: 1px solid rgba(17,118,106,0.14);
+        color: var(--primary-dark);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .module-card .card-body { padding: 16px 24px 22px; background: var(--surface); }
     .module-card .feature-list { list-style: none; padding: 0; margin: 0; }
     .module-card .feature-list li {
         padding: 0.35rem 0;
-        font-size: 0.875rem;
-        color: #495057;
+        font-family: var(--sans);
+        font-size: 13px;
+        color: var(--ink-2);
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
+        line-height: 1.5;
     }
     .module-card .feature-list li::before {
         content: '✓';
-        color: #198754;
+        color: var(--success);
         font-weight: 700;
         flex-shrink: 0;
         margin-top: 1px;
     }
 
-    .mc-onboarding .card-header  { background: linear-gradient(135deg, #0d6efd, #0b5ed7); color: #fff; }
-    .mc-employee .card-header    { background: linear-gradient(135deg, #198754, #157347); color: #fff; }
-    .mc-offboarding .card-header { background: linear-gradient(135deg, #dc3545, #b02a37); color: #fff; }
-    .mc-assets .card-header      { background: linear-gradient(135deg, #fd7e14, #e8590c); color: #fff; }
-    .mc-leave .card-header       { background: linear-gradient(135deg, #20c997, #0ca678); color: #fff; }
-    .mc-payroll .card-header     { background: linear-gradient(135deg, #6610f2, #520dc2); color: #fff; }
-    .mc-attendance .card-header  { background: linear-gradient(135deg, #0dcaf0, #0aa3c4); color: #fff; }
-    .mc-claims .card-header      { background: linear-gradient(135deg, #d63384, #ab296a); color: #fff; }
-    .mc-reports .card-header     { background: linear-gradient(135deg, #1a237e, #283593); color: #fff; }
-    .mc-accounting .card-header  { background: linear-gradient(135deg, #00695c, #00897b); color: #fff; }
-    .mc-announcements .card-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
-    .mc-knowledge .card-header { background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff; }
-    .mc-company .card-header { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
-
     .flow-section {
-        background: #f8f9fa;
-        border-radius: 1rem;
+        background: var(--bg-warm);
+        border: 1px solid var(--line-soft);
+        border-radius: 18px;
         padding: 2rem;
         margin-bottom: 2rem;
     }
-    .flow-section h3 { color: #0b5ed7; font-weight: 700; margin-bottom: 1rem; }
+    .flow-section h3 {
+        font-family: var(--sans); font-weight: 500;
+        font-size: 18px; letter-spacing: -0.01em;
+        color: var(--ink); margin-bottom: 0.75rem;
+    }
+    .flow-section h3 i { color: var(--primary-dark); }
+    .flow-section p { color: var(--ink-2); font-size: 13.5px; }
 
     .flow-step {
         text-align: center;
         position: relative;
     }
     .flow-step .step-circle {
-        width: 64px;
-        height: 64px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
+        background: var(--primary-tint);
+        border: 1px solid rgba(17,118,106,0.14);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 0.75rem;
-        font-size: 1.5rem;
-        color: #fff;
-        font-weight: 700;
+        font-family: var(--sans);
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--primary-dark);
     }
-    .flow-step .step-label { font-weight: 600; font-size: 0.9rem; color: #212529; }
-    .flow-step .step-desc { font-size: 0.8rem; color: #6c757d; margin-top: 0.25rem; }
+    .flow-step .step-circle i { color: var(--primary-dark); }
+    .flow-step .step-label { font-family: var(--sans); font-weight: 600; font-size: 13px; color: var(--ink); }
+    .flow-step .step-desc { font-family: var(--sans); font-size: 11.5px; color: var(--mute); margin-top: 0.25rem; line-height: 1.5; }
 
     .flow-arrow {
         display: flex;
@@ -136,7 +157,7 @@
         justify-content: center;
         padding-top: 1rem;
     }
-    .flow-arrow i { font-size: 1.5rem; color: #adb5bd; }
+    .flow-arrow i { font-size: 1.25rem; color: var(--line); }
 
     .role-card {
         border-radius: 0.75rem;
@@ -324,31 +345,31 @@
 
     <div class="row g-0 align-items-start">
         <div class="col flow-step">
-            <div class="step-circle" style="background:#0d6efd;">1</div>
+            <div class="step-circle">1</div>
             <div class="step-label">Onboarding</div>
             <div class="step-desc">HR creates record,<br>invite email sent</div>
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#6610f2;">2</div>
+            <div class="step-circle">2</div>
             <div class="step-label">Registration</div>
             <div class="step-desc">New hire fills form,<br>sets password</div>
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#198754;">3</div>
+            <div class="step-circle">3</div>
             <div class="step-label">Active Employee</div>
             <div class="step-desc">Full HRM services:<br>payroll, leave, claims</div>
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#dc3545;">4</div>
+            <div class="step-circle">4</div>
             <div class="step-label">Offboarding</div>
             <div class="step-desc">Exit process, asset<br>return, IT cleanup</div>
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#212529;">5</div>
+            <div class="step-circle">5</div>
             <div class="step-label">Archived</div>
             <div class="step-desc">Permanent record<br>retained</div>
         </div>
@@ -614,7 +635,7 @@
 
     <div class="row g-0 align-items-start">
         <div class="col flow-step">
-            <div class="step-circle" style="background:#6c757d;">
+            <div class="step-circle">
                 <i class="bi bi-pencil-square" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Employee Submits</div>
@@ -622,7 +643,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#ffc107;color:#212529;">
+            <div class="step-circle">
                 <i class="bi bi-person-check" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Manager Review</div>
@@ -630,7 +651,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#0d6efd;">
+            <div class="step-circle">
                 <i class="bi bi-shield-check" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">HR Review</div>
@@ -638,7 +659,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#198754;">
+            <div class="step-circle">
                 <i class="bi bi-check-lg" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Approved</div>
@@ -980,7 +1001,7 @@
 
     <div class="row g-0 align-items-start">
         <div class="col flow-step">
-            <div class="step-circle" style="background:#6c757d;">
+            <div class="step-circle">
                 <i class="bi bi-currency-dollar" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Salary Setup</div>
@@ -988,7 +1009,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#0d6efd;">
+            <div class="step-circle">
                 <i class="bi bi-file-earmark-plus" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Create Pay Run</div>
@@ -996,7 +1017,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#ffc107;color:#212529;">
+            <div class="step-circle">
                 <i class="bi bi-calculator" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Generate Payslips</div>
@@ -1004,7 +1025,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#198754;">
+            <div class="step-circle">
                 <i class="bi bi-check-circle" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Approve & Pay</div>
@@ -1012,7 +1033,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#6610f2;">
+            <div class="step-circle">
                 <i class="bi bi-file-earmark-text" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">EA Form</div>
@@ -1095,7 +1116,7 @@
 
     <div class="row g-0 align-items-start">
         <div class="col flow-step">
-            <div class="step-circle" style="background:#00695c;">
+            <div class="step-circle">
                 <i class="bi bi-diagram-3" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Chart of Accounts</div>
@@ -1103,7 +1124,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#0d6efd;">
+            <div class="step-circle">
                 <i class="bi bi-receipt" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Invoices & Bills</div>
@@ -1111,7 +1132,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#6610f2;">
+            <div class="step-circle">
                 <i class="bi bi-robot" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">AI Invoice OCR</div>
@@ -1119,7 +1140,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#198754;">
+            <div class="step-circle">
                 <i class="bi bi-journal-check" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Journal Entries</div>
@@ -1127,7 +1148,7 @@
         </div>
         <div class="col-auto flow-arrow"><i class="bi bi-chevron-right"></i></div>
         <div class="col flow-step">
-            <div class="step-circle" style="background:#dc3545;">
+            <div class="step-circle">
                 <i class="bi bi-file-earmark-bar-graph" style="font-size:1.3rem;"></i>
             </div>
             <div class="step-label">Financial Reports</div>

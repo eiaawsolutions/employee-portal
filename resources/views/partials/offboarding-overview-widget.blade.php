@@ -2,9 +2,7 @@
 @include('partials.dashboard-widgets-style')
 
 <div class="section-header">
-    <div class="section-icon" style="background:#fef2f2;">
-        <i class="bi bi-box-arrow-right" style="font-size:16px;color:#dc2626;"></i>
-    </div>
+    <div class="section-icon"><i class="bi bi-box-arrow-right"></i></div>
     <h6>Offboarding Overview</h6>
 </div>
 <div class="row g-3 mb-4">
@@ -18,7 +16,7 @@
     {{-- 1. Offboarded Year to Date --}}
     <div class="col-md-6">
         <div class="card dash-widget h-100" id="card-offb-ytd">
-            <div class="widget-header" style="background:linear-gradient(135deg,#6366f1,#4338ca);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-person-dash-fill"></i></div>
                     <div class="flex-grow-1">
@@ -40,10 +38,15 @@
                 @forelse($offboardedYtdByCompany as $row)
                 <div class="breakdown-row offb-filter-row" data-company="{{ $row->company }}">
                     <span>{{ $row->company }}</span>
-                    <span class="breakdown-badge" style="background:#6366f1;">{{ $row->total }}</span>
+                    <span class="breakdown-badge">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No data yet</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-person-dash" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No data yet</div>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -52,7 +55,7 @@
     {{-- 2. Exiting This Month --}}
     <div class="col-md-6">
         <div class="card dash-widget h-100" id="card-offb-exiting">
-            <div class="widget-header" style="background:linear-gradient(135deg,#ef4444,#b91c1c);">
+            <div class="widget-header">
                 <div class="d-flex align-items-center gap-3">
                     <div class="widget-icon"><i class="bi bi-calendar-x-fill"></i></div>
                     <div class="flex-grow-1">
@@ -74,10 +77,15 @@
                 @forelse($exitingByCompany as $row)
                 <div class="breakdown-row offb-filter-row" data-company="{{ $row->company ?? 'Unknown' }}">
                     <span>{{ $row->company ?? 'Unknown' }}</span>
-                    <span class="breakdown-badge" style="background:#ef4444;">{{ $row->total }}</span>
+                    <span class="breakdown-badge">{{ $row->total }}</span>
                 </div>
                 @empty
-                <div class="text-muted small text-center py-2">No exits this month</div>
+                <div class="text-center py-4">
+                    <div style="width:44px;height:44px;background:var(--primary-tint);border:1px solid rgba(17,118,106,0.14);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                        <i class="bi bi-calendar-x" style="font-size:18px;color:var(--primary-dark);"></i>
+                    </div>
+                    <div style="font-family:var(--sans);font-size:13px;color:var(--mute);">No exits this month</div>
+                </div>
                 @endforelse
             </div>
         </div>
