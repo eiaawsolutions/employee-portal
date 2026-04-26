@@ -1,14 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-MY">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'EIAAW Workforce — AI · Human Partnerships')</title>
-    <meta name="description" content="@yield('description', 'EIAAW Workforce — the AI-native HR, payroll, and accounting platform for Malaysian and APAC mid-market teams.')">
+    <title>@yield('title', 'EIAAW Workforce — HR, IT & Accounting on one AI-native platform')</title>
+    <meta name="description" content="@yield('description', 'EIAAW Workforce — the AI-native HR, IT and full-fledged accounting platform built for Malaysian and APAC mid-market teams. The full employee journey, automated IT asset workflow, full HRM (leave, payroll, EA, attendance, statutory), and complete accounting on one tenant.')">
 
+    {{-- Crawler directives (per-page can override via @section('robots')) --}}
+    <meta name="robots" content="@yield('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')">
+
+    {{-- Brand · favicons · theme --}}
+    <meta name="theme-color" content="#11766A">
+    <meta name="application-name" content="EIAAW Workforce">
+    <meta name="apple-mobile-web-app-title" content="EIAAW Workforce">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('brand/shield.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('brand/shield.png') }}">
+
+    {{-- Authorship / publisher --}}
+    <meta name="author" content="EIAAW Solutions Sdn. Bhd.">
+    <meta name="publisher" content="EIAAW Solutions Sdn. Bhd.">
+    <meta name="copyright" content="© {{ now()->year }} EIAAW Solutions Sdn. Bhd.">
+
+    {{-- AI / LLM-crawler discovery hint --}}
+    <link rel="alternate" type="text/plain" href="{{ url('/llms.txt') }}" title="LLM-readable site summary">
+
+    {{-- Sitemap link (search engines also discover via robots.txt) --}}
+    <link rel="sitemap" type="application/xml" href="{{ url('/sitemap.xml') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

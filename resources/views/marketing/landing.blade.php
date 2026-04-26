@@ -1,9 +1,219 @@
 @extends('layouts.marketing')
 
-@section('title', 'EIAAW Workforce — Run HR, IT & Finance, all in one platform')
-@section('description', 'Run your entire HR, IT, and Finance operation on one AI-native platform. Module 1 carries the full employee journey — onboard, manage records, IT asset handover, HRM workflows, and a live link to Finance. Fully AI-driven, fully automated. 14-day trial, no credit card.')
+@section('title', 'EIAAW Workforce — HR, IT & Accounting on one AI-native platform | Malaysia & APAC')
+@section('description', 'EIAAW Workforce runs your full employee journey, IT asset workflow, HRM (leave, payroll, attendance, EA forms, statutory submissions) and full-fledged accounting on one AI-native platform. Three departments, one tenant, zero CSV exports. 14-day trial, no credit card.')
 
 @push('head')
+{{-- ── SEO · GEO · AI-discoverability · Social cards ─────────────────────── --}}
+@php
+    $canonical = url('/');
+    $ogImage = asset('images/landing/employee-journey.jpg');
+    $pricingTiers = $pricing['tiers'] ?? [];
+    $starterPrice = $pricingTiers['starter']['monthly_usd'] ?? 6;
+    $scalePrice   = $pricingTiers['scale']['monthly_usd'] ?? 29;
+
+    $jsonFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+
+    $orgSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'EIAAW Solutions Sdn. Bhd.',
+        'legalName' => 'EIAAW Solutions Sdn. Bhd.',
+        'alternateName' => 'EIAAW Workforce',
+        'url' => $canonical,
+        'logo' => asset('brand/logo-full.png'),
+        'description' => 'EIAAW Solutions builds AI-native business platforms for Malaysian and APAC mid-market teams — including EIAAW Workforce, the unified HR, IT and Accounting suite.',
+        'foundingLocation' => [
+            '@type' => 'Place',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressCountry' => 'MY',
+                'addressRegion' => 'Kuala Lumpur',
+            ],
+        ],
+        'contactPoint' => [
+            [
+                '@type' => 'ContactPoint',
+                'contactType' => 'sales',
+                'email' => config('eiaaw.sales_email', 'sales@eiaawsolutions.com'),
+                'areaServed' => ['MY', 'SG', 'ID', 'TH', 'PH', 'VN'],
+                'availableLanguage' => ['en', 'ms'],
+            ],
+            [
+                '@type' => 'ContactPoint',
+                'contactType' => 'customer support',
+                'email' => config('eiaaw.support_email', 'hello@eiaawsolutions.com'),
+                'availableLanguage' => ['en', 'ms'],
+            ],
+        ],
+        'sameAs' => ['https://eiaawsolutions.com'],
+    ];
+
+    $appSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'SoftwareApplication',
+        'name' => 'EIAAW Workforce',
+        'applicationCategory' => 'BusinessApplication',
+        'applicationSubCategory' => 'Human Resources, IT Asset Management, Accounting',
+        'operatingSystem' => 'Web (any modern browser)',
+        'url' => $canonical,
+        'image' => $ogImage,
+        'description' => 'EIAAW Workforce unifies the full employee journey (onboarding, records, offboarding), IT asset management with auto AARF acceptance/return, full HRM (leave, payroll, EA forms, attendance, government statutory submissions) and full-fledged accounting on one AI-native multi-tenant platform.',
+        'featureList' => [
+            'Automated employee onboarding with self-service invite link',
+            'Active employee records with cryptographic re-acknowledgement on edits',
+            'Automated offboarding with IT/Finance handoff',
+            'IT asset inventory with auto-acceptance and return AARF flows',
+            'Leave management with accruals and manager reminders',
+            'Payroll with payslips, EA forms and statutory deductions (EPF/SOCSO/EIS/PCB)',
+            'Attendance tracking',
+            'Expense claims (eClaim) auto-posting to GL',
+            'Full accounting: Chart of Accounts, GL, AR/AP, invoices, POs, budgeting, tax returns',
+            'AI assistant grounded on tenant data with row-level citations',
+            'Postgres Row-Level Security per tenant',
+        ],
+        'offers' => [
+            [
+                '@type' => 'Offer',
+                'name' => 'Starter',
+                'price' => $starterPrice,
+                'priceCurrency' => 'USD',
+                'priceSpecification' => [
+                    '@type' => 'UnitPriceSpecification',
+                    'price' => $starterPrice,
+                    'priceCurrency' => 'USD',
+                    'unitText' => 'per active employee per month',
+                ],
+                'availability' => 'https://schema.org/InStock',
+            ],
+            [
+                '@type' => 'Offer',
+                'name' => 'Scale (everything)',
+                'price' => $scalePrice,
+                'priceCurrency' => 'USD',
+                'priceSpecification' => [
+                    '@type' => 'UnitPriceSpecification',
+                    'price' => $scalePrice,
+                    'priceCurrency' => 'USD',
+                    'unitText' => 'per active employee per month',
+                ],
+                'availability' => 'https://schema.org/InStock',
+            ],
+        ],
+        'creator' => [
+            '@type' => 'Organization',
+            'name' => 'EIAAW Solutions Sdn. Bhd.',
+        ],
+        'inLanguage' => ['en', 'ms'],
+        'audience' => [
+            '@type' => 'BusinessAudience',
+            'audienceType' => 'Mid-market businesses in Malaysia and APAC',
+        ],
+    ];
+
+    $faqSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => [
+            [
+                '@type' => 'Question',
+                'name' => 'What is EIAAW Workforce?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => 'EIAAW Workforce is an AI-native platform that runs three departments — HR, IT, and Accounting — on a single multi-tenant backbone. It carries the full employee journey from onboarding through active management to offboarding, automates IT asset acceptance and return via signed AARF links, and posts approved claims and payroll directly to a full accounting ledger.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name' => 'Which Malaysian statutory submissions are covered?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => 'EPF, SOCSO, EIS, and PCB are calculated on every payroll run. EA forms are auto-generated for each employee at year-end. Statutory file exports are formatted for direct submission to LHDN, KWSP, PERKESO, and HRDC.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name' => 'Is the AI assistant safe to use on real employee data?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => 'Yes. Every AI answer is retrieval-grounded on your tenant only, cites the records it read, respects role-based access, and runs under a per-tenant cost circuit breaker so a runaway prompt never shocks your bill.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name' => 'How is tenant data isolated?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => 'EIAAW Workforce runs on Postgres with Row-Level Security enforcing tenant_id at the driver level. Cross-tenant data leaks are impossible even through a bugged controller.',
+                ],
+            ],
+            [
+                '@type' => 'Question',
+                'name' => 'Can I start without a credit card?',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => 'Yes. Sign up with your work email, pick a workspace URL, set a password — your tenant is provisioned with a 14-day Growth trial. No credit card is required.',
+                ],
+            ],
+        ],
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'EIAAW Workforce',
+                'item' => $canonical,
+            ],
+        ],
+    ];
+@endphp
+
+<link rel="canonical" href="{{ $canonical }}">
+
+{{-- Open Graph --}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EIAAW Workforce">
+<meta property="og:title" content="EIAAW Workforce — HR, IT & Accounting on one AI-native platform">
+<meta property="og:description" content="Three departments. One platform. The full employee journey — onboard, manage, offboard — wired live to IT asset workflows, full HRM (leave, payroll, EA, attendance, statutory) and full-fledged accounting. Built for Malaysia & APAC.">
+<meta property="og:url" content="{{ $canonical }}">
+<meta property="og:image" content="{{ $ogImage }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_MY">
+<meta property="og:locale:alternate" content="en_SG">
+<meta property="og:locale:alternate" content="en_GB">
+
+{{-- Twitter / X card --}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EIAAW Workforce — HR, IT & Accounting on one AI-native platform">
+<meta name="twitter:description" content="Run the full employee journey, IT asset workflow, HRM and accounting on one tenant. Built for Malaysia & APAC.">
+<meta name="twitter:image" content="{{ $ogImage }}">
+
+{{-- GEO targeting (Malaysia / APAC) --}}
+<meta name="geo.region" content="MY-14">
+<meta name="geo.placename" content="Kuala Lumpur">
+<meta name="ICBM" content="3.1390,101.6869">
+<meta name="DC.coverage" content="Malaysia, Singapore, Indonesia, Thailand, Philippines, Vietnam, APAC">
+
+{{-- AI-search discovery hint (non-standard but read by some indexers) --}}
+<link rel="alternate" type="text/plain" href="{{ url('/llms.txt') }}" title="LLM-readable summary">
+
+{{-- JSON-LD: Organization --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($orgSchema, $jsonFlags) !!}</script>
+
+{{-- JSON-LD: SoftwareApplication (EIAAW Workforce) --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($appSchema, $jsonFlags) !!}</script>
+
+{{-- JSON-LD: FAQ (mirrors the visible FAQ section below) --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($faqSchema, $jsonFlags) !!}</script>
+
+{{-- JSON-LD: BreadcrumbList --}}
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($breadcrumbSchema, $jsonFlags) !!}</script>
+
 <style>
     /* ── Hero ── */
     .ln-hero {
@@ -428,10 +638,10 @@
                     <span style="font-family: var(--mono); font-size: 11px; color: var(--mute); text-transform: uppercase; letter-spacing: 0.14em;">Built for Malaysia &amp; APAC</span>
                 </div>
                 <h1 class="mk-display">
-                    Run your HR, IT, and Finance <em>all on one platform</em> — with AI partners that automate the work in between.
+                    EIAAW Workforce — three departments, <em>one platform.</em>
                 </h1>
                 <p class="ln-hero-lede">
-                    EIAAW Workforce carries the entire employee journey on one backbone — onboarding, employee records, IT asset hand-over, HRM workflows, and a live link to Finance. People, devices, payroll, and the ledger move together. No exports, no reconciliations, no SaaS sprawl.
+                    HR, IT, and Accounting on a single AI-native backbone. The full employee journey — onboard, manage, offboard — runs end-to-end alongside an automated IT asset workflow with auto acceptance and return AARFs, a complete HRM suite (leave, payroll, EA forms, attendance, government statutory submissions), and a full-fledged accounting platform. Three departments. One tenant. Zero CSV exports. More modules in active development.
                 </p>
                 <div class="ln-hero-ctas">
                     <a href="{{ route('signup.form') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
@@ -469,11 +679,12 @@
 
 <section class="ln-proof">
     <div class="mk-container ln-proof-inner">
-        <div class="ln-proof-label">One platform · One tenant · Zero duplicated data:</div>
+        <div class="ln-proof-label">Three departments · One platform · Zero duplicated data:</div>
         <div class="ln-proof-modules">
-            <span>HR Operations</span>
+            <span>HR &amp; People Ops</span>
             <span>IT Asset Management</span>
-            <span>Finance &amp; Payroll</span>
+            <span>Full Accounting</span>
+            <span>Payroll · EA · Statutory</span>
             <span>AI Workflow Automation</span>
         </div>
     </div>
@@ -482,85 +693,93 @@
 <section class="mk-section">
     <div class="mk-container">
         <div class="ln-sec-head">
-            <div class="eyebrow">Module 1 · The Employee Journey</div>
+            <div class="eyebrow">The Automated Employee Journey</div>
             <div>
-                <h2>From offer-letter to exit interview, <em>one continuous flow.</em></h2>
-                <p style="max-width: 620px; margin-top: 24px;">Onboarding hands the employee to HR records, HR records hand devices to IT, IT hand entitlements to Finance — all without a single CSV export. Every step is AI-assisted; every change reaches the next module in real time.</p>
+                <h2>Onboard, manage, offboard — <em>one continuous flow</em> across HR, IT, and Accounting.</h2>
+                <p style="max-width: 620px; margin-top: 24px;">A new hire fills the invite form once. From that moment, every downstream system — HR records, IT assets, payroll, EA forms, statutory submissions, the general ledger — moves in step. No exports. No reconciliations. No SaaS sprawl.</p>
             </div>
         </div>
 
         <div class="ln-module">
             <div>
-                <div class="ln-module-eyebrow">Step 01 · Onboard &amp; Records</div>
+                <div class="ln-module-eyebrow">Pillar 01 · HR &amp; People Operations</div>
                 <div class="ln-module-step">01.</div>
-                <h3>A new hire fills <em>once</em> — and HR, IT, and Finance all hear it.</h3>
-                <p>Section A–I of the invite form populates personal details, work details, education, dependents, and statutory data. The day they start, AI auto-activates the account, sends the welcome email, and stages the records into every downstream table — no HR clicks needed.</p>
+                <h3>A full HRM suite — onboard, manage, offboard, <em>and pay them right.</em></h3>
+                <p>The employee journey runs end-to-end on one record. Section A–I of the invite link captures personal, work, education, dependent, and statutory data. AI auto-activates the account on start date, cascades into every relationship table, and runs the same chain in reverse on offboarding. Leave, attendance, payslips, EA forms, and government statutory submissions — EPF, SOCSO, EIS, PCB — all live on the same timeline.</p>
                 <ul class="ln-module-bullets">
-                    <li>Tokenised public invite link with self-service photo + NRIC capture</li>
-                    <li>Auto-activation on start date with cascade into all tables</li>
+                    <li>Tokenised invite link with self-service NRIC + photo capture</li>
+                    <li>Auto-activation on start date · auto-offboarding handoff to IT &amp; Finance</li>
+                    <li>Leave management with accruals, manager reminders, weekly pending-sweep</li>
+                    <li>Attendance · payslips · EA forms · eClaim under one record</li>
+                    <li>EPF / SOCSO / EIS / PCB calculated every payroll · statutory file exports for LHDN, KWSP, PERKESO, HRDC</li>
                     <li>Edit history with cryptographic re-acknowledgement on sensitive fields</li>
                 </ul>
             </div>
             <div class="ln-module-media">
                 <div class="ln-figure ln-figure--float-a">
-                    <img src="{{ asset('images/landing/employee-journey.jpg') }}" alt="Team welcoming a new hire on day one" loading="lazy">
+                    <img src="{{ asset('images/landing/employee-journey.jpg') }}" alt="HR onboarding a new hire on day one across the EIAAW Workforce platform" loading="lazy">
                 </div>
             </div>
         </div>
 
         <div class="ln-module ln-module--reverse">
             <div>
-                <div class="ln-module-eyebrow">Step 02 · IT Asset Hand-over</div>
+                <div class="ln-module-eyebrow">Pillar 02 · IT Asset Management</div>
                 <div class="ln-module-step">02.</div>
-                <h3>HR books the asset, IT provisions it, <em>the inventory updates itself.</em></h3>
-                <p>The moment HR confirms a start date, the IT module sees the request. Laptops, phones, monitors, and licences are picked from inventory, assigned to the employee, and acknowledged via signed AARF link. On exit, the same chain runs in reverse — assets return, accounts disable, IT signs off before payroll is finalised.</p>
+                <h3>Every laptop, phone, and licence — <em>tracked, signed, returned</em>, automatically.</h3>
+                <p>The moment HR confirms a start date, IT sees the request. Assets are picked from live inventory, assigned to the employee, and acknowledged through a signed Asset Acceptance &amp; Return Form (AARF) sent by email — no spreadsheets, no Slack threads. On exit, the same chain runs in reverse: a return AARF is dispatched, the employee signs off, and the asset is unassigned and either restocked or booked into the disposed-asset register that feeds Finance depreciation.</p>
                 <ul class="ln-module-bullets">
-                    <li>Live asset inventory with tagged provisioning workflows</li>
-                    <li>AARF email with tokenised acknowledgement and audit trail</li>
-                    <li>Disposed-asset register feeds straight into Finance depreciation</li>
+                    <li>Live asset inventory with full lifecycle history per unit</li>
+                    <li>Auto acceptance AARF on assignment · auto return AARF on offboarding</li>
+                    <li>Tokenised email acknowledgement with full audit trail</li>
+                    <li>Provisioning workflows that wait for IT sign-off before payroll finalises</li>
+                    <li>Disposed-asset register flows straight to Finance depreciation</li>
                 </ul>
             </div>
             <div class="ln-module-media">
                 <div class="ln-figure ln-figure--float-b">
-                    <img src="{{ asset('images/landing/it-assets.jpg') }}" alt="IT assets ready for provisioning" loading="lazy">
+                    <img src="{{ asset('images/landing/it-assets.jpg') }}" alt="IT asset inventory and AARF acceptance workflow in EIAAW Workforce" loading="lazy">
                 </div>
             </div>
         </div>
 
         <div class="ln-module">
             <div>
-                <div class="ln-module-eyebrow">Step 03 · HRM &amp; People Operations</div>
+                <div class="ln-module-eyebrow">Pillar 03 · Full-Fledged Accounting</div>
                 <div class="ln-module-step">03.</div>
-                <h3>Leave, attendance, claims, EA forms — <em>one employee, one timeline.</em></h3>
-                <p>Every HR action lives on the same employee record the IT and Finance modules already trust. Approvals route along the org chart, reminders fire on schedule, and a weekly sweep nudges anything pending — so nothing rots in someone's inbox.</p>
+                <h3>A complete accounting platform — <em>not a "lite" module bolted on.</em></h3>
+                <p>Chart of Accounts, General Ledger, Accounts Receivable, Accounts Payable, invoices, purchase orders, banking &amp; reconciliation, fixed assets &amp; depreciation, budgeting, and tax returns — all wired to the same employee, approver chain, and audit log the HR and IT modules trust. Approved expense claims auto-post to the GL. Payroll runs against the live HR roster. Asset disposals book against the right cost centre. Your accountants stop reconciling and start reviewing.</p>
                 <ul class="ln-module-bullets">
-                    <li>Leave management with manager reminders + balance accruals</li>
-                    <li>Attendance, payslips, EA forms, and eClaim under one roof</li>
-                    <li>Auto pending-sweep emails every Wednesday for stalled approvals</li>
+                    <li>Chart of Accounts · GL · AR/AP · Invoices · Purchase Orders</li>
+                    <li>Banking, reconciliation, fixed assets &amp; depreciation, budgeting, tax returns</li>
+                    <li>Approved eClaims auto-post to the ledger with full traceability</li>
+                    <li>AI invoice scanning &amp; budget-drift anomaly alerts</li>
+                    <li>Executive dashboard reads live from the books — no exports</li>
                 </ul>
             </div>
             <div class="ln-module-media">
                 <div class="ln-figure ln-figure--float-c">
-                    <img src="{{ asset('images/landing/hr-onboarding.jpg') }}" alt="HR team running people operations" loading="lazy">
+                    <img src="{{ asset('images/landing/finance.jpg') }}" alt="Full accounting dashboards in EIAAW Workforce" loading="lazy">
                 </div>
             </div>
         </div>
 
         <div class="ln-module ln-module--reverse">
             <div>
-                <div class="ln-module-eyebrow">Step 04 · Linked to Finance</div>
+                <div class="ln-module-eyebrow">And more · In active development</div>
                 <div class="ln-module-step">04.</div>
-                <h3>Approved claims become journal entries — <em>without a CSV in sight.</em></h3>
-                <p>The Finance module reads the same employee, the same approver chain, the same audit log. Approved expense claims post to the ledger, payroll runs against the live HR roster, asset disposals book against the right cost centre. Your accountants stop reconciling and start reviewing.</p>
+                <h3>The platform is alive — <em>new modules are landing every cycle.</em></h3>
+                <p>EIAAW Workforce is built as a backbone, not a finished bundle. Every quarter brings new capability — deeper analytics, richer AI partners, additional government integrations, and lateral modules that compound on the same single-tenant data. When you adopt the platform, you're adopting a roadmap.</p>
                 <ul class="ln-module-bullets">
-                    <li>Chart of Accounts, GL, AR/AP, invoices &amp; POs in one workspace</li>
-                    <li>Approved eClaims auto-post to the GL with full traceability</li>
-                    <li>AI invoice scanning + budget drift alerts surface anomalies early</li>
+                    <li>Knowledge base &amp; internal docs — live</li>
+                    <li>Executive system overview &amp; reports — live</li>
+                    <li>Deeper government integrations &amp; e-invoicing — rolling</li>
+                    <li>Additional AI partners across HR, IT &amp; Finance workflows — rolling</li>
                 </ul>
             </div>
             <div class="ln-module-media">
                 <div class="ln-figure ln-figure--float-a">
-                    <img src="{{ asset('images/landing/finance.jpg') }}" alt="Finance dashboards and ledger" loading="lazy">
+                    <img src="{{ asset('images/landing/hr-onboarding.jpg') }}" alt="EIAAW Workforce roadmap and active development" loading="lazy">
                 </div>
             </div>
         </div>
@@ -639,6 +858,41 @@
                 </div>
             </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<section class="mk-section">
+    <div class="mk-container">
+        <div class="ln-sec-head">
+            <div class="eyebrow">Frequently asked</div>
+            <div>
+                <h2>The five questions <em>every operator asks first.</em></h2>
+                <p style="max-width: 620px; margin-top: 24px;">Direct answers, no marketing fluff. Full FAQ on the <a href="{{ route('marketing.faq') }}" style="border-bottom: 1px solid currentColor;">FAQ page</a>.</p>
+            </div>
+        </div>
+
+        <div class="ln-three" style="grid-template-columns: 1fr;">
+            <article class="ln-three-cell">
+                <h3>What is EIAAW Workforce?</h3>
+                <p>An AI-native platform that runs three departments — HR, IT, and Accounting — on a single multi-tenant backbone. It carries the full employee journey from onboarding through active management to offboarding, automates IT asset acceptance and return via signed AARF links, and posts approved claims and payroll directly to a full accounting ledger.</p>
+            </article>
+            <article class="ln-three-cell">
+                <h3>Which Malaysian statutory submissions are covered?</h3>
+                <p>EPF, SOCSO, EIS, and PCB are calculated on every payroll run. EA forms are auto-generated for each employee at year-end. Statutory file exports are formatted for direct submission to LHDN, KWSP, PERKESO, and HRDC.</p>
+            </article>
+            <article class="ln-three-cell">
+                <h3>Is the AI assistant safe to use on real employee data?</h3>
+                <p>Every AI answer is retrieval-grounded on your tenant only, cites the records it read, respects role-based access, and runs under a per-tenant cost circuit breaker so a runaway prompt never shocks your bill.</p>
+            </article>
+            <article class="ln-three-cell">
+                <h3>How is tenant data isolated?</h3>
+                <p>EIAAW Workforce runs on Postgres with Row-Level Security enforcing <code style="font-family: var(--mono); font-size: 13px; background: var(--bg-warm); padding: 2px 6px; border-radius: 4px;">tenant_id</code> at the driver level. Cross-tenant data leaks are impossible even through a bugged controller.</p>
+            </article>
+            <article class="ln-three-cell">
+                <h3>Can I start without a credit card?</h3>
+                <p>Yes. Sign up with your work email, pick a workspace URL, set a password — your tenant is provisioned with a 14-day Growth trial. No credit card required.</p>
+            </article>
         </div>
     </div>
 </section>

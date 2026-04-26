@@ -1,2 +1,119 @@
+# EIAAW Workforce — robots policy
+# Marketing surfaces are public; tenant app surfaces are intentionally
+# excluded. Tenant subdomains (*.eiaawsolutions.com) are gated by the
+# 'apex' middleware on the marketing routes, so tenant pages 404 on
+# crawlers that hit them anyway.
+
 User-agent: *
-Disallow:
+Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /security
+Allow: /faq
+Allow: /terms
+Allow: /privacy
+Allow: /dpa
+Allow: /find-workspace
+Allow: /signup
+Allow: /llms.txt
+
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /two-factor-challenge
+Disallow: /sso/
+Disallow: /dashboard
+Disallow: /hr/
+Disallow: /it/
+Disallow: /admin
+Disallow: /superadmin/
+Disallow: /employee/
+Disallow: /accounting/
+Disallow: /reports/
+Disallow: /aarf/
+Disallow: /onboarding-invite/
+Disallow: /signup/confirm/
+Disallow: /secure-files/
+Disallow: /stripe/
+Disallow: /csp-report
+
+# AI / LLM crawlers — explicitly allow indexing of public marketing surfaces
+# so EIAAW Workforce is discoverable through ChatGPT, Claude, Perplexity,
+# Gemini, and Google AI Overviews / SGE.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: PetalBot
+Allow: /
+
+# Scraper-style bots that don't add value — politely declined
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap
+Sitemap: https://ep.eiaawsolutions.com/sitemap.xml
+
+# LLM summary
+# Human-readable + LLM-readable site summary at:
+# https://ep.eiaawsolutions.com/llms.txt
