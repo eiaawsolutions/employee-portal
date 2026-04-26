@@ -26,26 +26,20 @@
         .auth-aside {
             background: var(--bg-warm);
             padding: clamp(28px, 4vw, 56px);
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; justify-content: center;
             border-right: 1px solid var(--line-soft);
-            position: relative;
+            gap: clamp(20px, 2.4vw, 32px);
         }
         .auth-aside-meta {
-            position: absolute;
-            bottom: clamp(28px, 4vw, 56px);
-            left: clamp(28px, 4vw, 56px);
+            font-family: var(--mono); font-size: 11px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.14em;
+            color: var(--mute);
+            margin-top: clamp(20px, 2.4vw, 32px);
         }
-        .auth-aside-lockup {
-            position: absolute;
-            top: clamp(28px, 4vw, 56px);
-            left: clamp(28px, 4vw, 56px);
-        }
+        .auth-aside-lockup { /* flows naturally inside the centered column */ }
         .auth-aside-body {
-            flex: 1;
-            display: flex; flex-direction: column; justify-content: center;
+            display: flex; flex-direction: column;
             gap: clamp(20px, 2.4vw, 32px);
-            padding-top: clamp(80px, 10vw, 120px);
-            padding-bottom: clamp(60px, 8vw, 100px);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
@@ -124,28 +118,13 @@
             .auth-aside-hero img { animation: none; }
             .auth-aside-hero::after { animation: none; }
         }
-        .auth-aside-meta {
-            font-family: var(--mono); font-size: 11px; font-weight: 500;
-            text-transform: uppercase; letter-spacing: 0.14em;
-            color: var(--mute);
-        }
         .auth-main {
-            display: flex; align-items: flex-start; justify-content: flex-start;
+            display: flex; align-items: center; justify-content: center;
             padding: clamp(28px, 4vw, 56px);
             background: var(--surface);
-            position: relative;
         }
         .auth-form {
             width: 100%; max-width: 380px;
-        }
-        /* Pin SIGN IN eyebrow to the same vertical center as the lockup.
-           Lockup = 34px shield, vertical-centered text → text-center at +17px from lockup top.
-           Eyebrow = 11px single-line, cap-height ~8px → text-center at +5px from eyebrow top.
-           Both columns share the same top padding clamp(28px,4vw,56px), so we add
-           17 - 5 = 12px to the eyebrow's top to align their text-centers. */
-        .auth-form > .eyebrow {
-            display: inline-flex;
-            margin-top: 12px;
         }
         .auth-form h1 {
             font-family: var(--sans); font-weight: 500;
@@ -356,7 +335,7 @@
 
             <p class="text-center mt-4 mb-0" style="font-size:13px;color:var(--ink-2);">
                 New to {{ config('eiaaw.product_name', 'EIAAW Workforce') }}?
-                <a href="{{ route('signup.form') }}" class="auth-link">Start a 14-day trial</a>
+                <a href="{{ route('marketing.pricing') }}" class="auth-link">Start a 14-day trial</a>
             </p>
 
             <p class="footer-mini text-center">
