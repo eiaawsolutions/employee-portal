@@ -130,9 +130,8 @@
             color: var(--mute);
         }
         .auth-main {
-            display: flex; align-items: flex-start; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: flex-start;
             padding: clamp(28px, 4vw, 56px);
-            padding-top: clamp(28px, 4vw, 56px);
             background: var(--surface);
         }
         .auth-form {
