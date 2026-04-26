@@ -28,15 +28,28 @@
             padding: clamp(40px, 5vw, 72px) clamp(28px, 4vw, 56px);
             display: flex; flex-direction: column; justify-content: space-between;
             border-right: 1px solid var(--line-soft);
+            gap: clamp(28px, 4vw, 44px);
         }
         .auth-aside-quote {
             font-family: var(--serif); font-style: italic; font-weight: 400;
-            font-size: clamp(28px, 3vw, 44px); line-height: 1.18;
-            color: var(--ink); letter-spacing: -0.015em;
+            font-size: clamp(26px, 2.6vw, 38px); line-height: 1.15;
+            color: var(--ink); letter-spacing: -0.018em;
             max-width: 22ch;
         }
         .auth-aside-quote em {
             font-family: var(--serif); color: var(--primary-dark);
+        }
+        .auth-aside-quote strong {
+            font-family: var(--sans); font-weight: 600; font-style: normal;
+            color: var(--ink); letter-spacing: -0.025em;
+        }
+        .auth-aside-hero {
+            display: flex; align-items: center; justify-content: center;
+            flex: 1; min-height: 0;
+        }
+        .auth-aside-hero img {
+            max-width: 100%; height: auto; max-height: 52vh;
+            display: block;
         }
         .auth-aside-meta {
             font-family: var(--mono); font-size: 11px; font-weight: 500;
@@ -140,7 +153,13 @@
         </a>
 
         <div class="auth-aside-quote">
-            The HR platform built for people who replaced spreadsheets with <em>real systems</em> — and want to do the same with AI.
+            Run an entire organisation <em>in one click</em> with <strong>EIAAW&nbsp;Workforce</strong>.
+        </div>
+
+        <div class="auth-aside-hero">
+            <img src="{{ asset('brand/login-hero.svg') }}"
+                 alt="EIAAW Workforce dashboard with Run organisation assistant"
+                 loading="lazy">
         </div>
 
         <div class="auth-aside-meta">

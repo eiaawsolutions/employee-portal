@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" role="img" aria-labelledby="login-title login-desc" preserveAspectRatio="xMidYMid meet">
+  <title id="login-title">EIAAW Workforce — your workspace, ready</title>
+  <desc id="login-desc">A portrait preview of the EIAAW Workforce platform: dashboard with HR, IT, and Finance summary cards, a live activity stream, and the one-click Run organisation command palette.</desc>
+
+  <defs>
+    <linearGradient id="lh-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF7F2" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#F3EDE0" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="lh-teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22B8A5"/>
+      <stop offset="100%" stop-color="#11766A"/>
+    </linearGradient>
+    <linearGradient id="lh-ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0F1A1D"/>
+      <stop offset="100%" stop-color="#162428"/>
+    </linearGradient>
+    <radialGradient id="lh-glow" cx="0.7" cy="0.4" r="0.5">
+      <stop offset="0%" stop-color="#22B8A5" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#22B8A5" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lh-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dx="0" dy="12" result="offset"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Transparent background; the aside already provides bg-warm -->
+  <rect width="480" height="600" fill="url(#lh-bg)"/>
+
+  <!-- Ambient glow behind the composition -->
+  <ellipse cx="320" cy="220" rx="200" ry="140" fill="url(#lh-glow)"/>
+
+  <!-- Primary dashboard panel (slightly tilted for warmth) -->
+  <g transform="rotate(-1 240 280)" filter="url(#lh-shadow)">
+    <!-- Browser-style frame -->
+    <rect x="50" y="80" width="380" height="280" rx="18" fill="#FFFFFF" stroke="#E6DFCF" stroke-width="1"/>
+    <rect x="50" y="80" width="380" height="32" rx="18" fill="#F8F3E8"/>
+    <rect x="50" y="106" width="380" height="6" fill="#F8F3E8"/>
+    <circle cx="68" cy="96" r="4" fill="#E0BFA0"/>
+    <circle cx="82" cy="96" r="4" fill="#EAD9B8"/>
+    <circle cx="96" cy="96" r="4" fill="#C8E0CF"/>
+
+    <!-- Header inside dashboard -->
+    <text x="72" y="136" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em" text-anchor="start">DASHBOARD · TODAY</text>
+    <text x="72" y="156" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em" text-anchor="start">Run your organisation</text>
+    <text x="72" y="176" font-family="'Instrument Serif', Georgia, serif" font-size="17" font-style="italic" fill="#11766A" letter-spacing="-0.02em" text-anchor="start">in one click.</text>
+
+    <!-- Three KPI cards (compact) -->
+    <rect x="72" y="194" width="108" height="66" rx="10" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="80" y="202" width="18" height="18" rx="5" fill="#1FA896" opacity="0.14"/>
+    <text x="89" y="215" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" text-anchor="middle">HR</text>
+    <text x="80" y="240" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.08em" text-anchor="start">EMPLOYEES</text>
+    <text x="80" y="254" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em" text-anchor="start">142</text>
+
+    <rect x="186" y="194" width="108" height="66" rx="10" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="194" y="202" width="18" height="18" rx="5" fill="#1FA896" opacity="0.14"/>
+    <text x="203" y="215" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" text-anchor="middle">IT</text>
+    <text x="194" y="240" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.08em" text-anchor="start">ASSETS</text>
+    <text x="194" y="254" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em" text-anchor="start">318</text>
+
+    <rect x="300" y="194" width="108" height="66" rx="10" fill="#FFFFFF" stroke="#EDE5D2" stroke-width="1"/>
+    <rect x="308" y="202" width="18" height="18" rx="5" fill="#1FA896" opacity="0.14"/>
+    <text x="317" y="215" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700" fill="#11766A" text-anchor="middle">FIN</text>
+    <text x="308" y="240" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#9CA8AC" letter-spacing="0.08em" text-anchor="start">MTD</text>
+    <text x="308" y="254" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500" fill="#0F1A1D" letter-spacing="-0.02em" text-anchor="start">RM 412k</text>
+
+    <!-- Activity rows -->
+    <text x="72" y="284" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9CA8AC" letter-spacing="0.14em" text-anchor="start">LIVE ACTIVITY</text>
+    <circle cx="78" cy="304" r="2.5" fill="#1FA896"/>
+    <text x="88" y="307" font-family="Inter, system-ui, sans-serif" font-size="9.5" fill="#3F4F54" text-anchor="start">Aisha Rahman activated · 2 assets provisioned</text>
+    <circle cx="78" cy="322" r="2.5" fill="#1FA896"/>
+    <text x="88" y="325" font-family="Inter, system-ui, sans-serif" font-size="9.5" fill="#3F4F54" text-anchor="start">CL-2891 approved · auto-posted to GL</text>
+    <circle cx="78" cy="340" r="2.5" fill="#22B8A5"/>
+    <text x="88" y="343" font-family="Inter, system-ui, sans-serif" font-size="9.5" fill="#3F4F54" text-anchor="start">Payroll · 142 employees · EPF/SOCSO/EIS/PCB</text>
+  </g>
+
+  <!-- Floating one-click command card, overlapping bottom-right -->
+  <g transform="rotate(2 320 460)" filter="url(#lh-shadow)">
+    <rect x="180" y="380" width="280" height="170" rx="18" fill="url(#lh-ink)"/>
+    <rect x="180" y="380" width="280" height="170" rx="18" fill="none" stroke="#FFFFFF" stroke-opacity="0.06" stroke-width="1"/>
+
+    <!-- Status -->
+    <circle cx="200" cy="406" r="3.5" fill="#22B8A5"/>
+    <text x="212" y="409" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="9" letter-spacing="0.14em" fill="#22B8A5" text-anchor="start">LIVE · ASSISTANT READY</text>
+
+    <!-- Headline (split lines, no overlap) -->
+    <text x="200" y="436" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="500" fill="#FFFFFF" letter-spacing="-0.01em" text-anchor="start">Run today's operations</text>
+    <text x="200" y="456" font-family="'Instrument Serif', Georgia, serif" font-size="18" font-style="italic" fill="#22B8A5" letter-spacing="-0.02em" text-anchor="start">in one click.</text>
+
+    <!-- Run button -->
+    <rect x="200" y="476" width="240" height="48" rx="12" fill="url(#lh-teal)"/>
+    <rect x="200" y="476" width="240" height="48" rx="12" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1"/>
+    <text x="320" y="506" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" text-anchor="middle">Run organisation →</text>
+
+    <!-- Cursor -->
+    <g transform="translate(366, 498)">
+      <path d="M0 0 L0 16 L4 12 L7 19 L10 18 L7 11 L13 11 Z" fill="#FFFFFF" stroke="#0F1A1D" stroke-width="1" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

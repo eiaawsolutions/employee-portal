@@ -859,7 +859,7 @@
                 </div>
 
                 <h1 id="hero-heading" class="mk-display">
-                    Run an entire organisation <em>in one click.</em>
+                    Run an entire organisation<br><em>in one click.</em>
                 </h1>
 
                 <p class="ln-hero-lede">
@@ -884,7 +884,7 @@
 
             <aside class="ln-hero-mock" aria-label="Product preview: EIAAW Workforce dashboard with one-click platform run">
                 <figure class="ln-hero-mock-main">
-                    <img src="{{ asset('images/landing/platform-hero.svg') }}"
+                    <img src="{{ asset('images/landing/platform-hero-v2.svg') }}"
                          alt="EIAAW Workforce dashboard preview — sidebar listing HR, IT, and Finance modules; main canvas showing 142 active employees, 318 deployed assets, RM 412k month-to-date revenue, a live activity stream covering onboarding, expense-claim posting, AARF acknowledgement and payroll preview, with a Run today's operations command palette anchored at the bottom."
                          width="720" height="540" loading="eager" fetchpriority="high">
                 </figure>
