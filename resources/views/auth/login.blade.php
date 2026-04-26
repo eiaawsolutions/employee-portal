@@ -28,15 +28,21 @@
             padding: clamp(28px, 4vw, 56px);
             display: flex; flex-direction: column; justify-content: center;
             border-right: 1px solid var(--line-soft);
-            gap: clamp(20px, 2.4vw, 32px);
+            position: relative;
+        }
+        .auth-aside-lockup {
+            position: absolute;
+            top: clamp(28px, 4vw, 56px);
+            left: clamp(28px, 4vw, 56px);
         }
         .auth-aside-meta {
+            position: absolute;
+            bottom: clamp(28px, 4vw, 56px);
+            left: clamp(28px, 4vw, 56px);
             font-family: var(--mono); font-size: 11px; font-weight: 500;
             text-transform: uppercase; letter-spacing: 0.14em;
             color: var(--mute);
-            margin-top: clamp(20px, 2.4vw, 32px);
         }
-        .auth-aside-lockup { /* flows naturally inside the centered column */ }
         .auth-aside-body {
             display: flex; flex-direction: column;
             gap: clamp(20px, 2.4vw, 32px);
@@ -60,7 +66,7 @@
             perspective: 1200px;
         }
         .auth-aside-hero img {
-            max-width: 88%; height: auto; max-height: 32vh;
+            max-width: 100%; height: auto; max-height: 40vh;
             display: block;
             filter:
                 drop-shadow(0 40px 50px rgba(15, 26, 29, 0.28))
