@@ -127,10 +127,7 @@ class DashboardController extends Controller
         \App\Services\SecurityScoreService $security,
         \App\Services\UpdateCheckerService $updates
     ) {
-        $user = Auth::user();
-        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
-            abort(403);
-        }
+        $this->authorizePlatformAdmin();
 
         return view('superadmin.system-overview', [
             'meta'          => $meta->get(),
@@ -144,10 +141,7 @@ class DashboardController extends Controller
      */
     public function refreshSecurityScore(\App\Services\SecurityScoreService $security)
     {
-        $user = Auth::user();
-        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
-            abort(403);
-        }
+        $this->authorizePlatformAdmin();
 
         return response()->json($security->refresh());
     }
@@ -157,12 +151,23 @@ class DashboardController extends Controller
      */
     public function refreshUpdateCheck(\App\Services\UpdateCheckerService $updates)
     {
-        $user = Auth::user();
-        if (!$user->isSuperadmin() && !$user->isSystemAdmin()) {
-            abort(403);
-        }
+        $this->authorizePlatformAdmin();
 
         return response()->json($updates->refresh());
+    }
+
+    /**
+     * Defense-in-depth: System Overview is EIAAW HQ only. The route is already
+     * gated by EnsurePlatformAdmin middleware; this is a belt-and-suspenders
+     * check that survives route refactors and matches the 404 behavior so
+     * tenant superadmins cannot enumerate the page's existence.
+     */
+    private function authorizePlatformAdmin(): void
+    {
+        $user = Auth::user();
+        if (! $user || ! $user->isPlatformAdmin()) {
+            abort(404);
+        }
     }
 
     public function hrDashboard()

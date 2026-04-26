@@ -218,9 +218,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
     Route::post('/superadmin/account-management/{user}/activate', [AccountManagementController::class, 'activate'])->name('superadmin.accounts.activate');
     Route::post('/superadmin/account-management/{user}/reset-2fa', [AccountManagementController::class, 'resetTwoFactor'])->name('superadmin.accounts.reset-2fa');
 
-    Route::get('/superadmin/system-overview',           [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
-    Route::post('/superadmin/system-overview/security-score', [DashboardController::class, 'refreshSecurityScore'])->name('superadmin.security-score.refresh');
-    Route::post('/superadmin/system-overview/update-check',   [DashboardController::class, 'refreshUpdateCheck'])->name('superadmin.update-check.refresh');
+    // System Overview + System Logic (Knowledge Base) are EIAAW HQ only —
+    // gated below inside the EnsurePlatformAdmin group.
 
     // Dedicated database request (Enterprise only — plan-gated)
     Route::middleware('plan:infra.dedicated_db')->group(function () {
@@ -273,18 +272,23 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
         Route::get('/superadmin/diagnostics/session-domain',
             [\App\Http\Controllers\PlatformDiagnosticsController::class, 'sessionDomain'])
             ->name('superadmin.diagnostics.session-domain');
-    });
 
-    // Knowledge Base (Superadmin only — separate password)
-    Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
-    Route::post('/superadmin/knowledge-base/setup',    [KnowledgeBaseController::class, 'storePassword'])->name('superadmin.kb.setup.store');
-    Route::get('/superadmin/knowledge-base/gate',      [KnowledgeBaseController::class, 'gate'])->name('superadmin.kb.gate');
-    Route::post('/superadmin/knowledge-base/unlock',   [KnowledgeBaseController::class, 'unlock'])->name('superadmin.kb.unlock');
-    Route::get('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'changePassword'])->name('superadmin.kb.password.change');
-    Route::put('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'updatePassword'])->name('superadmin.kb.password.update');
-    Route::get('/superadmin/knowledge-base',           [KnowledgeBaseController::class, 'index'])->name('superadmin.kb.index');
-    Route::post('/superadmin/knowledge-base/lock',     [KnowledgeBaseController::class, 'lock'])->name('superadmin.kb.lock');
-    Route::get('/superadmin/knowledge-base/{slug}',    [KnowledgeBaseController::class, 'topic'])->name('superadmin.kb.topic');
+        // System Overview — fleet/host metadata, security score, update checker
+        Route::get('/superadmin/system-overview',                  [DashboardController::class, 'systemOverview'])->name('superadmin.system-overview');
+        Route::post('/superadmin/system-overview/security-score',  [DashboardController::class, 'refreshSecurityScore'])->name('superadmin.security-score.refresh');
+        Route::post('/superadmin/system-overview/update-check',    [DashboardController::class, 'refreshUpdateCheck'])->name('superadmin.update-check.refresh');
+
+        // System Logic / Knowledge Base — internal architecture docs (separate password)
+        Route::get('/superadmin/knowledge-base/setup',     [KnowledgeBaseController::class, 'setupPassword'])->name('superadmin.kb.setup');
+        Route::post('/superadmin/knowledge-base/setup',    [KnowledgeBaseController::class, 'storePassword'])->name('superadmin.kb.setup.store');
+        Route::get('/superadmin/knowledge-base/gate',      [KnowledgeBaseController::class, 'gate'])->name('superadmin.kb.gate');
+        Route::post('/superadmin/knowledge-base/unlock',   [KnowledgeBaseController::class, 'unlock'])->name('superadmin.kb.unlock');
+        Route::get('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'changePassword'])->name('superadmin.kb.password.change');
+        Route::put('/superadmin/knowledge-base/password',  [KnowledgeBaseController::class, 'updatePassword'])->name('superadmin.kb.password.update');
+        Route::get('/superadmin/knowledge-base',           [KnowledgeBaseController::class, 'index'])->name('superadmin.kb.index');
+        Route::post('/superadmin/knowledge-base/lock',     [KnowledgeBaseController::class, 'lock'])->name('superadmin.kb.lock');
+        Route::get('/superadmin/knowledge-base/{slug}',    [KnowledgeBaseController::class, 'topic'])->name('superadmin.kb.topic');
+    });
 
     // ══════════════════════════════════════════════════════════════════════
     // C-SUITE REPORTS & ANALYTICS

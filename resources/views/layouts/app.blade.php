@@ -374,12 +374,14 @@
                 <i class="bi bi-graph-up-arrow"></i> C-Suite Reports
             </a>
         </div>
+        @if(Auth::user()->isPlatformAdmin())
         <div class="nav-item">
             <a href="{{ route('superadmin.system-overview') }}"
                class="nav-link {{ request()->routeIs('superadmin.system-overview') ? 'active' : '' }}">
                 <i class="bi bi-diagram-3"></i> System Overview
             </a>
         </div>
+        @endif
 
         {{-- ── Self-Service ── --}}
         <div class="sidebar-section">Self-Service</div>
@@ -481,12 +483,14 @@
                 <i class="bi bi-building"></i> Company Registration
             </a>
         </div>
+        @if(Auth::user()->isPlatformAdmin())
         <div class="nav-item">
             <a href="{{ route('superadmin.kb.gate') }}"
                class="nav-link {{ request()->routeIs('superadmin.kb.*') ? 'active' : '' }}">
                 <i class="bi bi-book"></i> System Logic
             </a>
         </div>
+        @endif
 
         {{-- ── Account ── --}}
         <div class="sidebar-section">Account</div>

@@ -91,12 +91,16 @@ class KnowledgeBaseController extends Controller
     }
 
     /**
-     * Ensure only superadmin can access.
+     * System Logic / Knowledge Base is EIAAW HQ only. The routes are already
+     * gated by EnsurePlatformAdmin middleware; this is defense-in-depth that
+     * survives route refactors and returns 404 to prevent tenant superadmins
+     * from enumerating the page's existence. Method name preserved for the
+     * existing call sites throughout this controller.
      */
     private function authorizeSuperadmin(): void
     {
-        if (!Auth::user() || !Auth::user()->isSuperadmin()) {
-            abort(403);
+        if (!Auth::user() || !Auth::user()->isPlatformAdmin()) {
+            abort(404);
         }
     }
 
