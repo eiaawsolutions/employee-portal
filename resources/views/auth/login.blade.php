@@ -133,11 +133,19 @@
             display: flex; align-items: flex-start; justify-content: flex-start;
             padding: clamp(28px, 4vw, 56px);
             background: var(--surface);
+            position: relative;
         }
         .auth-form {
             width: 100%; max-width: 380px;
-            /* Align "SIGN IN" eyebrow with the logo on the left aside */
-            padding-top: clamp(8px, 1.2vw, 18px);
+        }
+        /* Pin SIGN IN eyebrow to the same vertical center as the lockup.
+           Lockup = 34px shield, vertical-centered text → text-center at +17px from lockup top.
+           Eyebrow = 11px single-line, cap-height ~8px → text-center at +5px from eyebrow top.
+           Both columns share the same top padding clamp(28px,4vw,56px), so we add
+           17 - 5 = 12px to the eyebrow's top to align their text-centers. */
+        .auth-form > .eyebrow {
+            display: inline-flex;
+            margin-top: 12px;
         }
         .auth-form h1 {
             font-family: var(--sans); font-weight: 500;
