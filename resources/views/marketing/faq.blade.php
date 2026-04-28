@@ -182,7 +182,7 @@
         <h3>Still have a question? <em>Ask us.</em></h3>
         <p>We answer sales, security, and implementation questions within one business day.</p>
         <div class="faq-contact-ctas">
-            <a href="mailto:{{ config('eiaaw.sales_email') }}?subject=EIAAW Workforce question" class="eiaaw-btn eiaaw-btn--primary">Email sales@</a>
+            <a href="#" data-ep-action="talk" class="eiaaw-btn eiaaw-btn--primary">Talk to us</a>
             <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--outline">Or just start the trial →</a>
         </div>
     </div>

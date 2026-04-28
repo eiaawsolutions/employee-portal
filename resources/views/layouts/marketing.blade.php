@@ -315,6 +315,13 @@
     })();
 </script>
 
+{{-- Marketing chatbot + Talk-to-us modal (apex-only; included on every marketing page) --}}
+@include('partials.marketing-chatbot')
+
+{{-- Voice agent launcher — reuses the Sales-marketing-agent Retell web-call
+     infrastructure with site_scope=workforce. No new infra, no new cost. --}}
+@include('partials.marketing-voice')
+
 @stack('scripts')
 
 </body>

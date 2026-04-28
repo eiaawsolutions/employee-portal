@@ -891,6 +891,7 @@
                 <div class="ln-hero-ctas">
                     <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
                     <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See every feature →</a>
+                    <a href="#" data-ep-action="talk" class="eiaaw-btn eiaaw-btn--outline">Talk to us</a>
                 </div>
 
                 <div class="ln-hero-trust">

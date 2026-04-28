@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FindWorkspaceController;
+use App\Http\Controllers\MarketingChatbotController;
+use App\Http\Controllers\MarketingContactController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\StripeWebhookController;
@@ -73,6 +75,17 @@ Route::middleware('apex')->group(function () {
 
     Route::get('/find-workspace',   [FindWorkspaceController::class, 'show'])->name('marketing.find-workspace');
     Route::post('/find-workspace',  [FindWorkspaceController::class, 'lookup'])->name('marketing.find-workspace.lookup')->middleware('throttle:5,1');
+
+    // ── Marketing chatbot + Talk-to-us form (apex only, CSRF on, throttled) ──
+    // The chatbot is hard-locked to ep.eiaawsolutions.com surface (FAQ + pricing
+    // + signup). It cannot answer outside that scope and routes everything else
+    // to the Talk-to-us form.
+    Route::post('/api/chatbot', [MarketingChatbotController::class, 'ask'])
+        ->name('marketing.chatbot')
+        ->middleware('throttle:5,1');
+    Route::post('/api/contact', [MarketingContactController::class, 'store'])
+        ->name('marketing.contact')
+        ->middleware('throttle:3,1');
 
     // Public signup (apex only; SignupController also guards with ensureMarketingApex for belt-and-braces)
     Route::middleware('guest')->group(function () {
