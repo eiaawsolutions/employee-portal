@@ -75,3 +75,13 @@ Schedule::command('backup:test-restore')
     ->weeklyOn(1, '05:00')
     ->appendOutputTo(storage_path('logs/backup-verify.log'))
     ->skip(fn () => empty(env('TEST_RESTORE_DSN')));
+
+// Marketing leads — retry the sales@ notification email for any
+// marketing_contacts rows that didn't deliver on first attempt. Every 10
+// minutes so a transient SMTP blip never costs us a sales lead. Capped at
+// 5 attempts per row; stalled rows escalate via Log::critical for human
+// triage. See app/Services/MarketingLeadNotifier.php.
+Schedule::command('marketing:retry-pending-emails')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/marketing-leads.log'));
