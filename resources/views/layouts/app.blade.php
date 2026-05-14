@@ -383,6 +383,21 @@
         </div>
         @endif
 
+        {{-- ── Support (Ticketing) ── --}}
+        <div class="sidebar-section">Support</div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.manage') }}"
+               class="nav-link {{ request()->routeIs('tickets.manage') || (request()->routeIs('tickets.show') && request()->query('from') === 'manage') ? 'active' : '' }}">
+                <i class="bi bi-headset"></i> Ticket Management
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.index') }}"
+               class="nav-link {{ request()->routeIs('tickets.index') || request()->routeIs('tickets.create') ? 'active' : '' }}">
+                <i class="bi bi-ticket-perforated"></i> My Tickets
+            </a>
+        </div>
+
         {{-- ── Self-Service ── --}}
         <div class="sidebar-section">Self-Service</div>
         <div class="nav-item">
@@ -613,6 +628,21 @@
             </a>
         </div>
 
+        {{-- ── Support (Ticketing) ── --}}
+        <div class="sidebar-section">Support</div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.manage') }}"
+               class="nav-link {{ request()->routeIs('tickets.manage') || (request()->routeIs('tickets.show') && request()->query('from') === 'manage') ? 'active' : '' }}">
+                <i class="bi bi-headset"></i> Ticket Management
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.index') }}"
+               class="nav-link {{ request()->routeIs('tickets.index') || request()->routeIs('tickets.create') ? 'active' : '' }}">
+                <i class="bi bi-ticket-perforated"></i> My Tickets
+            </a>
+        </div>
+
         {{-- ── Self-Service ── --}}
         <div class="sidebar-section">Self-Service</div>
         <div class="nav-item">
@@ -750,6 +780,21 @@
         </div>
         @endif
 
+        {{-- ── Support (Ticketing) ── --}}
+        <div class="sidebar-section">Support</div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.manage') }}"
+               class="nav-link {{ request()->routeIs('tickets.manage') || (request()->routeIs('tickets.show') && request()->query('from') === 'manage') ? 'active' : '' }}">
+                <i class="bi bi-headset"></i> Ticket Management
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="{{ route('tickets.index') }}"
+               class="nav-link {{ request()->routeIs('tickets.index') || request()->routeIs('tickets.create') ? 'active' : '' }}">
+                <i class="bi bi-ticket-perforated"></i> My Tickets
+            </a>
+        </div>
+
         {{-- Self-Service (IT staff are also employees) --}}
         <div class="sidebar-section">Self-Service</div>
         <div class="nav-item">
@@ -842,6 +887,23 @@
             </a>
         </div>
         @endif
+
+        {{-- ── Support (Ticketing) ── --}}
+        <div class="sidebar-section">Support</div>
+        @if(Auth::user()->canAccessTicketManagement())
+        <div class="nav-item">
+            <a href="{{ route('tickets.manage') }}"
+               class="nav-link {{ request()->routeIs('tickets.manage') || (request()->routeIs('tickets.show') && request()->query('from') === 'manage') ? 'active' : '' }}">
+                <i class="bi bi-headset"></i> Ticket Management
+            </a>
+        </div>
+        @endif
+        <div class="nav-item">
+            <a href="{{ route('tickets.index') }}"
+               class="nav-link {{ request()->routeIs('tickets.index') || request()->routeIs('tickets.create') ? 'active' : '' }}">
+                <i class="bi bi-ticket-perforated"></i> My Tickets
+            </a>
+        </div>
 
         {{-- Self-Service --}}
         <div class="sidebar-section">Self-Service</div>
