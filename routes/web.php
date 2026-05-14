@@ -270,6 +270,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnforceSingleSession::class, \Ap
             [\App\Http\Controllers\HqOverviewController::class, 'index'])
             ->name('superadmin.hq.index');
 
+        // HQ Ticketing — fleet-wide ticket health (aggregates + counts only).
+        // Same privacy contract as HQ Overview; never reads ticket bodies.
+        Route::get('/superadmin/hq/tickets',
+            [\App\Http\Controllers\HqTicketsController::class, 'index'])
+            ->name('superadmin.hq.tickets');
+
         // Tenants directory — every workspace on the platform
         Route::get('/superadmin/tenants',
             [\App\Http\Controllers\SuperAdminTenantsController::class, 'index'])

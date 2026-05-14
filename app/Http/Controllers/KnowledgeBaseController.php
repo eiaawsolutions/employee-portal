@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\SystemMetadataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Services\SystemMetadataService;
 
 class KnowledgeBaseController extends Controller
 {
@@ -16,75 +16,81 @@ class KnowledgeBaseController extends Controller
     {
         return [
             'onboarding' => [
-                'title'       => 'Onboarding Flow',
-                'icon'        => 'bi-person-plus-fill',
-                'color'       => '#198754',
+                'title' => 'Onboarding Flow',
+                'icon' => 'bi-person-plus-fill',
+                'color' => '#198754',
                 'description' => 'Invite → Register → Activate lifecycle with staging JSON, consent, and auto-activation.',
             ],
             'offboarding' => [
-                'title'       => 'Offboarding Flow',
-                'icon'        => 'bi-box-arrow-right',
-                'color'       => '#dc3545',
+                'title' => 'Offboarding Flow',
+                'icon' => 'bi-box-arrow-right',
+                'color' => '#dc3545',
                 'description' => 'Exit initiation → notifications → asset return → account deactivation pipeline.',
             ],
             'leave' => [
-                'title'       => 'Leave Management',
-                'icon'        => 'bi-calendar2-week',
-                'color'       => '#0d6efd',
+                'title' => 'Leave Management',
+                'icon' => 'bi-calendar2-week',
+                'color' => '#0d6efd',
                 'description' => 'Apply → Manager/HR approval → balance deduction with tenure-based entitlements.',
             ],
             'payroll' => [
-                'title'       => 'Payroll & Statutory',
-                'icon'        => 'bi-wallet2',
-                'color'       => '#6f42c1',
+                'title' => 'Payroll & Statutory',
+                'icon' => 'bi-wallet2',
+                'color' => '#6f42c1',
                 'description' => 'Pay run generation → statutory calculations (EPF/SOCSO/EIS/PCB) → payslip issuance.',
             ],
             'claims' => [
-                'title'       => 'Expense Claims',
-                'icon'        => 'bi-receipt-cutoff',
-                'color'       => '#fd7e14',
+                'title' => 'Expense Claims',
+                'icon' => 'bi-receipt-cutoff',
+                'color' => '#fd7e14',
                 'description' => 'Draft → Submit → Manager → HR → Payroll integration with duplicate detection.',
             ],
+            'tickets' => [
+                'title' => 'Ticketing & Help Desk',
+                'icon' => 'bi-headset',
+                'color' => '#0ea5e9',
+                'description' => 'Raise → Route → Assign PIC → Chat → Resolve with malware-scanned attachments, 24h stale reminders, and per-department analytics.',
+            ],
             'attendance' => [
-                'title'       => 'Attendance & Overtime',
-                'icon'        => 'bi-stopwatch',
-                'color'       => '#20c997',
+                'title' => 'Attendance & Overtime',
+                'icon' => 'bi-stopwatch',
+                'color' => '#20c997',
                 'description' => 'Clock in/out → late detection → overtime requests → HR approval flow.',
             ],
             'assets' => [
-                'title'       => 'IT Asset Lifecycle',
-                'icon'        => 'bi-laptop',
-                'color'       => '#0dcaf0',
+                'title' => 'IT Asset Lifecycle',
+                'icon' => 'bi-laptop',
+                'color' => '#0dcaf0',
                 'description' => 'Procurement → Assignment → AARF acknowledgement → Return → Decommission pipeline.',
             ],
             'authentication' => [
-                'title'       => 'Authentication & Security',
-                'icon'        => 'bi-shield-lock-fill',
-                'color'       => '#6610f2',
+                'title' => 'Authentication & Security',
+                'icon' => 'bi-shield-lock-fill',
+                'color' => '#6610f2',
                 'description' => 'Work-email login → single-session → lockout → password reset → session timeout.',
             ],
             'consent' => [
-                'title'       => 'Edit & Consent Flows',
-                'icon'        => 'bi-pencil-square',
-                'color'       => '#d63384',
+                'title' => 'Edit & Consent Flows',
+                'icon' => 'bi-pencil-square',
+                'color' => '#d63384',
                 'description' => 'Onboarding notification-only vs employee consent-required edit log pipelines.',
             ],
             'roles' => [
-                'title'       => 'Roles & Permissions',
-                'icon'        => 'bi-people-fill',
-                'color'       => '#adb5bd',
+                'title' => 'Roles & Permissions',
+                'icon' => 'bi-people-fill',
+                'color' => '#adb5bd',
                 'description' => 'Role hierarchy, capability methods, custom per-resource permission overrides.',
             ],
             'scheduled' => [
-                'title'       => 'Scheduled Jobs & Automation',
-                'icon'        => 'bi-clock-history',
-                'color'       => '#495057',
+                'title' => 'Scheduled Jobs & Automation',
+                'icon' => 'bi-clock-history',
+                'color' => '#495057',
                 'description' => 'Cron commands: activation, offboarding notifications, reminders, backups, audit.',
             ],
             'emails' => [
-                'title'       => 'Email & Notification Map',
-                'icon'        => 'bi-envelope-fill',
-                'color'       => '#e35d6a',
+                'title' => 'Email & Notification Map',
+                'icon' => 'bi-envelope-fill',
+                'color' => '#e35d6a',
                 'description' => 'All 20+ mail classes organized by module with triggers and recipients.',
             ],
         ];
@@ -99,7 +105,7 @@ class KnowledgeBaseController extends Controller
      */
     private function authorizeSuperadmin(): void
     {
-        if (!Auth::user() || !Auth::user()->isPlatformAdmin()) {
+        if (! Auth::user() || ! Auth::user()->isPlatformAdmin()) {
             abort(404);
         }
     }
@@ -109,7 +115,7 @@ class KnowledgeBaseController extends Controller
      */
     private function hasKbPassword(): bool
     {
-        return !empty(Auth::user()->kb_password_hash);
+        return ! empty(Auth::user()->kb_password_hash);
     }
 
     /**
@@ -144,7 +150,7 @@ class KnowledgeBaseController extends Controller
         $this->authorizeSuperadmin();
 
         $request->validate([
-            'password'              => 'required|string|min:8|max:128|confirmed',
+            'password' => 'required|string|min:8|max:128|confirmed',
             'password_confirmation' => 'required',
         ]);
 
@@ -167,7 +173,7 @@ class KnowledgeBaseController extends Controller
     {
         $this->authorizeSuperadmin();
 
-        if (!$this->hasKbPassword()) {
+        if (! $this->hasKbPassword()) {
             return redirect()->route('superadmin.kb.setup');
         }
 
@@ -189,7 +195,7 @@ class KnowledgeBaseController extends Controller
             'password' => 'required|string|max:128',
         ]);
 
-        if (!Hash::check($request->password, Auth::user()->kb_password_hash)) {
+        if (! Hash::check($request->password, Auth::user()->kb_password_hash)) {
             return back()->withErrors(['password' => 'Incorrect Knowledge Base password.']);
         }
 
@@ -220,12 +226,12 @@ class KnowledgeBaseController extends Controller
         $this->ensureAccess();
 
         $request->validate([
-            'current_password'      => 'required|string|max:128',
-            'password'              => 'required|string|min:8|max:128|confirmed',
+            'current_password' => 'required|string|max:128',
+            'password' => 'required|string|min:8|max:128|confirmed',
             'password_confirmation' => 'required',
         ]);
 
-        if (!Hash::check($request->current_password, Auth::user()->kb_password_hash)) {
+        if (! Hash::check($request->current_password, Auth::user()->kb_password_hash)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
 
@@ -249,7 +255,7 @@ class KnowledgeBaseController extends Controller
 
         return view('superadmin.knowledge-base.index', [
             'topics' => $this->getTopics(),
-            'meta'   => $meta->get(),
+            'meta' => $meta->get(),
         ]);
     }
 
@@ -265,21 +271,21 @@ class KnowledgeBaseController extends Controller
 
         $topics = $this->getTopics();
 
-        if (!isset($topics[$slug])) {
+        if (! isset($topics[$slug])) {
             abort(404);
         }
 
-        $viewName = 'superadmin.knowledge-base.topics.' . $slug;
+        $viewName = 'superadmin.knowledge-base.topics.'.$slug;
 
-        if (!view()->exists($viewName)) {
+        if (! view()->exists($viewName)) {
             abort(404);
         }
 
         return view($viewName, [
-            'topic'  => $topics[$slug],
+            'topic' => $topics[$slug],
             'topics' => $topics,
-            'slug'   => $slug,
-            'meta'   => $meta->get(),
+            'slug' => $slug,
+            'meta' => $meta->get(),
         ]);
     }
 
@@ -301,10 +307,10 @@ class KnowledgeBaseController extends Controller
 
     private function ensureAccess(): void
     {
-        if (!$this->hasKbPassword()) {
+        if (! $this->hasKbPassword()) {
             abort(302, '', ['Location' => route('superadmin.kb.setup')]);
         }
-        if (!$this->isUnlocked()) {
+        if (! $this->isUnlocked()) {
             abort(302, '', ['Location' => route('superadmin.kb.gate')]);
         }
     }
