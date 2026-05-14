@@ -55,6 +55,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => \App\Http\Middleware\ResolveTenant::class,
             'apex'   => \App\Http\Middleware\EnsureApex::class,
             'plan'   => \App\Http\Middleware\EnsurePlan::class,
+            // Defence-in-depth heuristic + optional ClamAV scan on every
+            // uploaded file. Applied per-route on upload endpoints (tickets,
+            // ticket messages).
+            'scan-uploads' => \App\Http\Middleware\ScanUploadsForMalware::class,
         ]);
 
         // Exempt the public AARF acknowledgement POST from CSRF verification.

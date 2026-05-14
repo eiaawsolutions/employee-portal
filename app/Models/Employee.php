@@ -13,7 +13,7 @@ class Employee extends Model
         'tenant_id',
         'onboarding_id', 'user_id', 'active_from', 'active_until',
         // Personal profile (official record, editable by user)
-        'full_name', 'preferred_name', 'official_document_id', 'date_of_birth', 'sex',
+        'full_name', 'preferred_name', 'official_document_id', 'date_of_birth', 'birthday_email_sent_year', 'sex',
         'marital_status', 'religion', 'race', 'is_disabled', 'residential_address',
         'personal_contact_number', 'house_tel_no', 'personal_email',
         'bank_account_number', 'bank_name',

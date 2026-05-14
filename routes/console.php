@@ -85,3 +85,22 @@ Schedule::command('marketing:retry-pending-emails')
     ->everyTenMinutes()
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/marketing-leads.log'));
+
+// Ticketing — hourly stale-ticket reminder. Notifies PIC (or department
+// managers if unassigned) for any ticket idle 24h+. Throttled per ticket
+// via tickets.last_reminder_sent_at. Auto-transitions Open → Pending for
+// un-PIC'd tickets idle 24h+.
+Schedule::command('tickets:remind-stale')
+    ->hourly()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/ticket-reminders.log'));
+
+// Birthday e-cards — every minute so an HR edit of an employee's DOB
+// takes effect immediately on the same day. Idempotent via
+// employees.birthday_email_sent_year. Asia/Kuala_Lumpur timezone so a
+// birthday lands on the employee's local "today", not UTC's.
+Schedule::command('birthdays:send-wishes')
+    ->everyMinute()
+    ->timezone('Asia/Kuala_Lumpur')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/birthday-wishes.log'));

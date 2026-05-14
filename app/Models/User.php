@@ -244,4 +244,28 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['finance_manager', 'superadmin']);
     }
+
+    // ── Ticketing Module ───────────────────────────────────────────────
+
+    /**
+     * Can this user access /tickets/manage? True for system-wide admins and
+     * for anyone who manages at least one department.
+     */
+    public function canAccessTicketManagement(): bool
+    {
+        return $this->canViewAllTickets()
+            || !empty(\App\Models\Ticket::departmentsManagedBy($this));
+    }
+
+    /** Can see every ticket in the tenant (no department restriction). */
+    public function canViewAllTickets(): bool
+    {
+        return $this->isSuperadmin() || $this->isSystemAdmin();
+    }
+
+    /** Can this user manage tickets in a specific department? */
+    public function canManageTicketsForDepartment(string $department): bool
+    {
+        return \App\Models\Ticket::isManagerOf($this, $department);
+    }
 }

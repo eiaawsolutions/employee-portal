@@ -41,6 +41,9 @@ use App\Http\Controllers\Accounting\BudgetController;
 use App\Http\Controllers\Accounting\FinancialReportController;
 use App\Http\Controllers\Accounting\AiAccountingController;
 use App\Http\Controllers\Accounting\AccountingSettingController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TicketMessageController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // ── Stripe webhook (no auth, signature-verified by Cashier middleware) ──────
@@ -695,4 +698,37 @@ Route::delete('/hr/employees/{employee}/orientation',[EmployeeController::class,
     Route::post('/accounting/settings/currency',                     [AccountingSettingController::class, 'storeCurrency'])->name('accounting.settings.store-currency');
 
     }); // end plan:finance.accounting group
+
+    // ────────────────────────────────────────────────────────────────────
+    // Ticketing — internal help desk. Universal (no plan gate) per Amos's
+    // decision: every workspace gets it regardless of subscription tier.
+    // Attachments scanned by ScanUploadsForMalware before reaching the
+    // controller. See docs/PLAN-CLARITAS-REPLICATION.md.
+    // ────────────────────────────────────────────────────────────────────
+    Route::prefix('tickets')->name('tickets.')->group(function () {
+        Route::get('/',                       [TicketController::class, 'index'])->name('index');
+        Route::get('/create',                 [TicketController::class, 'create'])->name('create');
+        Route::post('/',                      [TicketController::class, 'store'])
+            ->middleware('scan-uploads')
+            ->name('store');
+        Route::get('/manage',                 [TicketController::class, 'manage'])->name('manage');
+        Route::get('/{ticket}',               [TicketController::class, 'show'])->name('show');
+        Route::get('/{ticket}/edit-admin',    [TicketController::class, 'editAdmin'])->name('edit-admin');
+        Route::put('/{ticket}/admin',         [TicketController::class, 'updateAdmin'])->name('update-admin');
+        Route::post('/{ticket}/assign-pic',   [TicketController::class, 'assignPic'])->name('assign-pic');
+        Route::post('/{ticket}/status',       [TicketController::class, 'updateStatus'])->name('status');
+
+        // Chat thread (poll + post). Attachments scanned for malware.
+        Route::get('/{ticket}/messages',      [TicketMessageController::class, 'index'])->name('messages.index');
+        Route::post('/{ticket}/messages',     [TicketMessageController::class, 'store'])
+            ->middleware('scan-uploads')
+            ->name('messages.store');
+    });
+
+    // Notification bell — used by every authenticated page.
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/',                 [NotificationController::class, 'index'])->name('index');
+        Route::post('/{id}/read',       [NotificationController::class, 'markRead'])->name('read');
+        Route::post('/mark-all-read',   [NotificationController::class, 'markAllRead'])->name('mark-all-read');
+    });
 });
