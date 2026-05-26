@@ -49,6 +49,10 @@ class TicketController extends Controller
     SQL;
 
     // ── Self-Service: tickets the user has raised + assigned to them ──────
+    // Tab scope:
+    //   active   = tickets the user RAISED, status in ACTIVE_STATUSES
+    //   assigned = tickets the user is PIC of, status in ACTIVE_STATUSES
+    //   archived = tickets the user RAISED or is PIC of, status in ARCHIVED_STATUSES
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -58,12 +62,18 @@ class TicketController extends Controller
             $scope = 'active';
         }
 
+        // Each count must match exactly what its tab renders below — otherwise
+        // a PIC's Resolved ticket would inflate the Assigned-to-Me badge while
+        // sitting silently on the Archived tab.
         $counts = [
             'active' => Ticket::where('user_id', $user->id)
                 ->whereIn('status', Ticket::ACTIVE_STATUSES)->count(),
-            'assigned' => Ticket::where('assigned_to', $user->id)->count(),
-            'archived' => Ticket::where('user_id', $user->id)
-                ->whereIn('status', Ticket::ARCHIVED_STATUSES)->count(),
+            'assigned' => Ticket::where('assigned_to', $user->id)
+                ->whereIn('status', Ticket::ACTIVE_STATUSES)->count(),
+            'archived' => Ticket::where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('assigned_to', $user->id);
+            })->whereIn('status', Ticket::ARCHIVED_STATUSES)->count(),
         ];
 
         $query = Ticket::with(['creator', 'assignee', 'company'])
@@ -73,11 +83,18 @@ class TicketController extends Controller
             ->orderByDesc('created_at');
 
         if ($scope === 'assigned') {
-            $query->where('assigned_to', $user->id);
-            $statusOptions = Ticket::STATUSES;
+            // Active tickets the user is PIC of. Terminal ones move to Archived
+            // (where the OR-clause picks them up) so this tab never mixes.
+            $query->where('assigned_to', $user->id)
+                ->whereIn('status', Ticket::ACTIVE_STATUSES);
+            $statusOptions = Ticket::ACTIVE_STATUSES;
         } elseif ($scope === 'archived') {
-            $query->where('user_id', $user->id)
-                ->whereIn('status', Ticket::ARCHIVED_STATUSES);
+            // Terminal tickets either RAISED or PIC'd by the user, so a PIC
+            // retains visibility of their finished work after it leaves Assigned.
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('assigned_to', $user->id);
+            })->whereIn('status', Ticket::ARCHIVED_STATUSES);
             $statusOptions = Ticket::ARCHIVED_STATUSES;
         } else {
             $query->where('user_id', $user->id)
@@ -593,6 +610,16 @@ class TicketController extends Controller
         // Notify department managers (no interns — they only get pinged on assignment).
         $managers = $ticket->managersForNotification()->get();
 
+        // Same-department tickets also notify the raiser's reporting (line)
+        // manager. Notification-only — does NOT change ticket visibility or
+        // the PIC pool. Cross-department tickets keep the standard dept-head
+        // routing. De-duplicated against the dept-manager pool so a reporting
+        // manager who is also a dept manager isn't pinged twice.
+        $reportingManager = $ticket->reportingManagerForSameDeptNotification();
+        if ($reportingManager && ! $managers->contains('id', $reportingManager->id)) {
+            $managers->push($reportingManager);
+        }
+
         foreach ($managers as $manager) {
             if ($manager->work_email) {
                 Mail::to($manager->work_email)->queue(new TicketCreatedMail($ticket, $manager));
@@ -600,6 +627,15 @@ class TicketController extends Controller
         }
         if ($managers->isNotEmpty()) {
             Notification::send($managers, new TicketRaisedNotification($ticket->fresh(['creator'])));
+        }
+
+        // Same-dept reporting manager who has no (or an inactive) User account
+        // — email-only fallback. The bell ping can't reach them (notifications
+        // FK to users) until they register.
+        $reportingManagerEmp = $ticket->reportingManagerEmployeeForEmailOnly();
+        if ($reportingManagerEmp) {
+            Mail::to($reportingManagerEmp->company_email)
+                ->queue(new TicketCreatedMail($ticket, $reportingManagerEmp));
         }
 
         return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket created.');
@@ -692,6 +728,14 @@ class TicketController extends Controller
         // Notify the new department's managers as if the ticket had just
         // been raised in their queue.
         $managers = $ticket->managersForNotification()->get();
+
+        // If the re-routed department now matches the raiser's own department,
+        // their reporting manager is notified too (same rule as creation).
+        $reportingManager = $ticket->reportingManagerForSameDeptNotification();
+        if ($reportingManager && ! $managers->contains('id', $reportingManager->id)) {
+            $managers->push($reportingManager);
+        }
+
         foreach ($managers as $manager) {
             if ($manager->work_email) {
                 Mail::to($manager->work_email)->queue(new TicketCreatedMail($ticket, $manager));
@@ -699,6 +743,14 @@ class TicketController extends Controller
         }
         if ($managers->isNotEmpty()) {
             Notification::send($managers, new TicketRaisedNotification($ticket->fresh(['creator'])));
+        }
+
+        // Email-only fallback for a same-dept reporting manager without an
+        // active User account.
+        $reportingManagerEmp = $ticket->reportingManagerEmployeeForEmailOnly();
+        if ($reportingManagerEmp) {
+            Mail::to($reportingManagerEmp->company_email)
+                ->queue(new TicketCreatedMail($ticket, $reportingManagerEmp));
         }
 
         // After a dept change, the editor may no longer have manage rights on
