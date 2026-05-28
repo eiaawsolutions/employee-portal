@@ -13,7 +13,8 @@ return [
 
     'support_email' => env('SUPPORT_EMAIL', 'hello@eiaawsolutions.com'),
     'sales_email'   => env('SALES_EMAIL', 'sales@eiaawsolutions.com'),
-    'company_legal' => 'EIAAW Solutions Sdn. Bhd.',
+    'company_legal'  => 'EIAAW SOLUTIONS',
+    'company_reg_no' => '202603133419 (CT0164540-H)',
 
     /*
      * Reserved tenant slugs.

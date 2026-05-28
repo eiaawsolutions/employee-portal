@@ -21,9 +21,9 @@
     <link rel="apple-touch-icon" href="{{ asset('brand/shield.png') }}">
 
     {{-- Authorship / publisher --}}
-    <meta name="author" content="EIAAW Solutions Sdn. Bhd.">
-    <meta name="publisher" content="EIAAW Solutions Sdn. Bhd.">
-    <meta name="copyright" content="© {{ now()->year }} EIAAW Solutions Sdn. Bhd.">
+    <meta name="author" content="EIAAW SOLUTIONS">
+    <meta name="publisher" content="EIAAW SOLUTIONS">
+    <meta name="copyright" content="© {{ now()->year }} EIAAW SOLUTIONS (SSM Reg. No. 202603133419 / CT0164540-H)">
 
     {{-- AI / LLM-crawler discovery hint --}}
     <link rel="alternate" type="text/plain" href="{{ url('/llms.txt') }}" title="LLM-readable site summary">
@@ -297,7 +297,7 @@
                 <span>Encrypted at rest</span>
                 <span>Audit-logged</span>
             </div>
-            <div>© {{ now()->year }} {{ config('eiaaw.company_legal') }}</div>
+            <div>© {{ now()->year }} {{ config('eiaaw.company_legal') }} · SSM Reg. No. {{ config('eiaaw.company_reg_no') }}</div>
         </div>
     </div>
 </footer>

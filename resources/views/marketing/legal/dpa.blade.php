@@ -10,7 +10,7 @@
     <h2>1. Parties and roles</h2>
     <p>
         For personal data processed through EIAAW Workforce, your workspace is the
-        <strong>controller</strong> and EIAAW Solutions Sdn. Bhd. is the
+        <strong>controller</strong> and EIAAW SOLUTIONS (SSM Reg. No. 202603133419 / CT0164540-H) is the
         <strong>processor</strong>. This DPA governs the processor relationship.
     </p>
 

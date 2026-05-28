@@ -17,8 +17,9 @@
     $orgSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'Organization',
-        'name' => 'EIAAW Solutions Sdn. Bhd.',
-        'legalName' => 'EIAAW Solutions Sdn. Bhd.',
+        'name' => 'EIAAW SOLUTIONS',
+        'legalName' => 'EIAAW SOLUTIONS',
+        'identifier' => '202603133419 (CT0164540-H)',
         'alternateName' => 'EIAAW Workforce',
         'url' => $canonical,
         'logo' => asset('brand/logo-full.png'),
@@ -102,7 +103,7 @@
         ],
         'creator' => [
             '@type' => 'Organization',
-            'name' => 'EIAAW Solutions Sdn. Bhd.',
+            'name' => 'EIAAW SOLUTIONS',
         ],
         'inLanguage' => ['en', 'ms'],
         'audience' => [
@@ -181,7 +182,7 @@
         'inLanguage' => ['en-MY', 'en', 'ms'],
         'publisher' => [
             '@type' => 'Organization',
-            'name' => 'EIAAW Solutions Sdn. Bhd.',
+            'name' => 'EIAAW SOLUTIONS',
             'url' => $canonical,
             'logo' => [
                 '@type' => 'ImageObject',
@@ -205,7 +206,7 @@
             '@type' => 'Service',
             'name' => 'EIAAW Workforce — HR & People Operations',
             'serviceType' => 'Human Resources Management Software',
-            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW SOLUTIONS', 'url' => $canonical],
             'areaServed' => [
                 ['@type' => 'Country', 'name' => 'Malaysia'],
                 ['@type' => 'Country', 'name' => 'Singapore'],
@@ -222,7 +223,7 @@
             '@type' => 'Service',
             'name' => 'EIAAW Workforce — IT Asset Management',
             'serviceType' => 'IT Asset Management Software',
-            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW SOLUTIONS', 'url' => $canonical],
             'areaServed' => [
                 ['@type' => 'Country', 'name' => 'Malaysia'],
                 ['@type' => 'Country', 'name' => 'Singapore'],
@@ -239,7 +240,7 @@
             '@type' => 'Service',
             'name' => 'EIAAW Workforce — Full Accounting',
             'serviceType' => 'Accounting & Financial Management Software',
-            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW Solutions Sdn. Bhd.', 'url' => $canonical],
+            'provider' => ['@type' => 'Organization', 'name' => 'EIAAW SOLUTIONS', 'url' => $canonical],
             'areaServed' => [
                 ['@type' => 'Country', 'name' => 'Malaysia'],
                 ['@type' => 'Country', 'name' => 'Singapore'],
@@ -258,7 +259,7 @@
         '@context' => 'https://schema.org',
         '@type' => 'LocalBusiness',
         '@id' => rtrim($canonical, '/').'#localbusiness',
-        'name' => 'EIAAW Solutions Sdn. Bhd.',
+        'name' => 'EIAAW SOLUTIONS',
         'image' => asset('brand/logo-full.png'),
         'url' => $canonical,
         'telephone' => '',

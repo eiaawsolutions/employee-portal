@@ -1,10 +1,10 @@
 @extends('marketing.legal._layout')
 
 @section('title', 'Terms of service — EIAAW Workforce')
-@section('description', 'Terms of service for EIAAW Workforce, the AI-native HR platform by EIAAW Solutions Sdn. Bhd.')
+@section('description', 'Terms of service for EIAAW Workforce, the AI-native HR platform by EIAAW SOLUTIONS (SSM Reg. No. 202603133419 / CT0164540-H).')
 
 @section('legal-title', 'Terms of service')
-@section('legal-lede', 'The agreement between your workspace and EIAAW Solutions Sdn. Bhd.')
+@section('legal-lede', 'The agreement between your workspace and EIAAW SOLUTIONS (SSM Reg. No. 202603133419 / CT0164540-H).')
 
 @section('legal-body')
     <h2>1. Outline</h2>
