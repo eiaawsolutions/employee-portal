@@ -49,17 +49,21 @@ class SecurityHeaders
         // from script-src, and `unsafe-inline` from style-src.
         $cspEnforced = implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'nonce-{$nonce}' 'unsafe-hashes' https://cdn.jsdelivr.net",
+            // connect.facebook.net serves fbevents.js (Meta Pixel loader).
+            "script-src 'self' 'nonce-{$nonce}' 'unsafe-hashes' https://cdn.jsdelivr.net https://connect.facebook.net",
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
             "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com",
-            "img-src 'self' data: blob: https://api.qrserver.com",
+            // www.facebook.com hosts the Meta Pixel <noscript> tracking <img> beacon.
+            "img-src 'self' data: blob: https://api.qrserver.com https://www.facebook.com",
             // connect-src — AI gateway calls out to api.anthropic.com/api.openai.com
             // from the SERVER, never the browser, so the browser only XHRs same-origin
-            // for app traffic. The one exception is the marketing voice launcher
-            // (resources/views/partials/marketing-voice.blade.php), which POSTs to
-            // sa.eiaawsolutions.com (sibling Sales-marketing-agent service) to mint
-            // a one-shot Retell call URL. Anonymous, unauthenticated, marketing pages only.
-            "connect-src 'self' https://sa.eiaawsolutions.com",
+            // for app traffic. Two cross-origin exceptions: (1) the marketing voice
+            // launcher (resources/views/partials/marketing-voice.blade.php), which
+            // POSTs to sa.eiaawsolutions.com (sibling Sales-marketing-agent service)
+            // to mint a one-shot Retell call URL — anonymous marketing pages only;
+            // (2) Meta Pixel (fbq) beacons events to www.facebook.com /
+            // connect.facebook.net.
+            "connect-src 'self' https://sa.eiaawsolutions.com https://www.facebook.com https://connect.facebook.net",
             "frame-ancestors 'none'",
             "frame-src 'none'",
             "object-src 'none'",
