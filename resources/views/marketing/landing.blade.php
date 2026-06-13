@@ -6,7 +6,15 @@
 @push('head')
 {{-- ── SEO · GEO · AI-discoverability · Social cards ─────────────────────── --}}
 @php
-    $canonical = url('/');
+    // Canonical must be host-pinned to the production apex so that crawls of
+    // alternate hosts (e.g. www.ep.eiaawsolutions.com, which Railway also
+    // serves) do not self-canonicalize into duplicate indexable pages.
+    // url('/') echoes the request host, which created an "Alternate page with
+    // proper canonical tag" duplicate in Search Console — hence the override.
+    $marketingHost = config('eiaaw.marketing_host', 'ep.eiaawsolutions.com');
+    $canonical = app()->environment('production')
+        ? 'https://'.trim($marketingHost, '/').'/'
+        : url('/');
     $ogImage = asset('images/landing/employee-journey.jpg');
     $pricingTiers = $pricing['tiers'] ?? [];
     $starterPrice = $pricingTiers['starter']['monthly_usd'] ?? 6;
