@@ -28,6 +28,23 @@
     {{-- Crawler directives (per-page can override via @section('robots')) --}}
     <meta name="robots" content="@yield('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')">
 
+    {{-- Self-referential canonical: keep the real per-page request path but pin
+         the host to the production marketing host, so crawls of alternate hosts
+         (e.g. www.ep.eiaawsolutions.com served directly by Railway, or
+         *.up.railway.app preview hosts) self-canonicalize to one URL instead of
+         creating duplicate indexable pages. A page may override by pushing its
+         own <link rel="canonical"> — search engines honour the first one. --}}
+    @php
+        $mkHost = config('eiaaw.marketing_host', 'ep.eiaawsolutions.com');
+        $mkPath = request()->path() === '/' ? '' : '/'.ltrim(request()->path(), '/');
+        $mkBase = app()->environment('production')
+            ? 'https://'.trim($mkHost, '/')
+            : rtrim(url('/'), '/');
+        $mkCanonical = $mkPath === '' ? $mkBase.'/' : $mkBase.$mkPath;
+    @endphp
+    <link rel="canonical" href="{{ $mkCanonical }}">
+    <meta property="og:url" content="{{ $mkCanonical }}">
+
     {{-- Brand · favicons · theme --}}
     <meta name="theme-color" content="#11766A">
     <meta name="application-name" content="EIAAW Workforce">

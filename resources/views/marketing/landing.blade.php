@@ -297,14 +297,15 @@
     ];
 @endphp
 
-<link rel="canonical" href="{{ $canonical }}">
+{{-- Canonical + og:url are emitted by layouts.marketing (host-pinned,
+     per-request-path). $canonical is retained above solely for the JSON-LD
+     schema blocks below. --}}
 
 {{-- Open Graph --}}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EIAAW Workforce">
 <meta property="og:title" content="EIAAW Workforce — HR, IT & Accounting on one AI-native platform">
 <meta property="og:description" content="Three departments. One platform. The full employee journey — onboard, manage, offboard — wired live to IT asset workflows, full HRM (leave, payroll, EA, attendance, statutory) and full-fledged accounting. Built for Malaysia & APAC.">
-<meta property="og:url" content="{{ $canonical }}">
 <meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
