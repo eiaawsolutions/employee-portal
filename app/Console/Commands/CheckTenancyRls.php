@@ -105,9 +105,19 @@ class CheckTenancyRls extends Command
      *   subscription_events — Stripe webhook log; webhooks arrive without
      *     tenant context, so the handler must write before tenant resolution.
      *     Cross-tenant access is gated at the controller layer.
+     *
+     *   tenant_usage_daily — platform-admin aggregate snapshot (one row per
+     *     tenant per day, aggregates only). Read CROSS-TENANT by the HQ
+     *     Overview dashboard (HqOverviewController), which is gated to EIAAW
+     *     staff via the EnsurePlatformAdmin middleware. A per-tenant RLS
+     *     policy (tenant_id = eiaaw_current_tenant_id()) would break that
+     *     cross-tenant read, so isolation for this table is enforced at the
+     *     route/controller layer instead. No row-level tenant data is stored
+     *     here (see 2026_05_09_000001_create_tenant_usage_daily_table).
      */
     private const INTENTIONALLY_NO_RLS = [
         'subscription_events',
+        'tenant_usage_daily',
     ];
 
     private function checkTablesHaveRls(): void
