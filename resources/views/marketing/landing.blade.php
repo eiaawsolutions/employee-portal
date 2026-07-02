@@ -153,7 +153,7 @@
                 'name' => 'How is tenant data isolated?',
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => 'EIAAW Workforce runs on Postgres with Row-Level Security enforcing tenant_id at the driver level. Cross-tenant data leaks are impossible even through a bugged controller.',
+                    'text' => 'EIAAW Workforce runs on Postgres with Row-Level Security (FORCE mode) enforcing tenant_id at the database level. The database rejects cross-tenant reads even if a controller is buggy — isolation does not depend on application code being correct.',
                 ],
             ],
             [
@@ -1054,7 +1054,7 @@
             <article class="ln-three-cell">
                 <span class="mk-pill"><span class="mk-pill-dot"></span>01 · Isolation</span>
                 <h3>Tenant data is walled off at the <em>database</em>, not the app.</h3>
-                <p>Postgres Row-Level Security enforces tenant_id on every query at the driver level. No accidental cross-tenant leak is possible, even through a bugged controller.</p>
+                <p>Postgres Row-Level Security (FORCE mode) enforces tenant_id on every query at the database level. The database rejects cross-tenant reads even if a controller is buggy — isolation doesn't rely on app code being correct.</p>
             </article>
             <article class="ln-three-cell">
                 <span class="mk-pill"><span class="mk-pill-dot"></span>02 · One backbone</span>
@@ -1141,7 +1141,7 @@
             </article>
             <article class="ln-three-cell">
                 <h3>How is tenant data isolated?</h3>
-                <p>EIAAW Workforce runs on Postgres with Row-Level Security enforcing <code style="font-family: var(--mono); font-size: 13px; background: var(--bg-warm); padding: 2px 6px; border-radius: 4px;">tenant_id</code> at the driver level. Cross-tenant data leaks are impossible even through a bugged controller.</p>
+                <p>EIAAW Workforce runs on Postgres with Row-Level Security (FORCE mode) enforcing <code style="font-family: var(--mono); font-size: 13px; background: var(--bg-warm); padding: 2px 6px; border-radius: 4px;">tenant_id</code> at the database level. The database rejects cross-tenant reads even if a controller is buggy — isolation doesn't depend on app code being correct.</p>
             </article>
             <article class="ln-three-cell">
                 <h3>Can I start without a credit card?</h3>

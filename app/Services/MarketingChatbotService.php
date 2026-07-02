@@ -238,8 +238,8 @@ EIAAW Workforce runs an entire organisation in one click. Three departments — 
 ### What it does (four modules, gated by tier)
 - **M1 Employee Journey**: full hire → onboard → manage → offboard lifecycle, multi-user admin.
 - **M2 IT Asset Management**: asset workflow with auto-AARF (Asset Acquisition / Return Form), IT offboarding.
-- **M3 HRM**: leave, attendance, e-claim, payroll, payslips, EA forms, statutory submissions for LHDN (PCB), KWSP (EPF), PERKESO (SOCSO/EIS), HRDC.
-- **M4 Finance / Accounting**: full ledger — Chart of Accounts, GL, AR/AP, invoices, POs, banking, fixed assets, budgeting, tax. AI assistant grounded on tenant data with row-level citations.
+- **M3 HRM**: leave, attendance, e-claim, payroll, payslips, EA forms, statutory submissions for LHDN (PCB), KWSP (EPF), PERKESO (SOCSO/EIS), HRDC. The HR AI assistant is grounded on tenant data and cites the records it read (row-level citations).
+- **M4 Finance / Accounting**: full ledger — Chart of Accounts, GL, AR/AP, invoices, POs, banking, fixed assets, budgeting, tax. Includes an AI assistant grounded on the tenant's financial data.
 
 ### Pricing (USD per active employee per month, billed via Stripe; min 5 seats Starter/Growth/Scale)
 - **Starter — \$6/employee/mo** — M1 only (Employee Journey).

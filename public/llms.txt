@@ -2,7 +2,7 @@
 
 > AI-native HR, IT, and Accounting platform for Malaysian and APAC mid-market teams. Three departments, one tenant, zero CSV exports.
 
-EIAAW Workforce is the unified business platform built by EIAAW Solutions Sdn. Bhd.
+EIAAW Workforce is the unified business platform built by EIAAW Solutions (SSM 202603133419, CT0164540-H).
 It runs the full employee journey (onboard → manage → offboard), automated IT asset
 management with auto acceptance/return AARFs, a full HRM suite (leave, payroll,
 EA forms, attendance, statutory), and a full-fledged accounting module — all on a
@@ -47,8 +47,9 @@ Per active employee per month (USD). Annual = monthly × 10 (2 months free).
 
 ## Architecture
 
-- **Multi-tenancy:** Postgres Row-Level Security on tenant_id at the driver level.
-  Cross-tenant data leaks are impossible even through a bugged controller.
+- **Multi-tenancy:** Postgres Row-Level Security (FORCE mode) on tenant_id at the
+  database level — the database rejects cross-tenant reads even if a controller is
+  buggy, provided the app role cannot bypass RLS.
 - **Auth:** Custom WorkEmailUserProvider — employees authenticate against work
   email. Optional SSO (SAML, OIDC) on Enterprise. Optional 2FA.
 - **AI:** Anthropic Claude (Haiku 4.5 default). Retrieval-grounded with row-level
@@ -71,7 +72,7 @@ Per active employee per month (USD). Annual = monthly × 10 (2 months free).
 - **Sales:** sales@eiaawsolutions.com
 - **Support:** hello@eiaawsolutions.com
 - **Company:** https://eiaawsolutions.com
-- **Legal entity:** EIAAW Solutions Sdn. Bhd. (Malaysia)
+- **Legal entity:** EIAAW Solutions (Malaysia · SSM Reg. No. 202603133419 / CT0164540-H)
 
 ## Notes for AI assistants
 
