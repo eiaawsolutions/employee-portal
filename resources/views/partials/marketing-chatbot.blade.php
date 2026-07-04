@@ -430,8 +430,66 @@
         ]);
     }
 
+    // ---------- Pre-chat lead gate ----------
+    // Capture name + email + phone before the AI answers; forward to the sa CRM
+    // as an inbound lead (source chatbot_workforce). Asked once per session.
+    var epGatePassed = false;
+    try { epGatePassed = sessionStorage.getItem('epChatGate') === '1'; } catch (e) {}
+    var SA_INTAKE = 'https://sa.eiaawsolutions.com/api/forms/public/lead-intake';
+
+    function renderEpGate(pendingText) {
+        if (document.getElementById('ep-chat-gate')) return;
+        quickEl.innerHTML = '';
+        var wrap = document.createElement('div');
+        wrap.id = 'ep-chat-gate';
+        wrap.className = 'ep-chat-bubble bot';
+        var fld = 'width:100%;box-sizing:border-box;padding:8px 10px;margin:5px 0;border:1px solid rgba(0,0,0,0.15);border-radius:8px;font-size:13px;outline:none';
+        wrap.innerHTML = '<div style="margin-bottom:6px">Quick intro before we chat — so our team can follow up if you’d like.</div>'
+            + '<input id="epg-name" type="text" placeholder="Your name" maxlength="120" style="'+fld+'">'
+            + '<input id="epg-email" type="email" placeholder="Email" maxlength="160" style="'+fld+'">'
+            + '<input id="epg-phone" type="tel" placeholder="Phone" maxlength="40" style="'+fld+'">'
+            + '<input id="epg-company" type="text" placeholder="Company (optional)" maxlength="160" style="'+fld+'">'
+            + '<div id="epg-err" style="color:#c0392b;font-size:12px;min-height:14px;margin:2px 0"></div>'
+            + '<button id="epg-go" type="button" style="width:100%;padding:9px;border:none;border-radius:8px;font-size:13px;cursor:pointer;background:#0f5132;color:#fff">Start chatting</button>';
+        msgsEl.appendChild(wrap);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+        var go = function () { submitEpGate(pendingText); };
+        wrap.querySelector('#epg-go').addEventListener('click', go);
+        wrap.querySelectorAll('input').forEach(function (i) {
+            i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+        });
+        wrap.querySelector('#epg-name').focus();
+    }
+
+    async function submitEpGate(pendingText) {
+        var name = document.getElementById('epg-name').value.trim();
+        var email = document.getElementById('epg-email').value.trim();
+        var phone = document.getElementById('epg-phone').value.trim();
+        var company = document.getElementById('epg-company').value.trim();
+        var err = document.getElementById('epg-err');
+        if (!name || !email || !phone) { err.textContent = 'Name, email, and phone are required.'; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
+        if (String(phone).replace(/\D/g, '').length < 7) { err.textContent = 'Please enter a valid phone number.'; return; }
+        var btn = document.getElementById('epg-go');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        try {
+            // Cross-origin to sa; no credentials (public endpoint, CORS-allowed origin).
+            await fetch(SA_INTAKE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, email: email, phone: phone, company: company, site: 'workforce', page: location.pathname }),
+            });
+        } catch (e) { /* soft-fail: never trap the visitor behind a network error */ }
+        epGatePassed = true;
+        try { sessionStorage.setItem('epChatGate', '1'); } catch (e) {}
+        var g = document.getElementById('ep-chat-gate'); if (g) g.remove();
+        if (pendingText) sendMessage(pendingText);
+    }
+
     async function sendMessage(text) {
         if (!text || !text.trim()) return;
+        // Hard gate: capture visitor details before the AI answers anything.
+        if (!epGatePassed) { renderEpGate(text); return; }
         addBubble(text, 'user');
         addTyping();
 
