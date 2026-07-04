@@ -339,15 +339,15 @@
                     <p>Daily `log:verify-integrity` command walks the HMAC chain; any tamper invalidates the run and notifies the ops channel.</p>
                 </div>
                 <div class="sec-roadmap-cell">
-                    <h3>SOC 2 Type I readiness <span class="status status--q3">Q3 2026</span></h3>
-                    <p>Controls documented against AICPA Trust Service Criteria (Security, Availability, Confidentiality). Third-party audit scheduled.</p>
+                    <h3>SOC 2 Type I readiness <span class="status status--q3">Planned</span></h3>
+                    <p>Controls documented against AICPA Trust Service Criteria (Security, Availability, Confidentiality). Not yet certified — talk to us for where the formal program stands.</p>
                 </div>
                 <div class="sec-roadmap-cell">
-                    <h3>SAML 2.0 + OIDC SSO <span class="status status--q3">Q3 2026</span></h3>
-                    <p>Enterprise tier. IdP-initiated and SP-initiated flows. SCIM 2.0 provisioning ships alongside.</p>
+                    <h3>SAML 2.0 + OIDC SSO <span class="status status--q3">Enterprise</span></h3>
+                    <p>Enterprise tier. IdP-initiated and SP-initiated flows. Contact us to scope your identity provider.</p>
                 </div>
                 <div class="sec-roadmap-cell">
-                    <h3>Penetration test (external) <span class="status status--q4">Q4 2026</span></h3>
+                    <h3>Penetration test (external) <span class="status status--q4">Planned</span></h3>
                     <p>External pentest by an accredited firm. Report summary published; findings treated per severity with SLAs.</p>
                 </div>
             </div>

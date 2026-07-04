@@ -110,7 +110,7 @@
                 ['What if I grow past my tier\'s headcount?', 'No auto-upgrade, no surprise charges. We email you on the 25th of the month, offering three paths: pay per extra seat at the tier rate, upgrade to the next tier, or switch to Enterprise.'],
                 ['Do you charge for invited users who never activate?', 'No. Only activated employees count toward billing.'],
                 ['Can I pay annually?', 'Yes. Annual billing gets you 2 months free (pay 10 months, get 12). Available on Starter, Growth, and Scale. Enterprise is always annual.'],
-                ['What currencies do you support?', 'MYR (primary) and USD at launch. SGD, IDR, and PHP are on the roadmap for Q3 2026. Enterprise can be invoiced in any currency.'],
+                ['What currencies do you support?', 'MYR (primary) and USD. Enterprise can be invoiced in other currencies on request.'],
                 ['What payment methods?', 'All major cards via Stripe (Starter, Growth, Scale). Enterprise supports bank transfer, cheque, and LOA/PO billing.'],
             ],
         ],
@@ -130,7 +130,7 @@
             'title'  => 'Security',
             'items'  => [
                 ['How is tenant data isolated?', 'Postgres Row-Level Security (FORCE mode) on every tenant-tagged table. The database rejects queries that don\'t match the session\'s tenant_id — controllers can\'t leak what the DB won\'t let through. See the <a href="'.route('marketing.security').'">Security page</a> for the full architecture.'],
-                ['Do you have SOC 2?', 'SOC 2 Type I is in progress for Q3 2026. Type II follows 6 months after. SAML 2.0 / OIDC SSO lands alongside Type I.'],
+                ['Do you have SOC 2?', 'We\'re not SOC 2 certified today. The platform is built to those controls — Postgres Row-Level Security in FORCE mode, TLS 1.3, AES-256 at rest, HMAC-chained audit logs, TOTP 2FA, and SAML 2.0 / OIDC SSO on Enterprise. For where our formal compliance program stands, <a href="'.route('marketing.contact').'">talk to us</a>.'],
                 ['Is my data encrypted?', 'In transit: TLS 1.3 enforced. At rest: AES-256 on Postgres disk, encrypted file storage for the private disk.'],
                 ['Do you have 2FA?', 'Yes. TOTP-based 2FA available for every user. Enterprise can enforce 2FA workspace-wide.'],
                 ['What\'s in the audit log?', 'Every auth event, approval, AI query, export, and admin action — HMAC-chained so tampering is detectable. Scale tier gets audit export; Enterprise gets SIEM forwarding.'],
@@ -144,8 +144,8 @@
                 ['How long does implementation take?', 'Starter: self-serve in a day. Growth (HRM + assets): self-serve in 1–3 days, longer if you have an existing payroll history to import. Scale (adds full accounting): usually 2–4 weeks with our implementation team for CoA migration, opening balances, and integration setup.'],
                 ['Can I trial with real employee data?', 'Yes. You own the data you import, even during trial. If you don\'t convert, export + delete takes one click.'],
                 ['Do you support single sign-on?', 'Yes on Enterprise — SAML 2.0 and OIDC. Starter / Growth / Scale use email + password with optional TOTP 2FA.'],
-                ['What integrations do you have?', 'At launch: Stripe, Slack (notifications), Gmail/Outlook (email). Q3 2026: Xero, QuickBooks, ADP. Enterprise custom integrations via API.'],
-                ['Do you have a mobile app?', 'Web app is fully responsive and works on phone / tablet. Native iOS / Android apps on the Q4 2026 roadmap.'],
+                ['What integrations do you have?', 'Stripe, Slack (notifications), and Gmail/Outlook (email). Enterprise supports custom integrations via API — talk to us about a specific system.'],
+                ['Do you have a mobile app?', 'The web app is fully responsive and works on phone and tablet. There\'s no separate native iOS / Android app.'],
             ],
         ],
     ];

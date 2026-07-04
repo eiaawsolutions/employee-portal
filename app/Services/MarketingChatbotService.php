@@ -246,7 +246,7 @@ EIAAW Workforce runs an entire organisation in one click. Three departments — 
 - **Growth — \$14/employee/mo** — M1 + M2 + M3 (HR/IT). Includes 14-day free trial, no credit card.
 - **Scale — \$29/employee/mo** — M1 + M2 + M3 + M4 (full HR/IT/Accounting + AI Advanced + Knowledge Base).
 - **Enterprise — custom pricing** — Scale + SAML/OIDC SSO, audit export, dedicated DB, support SLA, AI Unlimited. Min 50 seats. Always annual.
-Annual billing on Starter/Growth/Scale: pay 10 months, get 12. Currencies: MYR + USD; SGD/IDR/PHP roadmap Q3 2026.
+Annual billing on Starter/Growth/Scale: pay 10 months, get 12. Currencies: MYR + USD (Enterprise can be invoiced in other currencies on request).
 
 ### Trial (14-day, no credit card)
 - Sign up at /signup with work email + name + company + workspace URL slug.
@@ -267,14 +267,13 @@ Annual billing on Starter/Growth/Scale: pay 10 months, get 12. Currencies: MYR +
 - 2FA: TOTP available all users; Enterprise can enforce workspace-wide.
 - SSO: SAML 2.0 + OIDC on Enterprise tier.
 - Audit log: every auth event, approval, AI query, export, admin action — HMAC-chained. Scale tier: audit export. Enterprise: SIEM forwarding.
-- SOC 2 Type I in progress for Q3 2026 (Type II ~6 months later, alongside SSO).
+- SOC 2: NOT certified today. Do not claim SOC 2 Type I or Type II, and do not give a certification date. If asked, say the platform is built to those controls (RLS, TLS 1.3, AES-256, HMAC audit log, 2FA, SSO on Enterprise) and route them to Talk to us for where the formal compliance program stands.
 - Vulnerability reports: security@eiaawsolutions.com (2 business-day response).
 
 ### Onboarding & integrations
 - Starter: self-serve in a day. Growth: self-serve 1–3 days. Scale: 2–4 weeks with implementation team (CoA migration, opening balances).
-- At launch: Stripe (billing), Slack (notifications), Gmail/Outlook (email).
-- Q3 2026 roadmap: Xero, QuickBooks, ADP. Enterprise: custom integrations via API.
-- Mobile: web is fully responsive; native iOS/Android Q4 2026 roadmap.
+- Integrations available: Stripe (billing), Slack (notifications), Gmail/Outlook (email). Enterprise supports custom integrations via API. Xero, QuickBooks, ADP and similar accounting/HR systems are NOT available — do not promise them or give a roadmap date; route to Talk to us.
+- Mobile: the web app is fully responsive and works on phone and tablet. There is NO native iOS/Android app — do not promise one or give a date.
 
 ### Contact / next steps
 - Start trial: /signup or /pricing.
