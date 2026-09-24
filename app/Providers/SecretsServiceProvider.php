@@ -13,6 +13,14 @@ use Illuminate\Support\ServiceProvider;
  * Registered FIRST in bootstrap/providers.php so CashierServiceProvider,
  * AiGateway, and other consumers see real values, not handles.
  *
+ * Resolution runs in a booting() callback, not in register(): the resolver
+ * caches through the Cache facade, and the cache service does not exist yet
+ * while providers are still registering ("Target class [cache] does not
+ * exist" — every handle silently stayed a handle). booting() callbacks fire
+ * after all providers are registered but before any provider boots, so
+ * consumers that read config in boot() (PlatformSettings, Cashier) still see
+ * resolved values.
+ *
  * Fail-open: if Infisical is unreachable or creds are absent, the provider
  * logs and continues. Consumers that actually need the secret will surface
  * their own specific errors — this provider does not nuke the boot.
@@ -36,17 +44,21 @@ class SecretsServiceProvider extends ServiceProvider
             return;
         }
 
-        $resolver = $this->app->make(InfisicalResolver::class);
-        $paths = config('secrets.resolve', []);
+        $this->app->booting(fn () => $this->resolveConfiguredHandles());
+    }
 
-        foreach ($paths as $path) {
+    /** Rewrite every allow-listed config path that holds a secret:// handle. */
+    public function resolveConfiguredHandles(): void
+    {
+        $resolver = $this->app->make(InfisicalResolver::class);
+
+        foreach (config('secrets.resolve', []) as $path) {
             $current = config($path);
             if (! is_string($current) || ! str_starts_with($current, 'secret://')) {
                 continue;
             }
             try {
-                $resolved = $resolver->resolve($current);
-                config([$path => $resolved]);
+                config([$path => $resolver->resolve($current)]);
             } catch (\Throwable $e) {
                 // Fail-open. Downstream consumer raises its own error if
                 // the secret was actually required.
