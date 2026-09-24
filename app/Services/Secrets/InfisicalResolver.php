@@ -5,6 +5,7 @@ namespace App\Services\Secrets;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
@@ -21,9 +22,24 @@ use RuntimeException;
  * handle unchanged rather than crashing the boot. Any caller that actually
  * needs the secret will surface its own error — we don't nuke the whole
  * app for one unresolvable handle.
+ *
+ * This runs on EVERY request boot (the PHP server boots Laravel per
+ * request), so it must never touch the network per request. Incident
+ * 2026-09-25: failures weren't cached and the token lived only in process
+ * memory, so one unresolvable handle meant a login + fetch on every
+ * request; Infisical blocked the egress IP and each request then sat
+ * through two 5 s timeouts. Now:
+ *   - the access token is cached across requests (Laravel cache)
+ *   - a failure is remembered for FAILURE_TTL seconds (no retry storm)
+ *   - the last good value is kept and served while Infisical is unreachable
+ *   - connects give up after CONNECT_TIMEOUT seconds
  */
 class InfisicalResolver
 {
+    private const FAILURE_TTL = 120;
+    private const CONNECT_TIMEOUT = 2;
+    private const TOKEN_CACHE_KEY = 'infisical:access-token';
+
     private ?string $accessToken = null;
     private int $accessTokenExpiresAt = 0;
 
@@ -52,19 +68,52 @@ class InfisicalResolver
         }
 
         $ttl = (int) ($this->config['cache_ttl'] ?? 300);
-        $cacheKey = 'infisical:'.md5($handle);
+        $key = md5($handle);
+        $freshKey = 'infisical:'.$key;
+        $lastGoodKey = 'infisical:last-good:'.$key;
+        $failedKey = 'infisical:failed:'.$key;
 
-        return Cache::remember($cacheKey, $ttl, function () use ($parsed, $handle) {
-            try {
-                return $this->fetch($parsed['environment'], $parsed['path'], $parsed['name']);
-            } catch (\Throwable $e) {
-                Log::error('InfisicalResolver: fetch failed', [
-                    'handle' => $handle,
-                    'error' => $e->getMessage(),
-                ]);
-                throw $e;
-            }
-        });
+        if (is_string($fresh = $this->cacheGet($freshKey))) {
+            return $fresh;
+        }
+
+        // A recent failure: don't hit the network again yet.
+        if (Cache::has($failedKey)) {
+            return $this->cacheGet($lastGoodKey) ?? $handle;
+        }
+
+        try {
+            $value = $this->fetch($parsed['environment'], $parsed['path'], $parsed['name']);
+        } catch (\Throwable $e) {
+            Cache::put($failedKey, true, self::FAILURE_TTL);
+            $lastGood = $this->cacheGet($lastGoodKey);
+            Log::error('InfisicalResolver: fetch failed', [
+                'handle' => $handle,
+                'error' => $e->getMessage(),
+                'serving' => is_string($lastGood) ? 'last good value' : 'raw handle',
+            ]);
+            return is_string($lastGood) ? $lastGood : $handle;
+        }
+
+        Cache::put($freshKey, Crypt::encryptString($value), $ttl);
+        Cache::forever($lastGoodKey, Crypt::encryptString($value));
+
+        return $value;
+    }
+
+    /** Secret values are stored encrypted (APP_KEY) — the cache is a DB table. */
+    private function cacheGet(string $key): ?string
+    {
+        $stored = Cache::get($key);
+        if (! is_string($stored)) {
+            return null;
+        }
+        try {
+            return Crypt::decryptString($stored);
+        } catch (\Throwable) {
+            Cache::forget($key); // written under an old APP_KEY or format
+            return null;
+        }
     }
 
     /**
@@ -89,6 +138,14 @@ class InfisicalResolver
             return;
         }
 
+        // Shared across requests so each PHP request doesn't log in again.
+        $cached = json_decode((string) $this->cacheGet(self::TOKEN_CACHE_KEY), true);
+        if (is_array($cached) && time() < ($cached['expires_at'] ?? 0) - 30) {
+            $this->accessToken = $cached['token'];
+            $this->accessTokenExpiresAt = $cached['expires_at'];
+            return;
+        }
+
         $clientId = $this->config['client_id'] ?? null;
         $clientSecret = $this->config['client_secret'] ?? null;
         if (empty($clientId) || empty($clientSecret)) {
@@ -101,6 +158,7 @@ class InfisicalResolver
                 'clientSecret' => $clientSecret,
             ],
             'timeout' => (int) ($this->config['request_timeout'] ?? 5),
+            'connect_timeout' => self::CONNECT_TIMEOUT,
         ]);
 
         $body = json_decode((string) $response->getBody(), true);
@@ -111,6 +169,10 @@ class InfisicalResolver
         $this->accessToken = (string) $body['accessToken'];
         $expiresIn = (int) ($body['expiresIn'] ?? 3600);
         $this->accessTokenExpiresAt = time() + $expiresIn;
+        Cache::put(self::TOKEN_CACHE_KEY, Crypt::encryptString(json_encode([
+            'token' => $this->accessToken,
+            'expires_at' => $this->accessTokenExpiresAt,
+        ])), max(60, $expiresIn - 60));
     }
 
     private function fetch(string $environment, string $path, string $name): string
@@ -132,6 +194,7 @@ class InfisicalResolver
                 'Authorization' => 'Bearer '.$this->accessToken,
             ],
             'timeout' => (int) ($this->config['request_timeout'] ?? 5),
+            'connect_timeout' => self::CONNECT_TIMEOUT,
         ]);
 
         $body = json_decode((string) $response->getBody(), true);
