@@ -1,5 +1,10 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "php82Extensions.pdo_pgsql", "php82Extensions.pgsql", "php82Extensions.gd", "php82Extensions.intl", "php82Extensions.zip", "php82Extensions.bcmath", "php82Extensions.redis", "nodejs_22", "postgresql"]
+# PHP 8.4 (security support to 31 Dec 2028). Nixpacks' default nixpkgs archive
+# is frozen at Jan 2025 (PHP 8.2.27 / 8.4.2), so pin a current nixos-26.05
+# commit to get patched point releases; bump it to pick up new PHP security
+# releases. postgresql_16 keeps pg_dump/pg_restore matched to the PG 16 server.
+nixpkgsArchive = "c508844df6c28fa6dabc1b6af70f3ccbd65c5201"
+nixPkgs = ["php84", "php84Packages.composer", "php84Extensions.pdo_pgsql", "php84Extensions.pgsql", "php84Extensions.gd", "php84Extensions.intl", "php84Extensions.zip", "php84Extensions.bcmath", "php84Extensions.redis", "nodejs_22", "postgresql_16"]
 
 [phases.install]
 cmds = [
