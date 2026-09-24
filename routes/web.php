@@ -52,6 +52,12 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->middleware(VerifyWebhookSignature::class)
     ->name('cashier.webhook');
 
+// Public-disk files (logos, profile photos, announcement images). Reached only
+// when the file isn't on local disk, i.e. when storage is on R2.
+Route::get('/storage/{path}', [\App\Http\Controllers\PublicStorageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('storage.public');
+
 // CSP violation reports — browser posts here when report-only policy triggers.
 Route::post('/csp-report', [\App\Http\Controllers\CspReportController::class, 'store'])
     ->name('csp.report')

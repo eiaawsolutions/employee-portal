@@ -61,7 +61,16 @@ return [
         'database.redis.default.password',
         'database.redis.cache.password',
 
-        // Object storage
+        // Object storage (R2_ENABLED switches local/public/backups onto R2)
+        'filesystems.disks.local.key',
+        'filesystems.disks.local.secret',
+        'filesystems.disks.local.endpoint',
+        'filesystems.disks.public.key',
+        'filesystems.disks.public.secret',
+        'filesystems.disks.public.endpoint',
+        'filesystems.disks.backups.key',
+        'filesystems.disks.backups.secret',
+        'filesystems.disks.backups.endpoint',
         'filesystems.disks.r2.key',
         'filesystems.disks.r2.secret',
         'filesystems.disks.s3.key',

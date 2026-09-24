@@ -1688,7 +1688,11 @@ class EmployeeController extends Controller
         if (!$isOwner && !$isManager) abort(403);
         if ($contract->employee_id !== $employee->id) abort(404);
 
-        return \Illuminate\Support\Facades\Storage::disk('public')
+        // Contracts are stored on the private disk; older rows may sit on public.
+        $disk = \Illuminate\Support\Facades\Storage::disk('local')->exists($contract->file_path) ? 'local' : 'public';
+        if (!\Illuminate\Support\Facades\Storage::disk($disk)->exists($contract->file_path)) abort(404);
+
+        return \Illuminate\Support\Facades\Storage::disk($disk)
             ->download($contract->file_path, $contract->original_filename);
     }
 

@@ -1,5 +1,29 @@
 <?php
 
+/*
+ * R2_ENABLED=true moves the app's file storage off the container disk (which
+ * Railway wipes on every redeploy) into the private Cloudflare R2 bucket
+ * R2_BUCKET, under one folder per purpose: {R2_ROOT}/private (the 'local'
+ * disk: HR documents, receipts, invoices), {R2_ROOT}/public (the 'public'
+ * disk: logos, profile photos, served through /storage/* by the app) and
+ * {R2_ROOT}/backups. Credentials are secret:// handles resolved by
+ * SecretsServiceProvider (see config/secrets.php).
+ */
+$r2Enabled = filter_var(env('R2_ENABLED', false), FILTER_VALIDATE_BOOLEAN);
+$r2 = static fn (string $folder): array => [
+    'driver' => 's3',
+    'key' => env('R2_ACCESS_KEY_ID'),
+    'secret' => env('R2_SECRET_ACCESS_KEY'),
+    'region' => 'auto',
+    'bucket' => env('R2_BUCKET'),
+    'endpoint' => env('R2_ENDPOINT'),
+    'use_path_style_endpoint' => true,
+    'root' => trim(env('R2_ROOT', 'workforce'), '/').'/'.$folder,
+    'visibility' => 'private',
+    'throw' => false,
+    'report' => true,
+];
+
 return [
 
     /*
@@ -30,19 +54,30 @@ return [
 
     'disks' => [
 
-        'local' => [
+        'local' => $r2Enabled ? $r2('private') : [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // No 'serve': /storage/* belongs to the public disk (PublicStorageController);
+            // private files are only served through SecureFileController.
             'throw' => false,
             'report' => false,
         ],
 
-        'public' => [
+        'public' => $r2Enabled ? $r2('public') + [
+            'url' => rtrim((string) env('APP_URL'), '/').'/storage',
+        ] : [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim((string) env('APP_URL'), '/').'/storage',
             'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // Encrypted database backups (backup:run). Off the container disk when R2 is on.
+        'backups' => $r2Enabled ? $r2('backups') : [
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),
             'throw' => false,
             'report' => false,
         ],

@@ -9,14 +9,10 @@ Schedule::command('leave:remind-managers')->dailyAt('09:00');
 Schedule::command('claims:remind')->dailyAt('09:00');
 Schedule::command('sweep:pending-weekly')->weeklyOn(3, '00:00'); // Wednesday midnight
 
-// Backup: daily encrypted full backup at 2 AM, retain 30 days
-Schedule::command('backup:run --type=full --encrypt --keep=30')
-    ->dailyAt('02:00')
-    ->withoutOverlapping()
-    ->appendOutputTo(storage_path('logs/backup.log'));
-
-// Backup: database-only snapshot every 6 hours for RPO minimization
-Schedule::command('backup:run --type=database --encrypt --keep=7')
+// Backup: encrypted database dump every 6 hours, uploaded to the 'backups'
+// disk (R2 when R2_ENABLED) and kept 14 days. One job, so prunes can't
+// delete another job's copies. The code lives in git, so no code archive.
+Schedule::command('backup:run --type=database --encrypt --keep=14')
     ->everySixHours()
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/backup.log'));

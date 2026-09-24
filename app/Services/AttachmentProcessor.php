@@ -40,11 +40,8 @@ class AttachmentProcessor
 
         $relativePath = trim($directory, '/').'/'
             .$namePrefix.time().'_'.Str::random(10).'.'.$ext;
-        $absolutePath = Storage::disk('local')->path($relativePath);
-
-        if (! is_dir(dirname($absolutePath))) {
-            @mkdir(dirname($absolutePath), 0755, true);
-        }
+        // Process in a temp file, then hand it to the disk (local or R2).
+        $absolutePath = tempnam(sys_get_temp_dir(), 'att_');
 
         $compressed = false;
         if ($isImage) {
@@ -57,11 +54,17 @@ class AttachmentProcessor
         }
 
         if (! $compressed) {
-            // Non-image OR image compression failed → move the upload as-is.
-            $file->move(dirname($absolutePath), basename($absolutePath));
+            // Non-image OR image compression failed → store the upload as-is.
+            copy($file->getRealPath(), $absolutePath);
         }
 
         $finalSize = @filesize($absolutePath) ?: $file->getSize();
+        $stream = fopen($absolutePath, 'rb');
+        Storage::disk('local')->put($relativePath, $stream);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+        @unlink($absolutePath);
 
         return [
             'file_path' => $relativePath,

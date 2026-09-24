@@ -65,6 +65,9 @@ class BackupSystem extends Command
             // Prune old backups
             $this->pruneBackups($backupDir, $keepDays);
 
+            // Copy off the container (Railway wipes its disk on every deploy).
+            $this->uploadOffsite($backupDir, $timestamp, $keepDays);
+
             $this->info("Backup completed successfully.");
             Log::info('BackupSystem: completed', ['type' => $type, 'files' => array_map('basename', $files)]);
 
@@ -80,6 +83,10 @@ class BackupSystem extends Command
     {
         $connection = config('database.default');
         $config     = config("database.connections.{$connection}");
+
+        if ($config['driver'] === 'pgsql') {
+            return $this->backupPostgres($dir, $timestamp, $config);
+        }
 
         if (!in_array($config['driver'], ['mysql', 'mariadb'])) {
             $this->warn("Database backup only supports MySQL/MariaDB. Skipping.");
@@ -132,6 +139,78 @@ class BackupSystem extends Command
         $sizeMb = round(filesize($filepath) / 1024 / 1024, 2);
         $this->info("  Database snapshot: {$filename} ({$sizeMb} MB)");
         return $filepath;
+    }
+
+    /**
+     * pg_dump in custom format. Uses DATABASE_URL when set: the app's own
+     * role is subject to FORCE row-level security and would dump nothing.
+     */
+    private function backupPostgres(string $dir, string $timestamp, array $config): ?string
+    {
+        if (!$this->commandExists('pg_dump')) {
+            $this->warn('  pg_dump not available. Skipping database backup.');
+            return null;
+        }
+
+        $filepath = "{$dir}/db_{$timestamp}.dump";
+        $target = env('DATABASE_URL');
+        $envPrefix = '';
+        if (!$target) {
+            $target = sprintf('host=%s port=%s dbname=%s user=%s', $config['host'], $config['port'] ?? 5432, $config['database'], $config['username']);
+            $envPrefix = 'PGPASSWORD='.escapeshellarg((string) ($config['password'] ?? '')).' ';
+        }
+
+        $this->info('  Dumping PostgreSQL database...');
+        $output = [];
+        $result = null;
+        exec($envPrefix.'pg_dump --format=custom --no-owner --no-privileges --file='.escapeshellarg($filepath).' '.escapeshellarg($target).' 2>&1', $output, $result);
+
+        if ($result !== 0 || !file_exists($filepath) || filesize($filepath) < 100) {
+            // pg_dump can echo the connection string on errors; never log its output.
+            $this->error('  pg_dump failed (exit '.$result.').');
+            Log::error('BackupSystem: pg_dump failed', ['exit' => $result]);
+            @unlink($filepath);
+            return null;
+        }
+
+        chmod($filepath, 0600);
+        $this->info('  Database dump: '.basename($filepath).' ('.round(filesize($filepath) / 1024).' KB)');
+
+        return $filepath;
+    }
+
+    /**
+     * Upload this run's files to the 'backups' disk (R2 when R2_ENABLED) and
+     * prune remote copies older than $keepDays. No-op when the backups disk
+     * is this same local directory.
+     */
+    private function uploadOffsite(string $dir, string $timestamp, int $keepDays): void
+    {
+        if (config('filesystems.disks.backups.driver') === 'local'
+            && realpath((string) config('filesystems.disks.backups.root')) === realpath($dir)) {
+            return;
+        }
+
+        $disk = Storage::disk('backups');
+        foreach (glob("{$dir}/*{$timestamp}*") as $file) {
+            $stream = fopen($file, 'rb');
+            $ok = $disk->put(basename($file), $stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+            if (!$ok) {
+                throw new \RuntimeException('Off-site upload failed for '.basename($file));
+            }
+            @unlink($file);
+            $this->info('  Uploaded off-site: '.basename($file));
+        }
+
+        $cutoff = now()->subDays($keepDays)->timestamp;
+        foreach ($disk->files() as $remote) {
+            if ($disk->lastModified($remote) < $cutoff) {
+                $disk->delete($remote);
+            }
+        }
     }
 
     private function backupCodebase(string $dir, string $timestamp): ?string

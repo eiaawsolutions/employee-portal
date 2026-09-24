@@ -87,9 +87,9 @@ class AiAccountingController extends Controller
     public function scanFile(AiInvoiceScan $scan)
     {
         if (!Auth::user()->canManageAccounting()) abort(403);
-        $path = Storage::disk('local')->path($scan->file_path);
-        if (!file_exists($path)) abort(404);
-        return response()->file($path, ['Content-Type' => $scan->file_type ?? mime_content_type($path)]);
+        $disk = Storage::disk('local');
+        if (!$disk->exists($scan->file_path)) abort(404);
+        return $disk->response($scan->file_path, null, array_filter(['Content-Type' => $scan->file_type]));
     }
 
     public function confirmScan(Request $request, AiInvoiceScan $scan)

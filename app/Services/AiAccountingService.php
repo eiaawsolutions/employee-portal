@@ -42,11 +42,9 @@ class AiAccountingService
         $scan->update(['status' => 'processing']);
 
         try {
-            $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($scan->file_path);
-
-            if (!file_exists($filePath)) {
-                throw new \RuntimeException('File not found: ' . $scan->file_path);
-            }
+            // A real local path (R2 files are copied to a temp file) — GD, Ghostscript
+            // and the AI upload below all need one.
+            $filePath = \App\Support\LocalFile::for('local', $scan->file_path);
 
             $mimeType = mime_content_type($filePath);
             // Normalise: some systems misidentify PDFs
