@@ -59,4 +59,14 @@ class MarketingController extends Controller
     {
         return view('marketing.legal.dpa');
     }
+
+    /** Superseded legal documents, kept so customers can see what they agreed to. */
+    public function legalArchive(string $version, string $doc)
+    {
+        abort_unless(preg_match('/^\d{4}-\d{2}-\d{2}$/', $version) && in_array($doc, ['privacy', 'terms', 'dpa'], true), 404);
+        $view = "marketing.legal.archive.{$version}.{$doc}";
+        abort_unless(view()->exists($view), 404);
+
+        return view($view);
+    }
 }

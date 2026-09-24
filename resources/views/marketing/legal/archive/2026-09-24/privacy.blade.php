@@ -1,11 +1,16 @@
 @extends('marketing.legal._layout')
 
+@section('robots', 'noindex, follow')
+@section('legal-archive-notice')
+    <p style="background:var(--bg-warm);border:1px solid var(--line-soft);border-radius:12px;padding:12px 16px;font-size:14px;">Superseded version, kept for reference. It applied from 24 September 2026 until 25 September 2026. <a href="{{ route('marketing.privacy') }}">Read the current version.</a></p>
+@endsection
+
 @section('title', 'Privacy Notice — EIAAW Workforce (PDPA, English & Bahasa Malaysia)')
 @section('description', 'How EIAAW Workforce collects, uses, shares and protects personal data under Malaysia’s PDPA and other APAC privacy laws. In English and Bahasa Malaysia.')
 
 @section('legal-title', 'Privacy notice')
 @section('legal-lede', 'What personal data EIAAW Workforce handles, why, who receives it, and the rights you have.')
-@section('legal-updated', '25 September 2026')
+@section('legal-updated', '24 September 2026')
 
 @php $dpo = config('eiaaw.privacy_email'); @endphp
 
@@ -13,7 +18,7 @@
     <p class="lg-lang"><a href="#en">English</a> · <a href="#bm">Bahasa Malaysia</a></p>
 
     <div id="en">
-    <p>This notice explains how EIAAW SOLUTIONS handles personal data in connection with EIAAW Workforce: this website (ep.eiaawsolutions.com) and the customer workspaces at <code>*.ep.eiaawsolutions.com</code>. It is issued under Malaysia’s Personal Data Protection Act 2010 (as amended in 2024) and written with the privacy laws of the other Asia-Pacific countries in mind, the countries our visitors and customers come from, including Singapore, Indonesia, Thailand, the Philippines, Vietnam, Australia, New Zealand, Japan, South Korea, Hong Kong and India. A Bahasa Malaysia version follows; both versions have the same meaning.</p>
+    <p>This notice explains how EIAAW SOLUTIONS handles personal data in connection with EIAAW Workforce: this website (ep.eiaawsolutions.com) and the customer workspaces at <code>*.ep.eiaawsolutions.com</code>. It is issued under Malaysia’s Personal Data Protection Act 2010 (as amended in 2024) and written to also meet the privacy laws of the other Asia-Pacific countries our visitors and customers come from, including Singapore, Indonesia, Thailand, the Philippines, Vietnam, Australia, New Zealand, Japan, South Korea, Hong Kong and India. A Bahasa Malaysia version follows; both versions have the same meaning.</p>
 
     <h2>1. Who we are, and our two roles</h2>
     <p>EIAAW SOLUTIONS, registered in Malaysia under SSM {{ config('eiaaw.company_reg_no') }}, Kuala Lumpur, provides EIAAW Workforce. We play two different roles:</p>
@@ -21,7 +26,7 @@
         <li><strong>We decide how your data is used (data user / controller)</strong> for visitors to this website, people who contact us, and the people who sign up for, administer and pay for a workspace.</li>
         <li><strong>We process data for our customers (data processor)</strong> for the employee, payroll, leave, asset, claims and accounting records that a customer puts into its workspace. There, the employer that owns the workspace decides how the data is used, and we act only on its instructions under our <a href="{{ route('marketing.dpa') }}">Data Processing Agreement</a>. If you are an employee with a question about your records, please ask your employer first; we will help them respond.</li>
     </ul>
-    <p>Contact the person responsible for data protection at EIAAW at <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> (subject “DPO”) about anything in this notice.</p>
+    <p>Contact our Data Protection Officer at <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> (subject “DPO”) about anything in this notice.</p>
 
     <h2>2. What we collect, why, and on what basis</h2>
     <ul>
@@ -30,7 +35,7 @@
         <li><strong>Voice agent.</strong> Starting a call connects you to an AI voice agent run on our Sales Agent platform with our voice AI provider. The call is recorded and transcribed so the agent can respond and our team can follow up. The agent always says it is an AI. Basis: your consent, given when you start the call after reading the notice shown before it.</li>
         <li><strong>Signing up for a workspace.</strong> Work email, name, company name, workspace address, chosen plan, a password (stored only as a one-way hash), the IP address and browser used to sign up, and when you agreed to our Terms and this notice. Purpose: to create and secure your workspace and contact you about it. Basis: to enter into and perform our contract with you.</li>
         <li><strong>Billing.</strong> Payments are handled by Stripe. We keep the Stripe customer and subscription identifiers, your plan, seat count and invoices; we never see or store full card numbers. Basis: our contract, and our legal obligation to keep financial records.</li>
-        <li><strong>Using a workspace.</strong> Sign-in events, two-factor authentication status, an audit log of actions taken, and questions put to the Workforce Assistant with its answers. Purpose: to run the service, keep it secure, support you and apply each workspace’s AI usage limit. Basis: our contract, and our legitimate interest in security. Invoices and receipts that users choose to scan with AI are sent to Anthropic, or to the AI provider the workspace has connected, to read them.</li>
+        <li><strong>Using a workspace.</strong> Sign-in events, two-factor authentication status, an audit log of actions taken, and questions put to the Workforce Assistant with its answers. Purpose: to run the service, keep it secure, support you and apply each workspace’s AI usage limit. Basis: our contract, and our legitimate interest in security.</li>
         <li><strong>Ad measurement.</strong> Only if you allow it, and only on these marketing pages: the Meta Pixel measures our Facebook and Instagram ads. It receives technical data such as pages viewed, device and browser, never the contents of forms, chats or workspaces. It never runs inside the signed-in app. Basis: your consent through the cookie choices.</li>
         <li><strong>Security logs.</strong> Our hosting and network providers log technical data such as IP addresses to keep the service secure and working. Basis: our legitimate interest in security, and legal obligations.</li>
     </ul>
@@ -63,8 +68,8 @@
             <thead><tr><th>Provider</th><th>What it does for us</th><th>Where it processes data</th></tr></thead>
             <tbody>
                 <tr><td>Railway</td><td>Hosts the application and its database</td><td>Singapore</td></tr>
-                <tr><td>Cloudflare</td><td>DNS, content delivery and security filtering; storage of files uploaded to workspaces and of encrypted backups (Cloudflare R2)</td><td>Global network; stored files in the Asia-Pacific region</td></tr>
-                <tr><td>Anthropic</td><td>AI models for the chat assistant, the Workforce Assistant and AI invoice scanning</td><td>United States</td></tr>
+                <tr><td>Cloudflare</td><td>DNS, content delivery and security filtering</td><td>Global network</td></tr>
+                <tr><td>Anthropic</td><td>AI models for the chat assistant and the Workforce Assistant</td><td>United States</td></tr>
                 <tr><td>Stripe</td><td>Payments and subscription billing</td><td>United States and other countries</td></tr>
                 <tr><td>Resend</td><td>Sends account and notification emails</td><td>United States</td></tr>
                 <tr><td>Retell AI</td><td>Runs voice agent calls</td><td>United States</td></tr>
@@ -73,28 +78,26 @@
             </tbody>
         </table>
     </div>
-    <p>If we add or replace a provider that processes workspace data, we update this list and give customers at least 30 days’ notice, as set out in the Data Processing Agreement.</p>
-    <p>If a workspace administrator connects the workspace’s own AI provider account in the accounting settings, that provider works for the customer under the customer’s own agreement with it, not for us.</p>
+    <p>If we add or replace a provider that processes workspace data, we update this list and give customers notice as set out in the Data Processing Agreement.</p>
 
     <h2>6. Transfers outside your country</h2>
-    <p>The workspace database is hosted in Singapore, and files uploaded to workspaces and encrypted backups are stored with Cloudflare R2 in the Asia-Pacific region. Some providers above process data in other countries, including the United States. We transfer personal data out of Malaysia only as section 129 of Malaysia’s PDPA allows: each provider is bound by data-protection terms (including standard contractual clauses where the provider offers them) that require it to protect the data, and many transfers are needed to provide the service you asked for. Where your local law requires consent for such transfers, we ask for it on the form.</p>
+    <p>Workspace data is stored in Singapore. Some providers above process data in other countries, including the United States. We use providers bound by data-protection terms that protect your data to a standard comparable to Malaysian law, and where your local law requires consent for such transfers, we ask for it on the form.</p>
 
     <h2>7. How long we keep it</h2>
     <ul>
         <li>Enquiry and chat details: up to 24 months after our last contact with you, then deleted, unless you become a customer.</li>
         <li>Unfinished signups (the email was never confirmed): deleted after 90 days.</li>
         <li>Workspace data: for as long as the subscription runs. After cancellation the workspace is read-only for 30 days so you can export, then deleted from the primary database; any remaining copies are removed within 90 days of cancellation.</li>
-        <li>Encrypted database backups: 14 days, then deleted automatically.</li>
         <li>Billing records: 7 years, as Malaysian tax law requires.</li>
         <li>Security logs: only as long as needed to protect the service.</li>
     </ul>
 
     <h2>8. Security</h2>
-    <p>The service runs over HTTPS only. Each workspace’s data is kept apart by row-level security in the database, passwords are stored as one-way hashes, two-factor authentication is available to every user, and access to customer data inside EIAAW is limited to the people who need it to run and support the service. If a data breach is likely to cause significant harm, we will notify the Personal Data Protection Commissioner of Malaysia as soon as practicable and within 72 hours, tell the affected people without unnecessary delay and within 7 days of notifying the Commissioner, and notify other regulators as their law requires. For workspace data we notify the customer without undue delay and within 48 hours, so it can meet its own obligations.</p>
+    <p>The service runs over HTTPS only. Each workspace’s data is kept apart by row-level security in the database, passwords are stored as one-way hashes, two-factor authentication is available to every user, and access to customer data inside EIAAW is limited to the people who need it to run and support the service. If a data breach is likely to cause significant harm, we will notify the Personal Data Protection Commissioner of Malaysia within 72 hours and the affected people without undue delay, and other regulators as their law requires. For workspace data we notify the customer without undue delay so it can meet its own obligations.</p>
 
     <h2>9. Your rights</h2>
     <ul>
-        <li>See the personal data we hold about you and get a copy, including in a portable, machine-readable format, or ask us to send it to another organisation where that is technically feasible.</li>
+        <li>See the personal data we hold about you and get a copy, including in a portable, machine-readable format.</li>
         <li>Correct it, or ask us to delete it.</li>
         <li>Withdraw your consent at any time, object to or ask us to limit processing, and stop us contacting you. Withdrawing doesn’t affect what we did before.</li>
         <li>Complain to your data protection regulator (see below).</li>
@@ -102,18 +105,18 @@
     <p>Email <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> with “Personal data request” in the subject. We’ll verify it’s you, then respond within 21 days, or sooner where your local law requires. There is no charge unless the law allows one for repeated requests, and we’ll tell you first. For records held in an employer’s workspace, we pass your request to the employer and help it respond. We don’t send marketing unless you ask for it, and every marketing message lets you opt out.</p>
 
     <h2>10. Regulators</h2>
-    <p>If you complain to us, we’ll acknowledge your complaint within 5 working days and give you a written answer within 21 days. You can contact us first, and you can also complain to your regulator: Malaysia — Personal Data Protection Department (JPDP); Singapore — Personal Data Protection Commission (PDPC); Indonesia — Ministry of Communication and Digital Affairs (Komdigi); Thailand — Personal Data Protection Committee (PDPC); Philippines — National Privacy Commission (NPC); Vietnam — Ministry of Public Security (A05); Australia — Office of the Australian Information Commissioner (OAIC); New Zealand — Office of the Privacy Commissioner; Japan — Personal Information Protection Commission (PPC); South Korea — Personal Information Protection Commission (PIPC); Hong Kong — Office of the Privacy Commissioner for Personal Data (PCPD); India — Data Protection Board of India.</p>
+    <p>You can contact us first, and you can also complain to your regulator: Malaysia — Personal Data Protection Department (JPDP); Singapore — Personal Data Protection Commission (PDPC); Indonesia — Ministry of Communication and Digital Affairs (Komdigi); Thailand — Personal Data Protection Committee (PDPC); Philippines — National Privacy Commission (NPC); Vietnam — Ministry of Public Security (A05); Australia — Office of the Australian Information Commissioner (OAIC); New Zealand — Office of the Privacy Commissioner; Japan — Personal Information Protection Commission (PPC); South Korea — Personal Information Protection Commission (PIPC); Hong Kong — Office of the Privacy Commissioner for Personal Data (PCPD); India — Data Protection Board of India.</p>
 
     <h2>11. Children</h2>
     <p>EIAAW Workforce is a business service and isn’t directed at anyone under 18. Employers may hold records of employees or interns under 18 in their workspace; they are responsible for having a lawful basis, and we process those records only on their instructions.</p>
 
     <h2>12. Changes</h2>
-    <p>If we change how we handle personal data, we’ll update this page and the date at the top. If a change affects what you consented to, we’ll ask again. Earlier versions: <a href="{{ route('marketing.legal.archive', ['2026-09-24', 'privacy']) }}">24 September 2026</a>.</p>
+    <p>If we change how we handle personal data, we’ll update this page and the date at the top. If a change affects what you consented to, we’ll ask again.</p>
     </div>
 
     <section id="bm" lang="ms" class="lg-bm">
     <h2>Notis Privasi (Bahasa Malaysia)</h2>
-    <p>Notis ini menerangkan cara EIAAW SOLUTIONS mengendalikan data peribadi berkaitan EIAAW Workforce: laman web ini (ep.eiaawsolutions.com) dan ruang kerja pelanggan di <code>*.ep.eiaawsolutions.com</code>. Notis ini dikeluarkan di bawah Akta Perlindungan Data Peribadi 2010 (seperti yang dipinda pada 2024) dan juga ditulis dengan mengambil kira undang-undang privasi negara Asia Pasifik lain yang pelawat dan pelanggan kami datang, termasuk Singapura, Indonesia, Thailand, Filipina, Vietnam, Australia, New Zealand, Jepun, Korea Selatan, Hong Kong dan India. Versi Bahasa Inggeris dan versi Bahasa Malaysia membawa maksud yang sama.</p>
+    <p>Notis ini menerangkan cara EIAAW SOLUTIONS mengendalikan data peribadi berkaitan EIAAW Workforce: laman web ini (ep.eiaawsolutions.com) dan ruang kerja pelanggan di <code>*.ep.eiaawsolutions.com</code>. Notis ini dikeluarkan di bawah Akta Perlindungan Data Peribadi 2010 (seperti yang dipinda pada 2024) dan juga ditulis untuk memenuhi undang-undang privasi negara Asia Pasifik lain yang pelawat dan pelanggan kami datang, termasuk Singapura, Indonesia, Thailand, Filipina, Vietnam, Australia, New Zealand, Jepun, Korea Selatan, Hong Kong dan India. Versi Bahasa Inggeris dan versi Bahasa Malaysia membawa maksud yang sama.</p>
 
     <h3>1. Siapa kami, dan dua peranan kami</h3>
     <p>EIAAW SOLUTIONS, berdaftar di Malaysia di bawah SSM {{ config('eiaaw.company_reg_no') }}, Kuala Lumpur, menyediakan EIAAW Workforce. Kami memainkan dua peranan:</p>
@@ -121,7 +124,7 @@
         <li><strong>Kami menentukan cara data anda digunakan (pengguna data)</strong> bagi pelawat laman web ini, orang yang menghubungi kami, dan orang yang mendaftar, mentadbir dan membayar bagi sesuatu ruang kerja.</li>
         <li><strong>Kami memproses data bagi pihak pelanggan (pemproses data)</strong> bagi rekod pekerja, gaji, cuti, aset, tuntutan dan perakaunan yang dimasukkan oleh pelanggan ke dalam ruang kerjanya. Dalam hal ini, majikan yang memiliki ruang kerja menentukan cara data digunakan, dan kami hanya bertindak atas arahannya di bawah <a href="{{ route('marketing.dpa') }}">Perjanjian Pemprosesan Data</a> kami. Jika anda seorang pekerja yang mempunyai pertanyaan tentang rekod anda, sila tanya majikan anda terlebih dahulu; kami akan membantu mereka menjawab.</li>
     </ul>
-    <p>Hubungi individu yang bertanggungjawab bagi perlindungan data di EIAAW di <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> (subjek “DPO”) mengenai apa-apa perkara dalam notis ini.</p>
+    <p>Hubungi Pegawai Perlindungan Data kami di <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> (subjek “DPO”) mengenai apa-apa perkara dalam notis ini.</p>
 
     <h3>2. Data yang kami kumpul, tujuan dan asasnya</h3>
     <ul>
@@ -130,7 +133,7 @@
         <li><strong>Ejen suara.</strong> Memulakan panggilan menghubungkan anda dengan ejen suara AI yang dijalankan pada platform Sales Agent kami bersama penyedia AI suara kami. Panggilan dirakam dan ditranskripsi supaya ejen dapat menjawab dan pasukan kami dapat membuat susulan. Ejen sentiasa memaklumkan bahawa ia adalah AI. Asas: persetujuan anda, yang diberi apabila anda memulakan panggilan selepas membaca notis yang dipaparkan sebelumnya.</li>
         <li><strong>Mendaftar ruang kerja.</strong> E-mel kerja, nama, nama syarikat, alamat ruang kerja, pelan yang dipilih, kata laluan (disimpan hanya sebagai cincangan sehala), alamat IP dan pelayar yang digunakan semasa mendaftar, dan masa anda bersetuju dengan Terma dan notis ini. Tujuan: mewujudkan dan melindungi ruang kerja anda serta menghubungi anda mengenainya. Asas: untuk memeterai dan melaksanakan kontrak kami dengan anda.</li>
         <li><strong>Pengebilan.</strong> Pembayaran dikendalikan oleh Stripe. Kami menyimpan pengecam pelanggan dan langganan Stripe, pelan, bilangan tempat dan invois anda; kami tidak sekali-kali melihat atau menyimpan nombor kad penuh. Asas: kontrak kami, dan kewajipan undang-undang untuk menyimpan rekod kewangan.</li>
-        <li><strong>Menggunakan ruang kerja.</strong> Peristiwa log masuk, status pengesahan dua faktor, log audit tindakan yang diambil, serta soalan kepada Workforce Assistant dan jawapannya. Tujuan: menjalankan perkhidmatan, memastikannya selamat, memberi sokongan dan menguatkuasakan had penggunaan AI setiap ruang kerja. Asas: kontrak kami, dan kepentingan sah kami terhadap keselamatan. Invois dan resit yang dipilih pengguna untuk diimbas dengan AI dihantar kepada Anthropic, atau kepada penyedia AI yang disambungkan oleh ruang kerja, untuk dibaca.</li>
+        <li><strong>Menggunakan ruang kerja.</strong> Peristiwa log masuk, status pengesahan dua faktor, log audit tindakan yang diambil, serta soalan kepada Workforce Assistant dan jawapannya. Tujuan: menjalankan perkhidmatan, memastikannya selamat, memberi sokongan dan menguatkuasakan had penggunaan AI setiap ruang kerja. Asas: kontrak kami, dan kepentingan sah kami terhadap keselamatan.</li>
         <li><strong>Pengukuran iklan.</strong> Hanya jika anda membenarkannya, dan hanya di halaman pemasaran ini: Meta Pixel mengukur iklan Facebook dan Instagram kami. Ia menerima data teknikal seperti halaman yang dilihat, peranti dan pelayar, tetapi tidak sekali-kali kandungan borang, sembang atau ruang kerja. Ia tidak pernah berjalan di dalam aplikasi selepas log masuk. Asas: persetujuan anda melalui pilihan kuki.</li>
         <li><strong>Log keselamatan.</strong> Penyedia pengehosan dan rangkaian kami merekod data teknikal seperti alamat IP untuk memastikan perkhidmatan selamat dan berfungsi. Asas: kepentingan sah kami terhadap keselamatan, dan kewajipan undang-undang.</li>
     </ul>
@@ -143,27 +146,26 @@
     <p>Tiada apa-apa yang menjejaki anda dimuatkan sehingga anda membuat pilihan. Anda boleh menukar pilihan pada bila-bila masa melalui <a href="#cookies" data-cookie-settings>Cookie settings</a>, juga di bahagian bawah setiap halaman. Kuki yang digunakan: <code>eiaaw_workforce_session</code> (mengekalkan log masuk dan melindungi sesi, 2 jam tanpa aktiviti), <code>XSRF-TOKEN</code> (melindungi borang, 2 jam), <code>eiaaw_consent</code> (mengingati pilihan kuki anda merentas laman eiaawsolutions.com, 6 bulan), <code>eiaawConsent</code> (mengingati pilihan kuki anda, sehingga anda memadamnya), <code>epChatGate</code> (mengingati bahawa anda telah memperkenalkan diri dalam sembang, untuk sesi pelayar ini) dan <code>_fbp</code> (Meta, hanya dengan persetujuan pengiklanan, sehingga 3 bulan). Halaman ini juga memuatkan fon daripada Google Fonts, yang menerima alamat IP anda untuk menghantarnya.</p>
 
     <h3>5. Pihak yang menerima data anda</h3>
-    <p>Kami tidak menjual data peribadi atau berkongsinya dengan sesiapa untuk pemasaran mereka sendiri. Kami berkongsi hanya dengan CRM kami sendiri (pada platform EIAAW Sales Agent), dengan pihak berkuasa, mahkamah atau pengawal selia apabila dikehendaki oleh undang-undang, dan dengan penyedia perkhidmatan yang bekerja untuk kami di bawah kontrak: Railway (mengehos aplikasi dan pangkalan data, Singapura), Cloudflare (DNS, penghantaran kandungan, penapisan keselamatan, serta storan fail yang dimuat naik ke ruang kerja dan sandaran yang disulitkan melalui Cloudflare R2; rangkaian global, dengan fail yang disimpan di rantau Asia Pasifik), Anthropic (model AI bagi pembantu sembang, Workforce Assistant dan imbasan invois AI, Amerika Syarikat), Stripe (pembayaran dan pengebilan langganan, Amerika Syarikat dan negara lain), Resend (menghantar e-mel akaun dan pemberitahuan, Amerika Syarikat), Retell AI (menjalankan panggilan ejen suara, Amerika Syarikat), Google (fon web di halaman pemasaran, rangkaian global) dan Meta (pengukuran iklan, hanya dengan persetujuan anda, Amerika Syarikat). Jika kami menambah atau menggantikan penyedia yang memproses data ruang kerja, kami mengemas kini senarai ini dan memberi notis sekurang-kurangnya 30 hari kepada pelanggan, seperti yang ditetapkan dalam Perjanjian Pemprosesan Data. Jika pentadbir ruang kerja menyambungkan akaun penyedia AI milik ruang kerja itu sendiri dalam tetapan perakaunan, penyedia tersebut bekerja untuk pelanggan di bawah perjanjian pelanggan sendiri dengannya, bukan untuk kami.</p>
+    <p>Kami tidak menjual data peribadi atau berkongsinya dengan sesiapa untuk pemasaran mereka sendiri. Kami berkongsi hanya dengan CRM kami sendiri (pada platform EIAAW Sales Agent), dengan pihak berkuasa, mahkamah atau pengawal selia apabila dikehendaki oleh undang-undang, dan dengan penyedia perkhidmatan yang bekerja untuk kami di bawah kontrak: Railway (mengehos aplikasi dan pangkalan data, Singapura), Cloudflare (DNS, penghantaran kandungan dan penapisan keselamatan, rangkaian global), Anthropic (model AI bagi pembantu sembang dan Workforce Assistant, Amerika Syarikat), Stripe (pembayaran dan pengebilan langganan, Amerika Syarikat dan negara lain), Resend (menghantar e-mel akaun dan pemberitahuan, Amerika Syarikat), Retell AI (menjalankan panggilan ejen suara, Amerika Syarikat), Google (fon web di halaman pemasaran, rangkaian global) dan Meta (pengukuran iklan, hanya dengan persetujuan anda, Amerika Syarikat). Jika kami menambah atau menggantikan penyedia yang memproses data ruang kerja, kami mengemas kini senarai ini dan memberi notis kepada pelanggan seperti yang ditetapkan dalam Perjanjian Pemprosesan Data.</p>
 
     <h3>6. Pemindahan ke luar negara anda</h3>
-    <p>Pangkalan data ruang kerja dihoskan di Singapura, dan fail yang dimuat naik ke ruang kerja serta sandaran yang disulitkan disimpan dengan Cloudflare R2 di rantau Asia Pasifik. Sesetengah penyedia di atas memproses data di negara lain, termasuk Amerika Syarikat. Kami memindahkan data peribadi ke luar Malaysia hanya seperti yang dibenarkan oleh seksyen 129 APDP Malaysia: setiap penyedia terikat dengan terma perlindungan data (termasuk klausa kontrak standard jika ditawarkan oleh penyedia) yang mewajibkannya melindungi data tersebut, dan banyak pemindahan diperlukan untuk menyediakan perkhidmatan yang anda minta. Jika undang-undang tempatan anda memerlukan persetujuan bagi pemindahan sedemikian, kami memintanya pada borang.</p>
+    <p>Data ruang kerja disimpan di Singapura. Sesetengah penyedia di atas memproses data di negara lain, termasuk Amerika Syarikat. Kami menggunakan penyedia yang terikat dengan terma perlindungan data yang melindungi data anda pada tahap setanding dengan undang-undang Malaysia, dan jika undang-undang tempatan anda memerlukan persetujuan bagi pemindahan sedemikian, kami memintanya pada borang.</p>
 
     <h3>7. Tempoh penyimpanan</h3>
     <ul>
         <li>Butiran pertanyaan dan sembang: sehingga 24 bulan selepas hubungan terakhir kami dengan anda, kemudian dipadam, kecuali anda menjadi pelanggan.</li>
         <li>Pendaftaran yang tidak selesai (e-mel tidak pernah disahkan): dipadam selepas 90 hari.</li>
         <li>Data ruang kerja: selagi langganan berjalan. Selepas pembatalan, ruang kerja menjadi baca-sahaja selama 30 hari supaya anda boleh mengeksport data, kemudian dipadam daripada pangkalan data utama; sebarang salinan yang tinggal dibuang dalam tempoh 90 hari selepas pembatalan.</li>
-        <li>Sandaran pangkalan data yang disulitkan: 14 hari, kemudian dipadam secara automatik.</li>
         <li>Rekod pengebilan: 7 tahun, seperti yang dikehendaki oleh undang-undang cukai Malaysia.</li>
         <li>Log keselamatan: hanya selama yang diperlukan untuk melindungi perkhidmatan.</li>
     </ul>
 
     <h3>8. Keselamatan</h3>
-    <p>Perkhidmatan ini berjalan melalui HTTPS sahaja. Data setiap ruang kerja diasingkan melalui keselamatan peringkat baris dalam pangkalan data, kata laluan disimpan sebagai cincangan sehala, pengesahan dua faktor tersedia untuk setiap pengguna, dan akses kepada data pelanggan di dalam EIAAW terhad kepada mereka yang memerlukannya untuk menjalankan dan menyokong perkhidmatan. Jika berlaku pelanggaran data yang mungkin menyebabkan kemudaratan ketara, kami akan memaklumkan Pesuruhjaya Perlindungan Data Peribadi Malaysia secepat yang praktikal dan dalam tempoh 72 jam, memaklumkan individu yang terjejas tanpa kelewatan yang tidak perlu dan dalam tempoh 7 hari selepas memaklumkan Pesuruhjaya, serta memaklumkan pengawal selia lain seperti yang dikehendaki oleh undang-undang mereka. Bagi data ruang kerja, kami memaklumkan pelanggan tanpa kelewatan yang tidak wajar dan dalam tempoh 48 jam, supaya mereka dapat memenuhi kewajipan mereka sendiri.</p>
+    <p>Perkhidmatan ini berjalan melalui HTTPS sahaja. Data setiap ruang kerja diasingkan melalui keselamatan peringkat baris dalam pangkalan data, kata laluan disimpan sebagai cincangan sehala, pengesahan dua faktor tersedia untuk setiap pengguna, dan akses kepada data pelanggan di dalam EIAAW terhad kepada mereka yang memerlukannya untuk menjalankan dan menyokong perkhidmatan. Jika berlaku pelanggaran data yang mungkin menyebabkan kemudaratan ketara, kami akan memaklumkan Pesuruhjaya Perlindungan Data Peribadi Malaysia dalam tempoh 72 jam dan individu yang terjejas tanpa kelewatan yang tidak wajar, serta pengawal selia lain seperti yang dikehendaki oleh undang-undang mereka. Bagi data ruang kerja, kami memaklumkan pelanggan tanpa kelewatan yang tidak wajar supaya mereka dapat memenuhi kewajipan mereka sendiri.</p>
 
     <h3>9. Hak anda</h3>
     <ul>
-        <li>Melihat data peribadi yang kami simpan tentang anda dan mendapatkan salinannya, termasuk dalam format mudah alih yang boleh dibaca mesin, atau meminta kami menghantarnya kepada organisasi lain jika dapat dilaksanakan dari segi teknikal.</li>
+        <li>Melihat data peribadi yang kami simpan tentang anda dan mendapatkan salinannya, termasuk dalam format mudah alih yang boleh dibaca mesin.</li>
         <li>Membetulkannya, atau meminta kami memadamnya.</li>
         <li>Menarik balik persetujuan anda pada bila-bila masa, membantah atau meminta kami mengehadkan pemprosesan, dan menghentikan kami daripada menghubungi anda. Penarikan balik tidak menjejaskan pemprosesan sebelumnya.</li>
         <li>Membuat aduan kepada pengawal selia perlindungan data anda (lihat di bawah).</li>
@@ -171,7 +173,7 @@
     <p>E-mel <a href="mailto:{{ $dpo }}">{{ $dpo }}</a> dengan “Personal data request” sebagai subjek. Kami akan mengesahkan identiti anda, kemudian membalas dalam tempoh 21 hari, atau lebih awal jika undang-undang tempatan anda memerlukannya. Tiada caj dikenakan kecuali undang-undang membenarkannya bagi permintaan berulang, dan kami akan memaklumkan anda terlebih dahulu. Bagi rekod dalam ruang kerja majikan, kami menyalurkan permintaan anda kepada majikan dan membantu mereka menjawab. Kami tidak menghantar bahan pemasaran kecuali anda memintanya, dan setiap mesej pemasaran membolehkan anda menarik diri.</p>
 
     <h3>10. Pengawal selia</h3>
-    <p>Jika anda membuat aduan kepada kami, kami akan mengakui penerimaannya dalam tempoh 5 hari bekerja dan memberikan jawapan bertulis dalam tempoh 21 hari. Anda boleh menghubungi kami terlebih dahulu, dan anda juga boleh membuat aduan kepada pengawal selia anda: Malaysia — Jabatan Perlindungan Data Peribadi (JPDP); Singapura — Personal Data Protection Commission (PDPC); Indonesia — Kementerian Komunikasi dan Digital (Komdigi); Thailand — Personal Data Protection Committee (PDPC); Filipina — National Privacy Commission (NPC); Vietnam — Kementerian Keselamatan Awam (A05); Australia — Office of the Australian Information Commissioner (OAIC); New Zealand — Office of the Privacy Commissioner; Jepun — Personal Information Protection Commission (PPC); Korea Selatan — Personal Information Protection Commission (PIPC); Hong Kong — Office of the Privacy Commissioner for Personal Data (PCPD); India — Data Protection Board of India.</p>
+    <p>Anda boleh menghubungi kami terlebih dahulu, dan anda juga boleh membuat aduan kepada pengawal selia anda. Di Malaysia: Jabatan Perlindungan Data Peribadi (JPDP). Senarai pengawal selia bagi negara lain terdapat dalam seksyen 10 versi Bahasa Inggeris di atas.</p>
 
     <h3>11. Kanak-kanak</h3>
     <p>EIAAW Workforce ialah perkhidmatan perniagaan dan tidak ditujukan kepada sesiapa di bawah umur 18 tahun. Majikan mungkin menyimpan rekod pekerja atau pelatih di bawah umur 18 tahun dalam ruang kerja mereka; majikan bertanggungjawab memastikan asas yang sah, dan kami memproses rekod tersebut hanya atas arahan mereka.</p>

@@ -76,6 +76,7 @@
 
 <div class="mk-container">
     <div class="lg-body">
+        @yield('legal-archive-notice')
         @yield('legal-body')
     </div>
 

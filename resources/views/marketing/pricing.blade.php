@@ -236,6 +236,9 @@
             actually active — no charge for invited-but-not-started, terminated, or inactive records.
             Annual billing gets you {{ $pricing['annual_months_free'] }} months free.
         </p>
+        <p style="font-size: 14px; color: var(--mute); margin-top: 10px;">
+            Prices are in Malaysian ringgit and paid by card at checkout. EIAAW SOLUTIONS is not registered for SST, so no SST is charged: the price shown is the full price.
+        </p>
 
         <div class="pr-controls">
             <div class="pr-toggle" role="group" aria-label="Billing period">
@@ -352,6 +355,15 @@
         @push('head')
         <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn ($f) => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $pricingFaqs)], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
         @endpush
+        <div lang="ms" style="margin: 40px 0 8px; padding: 18px 22px; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--surface); font-size: 13.5px; line-height: 1.6; color: var(--ink-2);">
+            <strong style="color: var(--ink);">Maklumat pembekal.</strong>
+            EIAAW SOLUTIONS (SSM {{ config('eiaaw.company_reg_no') }}), Kuala Lumpur, Malaysia. E-mel: {{ config('eiaaw.privacy_email') }}.
+            Perkhidmatan: perisian web EIAAW Workforce untuk rekod pekerja, aset IT, HR (cuti, kehadiran, tuntutan, gaji) dan perakaunan.
+            Harga: dalam ringgit Malaysia bagi setiap pekerja aktif sebulan seperti di atas; EIAAW SOLUTIONS tidak berdaftar untuk SST, jadi tiada SST dikenakan.
+            Pembayaran: kad melalui Stripe semasa pembayaran. Ruang kerja diwujudkan sebaik sahaja pembayaran berjaya.
+            Terma: <a href="{{ route('marketing.terms') }}">Terma Perkhidmatan</a> · <a href="{{ route('marketing.privacy') }}#bm">Notis Privasi</a>.
+        </div>
+
         <div class="pr-faqs">
             @foreach($pricingFaqs as [$q, $a])
                 <div class="pr-faq">

@@ -76,6 +76,7 @@ Route::middleware('apex')->group(function () {
     Route::get('/terms',            [MarketingController::class, 'terms'])->name('marketing.terms');
     Route::get('/privacy',          [MarketingController::class, 'privacy'])->name('marketing.privacy');
     Route::get('/dpa',              [MarketingController::class, 'dpa'])->name('marketing.dpa');
+    Route::get('/legal/archive/{version}/{doc}', [MarketingController::class, 'legalArchive'])->name('marketing.legal.archive');
 
     // sitemap.xml is generated as a static file in public/ by the
     // sitemap:generate artisan command at build time (see nixpacks.toml).

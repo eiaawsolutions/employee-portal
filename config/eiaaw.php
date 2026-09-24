@@ -22,7 +22,7 @@ return [
     // Version of the privacy notice + terms a visitor agrees to. Stored with
     // every consent record (marketing_contacts, signup_invites). Bump it when
     // either document changes materially, and update the pages' "Last updated".
-    'privacy_version' => '2026-09-24',
+    'privacy_version' => '2026-09-25',
 
     /*
      * Reserved tenant slugs.

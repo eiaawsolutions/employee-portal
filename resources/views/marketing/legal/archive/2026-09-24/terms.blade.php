@@ -1,18 +1,22 @@
 @extends('marketing.legal._layout')
 
+@section('robots', 'noindex, follow')
+@section('legal-archive-notice')
+    <p style="background:var(--bg-warm);border:1px solid var(--line-soft);border-radius:12px;padding:12px 16px;font-size:14px;">Superseded version, kept for reference. It applied from 24 September 2026 until 25 September 2026. <a href="{{ route('marketing.terms') }}">Read the current version.</a></p>
+@endsection
+
 @section('title', 'Terms of Service — EIAAW Workforce')
 @section('description', 'The terms for using EIAAW Workforce: subscription and per-employee billing, your data, AI features, cancellation and liability. Governed by Malaysian law.')
 
 @section('legal-title', 'Terms of service')
 @section('legal-lede', 'The agreement between your organisation and EIAAW SOLUTIONS for using EIAAW Workforce.')
-@section('legal-updated', '25 September 2026')
+@section('legal-updated', '24 September 2026')
 
 @php $contact = config('eiaaw.privacy_email'); @endphp
 
 @section('legal-body')
     <h2>1. Who these terms are between</h2>
     <p>These terms are an agreement between EIAAW SOLUTIONS, registered in Malaysia under SSM {{ config('eiaaw.company_reg_no') }}, Kuala Lumpur (“EIAAW”, “we”), and the organisation that signs up for an EIAAW Workforce workspace (“you”). The person who signs up confirms they are authorised to accept these terms for that organisation. Our <a href="{{ route('marketing.privacy') }}">Privacy Notice</a> and <a href="{{ route('marketing.dpa') }}">Data Processing Agreement</a> form part of these terms. An Enterprise order form signed by both of us takes priority over these terms where they differ.</p>
-    <p>You accept these terms by ticking the box at signup and completing checkout; we keep a record of when you did so and which version you accepted. EIAAW Workforce is for business use: by subscribing, you confirm that your organisation is acquiring it for its business and not as a consumer.</p>
 
     <h2>2. The service</h2>
     <p>EIAAW Workforce is web software for managing employees, IT assets, HR (leave, attendance, claims and payroll) and accounting. What each plan includes is shown on the <a href="{{ route('marketing.pricing') }}">pricing page</a>. We keep improving the service; we won’t remove a core feature of your plan during a period you have already paid for without telling you first and offering a pro-rata refund if the change materially reduces what you paid for.</p>
@@ -21,18 +25,17 @@
     <p>Keep the details you give us accurate, keep sign-in credentials confidential, and tell us promptly at <a href="mailto:{{ $contact }}">{{ $contact }}</a> if you suspect unauthorised access. You decide who gets access to your workspace and what role they have, and you are responsible for what your users do in it. We recommend turning on two-factor authentication for every administrator.</p>
 
     <h2>4. Subscribing</h2>
-    <p>There is no free trial. You choose a plan, a billing period and the number of employees, and pay for the first period at checkout through Stripe. Your workspace is created once that payment succeeds. Your subscription then renews automatically at the start of each billing period until you cancel. Before you pay, Stripe’s checkout page shows your plan, billing period, number of employees and total, and you can go back and change them. Once payment succeeds we email you a confirmation. If you chose the wrong plan, billing period or number of employees, email us within 7 days and we’ll correct your subscription and refund or charge the difference.</p>
+    <p>There is no free trial. You choose a plan, a billing period and the number of employees, and pay for the first period at checkout through Stripe. Your workspace is created once that payment succeeds. Your subscription then renews automatically at the start of each billing period until you cancel.</p>
 
     <h2>5. Fees and billing</h2>
     <ul>
         <li>Plans are priced in Malaysian ringgit (MYR) per active employee per month. An active employee is an employee record with an active status in your workspace; invited employees who haven’t started, and deactivated or exited employees, are not counted.</li>
         <li>Starter, Growth and Scale have a minimum of 5 billable employees. You set the number of employees at checkout; if your active headcount changes, tell us and we’ll adjust your subscription from the next billing period. Enterprise pricing, minimums and terms are agreed in an order form.</li>
         <li>You pay monthly or annually, in advance, by card through Stripe, which charges the card you give at checkout at the start of each billing period. Annual billing costs 10 times the monthly price.</li>
-        <li>EIAAW SOLUTIONS is not registered for Sales and Service Tax (SST), so no SST is charged and the listed price is the full price. If we become registered, we’ll give you at least 30 days’ notice before we start charging it, and show it on the pricing page, at checkout and on each invoice.</li>
+        <li>Prices exclude any applicable taxes, which we show on the invoice.</li>
         <li>You can change plan at any time by telling us; the new plan’s features apply straight away and its price applies from your next billing period.</li>
         <li>If a payment fails and isn’t fixed within the grace period we tell you about, we may suspend the workspace until it is. We don’t refund partial periods except where the law requires it or these terms say so.</li>
         <li>We may change prices with at least 30 days’ notice; the change applies from your next billing period.</li>
-        <li>We issue invoices through Stripe. If the law requires us to issue an e-invoice through LHDN’s MyInvois system, we will; please give us your tax identification number (TIN) when we ask.</li>
     </ul>
 
     <h2>6. Your data</h2>
@@ -48,7 +51,7 @@
     <p>We work to keep the service available and to fix problems quickly, but we don’t promise it will be uninterrupted or error-free. Service levels, uptime commitments and service credits apply only where an Enterprise order form sets them out. Support is by email at <a href="mailto:{{ $contact }}">{{ $contact }}</a>.</p>
 
     <h2>10. Cancellation and termination</h2>
-    <p>You can cancel at any time by emailing us from the workspace owner’s address; cancellation takes effect at the end of the current billing period. We may end these terms if you seriously breach them and don’t fix the breach within 14 days of our notice, or immediately if the law requires it. After the subscription ends, the workspace is read-only for 30 days so you can export your data; we then delete Customer Data from the primary database and remove any remaining copies within 90 days of cancellation, unless the law requires us to keep something longer.</p>
+    <p>You can cancel at any time; cancellation takes effect at the end of the current billing period. We may end these terms if you seriously breach them and don’t fix the breach within 14 days of our notice, or immediately if the law requires it. After the subscription ends, the workspace is read-only for 30 days so you can export your data; we then delete Customer Data from the primary database and remove any remaining copies within 90 days of cancellation, unless the law requires us to keep something longer.</p>
 
     <h2>11. Warranties</h2>
     <p>We provide the service with reasonable skill and care. Apart from that and anything the law doesn’t allow us to exclude, the service is provided “as is”, without other warranties.</p>
@@ -67,7 +70,4 @@
 
     <h2>16. Contact</h2>
     <p>EIAAW SOLUTIONS, Kuala Lumpur, Malaysia · SSM {{ config('eiaaw.company_reg_no') }} · <a href="mailto:{{ $contact }}">{{ $contact }}</a></p>
-
-    <h2>17. General</h2>
-    <p>Neither of us is liable for delays or failures caused by events beyond our reasonable control. You may not transfer these terms without our written agreement; we may transfer them to a business that takes over EIAAW Workforce, and we’ll tell you if we do. If a court finds part of these terms unenforceable, the rest still applies. Not enforcing a right straight away doesn’t waive it. These terms, the Privacy Notice, the Data Processing Agreement and any Enterprise order form are the whole agreement between us about the service. We send notices to the workspace owner’s email address; you send them to the email address in section 16. Earlier versions: <a href="{{ route('marketing.legal.archive', ['2026-09-24', 'terms']) }}">24 September 2026</a>.</p>
 @endsection
