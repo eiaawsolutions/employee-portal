@@ -67,7 +67,13 @@ supervise queue php artisan queue:work --tries=3 --timeout=120 --sleep=3 --max-t
 
 # Web server: nginx + php-fpm. If either can't start, fall back to PHP's
 # built-in server so a bad web config never takes the site down.
-NGINX_CONF_DIR="$(dirname "$(nginx -V 2>&1 | grep -o 'conf-path=[^ ]*' | cut -d= -f2)" 2>/dev/null || true)"
+# Nix builds of nginx report --prefix rather than --conf-path; mime.types and
+# fastcgi_params live in <prefix>/conf.
+NGINX_PREFIX="$(nginx -V 2>&1 | grep -o -- '--prefix=[^ ]*' | cut -d= -f2 || true)"
+NGINX_CONF_DIR="${NGINX_PREFIX:+${NGINX_PREFIX}/conf}"
+if [[ -z "${NGINX_CONF_DIR}" ]]; then
+    NGINX_CONF_DIR="$(dirname "$(nginx -V 2>&1 | grep -o -- '--conf-path=[^ ]*' | cut -d= -f2)" 2>/dev/null || true)"
+fi
 if command -v nginx >/dev/null && command -v php-fpm >/dev/null && [[ -f "${NGINX_CONF_DIR}/mime.types" ]]; then
     mkdir -p /tmp/nginx-body /tmp/nginx-fastcgi /tmp/nginx-proxy /tmp/nginx-uwsgi /tmp/nginx-scgi
     sed -e "s|__PORT__|${PORT}|g" -e "s|__NGINX_CONF__|${NGINX_CONF_DIR}|g" \
