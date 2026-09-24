@@ -9,7 +9,7 @@
 #   3. `php artisan migrate --force` runs every migration from scratch on
 #      the clean DB. The migrations themselves bootstrap the Claritas-era
 #      tables + the SaaS retrofit on top.
-#   4. Start the PHP server.
+#   4. Start the scheduler + queue worker, then nginx + php-fpm.
 #
 # We deliberately DON'T use the pgsql-schema.sql baseline dump — it was
 # generated when Cashier migrations had old timestamps, and renaming
@@ -49,5 +49,39 @@ fi
 echo "=== Running migrations ==="
 php artisan migrate --force
 
-echo "=== Starting server on port ${PORT:-8080} ==="
-exec php -d variables_order=EGPCS -S 0.0.0.0:${PORT:-8080} -t public
+PORT="${PORT:-8080}"
+
+# Background processes the app depends on: the scheduler (start-date
+# activation, trial end, reminders, backups, retention) and the queue worker.
+# Each restarts itself if it exits; logs go to the container's stdout.
+supervise() {
+    local name="$1"; shift
+    ( while true; do
+        "$@" || echo "=== ${name} exited ($?); restarting in 5s ===" >&2
+        sleep 5
+      done ) &
+    echo "=== ${name} started (pid $!) ==="
+}
+supervise scheduler php artisan schedule:work
+supervise queue php artisan queue:work --tries=3 --timeout=120 --sleep=3 --max-time=3600
+
+# Web server: nginx + php-fpm. If either can't start, fall back to PHP's
+# built-in server so a bad web config never takes the site down.
+NGINX_CONF_DIR="$(dirname "$(nginx -V 2>&1 | grep -o 'conf-path=[^ ]*' | cut -d= -f2)" 2>/dev/null || true)"
+if command -v nginx >/dev/null && command -v php-fpm >/dev/null && [[ -f "${NGINX_CONF_DIR}/mime.types" ]]; then
+    mkdir -p /tmp/nginx-body /tmp/nginx-fastcgi /tmp/nginx-proxy /tmp/nginx-uwsgi /tmp/nginx-scgi
+    sed -e "s|__PORT__|${PORT}|g" -e "s|__NGINX_CONF__|${NGINX_CONF_DIR}|g" \
+        deploy/nginx.conf.template > /tmp/nginx.conf
+    chmod -R ugo+rw storage bootstrap/cache 2>/dev/null || true
+
+    if nginx -e /dev/stderr -t -c /tmp/nginx.conf; then
+        # -R: the container runs as root, as it did with `php -S`.
+        php-fpm -R -y "$(pwd)/deploy/php-fpm.conf" &
+        echo "=== php-fpm started (pid $!); nginx serving on port ${PORT} ==="
+        exec nginx -e /dev/stderr -c /tmp/nginx.conf
+    fi
+    echo "=== nginx config test failed; falling back to php -S ===" >&2
+fi
+
+echo "=== Starting PHP built-in server on port ${PORT} (fallback) ==="
+exec php -d variables_order=EGPCS -S 0.0.0.0:${PORT} -t public
