@@ -9,7 +9,7 @@
 #   3. `php artisan migrate --force` runs every migration from scratch on
 #      the clean DB. The migrations themselves bootstrap the Claritas-era
 #      tables + the SaaS retrofit on top.
-#   4. Start the scheduler + queue worker, then nginx + php-fpm.
+#   4. Start the scheduler + queue worker, then the multi-worker PHP server.
 #
 # We deliberately DON'T use the pgsql-schema.sql baseline dump — it was
 # generated when Cashier migrations had old timestamps, and renaming
@@ -65,29 +65,11 @@ supervise() {
 supervise scheduler php artisan schedule:work
 supervise queue php artisan queue:work --tries=3 --timeout=120 --sleep=3 --max-time=3600
 
-# Web server: nginx + php-fpm. If either can't start, fall back to PHP's
-# built-in server so a bad web config never takes the site down.
-# Nix builds of nginx report --prefix rather than --conf-path; mime.types and
-# fastcgi_params live in <prefix>/conf.
-NGINX_PREFIX="$(nginx -V 2>&1 | grep -o -- '--prefix=[^ ]*' | cut -d= -f2 || true)"
-NGINX_CONF_DIR="${NGINX_PREFIX:+${NGINX_PREFIX}/conf}"
-if [[ -z "${NGINX_CONF_DIR}" ]]; then
-    NGINX_CONF_DIR="$(dirname "$(nginx -V 2>&1 | grep -o -- '--conf-path=[^ ]*' | cut -d= -f2)" 2>/dev/null || true)"
-fi
-if command -v nginx >/dev/null && command -v php-fpm >/dev/null && [[ -f "${NGINX_CONF_DIR}/mime.types" ]]; then
-    mkdir -p /tmp/nginx-body /tmp/nginx-fastcgi /tmp/nginx-proxy /tmp/nginx-uwsgi /tmp/nginx-scgi
-    sed -e "s|__PORT__|${PORT}|g" -e "s|__NGINX_CONF__|${NGINX_CONF_DIR}|g" \
-        deploy/nginx.conf.template > /tmp/nginx.conf
-    chmod -R ugo+rw storage bootstrap/cache 2>/dev/null || true
-
-    if nginx -e /dev/stderr -t -c /tmp/nginx.conf; then
-        # -R: the container runs as root, as it did with `php -S`.
-        php-fpm -R -y "$(pwd)/deploy/php-fpm.conf" &
-        echo "=== php-fpm started (pid $!); nginx serving on port ${PORT} ==="
-        exec nginx -e /dev/stderr -c /tmp/nginx.conf
-    fi
-    echo "=== nginx config test failed; falling back to php -S ===" >&2
-fi
-
-echo "=== Starting PHP built-in server on port ${PORT} (fallback) ==="
+# Web server: PHP's built-in server with several worker processes
+# (PHP_CLI_SERVER_WORKERS), so one slow request no longer blocks every other
+# visitor. nginx + php-fpm was tried on 2026-09-24: php-fpm workers on this
+# Railway runtime cannot open scripts ("Unable to open primary script …
+# Operation not permitted"), with Nixpacks' stock config too.
+export PHP_CLI_SERVER_WORKERS="${PHP_CLI_SERVER_WORKERS:-4}"
+echo "=== Starting PHP server on port ${PORT} with ${PHP_CLI_SERVER_WORKERS} workers ==="
 exec php -d variables_order=EGPCS -S 0.0.0.0:${PORT} -t public
