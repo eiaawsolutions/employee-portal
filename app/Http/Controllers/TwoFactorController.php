@@ -29,7 +29,8 @@ class TwoFactorController extends Controller
 
         return view('auth.two-factor-setup', [
             'secret'    => $secret,
-            'qrCodeUrl' => $qrCodeUrl,
+            // Rendered here, never by a third-party QR service: it encodes the secret.
+            'qrCodeSvg' => \App\Support\QrCode::svgDataUri($qrCodeUrl),
         ]);
     }
 

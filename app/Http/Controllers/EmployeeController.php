@@ -1702,6 +1702,8 @@ class EmployeeController extends Controller
         if (!in_array(Auth::user()->role, ['hr_manager', 'superadmin'])) abort(403);
         if ($contract->employee_id !== $employee->id) abort(404);
 
+        // Stored on the private disk; older uploads may be on public.
+        \Illuminate\Support\Facades\Storage::disk('local')->delete($contract->file_path);
         \Illuminate\Support\Facades\Storage::disk('public')->delete($contract->file_path);
         $contract->delete();
 
@@ -1719,6 +1721,8 @@ class EmployeeController extends Controller
 
         // Delete old file if one already exists
         if ($employee->handbook_path) {
+            // Stored on the private disk; older uploads may be on public.
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->handbook_path);
             \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->handbook_path);
         }
 
@@ -1736,6 +1740,8 @@ class EmployeeController extends Controller
         if (!in_array(Auth::user()->role, ['hr_manager', 'superadmin'])) abort(403);
 
         if ($employee->handbook_path) {
+            // Stored on the private disk; older uploads may be on public.
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->handbook_path);
             \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->handbook_path);
             $employee->update(['handbook_path' => null]);
         }
@@ -1753,6 +1759,8 @@ class EmployeeController extends Controller
         ]);
 
         if ($employee->orientation_path) {
+            // Stored on the private disk; older uploads may be on public.
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->orientation_path);
             \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->orientation_path);
         }
 
@@ -1770,6 +1778,8 @@ class EmployeeController extends Controller
         if (!in_array(Auth::user()->role, ['hr_manager', 'superadmin'])) abort(403);
 
         if ($employee->orientation_path) {
+            // Stored on the private disk; older uploads may be on public.
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($employee->orientation_path);
             \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->orientation_path);
             $employee->update(['orientation_path' => null]);
         }

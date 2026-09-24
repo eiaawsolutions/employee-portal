@@ -71,7 +71,10 @@ class DeleteCanceledTenants extends Command
             }
 
             try {
-                TenantContext::run($tenant, function () use ($tenant) {
+                $files = 0;
+                TenantContext::run($tenant, function () use ($tenant, &$files) {
+                    // Files first: the scrub nulls some of the columns that point at them.
+                    $files = app(\App\Services\TenantFilePurger::class)->purge($tenant->id);
                     $this->scrubPii($tenant);
                 });
 
@@ -79,6 +82,7 @@ class DeleteCanceledTenants extends Command
 
                 Log::warning('tenant.pii_scrubbed_and_soft_deleted', [
                     'tenant_id' => $tenant->id,
+                    'files_deleted' => $files,
                     'slug' => $tenant->slug,
                     'canceled_at' => $tenant->canceled_at->toIso8601String(),
                 ]);

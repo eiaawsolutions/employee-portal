@@ -26,8 +26,7 @@
             @endif
 
             <div class="auth-qr-frame">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data={{ urlencode($qrCodeUrl) }}"
-                     alt="Two-factor QR code" loading="lazy">
+                <img src="{{ $qrCodeSvg }}" width="220" height="220" alt="Two-factor QR code">
             </div>
 
             <p style="text-align:center; font-size:13px; color:var(--mute); margin: 20px 0 8px;">

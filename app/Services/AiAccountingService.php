@@ -28,9 +28,12 @@ class AiAccountingService
             $company = Auth::user()?->employee?->company;
         }
         $settings = AccountingSetting::resolveForAi($company);
-        $this->provider      = $settings?->ai_provider ?? 'openai';
-        $this->apiKey        = $settings?->ai_api_key ?? config('services.openai.api_key');
-        $this->model         = $settings?->ai_model ?? 'gpt-4o';
+        // Default: EIAAW's Anthropic account (a disclosed sub-processor). A workspace
+        // can connect its own provider in accounting settings; that provider then
+        // works under the customer's own agreement, not as our sub-processor.
+        $this->provider      = $settings?->ai_provider ?: 'anthropic';
+        $this->apiKey        = $settings?->ai_api_key ?: (config('services.anthropic.key') ?: env('ANTHROPIC_API_KEY')); // same source as AiGateway
+        $this->model         = $settings?->ai_model ?: env('ANTHROPIC_MODEL_COMPLEX', 'claude-sonnet-4-6');
         $this->ollamaBaseUrl = rtrim($settings?->ollama_base_url ?? 'http://localhost:11434', '/');
     }
 

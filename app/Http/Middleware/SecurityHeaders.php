@@ -60,7 +60,7 @@ class SecurityHeaders
             "script-src 'self' 'nonce-{$nonce}' 'unsafe-hashes' https://cdn.jsdelivr.net{$metaScript}",
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
             "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com",
-            "img-src 'self' data: blob: https://api.qrserver.com{$metaImg}",
+            "img-src 'self' data: blob:{$metaImg}",
             // connect-src — AI gateway calls out to api.anthropic.com/api.openai.com
             // from the SERVER, never the browser, so the browser only XHRs same-origin
             // for app traffic. Two cross-origin exceptions: (1) the marketing voice
