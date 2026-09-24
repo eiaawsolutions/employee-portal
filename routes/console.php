@@ -62,6 +62,13 @@ Schedule::command('meter:tenant-usage')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/meter-tenant-usage.log'));
 
+// Retention periods promised in the privacy notice (enquiries/chats 24 months,
+// unconfirmed signups 90 days).
+Schedule::command('marketing:purge-stale')
+    ->dailyAt('04:15')
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/marketing-purge.log'));
+
 // Statutory rate drift check — runs weekly, fails CI/ops alerting on drift
 // so payroll miscalculation is caught before a live run, not after.
 Schedule::command('payroll:verify-statutory-rates')

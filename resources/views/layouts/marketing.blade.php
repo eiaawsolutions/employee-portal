@@ -5,25 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Meta Pixel Code — nonce'd to satisfy the enforced CSP (SecurityHeaders.php) --}}
-    <script nonce="{{ $cspNonce ?? '' }}">
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window,document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1516303113491153');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1516303113491153&ev=PageView&noscript=1"/></noscript>
-    {{-- End Meta Pixel Code --}}
+    {{-- Consent gate: nothing that tracks visitors loads until they opt in.
+         public/consent.js loads the Meta Pixel only after "Accept all". --}}
+    <script src="{{ asset('consent.js') }}?v=20260924ep" nonce="{{ $cspNonce ?? '' }}"></script>
 
-    <title>@yield('title', 'EIAAW Workforce — HR, IT & Accounting on one AI-native platform')</title>
-    <meta name="description" content="@yield('description', 'EIAAW Workforce — the AI-native HR, IT and full-fledged accounting platform built for Malaysian and APAC mid-market teams. The full employee journey, automated IT asset workflow, full HRM (leave, payroll, EA, attendance, statutory), and complete accounting on one tenant.')">
+    <title>@yield('title', 'HR, Payroll & Accounting Software Malaysia | EIAAW Workforce')</title>
+    <meta name="description" content="@yield('description', 'EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs: onboarding, leave, EPF/SOCSO/EIS/PCB payroll, EA forms and a full ledger in one workspace.')">
 
     {{-- Crawler directives (per-page can override via @section('robots')) --}}
     <meta name="robots" content="@yield('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1')">
@@ -43,7 +30,19 @@
         $mkCanonical = $mkPath === '' ? $mkBase.'/' : $mkBase.$mkPath;
     @endphp
     <link rel="canonical" href="{{ $mkCanonical }}">
+
+    {{-- Social cards: every page gets them; pages may override og_image. --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="EIAAW Workforce">
     <meta property="og:url" content="{{ $mkCanonical }}">
+    <meta property="og:title" content="@yield('title', 'HR, Payroll & Accounting Software Malaysia | EIAAW Workforce')">
+    <meta property="og:description" content="@yield('description', 'EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs.')">
+    <meta property="og:image" content="{{ $mkBase }}/images/landing/employee-journey.jpg">
+    <meta property="og:locale" content="en_MY">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'HR, Payroll & Accounting Software Malaysia | EIAAW Workforce')">
+    <meta name="twitter:description" content="@yield('description', 'EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs.')">
+    <meta name="twitter:image" content="{{ $mkBase }}/images/landing/employee-journey.jpg">
 
     {{-- Brand · favicons · theme --}}
     <meta name="theme-color" content="#11766A">
@@ -294,7 +293,7 @@
                         <small>Workforce</small>
                     </span>
                 </a>
-                <p>The AI-native HR, payroll, and accounting platform built for Malaysian and APAC mid-market teams.</p>
+                <p>HR, payroll, IT-asset and accounting software for Malaysian SMEs, by EIAAW Solutions, Kuala Lumpur.</p>
                 <div class="mk-social-row">
                     <a class="mk-social-link" href="https://www.linkedin.com/in/eiaawsolutions" target="_blank" rel="noopener me" aria-label="EIAAW Solutions on LinkedIn" title="LinkedIn">
                         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
@@ -350,6 +349,7 @@
                     <li><a href="{{ route('marketing.terms') }}">Terms of service</a></li>
                     <li><a href="{{ route('marketing.privacy') }}">Privacy policy</a></li>
                     <li><a href="{{ route('marketing.dpa') }}">Data processing (DPA)</a></li>
+                    <li><a href="{{ route('marketing.privacy') }}#cookies" data-cookie-settings>Cookie settings</a></li>
                 </ul>
             </div>
         </div>
@@ -358,7 +358,7 @@
             <div class="mk-footer-trust-chips">
                 <span>Postgres RLS isolation</span>
                 <span>PDPA-aligned</span>
-                <span>Encrypted at rest</span>
+                <span>Hosted in Singapore</span>
                 <span>Audit-logged</span>
             </div>
             <div>© {{ now()->year }} {{ config('eiaaw.company_legal') }} · SSM Reg. No. {{ config('eiaaw.company_reg_no') }}</div>

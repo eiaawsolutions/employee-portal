@@ -99,7 +99,7 @@
                 <div class="fw-confirm">
                     <div class="fw-confirm-mark">✓</div>
                     <h2>Check your inbox</h2>
-                    <p>If an EIAAW Workforce account exists for <code>{{ $submittedEmail ?? 'that address' }}</code>, we've sent you a list of the workspaces you can sign into.</p>
+                    <p>If that email belongs to a workspace, we've sent <code>{{ $submittedEmail ?? 'that address' }}</code> a list of the workspaces it can sign into.</p>
                     <p style="font-size: 13px;">The email arrives within a few minutes. Check spam if it doesn't — and make sure to search for <code>{{ config('eiaaw.product_name') }}</code>.</p>
                     <a href="{{ route('marketing.find-workspace') }}" class="fw-confirm-back">← Try another email</a>
                 </div>
@@ -123,6 +123,7 @@
                     </div>
 
                     <button type="submit" class="fw-submit">Send me the list</button>
+                    <p style="font-size: 12.5px; color: var(--mute); margin: 12px 0 0;">We use this email only to look up and send your workspace links. <a href="{{ route('marketing.privacy') }}">Privacy Notice</a></p>
                 </form>
 
                 <div class="fw-note">

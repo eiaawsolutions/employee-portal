@@ -42,6 +42,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Global security headers on every response
         $middleware->prepend(\App\Http\Middleware\SecurityHeaders::class);
 
+        // One canonical marketing host: www.ep → ep (301), before anything else.
+        $middleware->prepend(\App\Http\Middleware\RedirectWwwMarketingHost::class);
+
         // EIAAW Workforce — resolve current tenant from subdomain BEFORE any
         // tenant-scoped query runs. Binds app('current_tenant') and sets the
         // Postgres SET LOCAL app.tenant_id session variable for RLS.

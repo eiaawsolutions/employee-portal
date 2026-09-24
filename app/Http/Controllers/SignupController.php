@@ -61,6 +61,9 @@ class SignupController extends Controller
                 'regex:/^[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?$/',
             ],
             'plan'         => ['required', 'in:starter,growth,scale'],
+            'consent'      => ['accepted'],
+        ], [
+            'consent.accepted' => 'Please agree to the Terms of Service and Privacy Notice to continue.',
         ])->validate();
 
         $slug = strtolower($data['desired_slug']);
@@ -89,6 +92,8 @@ class SignupController extends Controller
                 'signup_ip'         => $request->ip(),
                 'signup_user_agent' => Str::limit($request->userAgent() ?? '', 500),
                 'confirmed_at'      => null,
+                'consent_at'        => now(),
+                'consent_version'   => config('eiaaw.privacy_version'),
             ]
         );
 

@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'FAQ — EIAAW Workforce')
-@section('description', 'Frequently asked questions about trials, billing, data, security, and onboarding on EIAAW Workforce.')
+@section('title', 'EIAAW Workforce FAQ — Trial, Billing, Data, PDPA & Security')
+@section('description', 'Straight answers about the EIAAW Workforce trial, per-employee billing, where data is hosted, PDPA, security, AI and getting started.')
 
 @push('head')
 <style>
@@ -91,65 +91,77 @@
 @section('content')
 
 @php
+    // Plain-text answers: the same strings feed the visible FAQ and the FAQPage schema.
     $faqGroups = [
         [
             'number' => '01',
             'title'  => 'Trial',
             'items'  => [
-                ['Do I need a credit card for the trial?', 'No. The 14-day Growth-tier trial needs only a work email, your name, company name, and a workspace URL. We never ask for card details to start.'],
-                ['What happens on day 15?', 'We email you on day 10, 13, and the morning of day 15 with a "pick a plan" link. If you do nothing, the workspace auto-downgrades to Starter on day 15 — your data stays, your team keeps working, and you can upgrade any time.'],
-                ['Can I extend my trial?', 'Yes — reply to any trial-reminder email and tell us why. Trial extensions are case-by-case but we\'ve never said no to a genuine evaluation.'],
-                ['Can I invite my team during the trial?', 'Yes. Up to 50 users during trial, full functionality. Invite-but-not-active employees don\'t count toward billed headcount.'],
+                ['Do I need a credit card for the trial?', 'No. The 14-day trial of the plan you choose needs only a work email, your name, company name and a workspace URL. We never ask for card details to start.'],
+                ['What happens when the trial ends?', 'If you haven’t chosen a paid plan, the workspace moves to the Starter plan and keeps your data. To keep using it, tell us you want to subscribe and we’ll send an invoice.'],
+                ['Can I extend my trial?', 'Ask us before it ends and tell us why. Extensions are case by case.'],
+                ['Can I invite my team during the trial?', 'Yes. A trial workspace has 5 user seats with the full features of the plan you chose. Invited employees who haven’t started don’t count toward billed headcount.'],
             ],
         ],
         [
             'number' => '02',
             'title'  => 'Billing',
             'items'  => [
-                ['How is "per active employee" calculated?', 'We bill for employees with an active record in your workspace on the first day of each billing cycle. Invited-but-not-started, terminated, and deactivated records don\'t count.'],
-                ['What if I grow past my tier\'s headcount?', 'No auto-upgrade, no surprise charges. We email you on the 25th of the month, offering three paths: pay per extra seat at the tier rate, upgrade to the next tier, or switch to Enterprise.'],
-                ['Do you charge for invited users who never activate?', 'No. Only activated employees count toward billing.'],
-                ['Can I pay annually?', 'Yes. Annual billing gets you 2 months free (pay 10 months, get 12). Available on Starter, Growth, and Scale. Enterprise is always annual.'],
-                ['What currencies do you support?', 'MYR (primary) and USD. Enterprise can be invoiced in other currencies on request.'],
-                ['What payment methods?', 'All major cards via Stripe (Starter, Growth, Scale). Enterprise supports bank transfer, cheque, and LOA/PO billing.'],
+                ['How is "per active employee" calculated?', 'We bill for employees with an active record in your workspace on the day we bill. Invited-but-not-started, terminated and deactivated records don’t count.'],
+                ['Is there a minimum?', 'Starter, Growth and Scale have a minimum of 5 billable employees per workspace. Enterprise minimums are agreed in the order form.'],
+                ['Can I pay annually?', 'Yes. Annual billing gets you 2 months free (pay 10 months, get 12) on Starter, Growth and Scale.'],
+                ['What currency do you bill in?', 'Plans are priced and billed in US dollars.'],
+                ['How do I pay?', 'We send invoices through Stripe, which you can pay by card. Enterprise can also pay by bank transfer against an invoice.'],
             ],
         ],
         [
             'number' => '03',
             'title'  => 'Data',
             'items'  => [
-                ['Where is my data hosted?', 'Railway production region. Postgres with daily encrypted backups retained 30 days, weekly retained 12 months.'],
-                ['Can I export everything?', 'Yes — full export of your tenant as CSV (for humans) or JSON Lines (for re-import) from Admin → Export. Audit log export is Scale+ tier.'],
-                ['What happens if I cancel?', 'Your data goes read-only for 30 days so your team can finish any outstanding work and export. After 30 days it\'s deleted from primary storage; encrypted backups are purged within 90 days.'],
-                ['Can I migrate existing data in?', 'Yes. Common HRMS / payroll exports can be imported via the onboarding wizard. Accounting migration (opening balances, chart of accounts, prior-period JE) is a paid setup engagement on Scale+.'],
-                ['Do you use my data to train AI models?', 'No. Your data is never used to train or fine-tune models — not ours, not third parties\'. Anthropic\'s API also does not train on customer data by default.'],
+                ['Where is my data hosted?', 'On Railway in Singapore, behind Cloudflare. The full list of providers that handle personal data is in our Privacy Notice.'],
+                ['Can I export my data?', 'Yes. Employee, asset, claims and onboarding records export as CSV from their modules, and EA forms are generated per employee. On request we provide a full export of your workspace.'],
+                ['What happens if I cancel?', 'Your workspace goes read-only for 30 days so your team can finish outstanding work and export. It is then deleted from the primary database, and any remaining copies are removed within 90 days of cancellation.'],
+                ['Can I move existing data in?', 'Yes. Employees and assets can be imported from CSV templates. Accounting opening balances can be entered when you set up the ledger.'],
+                ['Do you use my data to train AI models?', 'No. Your data is never used to train or fine-tune models, ours or anyone else’s. Anthropic, whose models power the assistant, does not train on data sent through its commercial API.'],
             ],
         ],
         [
             'number' => '04',
             'title'  => 'Security',
             'items'  => [
-                ['How is tenant data isolated?', 'Postgres Row-Level Security (FORCE mode) on every tenant-tagged table. The database rejects queries that don\'t match the session\'s tenant_id — controllers can\'t leak what the DB won\'t let through. See the <a href="'.route('marketing.security').'">Security page</a> for the full architecture.'],
-                ['Do you have SOC 2?', 'We\'re not SOC 2 certified today. The platform is built to those controls — Postgres Row-Level Security in FORCE mode, TLS 1.3, AES-256 at rest, HMAC-chained audit logs, TOTP 2FA, and SAML 2.0 / OIDC SSO on Enterprise. For where our formal compliance program stands, <a href="'.route('marketing.contact').'">talk to us</a>.'],
-                ['Is my data encrypted?', 'In transit: TLS 1.3 enforced. At rest: AES-256 on Postgres disk, encrypted file storage for the private disk.'],
-                ['Do you have 2FA?', 'Yes. TOTP-based 2FA available for every user. Enterprise can enforce 2FA workspace-wide.'],
-                ['What\'s in the audit log?', 'Every auth event, approval, AI query, export, and admin action — HMAC-chained so tampering is detectable. Scale tier gets audit export; Enterprise gets SIEM forwarding.'],
-                ['How do I report a vulnerability?', 'Email <a href="mailto:security@eiaawsolutions.com">security@eiaawsolutions.com</a>. We respond within 2 business days and publish a responsible-disclosure policy.'],
+                ['How is tenant data isolated?', 'Postgres Row-Level Security in FORCE mode on every tenant-tagged table. The database rejects queries that don’t match the session’s tenant ID, so a bug in application code can’t leak another workspace’s data.'],
+                ['Do you have SOC 2?', 'No, we are not SOC 2 certified. The controls we run today are Postgres Row-Level Security, HTTPS everywhere, a tamper-evident audit log, TOTP two-factor authentication, and SAML 2.0 / OIDC single sign-on on Enterprise.'],
+                ['Is my data encrypted?', 'All traffic uses HTTPS, and passwords are stored as one-way hashes.'],
+                ['Do you have 2FA?', 'Yes. TOTP two-factor authentication is available to every user, and admin roles are required to set it up.'],
+                ['What’s in the audit log?', 'Security-relevant actions such as sign-ins, approvals, AI queries and exports, chained with HMAC so tampering is detectable. Enterprise can export the log to its own SIEM.'],
+                ['How do I report a vulnerability?', 'Email eiaawsolutions@gmail.com with “Security” in the subject. We acknowledge within 2 business days. Our security.txt file lists the same contact.'],
             ],
         ],
         [
             'number' => '05',
-            'title'  => 'Onboarding',
+            'title'  => 'Getting started',
             'items'  => [
-                ['How long does implementation take?', 'Starter: self-serve in a day. Growth (HRM + assets): self-serve in 1–3 days, longer if you have an existing payroll history to import. Scale (adds full accounting): usually 2–4 weeks with our implementation team for CoA migration, opening balances, and integration setup.'],
-                ['Can I trial with real employee data?', 'Yes. You own the data you import, even during trial. If you don\'t convert, export + delete takes one click.'],
-                ['Do you support single sign-on?', 'Yes on Enterprise — SAML 2.0 and OIDC. Starter / Growth / Scale use email + password with optional TOTP 2FA.'],
-                ['What integrations do you have?', 'Stripe, Slack (notifications), and Gmail/Outlook (email). Enterprise supports custom integrations via API — talk to us about a specific system.'],
-                ['Do you have a mobile app?', 'The web app is fully responsive and works on phone and tablet. There\'s no separate native iOS / Android app.'],
+                ['How long does setup take?', 'Starter is self-serve in a day. Growth usually takes 1–3 days, longer if you are bringing in payroll history. Scale, which adds accounting, depends on how much of your ledger you are moving across.'],
+                ['Can I trial with real employee data?', 'Yes. You own the data you enter, even during the trial. If you don’t continue, ask us to delete the workspace and we will.'],
+                ['Do you support single sign-on?', 'Yes on Enterprise, with SAML 2.0 and OIDC. Starter, Growth and Scale use email and password with TOTP two-factor authentication.'],
+                ['What integrations do you have?', 'Stripe for billing, and email for invitations, approvals and notifications. Talk to us about a specific system.'],
+                ['Do you have a mobile app?', 'The web app works on phones and tablets. There is no separate native iOS or Android app.'],
             ],
         ],
     ];
+    $faqSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => collect($faqGroups)->flatMap(fn ($g) => $g['items'])->map(fn ($qa) => [
+            '@type' => 'Question',
+            'name' => $qa[0],
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $qa[1]],
+        ])->values()->all(),
+    ];
 @endphp
+@push('head')
+<script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endpush
 
 <section class="faq-hero">
     <div class="mk-container mk-container--narrow">
@@ -171,7 +183,7 @@
                 <details class="faq-item">
                     <summary>{{ $q }}</summary>
                     <div class="faq-body">
-                        <p>{!! $a !!}</p>
+                        <p>{{ $a }}</p>
                     </div>
                 </details>
             @endforeach

@@ -5,22 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Meta Pixel Code — nonce'd to satisfy the enforced CSP (SecurityHeaders.php) --}}
-    <script nonce="{{ $cspNonce ?? '' }}">
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window,document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1516303113491153');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1516303113491153&ev=PageView&noscript=1"/></noscript>
-    {{-- End Meta Pixel Code --}}
+    <meta name="robots" content="noindex, nofollow">
+    {{-- Consent gate: the Meta Pixel loads only after the visitor opts in (public/consent.js) --}}
+    <script src="{{ asset('consent.js') }}?v=20260924ep" nonce="{{ $cspNonce ?? '' }}"></script>
 
     <title>Start your EIAAW Workforce trial · {{ config('eiaaw.product_name', 'EIAAW Workforce') }}</title>
     <link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
@@ -130,7 +117,7 @@
 
             <ul class="aside-bullets">
                 <li>Full HR, payroll, claims, leave, attendance, IT assets</li>
-                <li>AI assistant trained on your workspace</li>
+                <li>AI assistant that answers from your own records</li>
                 <li>Up to 5 users free during trial</li>
                 <li>Cancel anytime; auto-converts to Starter on day&nbsp;15</li>
             </ul>
@@ -163,7 +150,7 @@
                 <div class="plan-summary-trial">14-day free trial · no credit card required</div>
             </div>
 
-            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug','plan']))
+            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug','plan','consent']))
                 <div class="alert-danger">{{ $errors->first() }}</div>
             @endif
 
@@ -199,14 +186,19 @@
                 @error('desired_slug')<div class="error">{{ $message }}</div>@enderror
             </div>
 
+            <div class="field">
+                <label for="consent" style="display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.5;cursor:pointer">
+                    <input type="checkbox" id="consent" name="consent" value="1" required style="margin-top:3px;width:auto;flex:none" @checked(old('consent'))>
+                    <span>I agree to the <a href="{{ route('marketing.terms') }}" target="_blank" rel="noopener" style="color:#11766A">Terms of Service</a> and to EIAAW processing my details, including through service providers outside my country, as described in the <a href="{{ route('marketing.privacy') }}" target="_blank" rel="noopener" style="color:#11766A">Privacy Notice</a>.</span>
+                </label>
+                @error('consent')<div class="error">{{ $message }}</div>@enderror
+            </div>
+
             <button type="submit" class="submit">
                 Continue → confirm by email
             </button>
 
             <p class="legal">
-                By signing up you agree to our
-                <a href="/terms">Terms of Service</a> and
-                <a href="/privacy">Privacy Policy</a>.
                 Already have an account?
                 <a href="/find-workspace">Find your workspace</a>.
             </p>

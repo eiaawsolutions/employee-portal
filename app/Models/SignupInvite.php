@@ -16,12 +16,13 @@ class SignupInvite extends Model
     protected $fillable = [
         'work_email', 'full_name', 'company_name', 'desired_slug',
         'confirmation_token', 'plan', 'confirmed_at', 'expires_at',
-        'signup_ip', 'signup_user_agent',
+        'signup_ip', 'signup_user_agent', 'consent_at', 'consent_version',
     ];
 
     protected $casts = [
         'confirmed_at' => 'datetime',
         'expires_at'   => 'datetime',
+        'consent_at'   => 'datetime',
     ];
 
     public function isExpired(): bool

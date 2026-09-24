@@ -47,23 +47,28 @@ class SecurityHeaders
         // in FRONTEND-PATTERNS.md and being converted to addEventListener incrementally.
         // When that migration completes this line drops `unsafe-hashes` + `unsafe-inline`
         // from script-src, and `unsafe-inline` from style-src.
+        // Meta's hosts are allowed only on the public marketing pages, where
+        // public/consent.js may load the Pixel after the visitor opts in. The
+        // signed-in app, sign-in and signup-confirm pages never allow them.
+        $marketing = $request->routeIs('marketing.*', 'signup.form');
+        $metaScript = $marketing ? ' https://connect.facebook.net' : '';
+        $metaImg = $marketing ? ' https://www.facebook.com' : '';
+        $metaConnect = $marketing ? ' https://www.facebook.com https://connect.facebook.net' : '';
+
         $cspEnforced = implode('; ', [
             "default-src 'self'",
-            // connect.facebook.net serves fbevents.js (Meta Pixel loader).
-            "script-src 'self' 'nonce-{$nonce}' 'unsafe-hashes' https://cdn.jsdelivr.net https://connect.facebook.net",
+            "script-src 'self' 'nonce-{$nonce}' 'unsafe-hashes' https://cdn.jsdelivr.net{$metaScript}",
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
             "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com",
-            // www.facebook.com hosts the Meta Pixel <noscript> tracking <img> beacon.
-            "img-src 'self' data: blob: https://api.qrserver.com https://www.facebook.com",
+            "img-src 'self' data: blob: https://api.qrserver.com{$metaImg}",
             // connect-src — AI gateway calls out to api.anthropic.com/api.openai.com
             // from the SERVER, never the browser, so the browser only XHRs same-origin
             // for app traffic. Two cross-origin exceptions: (1) the marketing voice
             // launcher (resources/views/partials/marketing-voice.blade.php), which
             // POSTs to sa.eiaawsolutions.com (sibling Sales-marketing-agent service)
             // to mint a one-shot Retell call URL — anonymous marketing pages only;
-            // (2) Meta Pixel (fbq) beacons events to www.facebook.com /
-            // connect.facebook.net.
-            "connect-src 'self' https://sa.eiaawsolutions.com https://www.facebook.com https://connect.facebook.net",
+            // (2) the Meta Pixel, marketing pages only and only after consent.
+            "connect-src 'self' https://sa.eiaawsolutions.com{$metaConnect}",
             "frame-ancestors 'none'",
             "frame-src 'none'",
             "object-src 'none'",

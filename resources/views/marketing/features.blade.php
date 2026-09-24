@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'Features — EIAAW Workforce')
-@section('description', 'Core HR, Payroll & EA forms, Claims, IT Asset Inventory, Full Accounting, and the AI assistant — every module in depth.')
+@section('title', 'HR, Payroll, IT Asset & Accounting Features | EIAAW Workforce')
+@section('description', 'Every EIAAW Workforce module in detail: employee records, IT assets with AARF, leave, claims, EPF/SOCSO/EIS/PCB payroll and EA forms, full accounting, and the AI assistant.')
 
 @push('head')
 <style>
@@ -194,7 +194,6 @@
                 <li>Asset master with serial, purchase date, warranty, and depreciation</li>
                 <li>AARF (Asset Acknowledgement) flow — tokenised email links to confirm receipt</li>
                 <li>Automatic return checklist generated from assigned assets on offboarding</li>
-                <li>Software licence seat tracking with expiry alerts</li>
                 <li>Disposal records with chain-of-custody trail</li>
             </ul>
         </div>
@@ -219,19 +218,18 @@
         <div class="ft-mod-copy">
             <span class="eyebrow">M3 · HRM · Growth+</span>
             <h2>Leave, attendance, claims, payroll — <em>one source of truth.</em></h2>
-            <p>Payroll pulls from attendance, leave, and approved claims automatically — no export/import cycle. EA forms export in the format LHDN expects.</p>
+            <p>Payroll picks up unpaid leave, approved overtime and approved claims automatically — no export/import cycle. EA forms are generated for every employee at year-end.</p>
             <ul>
                 <li>Leave workflow — apply, approve, balances, entitlements, public holidays</li>
-                <li>Attendance &amp; timesheet with anomaly flags</li>
+                <li>Attendance records and overtime requests with approval</li>
                 <li>Expense claims (eClaim) — receipt upload, multi-step approval</li>
                 <li>Advanced payroll — EPF, SOCSO, EIS, PCB calculated per Malaysian statutory tables</li>
-                <li>Delta payslips — "why did this month change?" explained per line</li>
-                <li>EA form generator (LHDN-compliant) with per-employee distribution</li>
+                <li>EA form generator with per-employee distribution</li>
             </ul>
         </div>
         <div class="ft-mock">
             <div class="ft-mock-head">
-                <span class="ft-mock-head-dot">Payroll · April 2026</span>
+                <span class="ft-mock-head-dot">Payroll · sample data</span>
                 <span>Run #47</span>
             </div>
             <div class="ft-mock-stats">
@@ -242,7 +240,7 @@
             <div class="ft-mock-row"><strong>EPF</strong> <span>$24,320 · 142 employees</span> <span class="tag tag--approved">Ready</span></div>
             <div class="ft-mock-row"><strong>SOCSO + EIS</strong> <span>$4,680 · 142 employees</span> <span class="tag tag--approved">Ready</span></div>
             <div class="ft-mock-row"><strong>PCB (tax)</strong> <span>$7,624 · 118 taxable</span> <span class="tag tag--approved">Ready</span></div>
-            <div class="ft-mock-row"><strong>Anomaly</strong> <span>1 employee · OT &gt; 60% of base</span> <span class="tag tag--pending">Review</span></div>
+            <div class="ft-mock-row"><strong>Pay run</strong> <span>Awaiting approval</span> <span class="tag tag--pending">Review</span></div>
         </div>
     </section>
 
@@ -254,17 +252,17 @@
             <p>Approved claims, fixed-asset depreciation, and payroll runs all flow into the same chart of accounts. No monthly export to a separate bookkeeping tool.</p>
             <ul>
                 <li>Chart of Accounts with opening-balance migration from your old system</li>
-                <li>Accounts Receivable / Payable with ageing and dunning</li>
+                <li>Accounts Receivable / Payable with ageing</li>
                 <li>Bank reconciliation with AI auto-match</li>
-                <li>Budgets with per-line variance alerts</li>
-                <li>Tax returns (SST / GST-ready) and fiscal period close</li>
+                <li>Budgets with variance reporting</li>
+                <li>SST returns and CP204 / CP207 tax records, with fiscal period close</li>
                 <li>AI invoice scanning — receipts and vendor bills auto-coded to GL</li>
                 <li>Claim → ledger auto-posting from the HRM eClaim workflow</li>
             </ul>
         </div>
         <div class="ft-mock">
             <div class="ft-mock-head">
-                <span class="ft-mock-head-dot">General Ledger · April</span>
+                <span class="ft-mock-head-dot">General Ledger · sample data</span>
                 <span>Period open</span>
             </div>
             <div class="ft-mock-row"><strong>Revenue</strong> <span>$530k</span> <span class="tag tag--approved">Posted</span></div>
@@ -280,24 +278,24 @@
         <div class="ft-mod-copy">
             <span class="eyebrow">AI · Human Partnerships · Every tier</span>
             <h2>An assistant that <em>reads your data</em> — and cites the rows.</h2>
-            <p>Retrieval-grounded on your tenant. Never hallucinates a policy. Respects role-based access — the assistant can only show what the asking user is allowed to see.</p>
+            <p>It answers from your workspace's records and lists the ones it used. It respects role-based access — it can only show what the person asking is allowed to see — and it reads without ever changing data. Check important answers against the records it cites.</p>
             <ul>
-                <li>Anthropic Claude Haiku 4.5 routine + Sonnet 4.6 for complex queries</li>
-                <li>Per-tenant monthly message budget with a cost circuit breaker</li>
-                <li>Every answer cites the specific records the model retrieved</li>
-                <li>Sensitive fields (NRIC, salary) redacted unless the asker has the role</li>
-                <li>Switchable to OpenAI or a self-hosted Llama model (Enterprise)</li>
+                <li>Runs on Anthropic's Claude models; your data is never used for training</li>
+                <li>Answers questions about leave, expense claims and the employee directory</li>
+                <li>Every answer lists the records it read</li>
+                <li>Salary and NRIC are never sent to the AI model</li>
+                <li>Monthly usage cap per workspace keeps costs predictable</li>
             </ul>
         </div>
         <div class="ft-mock">
             <div class="ft-mock-head">
-                <span class="ft-mock-head-dot">Assistant · Haiku 4.5</span>
+                <span class="ft-mock-head-dot">Assistant · sample</span>
                 <span>Budget · 412 / 1,000</span>
             </div>
-            <div class="ft-mock-row"><strong>Ask</strong> <span>"Summarise April claims by department"</span> <span class="tag tag--primary">Answered</span></div>
+            <div class="ft-mock-row"><strong>Ask</strong> <span>"Which claims are waiting for my approval?"</span> <span class="tag tag--primary">Answered</span></div>
             <div class="ft-mock-row"><strong>Ask</strong> <span>"Who's OOO next week?"</span> <span class="tag tag--primary">Answered</span></div>
-            <div class="ft-mock-row"><strong>Ask</strong> <span>"Draft offboarding plan for Daniel Lim"</span> <span class="tag tag--approved">Drafted</span></div>
-            <div class="ft-mock-row"><strong>Ask</strong> <span>"Show me Aisha's salary"</span> <span class="tag tag--danger">Role blocked</span></div>
+            <div class="ft-mock-row"><strong>Ask</strong> <span>"Who reports to Hanna Tan?"</span> <span class="tag tag--primary">Answered</span></div>
+            <div class="ft-mock-row"><strong>Ask</strong> <span>"Show me Aisha's salary"</span> <span class="tag tag--danger">Not available</span></div>
         </div>
     </section>
 

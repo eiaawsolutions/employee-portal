@@ -236,6 +236,13 @@
         padding: 10px 12px;
         background: #fbe9e9; border-radius: 8px;
     }
+    .ep-consent {
+        display: flex; gap: 8px; align-items: flex-start;
+        font-size: 12.5px; line-height: 1.5; color: var(--ink-2, #4a4a52);
+        margin: 4px 0 14px; cursor: pointer;
+    }
+    .ep-consent input { margin-top: 3px; flex: none; }
+    .ep-consent a { color: var(--primary-dark, #11766A); text-decoration: underline; }
     .ep-modal-actions {
         display: flex; gap: 10px; flex-wrap: wrap;
         margin-top: 8px;
@@ -323,6 +330,11 @@
                           placeholder="A few lines about your team, your goals, and the outcome you&rsquo;re after."></textarea>
             </div>
 
+            <label class="ep-consent" for="ep-c-consent">
+                <input type="checkbox" id="ep-c-consent">
+                <span>I agree that EIAAW may use these details to reply to me, including through service providers outside my country, as described in the <a href="{{ route('marketing.privacy') }}" target="_blank" rel="noopener">privacy notice</a>.</span>
+            </label>
+
             <div class="ep-modal-err" id="ep-c-error" hidden></div>
 
             <div class="ep-modal-actions">
@@ -334,7 +346,7 @@
         <div data-view="success" hidden>
             <span class="ep-modal-eyebrow">Message sent</span>
             <h3>Thanks — we&rsquo;ll <em>be in touch.</em></h3>
-            <p class="ep-modal-lede">Your enquiry just landed at <strong>{{ config('eiaaw.sales_email', 'sales@eiaawsolutions.com') }}</strong>. While you wait, you&rsquo;re welcome to keep exploring or start the 14-day Growth trial — no credit card.</p>
+            <p class="ep-modal-lede">Your enquiry just landed at <strong>{{ config('eiaaw.sales_email', 'sales@eiaawsolutions.com') }}</strong>. While you wait, you&rsquo;re welcome to keep exploring or start the 14-day trial — no credit card.</p>
             <div class="ep-modal-actions">
                 <a href="{{ route('marketing.pricing') }}" class="ep-btn ep-btn--primary">Start 14-day trial →</a>
                 <button type="button" class="ep-btn ep-btn--ghost" data-ep-close>Close</button>
@@ -364,6 +376,13 @@
 
     let sessionId = null;
     let isOpen = false;
+
+    // Consent record (PDPA + APAC baseline): notice version + time + page.
+    const PRIVACY_VERSION = '{{ config('eiaaw.privacy_version') }}';
+    const CONSENT_ERR = 'Please tick the box to agree to the privacy notice.';
+    function consentRecord() {
+        return 'Consent: agreed to privacy notice (' + PRIVACY_VERSION + ') on ' + new Date().toISOString() + ' via ' + location.href;
+    }
 
     function openPanel() {
         panel.classList.add('is-open');
@@ -449,6 +468,7 @@
             + '<input id="epg-email" type="email" placeholder="Email" maxlength="160" style="'+fld+'">'
             + '<input id="epg-phone" type="tel" placeholder="Phone" maxlength="40" style="'+fld+'">'
             + '<input id="epg-company" type="text" placeholder="Company (optional)" maxlength="160" style="'+fld+'">'
+            + '<label class="ep-consent" for="epg-consent" style="margin:6px 0 4px"><input type="checkbox" id="epg-consent"><span>I agree that EIAAW may use these details to reply to me, including through service providers outside my country, as described in the <a href="{{ route('marketing.privacy') }}" target="_blank" rel="noopener">privacy notice</a>.</span></label>'
             + '<div id="epg-err" style="color:#c0392b;font-size:12px;min-height:14px;margin:2px 0"></div>'
             + '<button id="epg-go" type="button" style="width:100%;padding:9px;border:none;border-radius:8px;font-size:13px;cursor:pointer;background:#0f5132;color:#fff">Start chatting</button>';
         msgsEl.appendChild(wrap);
@@ -470,6 +490,7 @@
         if (!name || !email || !phone) { err.textContent = 'Name, email, and phone are required.'; return; }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
         if (String(phone).replace(/\D/g, '').length < 7) { err.textContent = 'Please enter a valid phone number.'; return; }
+        if (!document.getElementById('epg-consent').checked) { err.textContent = CONSENT_ERR; return; }
         var btn = document.getElementById('epg-go');
         btn.disabled = true; btn.textContent = 'Saving…';
         try {
@@ -477,7 +498,7 @@
             await fetch(SA_INTAKE, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, email: email, phone: phone, company: company, site: 'workforce', page: location.pathname }),
+                body: JSON.stringify({ name: name, email: email, phone: phone, company: company, site: 'workforce', page: location.pathname, message: consentRecord() }),
             });
         } catch (e) { /* soft-fail: never trap the visitor behind a network error */ }
         epGatePassed = true;
@@ -583,6 +604,11 @@
             errEl.hidden = false;
             return;
         }
+        if (!modal.querySelector('#ep-c-consent').checked) {
+            errEl.textContent = CONSENT_ERR;
+            errEl.hidden = false;
+            return;
+        }
 
         errEl.hidden = true;
         btn.disabled = true;
@@ -600,7 +626,7 @@
                 credentials: 'same-origin',
                 body: JSON.stringify({
                     name: name, email: email, phone: phone, company: company,
-                    message: message, source: isOpen ? 'chatbot' : 'landing-form',
+                    message: message, source: isOpen ? 'chatbot' : 'landing-form', consent: true,
                 }),
             });
             const data = await res.json().catch(() => ({}));

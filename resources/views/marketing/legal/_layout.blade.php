@@ -38,6 +38,13 @@
     .lg-body li { margin-bottom: 8px; }
     .lg-body strong { color: var(--ink); font-weight: 600; }
     .lg-body a { color: var(--primary-dark); text-decoration: underline; }
+    .lg-body table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13.5px; }
+    .lg-body th, .lg-body td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line-soft); }
+    .lg-body th { color: var(--ink); font-weight: 600; }
+    .lg-body code { font-family: var(--mono); font-size: 12.5px; }
+    .lg-table { overflow-x: auto; }
+    .lg-lang { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 10px; }
+    .lg-bm { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line-soft); }
 
     .lg-nav {
         display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
@@ -63,11 +70,9 @@
         <span class="eyebrow">Legal</span>
         <h1 class="mk-display">@yield('legal-title')</h1>
         <p>@yield('legal-lede')</p>
-        <div class="lg-meta">Last updated · @yield('legal-updated', now()->format('M Y'))</div>
+        <div class="lg-meta">Last updated · @yield('legal-updated')</div>
     </div>
 </section>
-
-@include('marketing.legal._stub-banner')
 
 <div class="mk-container">
     <div class="lg-body">

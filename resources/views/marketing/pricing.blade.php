@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'Pricing — EIAAW Workforce')
-@section('description', 'Four modules, three paid tiers. Starter $6, Growth $14, Scale $29 per active employee per month. Enterprise custom. 14-day trial, no credit card.')
+@section('title', 'EIAAW Workforce Pricing — HR & Payroll Software per Employee')
+@section('description', 'EIAAW Workforce pricing per active employee per month: Starter, Growth and Scale plans, Enterprise on request. Annual billing gets two months free.')
 
 @push('head')
 <style>
@@ -338,31 +338,27 @@
             @endforeach
         </div>
 
+        @php
+            // One source for the visible FAQ and its FAQPage schema (pushed to <head> below).
+            $pricingFaqs = [
+                ['What counts as an "active employee"?', 'Anyone with an active record in your workspace on the day we bill. Invited-but-not-started users, terminated employees and deactivated accounts don’t count.'],
+                ['Is there a minimum?', 'Starter, Growth and Scale have a minimum of 5 billable employees per workspace. Enterprise minimums are agreed in the order form.'],
+                ['What’s the difference between Growth and Scale?', 'Growth bundles Employee Journey, IT Assets and HRM (leave, attendance, claims, payroll, EA forms). Scale adds full accounting: chart of accounts, general ledger, AR/AP, budgets, SST returns, AI invoice scanning and claim-to-ledger posting. Pick Scale when finance and HR run on the same backbone.'],
+                ['Do I need a credit card for the trial?', 'No. The 14-day trial of the plan you choose needs only a work email. When it ends, choose a plan to keep going; if you don’t, the workspace moves to Starter and keeps your data.'],
+                ['Is there a setup fee?', 'No setup fee on Starter, Growth or Scale. Enterprise implementations (SSO, dedicated database) have a setup fee agreed upfront.'],
+                ['How do I cancel?', 'Email us from the workspace owner’s address. Cancellation takes effect at the end of the current billing period; your data stays read-only for 30 days so you can export it, then it is deleted.'],
+            ];
+        @endphp
+        @push('head')
+        <script type="application/ld+json" nonce="{{ $cspNonce ?? '' }}">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(fn ($f) => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], $pricingFaqs)], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+        @endpush
         <div class="pr-faqs">
-            <div class="pr-faq">
-                <h4>What counts as an "active employee"?</h4>
-                <p>Anyone with an active record in your workspace on the day we bill. Invited-but-not-started users, terminated employees, and deactivated accounts don't count.</p>
-            </div>
-            <div class="pr-faq">
-                <h4>What's the difference between Growth and Scale?</h4>
-                <p>Growth bundles Employee Journey, IT Assets, and full HRM (leave, attendance, claims, payroll, EA forms) — everything most teams need to run people operations end-to-end. Scale adds Module 4 — full-fledged accounting (CoA, GL, AR/AP, budgets, tax returns, AI invoice scanning, claim → ledger auto-posting). Pick Scale when finance and HR run on the same backbone.</p>
-            </div>
-            <div class="pr-faq">
-                <h4>Do I need a credit card for the trial?</h4>
-                <p>No. The 14-day Growth-tier trial requires only a work email. On day 15 you pick a plan and add payment — or we auto-downgrade your workspace to Starter.</p>
-            </div>
-            <div class="pr-faq">
-                <h4>What if I grow past my tier's headcount?</h4>
-                <p>No surprise charges — we email you before the next invoice and let you choose: stay where you are (pay per extra seat), upgrade tier, or negotiate Enterprise.</p>
-            </div>
-            <div class="pr-faq">
-                <h4>Is there a setup fee?</h4>
-                <p>No setup fee on Starter, Growth, or Scale. Enterprise implementations (SSO, dedicated DB, custom integrations) have a scoped setup fee agreed upfront.</p>
-            </div>
-            <div class="pr-faq">
-                <h4>How do I cancel?</h4>
-                <p>From your workspace admin → Billing. Cancellation takes effect at the end of the current billing cycle; your data stays read-only for 30 days before deletion.</p>
-            </div>
+            @foreach($pricingFaqs as [$q, $a])
+                <div class="pr-faq">
+                    <h4>{{ $q }}</h4>
+                    <p>{{ $a }}</p>
+                </div>
+            @endforeach
         </div>
     </div>
 </section>

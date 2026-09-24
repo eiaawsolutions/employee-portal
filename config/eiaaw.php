@@ -16,6 +16,14 @@ return [
     'company_legal'  => 'EIAAW SOLUTIONS',
     'company_reg_no' => '202603133419 (CT0164540-H)',
 
+    // Data-protection contact (DPO) — the inbox named in the privacy notice.
+    'privacy_email' => env('PRIVACY_EMAIL', 'eiaawsolutions@gmail.com'),
+
+    // Version of the privacy notice + terms a visitor agrees to. Stored with
+    // every consent record (marketing_contacts, signup_invites). Bump it when
+    // either document changes materially, and update the pages' "Last updated".
+    'privacy_version' => '2026-09-24',
+
     /*
      * Reserved tenant slugs.
      *
@@ -145,9 +153,8 @@ return [
                     'Everything in Starter',
                     'IT asset inventory with AARF acknowledgement',
                     'IT offboarding checklist generated from assigned assets',
-                    'Software licence seat tracking & expiry alerts',
                     'Leave workflow — apply, approve, balances, entitlements',
-                    'Attendance & timesheet',
+                    'Attendance and overtime requests',
                     'Expense claims (eClaim) with multi-step approvals',
                     'Advanced payroll — EPF, SOCSO, EIS, PCB',
                     'Payslip delivery & EA form export (LHDN-ready)',
@@ -178,11 +185,10 @@ return [
                     'Full accounting — Chart of Accounts, GL, AR/AP, budgets, tax returns',
                     'AI invoice scanning & auto-reconciliation',
                     'Claim → ledger auto-posting',
-                    'Anomaly detection on claims, attendance, payroll',
                     'Bank reconciliation with AI auto-match',
                     'Fixed-asset depreciation feeding the GL',
-                    'AI assistant (5,000 messages/mo, financial-close copilot)',
-                    'Slack-channel support — 2 business-hour response',
+                    'AI assistant (5,000 messages/mo)',
+                    'Priority email support — 2 business-hour response',
                 ],
                 'excluded' => [
                     'SSO (SAML / OIDC) — Enterprise only',
@@ -203,7 +209,6 @@ return [
                 'features' => [
                     'Everything in Scale',
                     'SAML 2.0 + OIDC SSO',
-                    'SCIM 2.0 user provisioning',
                     'Dedicated Postgres database (isolated from shared pool)',
                     'Audit log export to your SIEM',
                     'Custom DPA, data residency, and BCP addenda',

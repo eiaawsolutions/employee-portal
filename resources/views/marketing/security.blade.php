@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'Security — EIAAW Workforce')
-@section('description', 'Postgres Row-Level Security, HMAC-chained audit log, encrypted-at-rest storage, PDPA-aligned. The security architecture behind EIAAW Workforce.')
+@section('title', 'Security & Data Isolation (Postgres RLS, PDPA) | EIAAW Workforce')
+@section('description', 'How EIAAW Workforce protects HR and payroll data: Postgres Row-Level Security per workspace, a tamper-evident audit log, 2FA, and a PDPA-aligned privacy programme.')
 
 @push('head')
 <style>
@@ -218,7 +218,7 @@
                 <div class="sec-arch-layer">
                     <span class="layer-tag">L1 · Edge</span>
                     <span class="layer-name">Cloudflare + Railway TLS
-                        <small>HTTPS enforced, HSTS preloaded, WAF rules on signup &amp; webhooks.</small>
+                        <small>HTTPS only with HSTS; Cloudflare filters traffic in front of the app.</small>
                     </span>
                     <span class="layer-check">Active</span>
                 </div>
@@ -246,9 +246,9 @@
                 <div class="sec-arch-layer">
                     <span class="layer-tag">L5 · CI</span>
                     <span class="layer-name">tenancy:check-rls + tenancy:test-leakage
-                        <small>Boot check: the DB role must NOT have BYPASSRLS. Integration test: 22 cross-tenant leakage assertions on every deploy.</small>
+                        <small>tenancy:check-rls confirms the app's database role cannot bypass RLS; a cross-tenant leakage test suite runs in our release checks.</small>
                     </span>
-                    <span class="layer-check">Passing</span>
+                    <span class="layer-check">Checked</span>
                 </div>
             </div>
         </div>
@@ -259,7 +259,7 @@
                     <span class="sec-audit-head-pill">Audit log · HMAC-chained</span>
                 </div>
                 <div style="font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.08em;">
-                    Sample · tenant #1 · last 4 events
+                    Illustrative sample · last 3 events
                 </div>
             </div>
 <pre><span class="c"># tamper-evident: each row's HMAC chains the previous row's HMAC.</span>
@@ -308,7 +308,7 @@
             <div class="sec-principle">
                 <span class="eyebrow">Principle 02</span>
                 <h4>Least privilege</h4>
-                <p>The DB role used by the app is NOT a superuser and does NOT have BYPASSRLS. Boot check refuses to start if this changes.</p>
+                <p>The database role the app uses is not a superuser and cannot bypass Row-Level Security. We check this with tenancy:check-rls before releases.</p>
             </div>
             <div class="sec-principle">
                 <span class="eyebrow">Principle 03</span>
@@ -328,15 +328,15 @@
             <div class="sec-roadmap-grid">
                 <div class="sec-roadmap-cell">
                     <h3>PDPA alignment <span class="status status--live">Live</span></h3>
-                    <p>Data-subject access, correction, and deletion request flows. Data residency opt-in for MY. DPO contact published.</p>
+                    <p>Privacy notice in English and Bahasa Malaysia, a published Data Protection Officer contact, and data requests answered within 21 days. Workspace data is hosted in Singapore.</p>
                 </div>
                 <div class="sec-roadmap-cell">
-                    <h3>Encryption at rest &amp; in transit <span class="status status--live">Live</span></h3>
-                    <p>TLS 1.3 enforced. Postgres AES-256 disk encryption. File uploads encrypted on private disk. Secrets in Railway's encrypted env vars.</p>
+                    <h3>Encryption in transit <span class="status status--live">Live</span></h3>
+                    <p>HTTPS on every connection, passwords stored as one-way hashes, and production secrets kept out of the code base.</p>
                 </div>
                 <div class="sec-roadmap-cell">
                     <h3>HMAC audit log integrity <span class="status status--live">Live</span></h3>
-                    <p>Daily `log:verify-integrity` command walks the HMAC chain; any tamper invalidates the run and notifies the ops channel.</p>
+                    <p>The `log:verify-integrity` command walks the HMAC chain; changing any historical entry breaks verification from that point on.</p>
                 </div>
                 <div class="sec-roadmap-cell">
                     <h3>SOC 2 Type I readiness <span class="status status--q3">Planned</span></h3>
@@ -363,7 +363,7 @@
         <p style="color: var(--ink-2); font-size: 16px; max-width: 520px; margin: 0 auto 28px;">
             DPAs, data-residency addenda, pentest summaries, and security-questionnaire responses — we answer before the contract.
         </p>
-        <a href="mailto:{{ config('eiaaw.support_email') }}?subject=EIAAW Workforce · Security review" class="eiaaw-btn eiaaw-btn--outline">Email security@</a>
+        <a href="mailto:{{ config('eiaaw.privacy_email') }}?subject=EIAAW Workforce · Security review" class="eiaaw-btn eiaaw-btn--outline">Email our security contact</a>
     </div>
 </section>
 

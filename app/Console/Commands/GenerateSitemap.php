@@ -34,7 +34,8 @@ class GenerateSitemap extends Command
         URL::forceScheme('https');
 
         $urls = [
-            ['loc' => route('marketing.landing'),        'changefreq' => 'weekly',  'priority' => '1.0'],
+            // Trailing slash matches the home page's canonical URL.
+            ['loc' => route('marketing.landing').'/',    'changefreq' => 'weekly',  'priority' => '1.0'],
             ['loc' => route('marketing.features'),       'changefreq' => 'monthly', 'priority' => '0.9'],
             ['loc' => route('marketing.pricing'),        'changefreq' => 'monthly', 'priority' => '0.9'],
             ['loc' => route('marketing.security'),       'changefreq' => 'monthly', 'priority' => '0.7'],

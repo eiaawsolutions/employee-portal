@@ -86,6 +86,16 @@
 
 <div class="ep-voice-status" id="ep-voice-status" role="status" aria-live="polite"></div>
 
+{{-- Shown before any call starts: what happens to the visitor's voice. --}}
+<div class="ep-voice-status" id="ep-voice-notice" role="dialog" aria-label="Before you start the call">
+    <strong>Before you start</strong>
+    You'll talk to an AI voice agent, not a person. The call is recorded and transcribed so the agent can answer and our team can follow up, and it is processed by our voice AI provider outside Malaysia. See the <a href="{{ route('marketing.privacy') }}" target="_blank" rel="noopener">privacy notice</a>.
+    <span style="display:flex;gap:8px;margin-top:10px;">
+        <button type="button" id="ep-voice-go" class="eiaaw-btn eiaaw-btn--primary" style="padding:8px 14px;font-size:13px;">Start the call</button>
+        <button type="button" id="ep-voice-cancel" class="eiaaw-btn eiaaw-btn--outline" style="padding:8px 14px;font-size:13px;">Not now</button>
+    </span>
+</div>
+
 @push('scripts')
 <script nonce="{{ $cspNonce ?? '' }}">
 (function () {
@@ -96,7 +106,14 @@
 
     const launcher = document.getElementById('ep-voice-launcher');
     const status   = document.getElementById('ep-voice-status');
-    if (!launcher || !status) return;
+    const notice   = document.getElementById('ep-voice-notice');
+    if (!launcher || !status || !notice) return;
+
+    function escapeHtml(t) {
+        const d = document.createElement('div');
+        d.textContent = String(t);
+        return d.innerHTML;
+    }
 
     function setStatus(html, persist) {
         status.innerHTML = html;
@@ -138,7 +155,7 @@
                 // the Talk-to-us fallback so we never lose a lead.
                 const msg = (data && (data.error || data.message)) || 'Voice agent is unavailable right now.';
                 setStatus(
-                    '<strong>' + msg + '</strong>'
+                    '<strong>' + escapeHtml(msg) + '</strong>'
                     + 'No worries — <a href="#" data-ep-action="talk">click here for the Talk-to-us form</a> '
                     + 'and our team will reply within one working day.',
                     true
@@ -157,7 +174,18 @@
         }
     }
 
-    launcher.addEventListener('click', startCall);
+    // The call only starts after the visitor has read the notice and chosen to go ahead.
+    launcher.addEventListener('click', function () {
+        status.classList.remove('is-visible');
+        notice.classList.add('is-visible');
+    });
+    document.getElementById('ep-voice-cancel').addEventListener('click', function () {
+        notice.classList.remove('is-visible');
+    });
+    document.getElementById('ep-voice-go').addEventListener('click', function () {
+        notice.classList.remove('is-visible');
+        startCall();
+    });
 })();
 </script>
 @endpush

@@ -25,6 +25,9 @@ class MarketingContactController extends Controller
                 'company' => 'nullable|string|max:191',
                 'message' => 'required|string|max:2000',
                 'source' => 'nullable|string|in:chatbot,landing-form,faq-form,voice-agent',
+                'consent' => 'accepted',
+            ], [
+                'consent.accepted' => 'Please tick the box to agree to the privacy notice.',
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -48,6 +51,8 @@ class MarketingContactController extends Controller
                 'ip' => $request->ip(),
                 'user_agent' => substr((string) $request->userAgent(), 0, 500),
                 'email_attempts' => 0,
+                'consent_at' => $now,
+                'consent_version' => config('eiaaw.privacy_version'),
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

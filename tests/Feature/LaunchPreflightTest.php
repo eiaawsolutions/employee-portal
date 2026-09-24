@@ -55,18 +55,14 @@ class LaunchPreflightTest extends TestCase
         }
     }
 
-    public function test_legal_stubs_check_flags_stub_banner(): void
+    public function test_legal_stubs_check_passes_now_final_copy_is_live(): void
     {
         Artisan::call('launch:preflight', ['--json' => true]);
         $json = json_decode(Artisan::output(), true);
 
-        $this->assertFalse(
+        $this->assertTrue(
             $json['results']['legal_stubs_replaced']['ok'],
-            'legal_stubs_replaced should fail while _stub-banner.blade.php exists'
-        );
-        $this->assertStringContainsString(
-            'stub',
-            strtolower($json['results']['legal_stubs_replaced']['detail'])
+            'terms, privacy and dpa carry final copy and the stub banner is gone'
         );
     }
 }
