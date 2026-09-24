@@ -702,7 +702,7 @@ class OnboardingController extends Controller
                 'Employment Type','Designation','Department','Company','Office Location',
                 'Reporting Manager','Reporting Manager Email','Start Date','Exit Date',
                 'Company Email','Google ID','Laptop','Monitor','Converter','Phone','SIM','Access Card',
-                'HR Emails','IT Emails','Calendar Sent','Welcome Sent','Created At']);
+                'HR Emails','IT Emails','Calendar Sent','Welcome Sent','Created At'], escape: '\\');
             foreach ($onboardings as $o) {
                 $p = $o->personalDetail; $w = $o->workDetail; $a = $o->assetProvisioning;
                 fputcsv($file, [$o->id,$p?->full_name,$p?->preferred_name,$p?->official_document_id,
@@ -716,7 +716,7 @@ class OnboardingController extends Controller
                     $a?->sim_card?'Yes':'No',$a?->access_card_request?'Yes':'No',
                     implode('; ',$o->hr_emails??[]),implode('; ',$o->it_emails??[]),
                     $o->calendar_invite_sent?'Yes':'No',$o->welcome_email_sent?'Yes':'No',
-                    $o->created_at->format('Y-m-d')]);
+                    $o->created_at->format('Y-m-d')], escape: '\\');
             }
             fclose($file);
         };

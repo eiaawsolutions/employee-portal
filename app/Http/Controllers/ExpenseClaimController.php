@@ -623,7 +623,7 @@ class ExpenseClaimController extends Controller
                 'Item Date', 'Description', 'Project/Client', 'Category',
                 'Amount (w/o GST)', 'GST', 'Total (w/ GST)',
                 'Submitted', 'Manager Approved', 'HR Approved',
-            ]);
+            ], escape: '\\');
 
             foreach ($claims as $claim) {
                 foreach ($claim->items as $item) {
@@ -643,7 +643,7 @@ class ExpenseClaimController extends Controller
                         $claim->submitted_at?->format('Y-m-d') ?? '-',
                         $claim->manager_approved_at?->format('Y-m-d') ?? '-',
                         $claim->hr_approved_at?->format('Y-m-d') ?? '-',
-                    ]);
+                    ], escape: '\\');
                 }
             }
             fclose($file);

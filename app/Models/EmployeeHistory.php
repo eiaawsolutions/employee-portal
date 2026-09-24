@@ -42,7 +42,7 @@ class EmployeeHistory extends Model
     public function onboarding() { return $this->belongsTo(Onboarding::class); }
 
     // ── Factory: build history snapshot from an Employee record ───────────
-    public static function createFromEmployee(Employee $emp, string $reason = null, string $remarks = null): self
+    public static function createFromEmployee(Employee $emp, ?string $reason = null, ?string $remarks = null): self
     {
         return self::create([
             'onboarding_id'           => $emp->onboarding_id,

@@ -681,7 +681,7 @@ class AssetController extends Controller
                 'Rental Vendor', 'Rental Vendor Contact', 'Rental Cost/Month', 'Rental Start', 'Rental End', 'Contract Ref',
                 'Assigned To', 'Assigned Date', 'Expected Return',
                 'Maintenance Status', 'Last Maintenance', 'Notes', 'Remarks',
-            ]);
+            ], escape: '\\');
             foreach ($assets as $a) {
                 fputcsv($file, [
                     $a->asset_tag, $a->asset_category, $a->asset_type, $a->brand, $a->model, $a->serial_number,
@@ -693,7 +693,7 @@ class AssetController extends Controller
                     $a->rental_start_date?->format('d/m/Y'), $a->rental_end_date?->format('d/m/Y'), $a->rental_contract_reference,
                     $a->resolvedAssigneeName(), $a->asset_assigned_date?->format('d/m/Y'), $a->expected_return_date?->format('d/m/Y'),
                     $a->maintenance_status, $a->last_maintenance_date?->format('d/m/Y'), $a->notes, $a->remarks,
-                ]);
+                ], escape: '\\');
             }
             fclose($file);
         };
@@ -875,7 +875,7 @@ class AssetController extends Controller
                 'asset_condition',      // optional: new (default) / good / fair / damaged
                 'maintenance_status',   // optional: none (default) / under_maintenance / repair_required
                 'status',               // optional: available (default) / assigned / under_maintenance / retired
-            ]);
+            ], escape: '\\');
 
             // Example row 1 — laptop with assignment history
             fputcsv($handle, [
@@ -908,7 +908,7 @@ class AssetController extends Controller
                 'good',                                            // asset_condition
                 'none',                                            // maintenance_status
                 'assigned',                                        // status
-            ]);
+            ], escape: '\\');
 
             // Example row 2 — available laptop, no assignment
             fputcsv($handle, [
@@ -924,7 +924,7 @@ class AssetController extends Controller
                 '', '', '', '', '', '',
                 '', '', '', 'HQ KL',
                 'new', 'none', 'available',
-            ]);
+            ], escape: '\\');
 
             fclose($handle);
         };
@@ -1048,7 +1048,7 @@ class AssetController extends Controller
         $ensureAarf = fn(Employee $emp) => $this->ensureAarfForEmployee($emp);
 
         // Main import loop
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, escape: '\\')) !== false) {
             if ($headers === null) {
                 $headers = array_map('trim', $row);
                 $rowNumber++;

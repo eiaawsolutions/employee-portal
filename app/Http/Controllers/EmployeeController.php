@@ -256,7 +256,7 @@ class EmployeeController extends Controller
                 'Employment Type','Designation','Department','Company','Office Location',
                 'Reporting Manager','Company Email','Google ID','Work Role',
                 'Start Date','Exit Date',
-            ]);
+            ], escape: '\\');
             foreach ($employees as $e) {
                 fputcsv($handle, [
                     $e->full_name, $e->preferred_name, $e->official_document_id,
@@ -267,7 +267,7 @@ class EmployeeController extends Controller
                     $e->employment_type, $e->designation, $e->department, $e->company, $e->office_location,
                     $e->reporting_manager, $e->company_email, $e->google_id, $e->work_role,
                     $e->start_date?->format('d/m/Y'), $e->exit_date?->format('d/m/Y'),
-                ]);
+                ], escape: '\\');
             }
             fclose($handle);
         };
@@ -323,7 +323,7 @@ class EmployeeController extends Controller
                 'exit_date',
                 'last_salary_date',
                 'confirmation_date',
-            ]);
+            ], escape: '\\');
 
             // Example row — required fields filled, optional fields can be left blank
             fputcsv($handle, [
@@ -360,7 +360,7 @@ class EmployeeController extends Controller
                 '',                          // exit_date               (optional, DD-MM-YYYY or leave blank)
                 '',                          // last_salary_date        (optional, DD-MM-YYYY or leave blank)
                 '',                          // confirmation_date       (optional, DD-MM-YYYY or leave blank)
-            ]);
+            ], escape: '\\');
 
             fclose($handle);
         };
@@ -392,7 +392,7 @@ class EmployeeController extends Controller
             'reporting_manager', 'start_date',
         ];
 
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, escape: '\\')) !== false) {
             // First row = headers
             if ($headers === null) {
                 $headers = array_map('trim', $row);
