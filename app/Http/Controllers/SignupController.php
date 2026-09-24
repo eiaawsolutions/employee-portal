@@ -2,25 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\SignupConfirmationMail;
 use App\Models\SignupInvite;
 use App\Models\Tenant;
+use App\Services\Billing\SignupCheckout;
+use App\Services\Billing\StripeGateway;
 use App\Services\TenantProvisioner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * SignupController — public tenant signup at the marketing apex
- * (ep.eiaawsolutions.com/signup).
+ * (ep.eiaawsolutions.com/signup). Pay-first, no free trial — same shape as
+ * the Social Media Team signup.
  *
- * Three-step flow:
- *   GET  /signup                 → form
- *   POST /signup                 → validate + create SignupInvite + email token
- *   GET  /signup/confirm/{token} → password form
- *   POST /signup/confirm/{token} → provision tenant + redirect to subdomain dashboard
+ *   GET  /signup?plan=            → details form (plan, period, headcount)
+ *   POST /signup                  → validate + SignupInvite + Stripe Checkout (MYR)
+ *   GET  /signup/checkout/success → record payment → set-password page
+ *   GET  /signup/confirm/{token}  → password form (paid invites only)
+ *   POST /signup/confirm/{token}  → provision tenant + redirect to subdomain login
+ *
+ * The checkout.session.completed webhook records the payment too (and emails
+ * the set-password link) in case the browser never comes back from Stripe.
  *
  * The marketing apex is identified by the absence of a tenant subdomain.
  * If the request hits a tenant subdomain, signup is 404 (existing tenants
@@ -45,7 +49,7 @@ class SignupController extends Controller
         return view('signup.form', ['plan' => $plan]);
     }
 
-    public function start(Request $request, TenantProvisioner $provisioner)
+    public function start(Request $request, SignupCheckout $checkout)
     {
         $this->ensureMarketingApex();
 
@@ -61,12 +65,26 @@ class SignupController extends Controller
                 'regex:/^[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?$/',
             ],
             'plan'         => ['required', 'in:starter,growth,scale'],
+            'period'       => ['required', 'in:monthly,annual'],
+            'headcount'    => ['required', 'integer', 'min:1', 'max:5000'],
             'consent'      => ['accepted'],
         ], [
             'consent.accepted' => 'Please agree to the Terms of Service and Privacy Notice to continue.',
         ])->validate();
 
         $slug = strtolower($data['desired_slug']);
+
+        // Already paid for this email but never set a password → resend the
+        // set-password link; never overwrite a paid invite or charge twice.
+        $paid = SignupInvite::where('work_email', $data['work_email'])
+            ->whereNotNull('paid_at')->whereNull('confirmed_at')->first();
+        if ($paid) {
+            $mailSent = $checkout->sendSetPasswordLink($paid);
+            return redirect()->route('signup.sent')
+                ->with('signup_email', $paid->work_email)
+                ->with('signup_plan', $paid->plan)
+                ->with('signup_mail_sent', $mailSent);
+        }
 
         // Single availability check — covers reserved list, format,
         // existing tenants (including soft-deleted), and pending invites.
@@ -87,6 +105,8 @@ class SignupController extends Controller
                 'company_name'      => $data['company_name'],
                 'desired_slug'      => $slug,
                 'plan'              => $data['plan'],
+                'billing_period'    => $data['period'],
+                'seats'             => $checkout->quantity($data['plan'], (int) $data['headcount']),
                 'confirmation_token' => Str::random(48),
                 'expires_at'        => now()->addDay(),
                 'signup_ip'         => $request->ip(),
@@ -94,34 +114,68 @@ class SignupController extends Controller
                 'confirmed_at'      => null,
                 'consent_at'        => now(),
                 'consent_version'   => config('eiaaw.privacy_version'),
+                'stripe_checkout_session_id' => null,
             ]
         );
 
-        // Send confirmation email. Failures here are user-blocking (no email →
-        // no way to confirm), so we log full context and tell the user instead
-        // of pretending the email went out.
-        $mailSent = true;
         try {
-            Mail::to($invite->work_email)->send(new SignupConfirmationMail($invite));
+            $url = $checkout->start(
+                $invite,
+                route('signup.checkout.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                route('signup.form', ['plan' => $invite->plan, 'canceled' => 1]),
+            );
         } catch (\Throwable $e) {
-            $mailSent = false;
-            Log::error('signup.confirmation_mail_failed', [
-                'invite_id'  => $invite->id,
-                'work_email' => $invite->work_email,
-                'plan'       => $invite->plan,
-                'mailer'     => config('mail.default'),
-                'host'       => config('mail.mailers.smtp.host'),
-                'from'       => config('mail.from.address'),
-                'error'      => $e->getMessage(),
-                'class'      => get_class($e),
+            Log::error('signup.checkout_start_failed', [
+                'invite_id' => $invite->id,
+                'plan'      => $invite->plan,
+                'error'     => $e->getMessage(),
             ]);
             report($e);
+            return back()->withInput()->withErrors([
+                'checkout' => 'We could not open checkout just now. Nothing was charged — please try again in a minute.',
+            ]);
         }
 
-        return redirect()->route('signup.sent')
-            ->with('signup_email', $invite->work_email)
-            ->with('signup_plan', $invite->plan)
-            ->with('signup_mail_sent', $mailSent);
+        // Defensive allow-list: never redirect a customer to a non-Stripe host.
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!in_array($host, ['checkout.stripe.com', 'billing.stripe.com'], true)) {
+            Log::error('signup.checkout_non_stripe_url', ['host' => $host]);
+            return back()->withInput()->withErrors([
+                'checkout' => 'We could not open checkout just now. Nothing was charged — please try again in a minute.',
+            ]);
+        }
+
+        return redirect()->away($url);
+    }
+
+    /**
+     * Stripe success URL. Records the payment (idempotent with the webhook)
+     * and sends the customer straight to set their password.
+     */
+    public function checkoutSuccess(Request $request, StripeGateway $stripe, SignupCheckout $checkout)
+    {
+        $this->ensureMarketingApex();
+
+        $sessionId = (string) $request->query('session_id', '');
+        if ($sessionId === '') {
+            return redirect()->route('marketing.pricing');
+        }
+
+        try {
+            $session = $stripe->retrieveCheckoutSession($sessionId);
+        } catch (\Throwable $e) {
+            Log::error('signup.checkout_retrieve_failed', ['session_id' => $sessionId, 'error' => $e->getMessage()]);
+            return redirect()->route('marketing.pricing')->with('signup_intent', 'checkout_unverified');
+        }
+
+        $invite = $checkout->recordPayment($session);
+        if (!$invite) {
+            $plan = $this->normalizePlan($session['metadata']['plan'] ?? null) ?? 'growth';
+            return redirect()->route('signup.form', ['plan' => $plan])
+                ->withErrors(['checkout' => 'Payment was not completed, so no workspace was created. You can try again below.']);
+        }
+
+        return redirect()->route('signup.confirm', $invite->confirmation_token);
     }
 
     public function showSent()
@@ -135,6 +189,10 @@ class SignupController extends Controller
         $this->ensureMarketingApex();
 
         $invite = $this->findValidInvite($token);
+        if (!$invite->isPaid()) {
+            return $this->redirectToCheckout($invite);
+        }
+
         return view('signup.confirm', compact('invite'));
     }
 
@@ -143,25 +201,27 @@ class SignupController extends Controller
         $this->ensureMarketingApex();
 
         $invite = $this->findValidInvite($token);
+        if (!$invite->isPaid()) {
+            return $this->redirectToCheckout($invite);
+        }
 
         $data = Validator::make($request->all(), [
-            'password' => ['required', 'string', 'min:12', 'confirmed'],
+            'password'     => ['required', 'string', 'min:12', 'confirmed'],
+            // Only sent when the paid-for URL was taken before provisioning.
+            'desired_slug' => ['sometimes', 'string', 'min:3', 'max:60', 'regex:/^[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?$/'],
         ])->validate();
+
+        if (!empty($data['desired_slug'])) {
+            $invite->update(['desired_slug' => strtolower($data['desired_slug'])]);
+        }
 
         try {
             $tenant = $provisioner->provisionFromInvite($invite, $data['password']);
         } catch (\App\Exceptions\SlugUnavailableException $e) {
-            // Race lost — another signup grabbed the slug between the form
-            // submission and provisioning. Send the user back to the
-            // signup form to pick a fresh slug; the original invite is
-            // unconsumed so they can retry without losing email/name.
-            return redirect()->route('signup.form', ['plan' => $invite->plan])
-                ->withInput([
-                    'work_email'   => $invite->work_email,
-                    'full_name'    => $invite->full_name,
-                    'company_name' => $invite->company_name,
-                    'plan'         => $invite->plan,
-                ])
+            // Race lost — the URL was taken between checkout and now. The
+            // customer has already paid, so never send them back through
+            // checkout: let them pick a new URL on this page.
+            return redirect()->route('signup.confirm', $invite->confirmation_token)
                 ->withErrors(['desired_slug' => $e->getMessage()]);
         }
 
@@ -173,7 +233,7 @@ class SignupController extends Controller
             : $tenant->workspaceUrl('/login');
 
         return redirect($url)->with('success',
-            'Workspace created — sign in with your work email to start the trial.');
+            'Workspace created — sign in with your work email.');
     }
 
     private function findValidInvite(string $token): SignupInvite
@@ -193,6 +253,19 @@ class SignupController extends Controller
         }
 
         return $invite;
+    }
+
+    /** Unpaid invites can't set a password — send them back to finish checkout. */
+    private function redirectToCheckout(SignupInvite $invite)
+    {
+        return redirect()->route('signup.form', ['plan' => $invite->plan])
+            ->withInput([
+                'work_email'   => $invite->work_email,
+                'full_name'    => $invite->full_name,
+                'company_name' => $invite->company_name,
+                'desired_slug' => $invite->desired_slug,
+            ])
+            ->withErrors(['checkout' => 'Payment for this workspace has not gone through yet. Complete checkout to continue.']);
     }
 
     /**

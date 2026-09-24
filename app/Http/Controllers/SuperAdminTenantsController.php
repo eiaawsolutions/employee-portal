@@ -79,8 +79,8 @@ class SuperAdminTenantsController extends Controller
             ->first();
 
         // Estimated MRR for this tenant. Enterprise returns null (custom).
-        $mrr = $tenant->planPriceUsdMonthly() !== null
-            ? $tenant->planPriceUsdMonthly() * (int) $tenant->plan_seats
+        $mrr = $tenant->planPriceMonthly() !== null
+            ? $tenant->planPriceMonthly() * (int) $tenant->plan_seats
             : null;
 
         return view('superadmin.tenants.show', compact('tenant', 'usage', 'aiTotals', 'snapshot', 'mrr'));

@@ -74,13 +74,7 @@ return [
         // Sentry (Session 12 observability)
         'sentry.dsn',
 
-        // Stripe Price IDs (populated via stripe:sync-prices, stored in Infisical
-        // so all EIAAW environments resolve from the same source of truth)
-        'eiaaw.pricing.tiers.starter.stripe_prices.monthly',
-        'eiaaw.pricing.tiers.starter.stripe_prices.annual',
-        'eiaaw.pricing.tiers.growth.stripe_prices.monthly',
-        'eiaaw.pricing.tiers.growth.stripe_prices.annual',
-        'eiaaw.pricing.tiers.scale.stripe_prices.monthly',
-        'eiaaw.pricing.tiers.scale.stripe_prices.annual',
+        // Stripe Price IDs are no longer config: signup checkout resolves
+        // MYR Prices by lookup key (App\Services\Billing\SignupCheckout).
     ],
 ];

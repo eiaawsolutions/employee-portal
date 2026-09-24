@@ -226,7 +226,7 @@
     <div class="mk-container mk-container--narrow">
         @if(session('signup_intent') === 'choose_plan_first')
             <div class="pr-intent-nudge" role="status">
-                Pick your plan first — your 14-day trial starts after you confirm by email.
+                Pick your plan first — you'll pay at checkout, then set your password.
             </div>
         @endif
         <span class="eyebrow">Pricing</span>
@@ -280,7 +280,7 @@
         <div class="pr-grid">
             @foreach($pricing['tiers'] as $tierKey => $tier)
                 @php
-                    $monthly = $tier['monthly_usd'] ?? null;
+                    $monthly = $tier['monthly_myr'] ?? null;
                     $annualFactor = 12 - $pricing['annual_months_free']; // 10
                 @endphp
                 <article class="pr-tier {{ $tier['featured'] ? 'featured' : '' }}">
@@ -295,10 +295,10 @@
                             {{ $tier['price_label'] ?? 'Custom' }}
                         @else
                             <span>
-                                <span data-period-monthly>${{ $monthly }}</span>
-                                <span data-period-annual>${{ number_format($monthly * $annualFactor / 12, 0) }}</span>
+                                <span data-period-monthly>RM{{ $monthly }}</span>
+                                <span data-period-annual>RM{{ number_format($monthly * $annualFactor / 12, 0) }}</span>
                             </span>
-                            <small>/emp/mo USD</small>
+                            <small>/emp/mo</small>
                         @endif
                     </div>
 
@@ -306,7 +306,7 @@
                         <div class="pr-tier-annual">
                             <span data-period-monthly>Billed monthly</span>
                             <span data-period-annual>
-                                Billed annually · ${{ $monthly * $annualFactor }}/emp/yr
+                                Billed annually · RM{{ $monthly * $annualFactor }}/emp/yr
                             </span>
                         </div>
                     @endif
@@ -332,7 +332,7 @@
                     @if(!empty($tier['cta']['mailto']))
                         <a href="mailto:{{ config('eiaaw.sales_email') }}?subject=EIAAW Workforce Enterprise enquiry" class="pr-cta-primary">{{ $tier['cta']['label'] }}</a>
                     @else
-                        <a href="{{ route($tier['cta']['route']) }}?plan={{ $tier['cta']['plan'] }}" class="pr-cta-primary">{{ $tier['cta']['label'] }}</a>
+                        <a href="{{ route($tier['cta']['route']) }}?plan={{ $tier['cta']['plan'] }}" data-signup-cta class="pr-cta-primary">{{ $tier['cta']['label'] }}</a>
                     @endif
                 </article>
             @endforeach
@@ -342,9 +342,9 @@
             // One source for the visible FAQ and its FAQPage schema (pushed to <head> below).
             $pricingFaqs = [
                 ['What counts as an "active employee"?', 'Anyone with an active record in your workspace on the day we bill. Invited-but-not-started users, terminated employees and deactivated accounts don’t count.'],
-                ['Is there a minimum?', 'Starter, Growth and Scale have a minimum of 5 billable employees per workspace. Enterprise minimums are agreed in the order form.'],
+                ['Is there a minimum?', 'Starter, Growth and Scale have a minimum of 5 billable employees per workspace. You enter your headcount at checkout. Enterprise minimums are agreed in the order form.'],
                 ['What’s the difference between Growth and Scale?', 'Growth bundles Employee Journey, IT Assets and HRM (leave, attendance, claims, payroll, EA forms). Scale adds full accounting: chart of accounts, general ledger, AR/AP, budgets, SST returns, AI invoice scanning and claim-to-ledger posting. Pick Scale when finance and HR run on the same backbone.'],
-                ['Do I need a credit card for the trial?', 'No. The 14-day trial of the plan you choose needs only a work email. When it ends, choose a plan to keep going; if you don’t, the workspace moves to Starter and keeps your data.'],
+                ['Is there a free trial?', 'No. You pay for your first month (or year) at Stripe checkout, in ringgit, and your workspace is created as soon as payment goes through. Not sure which tier fits? Talk to us before you buy.'],
                 ['Is there a setup fee?', 'No setup fee on Starter, Growth or Scale. Enterprise implementations (SSO, dedicated database) have a setup fee agreed upfront.'],
                 ['How do I cancel?', 'Email us from the workspace owner’s address. Cancellation takes effect at the end of the current billing period; your data stays read-only for 30 days so you can export it, then it is deleted.'],
             ];
@@ -379,6 +379,12 @@
             btn.setAttribute('aria-pressed', btn.getAttribute('data-period-btn') === period ? 'true' : 'false');
         });
         try { localStorage.setItem('eiaaw_pr_period', period); } catch (e) {}
+        // Carry the chosen billing period into signup so checkout charges it.
+        root.querySelectorAll('[data-signup-cta]').forEach(function (a) {
+            var url = new URL(a.href, window.location.origin);
+            url.searchParams.set('period', period);
+            a.href = url.toString();
+        });
     }
 
     root.querySelectorAll('[data-period-btn]').forEach(function (btn) {

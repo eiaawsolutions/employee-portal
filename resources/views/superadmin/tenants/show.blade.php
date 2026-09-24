@@ -157,8 +157,8 @@
                         <dt>Estimated MRR</dt>
                         <dd>
                             @if ($mrr !== null)
-                                USD {{ number_format($mrr, 2) }} /mo
-                                <span style="color:var(--mute); font-size:12px;">({{ $tenant->planPriceUsdMonthly() }} × {{ $tenant->plan_seats }} seats)</span>
+                                RM {{ number_format($mrr, 2) }} /mo
+                                <span style="color:var(--mute); font-size:12px;">({{ $tenant->planPriceMonthly() }} × {{ $tenant->plan_seats }} seats)</span>
                             @else
                                 Custom (Enterprise)
                             @endif

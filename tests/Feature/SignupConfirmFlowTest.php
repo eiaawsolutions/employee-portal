@@ -28,6 +28,8 @@ class SignupConfirmFlowTest extends TestCase
             'plan'               => 'scale',
             'confirmation_token' => Str::random(48),
             'expires_at'         => now()->addDay(),
+            'paid_at'            => now(),
+            'seats'              => 5,
         ]);
 
         $response = $this->post(route('signup.confirm.submit', $invite->confirmation_token), [

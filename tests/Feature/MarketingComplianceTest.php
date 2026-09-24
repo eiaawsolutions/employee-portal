@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Mail\FindWorkspaceMail;
 use App\Mail\SignupConfirmationMail;
 use App\Models\SignupInvite;
+use App\Services\Billing\StripeGateway;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Tests\Fakes\FakeStripeGateway;
 use Tests\TestCase;
 
 /**
@@ -131,14 +133,17 @@ class MarketingComplianceTest extends TestCase
     public function test_signup_records_when_and_to_which_version_the_user_agreed(): void
     {
         Mail::fake();
+        $this->app->instance(StripeGateway::class, new FakeStripeGateway());
 
-        $this->post(route('signup.start'), $this->signupPayload() + ['consent' => '1'])
-            ->assertRedirect(route('signup.sent'));
+        // Pay-first: consent is recorded, then the visitor goes to Stripe
+        // Checkout; the set-password email only follows payment.
+        $response = $this->post(route('signup.start'), $this->signupPayload() + ['consent' => '1']);
+        $this->assertStringStartsWith('https://checkout.stripe.com/', $response->headers->get('Location'));
 
         $invite = SignupInvite::firstOrFail();
         $this->assertSame(config('eiaaw.privacy_version'), $invite->consent_version);
         $this->assertNotNull($invite->consent_at);
-        Mail::assertSent(SignupConfirmationMail::class);
+        Mail::assertNotSent(SignupConfirmationMail::class);
     }
 
     // ── Find-workspace actually emails ──────────────────────────────────
@@ -149,6 +154,7 @@ class MarketingComplianceTest extends TestCase
             'work_email' => 'owner@example.com', 'full_name' => 'Owner', 'company_name' => 'Acme',
             'desired_slug' => 'acmeco', 'plan' => 'growth',
             'confirmation_token' => Str::random(48), 'expires_at' => now()->addDay(),
+            'paid_at' => now(), 'seats' => 5,
         ]);
         $this->post(route('signup.confirm.submit', $invite->confirmation_token), [
             'password' => 'a-strong-password-123', 'password_confirmation' => 'a-strong-password-123',
@@ -204,8 +210,9 @@ class MarketingComplianceTest extends TestCase
         $this->assertSame('https://eiaawsolutions.com/products.html#workforce', $app['@id']);
         $this->assertSame('https://eiaawsolutions.com/#organization', $app['publisher']['@id']);
         $this->assertSame('AggregateOffer', $app['offers']['@type']);
-        $this->assertEquals(6, $app['offers']['lowPrice']);
-        $this->assertEquals(29, $app['offers']['highPrice']);
+        $this->assertSame('MYR', $app['offers']['priceCurrency']);
+        $this->assertEquals(25, $app['offers']['lowPrice']);
+        $this->assertEquals(119, $app['offers']['highPrice']);
     }
 
     public function test_faq_schema_mirrors_the_visible_faq_exactly(): void
@@ -242,8 +249,12 @@ class MarketingComplianceTest extends TestCase
             'Never hallucinates',
             'Slack',                    // no Slack integration or channel support
             'Llama',                    // no self-hosted model option
-            'MYR (primary)',            // pricing is USD-only
-            'Up to 50 users',           // trial is 5 seats
+            'MYR (primary)',            // pricing is MYR-only
+            'Up to 50 users',           // never true
+            '14-day',                   // no free trial — paid at checkout
+            'no credit card',           // checkout takes a card up front
+            'US$',                      // pricing is MYR
+            '/emp/mo USD',
             'Anomaly detection',
             'Dunning',
             'Delta payslips',
@@ -287,6 +298,8 @@ class MarketingComplianceTest extends TestCase
             'company_name' => 'Kedai Maju',
             'desired_slug' => 'kedaimaju',
             'plan' => 'growth',
+            'period' => 'monthly',
+            'headcount' => 8,
         ];
     }
 

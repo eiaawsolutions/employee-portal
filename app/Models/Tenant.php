@@ -98,12 +98,14 @@ class Tenant extends Model
     }
 
     /**
-     * Per-seat monthly price in USD for this tenant's plan.
+     * Per-employee monthly list price in MYR for this tenant's plan.
      * Returns null for Enterprise (custom-priced) — billing is handled out-of-band.
+     * Tenants who signed up before the MYR switch may be on an older Stripe
+     * price; this is the current list price, not their invoice amount.
      */
-    public function planPriceUsdMonthly(): ?float
+    public function planPriceMonthly(): ?float
     {
-        $price = config("plans.{$this->plan}.price_usd_monthly");
+        $price = config("plans.{$this->plan}.price_myr_monthly");
         return $price === null ? null : (float) $price;
     }
 
@@ -211,13 +213,11 @@ class Tenant extends Model
     }
 
     /**
-     * Cashier uses this for checkout currency selection. Session 11 dropped
-     * MYR — every workspace bills in USD. The `billing_currency` column is
-     * retained but defaulted to USD; future multi-currency support can
-     * resurface it.
+     * Cashier uses this for checkout currency selection. Workspaces bill in
+     * MYR (2026-09-24); older workspaces may still carry 'USD'.
      */
     public function preferredCurrency(): string
     {
-        return strtolower($this->billing_currency ?: 'usd');
+        return strtolower($this->billing_currency ?: 'myr');
     }
 }

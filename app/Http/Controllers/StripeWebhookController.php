@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SubscriptionEvent;
 use App\Models\Tenant;
+use App\Services\Billing\SignupCheckout;
 use App\Support\TenantContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -77,6 +78,16 @@ class StripeWebhookController extends CashierWebhookController
                 }
             } else {
                 parent::handleWebhook($request);
+            }
+
+            // Pay-first signup: no tenant exists yet, so this is keyed on the
+            // invite in the session metadata. Safety net for a customer who
+            // paid but never came back to the success URL — records the
+            // payment and emails the set-password link (idempotent with the
+            // success redirect).
+            if ($eventType === 'checkout.session.completed'
+                && ($payload['data']['object']['metadata']['intent'] ?? null) === 'workforce_signup') {
+                app(SignupCheckout::class)->recordPayment($payload['data']['object']);
             }
 
             $event->update(['processed_at' => now()]);

@@ -71,38 +71,41 @@ class ModuleBundlingTest extends TestCase
         ];
     }
 
-    public function test_starter_price_is_six_usd(): void
+    public function test_starter_price_is_rm_25(): void
     {
-        $this->assertSame(6, config('plans.starter.price_usd_monthly'));
+        $this->assertSame(25, config('plans.starter.price_myr_monthly'));
     }
 
-    public function test_growth_price_is_fourteen_usd(): void
+    public function test_growth_price_is_rm_59(): void
     {
-        $this->assertSame(14, config('plans.growth.price_usd_monthly'));
+        $this->assertSame(59, config('plans.growth.price_myr_monthly'));
     }
 
-    public function test_scale_price_is_twentynine_usd(): void
+    public function test_scale_price_is_rm_119(): void
     {
-        $this->assertSame(29, config('plans.scale.price_usd_monthly'));
+        $this->assertSame(119, config('plans.scale.price_myr_monthly'));
     }
 
     public function test_enterprise_price_is_custom(): void
     {
-        $this->assertNull(config('plans.enterprise.price_usd_monthly'));
+        $this->assertNull(config('plans.enterprise.price_myr_monthly'));
     }
 
-    public function test_eiaaw_pricing_is_usd_only(): void
+    public function test_eiaaw_pricing_is_myr_with_no_trial(): void
     {
         $currency = config('eiaaw.pricing.currency');
         $this->assertIsArray($currency);
-        $this->assertSame('USD', $currency['code']);
+        $this->assertSame('MYR', $currency['code']);
+        $this->assertNull(config('eiaaw.pricing.trial_days'));
 
-        // No MYR currency slot anywhere in tier config
-        foreach (['starter', 'growth', 'scale'] as $tier) {
-            $stripePrices = config("eiaaw.pricing.tiers.{$tier}.stripe_prices");
-            $this->assertArrayNotHasKey('MYR', (array) $stripePrices);
-            $this->assertArrayHasKey('monthly', (array) $stripePrices);
-            $this->assertArrayHasKey('annual', (array) $stripePrices);
+        // The marketing price (eiaaw.php, drives checkout) and the plan
+        // catalog (plans.php, drives HQ MRR) must never drift apart.
+        foreach (['starter', 'growth', 'scale', 'enterprise'] as $tier) {
+            $this->assertSame(
+                config("plans.{$tier}.price_myr_monthly"),
+                config("eiaaw.pricing.tiers.{$tier}.monthly_myr"),
+                "{$tier}: plans.php and eiaaw.php disagree on price",
+            );
         }
     }
 }

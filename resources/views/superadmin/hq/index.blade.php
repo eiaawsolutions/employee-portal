@@ -111,7 +111,7 @@
                     <div class="d-flex align-items-center gap-3">
                         <div class="widget-icon"><i class="bi bi-cash-coin"></i></div>
                         <div>
-                            <div class="widget-number">${{ number_format($mrr['total_known'], 0) }}</div>
+                            <div class="widget-number">RM {{ number_format($mrr['total_known'], 0) }}</div>
                             <div class="widget-label">Estimated MRR</div>
                         </div>
                     </div>

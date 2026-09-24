@@ -95,6 +95,7 @@ Route::middleware('apex')->group(function () {
         Route::get('/signup',                         [SignupController::class, 'showForm'])->name('signup.form');
         Route::post('/signup',                        [SignupController::class, 'start'])->name('signup.start')->middleware('throttle:5,1');
         Route::get('/signup/sent',                    [SignupController::class, 'showSent'])->name('signup.sent');
+        Route::get('/signup/checkout/success',        [SignupController::class, 'checkoutSuccess'])->name('signup.checkout.success')->middleware('throttle:30,1');
         Route::get('/signup/confirm/{token}',         [SignupController::class, 'showConfirm'])->name('signup.confirm');
         Route::post('/signup/confirm/{token}',        [SignupController::class, 'confirm'])->name('signup.confirm.submit')->middleware('throttle:10,1');
     });

@@ -349,7 +349,7 @@
 
             <p class="text-center mt-4 mb-0" style="font-size:13px;color:var(--ink-2);">
                 New to {{ config('eiaaw.product_name', 'EIAAW Workforce') }}?
-                <a href="{{ route('marketing.pricing') }}" class="auth-link">Start a 14-day trial</a>
+                <a href="{{ route('marketing.pricing') }}" class="auth-link">Choose a plan</a>
             </p>
 
             <p class="footer-mini text-center">

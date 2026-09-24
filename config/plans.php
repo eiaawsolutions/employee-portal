@@ -9,23 +9,23 @@
  *   M3 HRM               — leave, attendance, claims, payroll, payslips, EA forms
  *   M4 Finance           — full accounting (CoA, GL, AR/AP, tax, fixed assets, budgets)
  *
- *   Starter     — M1                     — USD 6 / active employee / month
- *   Growth      — M1 + M2 + M3           — USD 14
- *   Scale       — M1 + M2 + M3 + M4      — USD 29
+ *   Starter     — M1                     — RM 25 / active employee / month
+ *   Growth      — M1 + M2 + M3           — RM 59
+ *   Scale       — M1 + M2 + M3 + M4      — RM 119
  *   Enterprise  — Scale + SSO + dedicated DB + audit export  — Custom
  *
  * Tenant::hasFeature($key) reads from here. Middleware `plan:it.assets`,
  * `plan:finance.accounting`, `plan:hr.payroll`, etc. gate routes.
  *
- * Pricing is USD-only. Billing currency on the tenant record is used by
- * Cashier for invoice presentation; MYR was dropped in Session 11.
- * Min 5 employees. Annual billing = 2 months free (×10).
+ * Pricing is MYR, paid at Stripe Checkout (no free trial) — must match
+ * config('eiaaw.pricing.tiers.*.monthly_myr), which drives checkout.
+ * Min 5 employees (the checkout quantity floor). Annual = 2 months free (×10).
  */
 return [
 
     'starter' => [
         'name' => 'Starter',
-        'price_usd_monthly' => 6,
+        'price_myr_monthly' => 25,
         'min_seats' => 5,
         'ai_budget_usd' => (float) env('AI_BUDGET_STARTER_USD', 5),
         'modules' => ['M1'],
@@ -42,7 +42,7 @@ return [
 
     'growth' => [
         'name' => 'Growth',
-        'price_usd_monthly' => 14,
+        'price_myr_monthly' => 59,
         'min_seats' => 5,
         'ai_budget_usd' => (float) env('AI_BUDGET_GROWTH_USD', 15),
         'modules' => ['M1', 'M2', 'M3'],
@@ -70,7 +70,7 @@ return [
 
     'scale' => [
         'name' => 'Scale',
-        'price_usd_monthly' => 29,
+        'price_myr_monthly' => 119,
         'min_seats' => 5,
         'ai_budget_usd' => (float) env('AI_BUDGET_SCALE_USD', 40),
         'modules' => ['M1', 'M2', 'M3', 'M4'],
@@ -99,7 +99,7 @@ return [
 
     'enterprise' => [
         'name' => 'Enterprise',
-        'price_usd_monthly' => null,  // custom
+        'price_myr_monthly' => null,  // custom
         'min_seats' => 50,
         'ai_budget_usd' => (float) env('AI_BUDGET_ENTERPRISE_USD', 200),
         'modules' => ['M1', 'M2', 'M3', 'M4', 'Enterprise extensions'],

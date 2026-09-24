@@ -63,7 +63,7 @@ class HqOverviewController extends Controller
 
         $mrr = ['total_known' => 0.0, 'enterprise_unknown' => 0];
         foreach ($payingTenants as $t) {
-            $price = $t->planPriceUsdMonthly();
+            $price = $t->planPriceMonthly();
             if ($price === null) {
                 $mrr['enterprise_unknown']++;
                 continue;

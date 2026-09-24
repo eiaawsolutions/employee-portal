@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
-@section('title', 'EIAAW Workforce FAQ — Trial, Billing, Data, PDPA & Security')
-@section('description', 'Straight answers about the EIAAW Workforce trial, per-employee billing, where data is hosted, PDPA, security, AI and getting started.')
+@section('title', 'EIAAW Workforce FAQ — Signing up, Billing, Data, PDPA & Security')
+@section('description', 'Straight answers about signing up for EIAAW Workforce, per-employee billing in ringgit, where data is hosted, PDPA, security, AI and getting started.')
 
 @push('head')
 <style>
@@ -95,23 +95,23 @@
     $faqGroups = [
         [
             'number' => '01',
-            'title'  => 'Trial',
+            'title'  => 'Signing up',
             'items'  => [
-                ['Do I need a credit card for the trial?', 'No. The 14-day trial of the plan you choose needs only a work email, your name, company name and a workspace URL. We never ask for card details to start.'],
-                ['What happens when the trial ends?', 'If you haven’t chosen a paid plan, the workspace moves to the Starter plan and keeps your data. To keep using it, tell us you want to subscribe and we’ll send an invoice.'],
-                ['Can I extend my trial?', 'Ask us before it ends and tell us why. Extensions are case by case.'],
-                ['Can I invite my team during the trial?', 'Yes. A trial workspace has 5 user seats with the full features of the plan you chose. Invited employees who haven’t started don’t count toward billed headcount.'],
+                ['Is there a free trial?', 'No. You choose a plan and pay for the first month or year at Stripe checkout. Your workspace is created as soon as payment goes through and you set a password.'],
+                ['What do I need to sign up?', 'Your work email, name, company name, a workspace URL, the number of employees, and a card for checkout.'],
+                ['Can I ask questions before I buy?', 'Yes. Click “Talk to us” and we answer sales questions within one business day.'],
+                ['Can I invite my team straight away?', 'Yes. Once your workspace is created you can invite your team. Invited employees who haven’t started don’t count toward billed headcount.'],
             ],
         ],
         [
             'number' => '02',
             'title'  => 'Billing',
             'items'  => [
-                ['How is "per active employee" calculated?', 'We bill for employees with an active record in your workspace on the day we bill. Invited-but-not-started, terminated and deactivated records don’t count.'],
+                ['How is "per active employee" calculated?', 'You set the number of employees at checkout, minimum 5. Invited-but-not-started, terminated and deactivated records don’t count. If your active headcount changes, tell us and we adjust your subscription from the next billing period.'],
                 ['Is there a minimum?', 'Starter, Growth and Scale have a minimum of 5 billable employees per workspace. Enterprise minimums are agreed in the order form.'],
                 ['Can I pay annually?', 'Yes. Annual billing gets you 2 months free (pay 10 months, get 12) on Starter, Growth and Scale.'],
-                ['What currency do you bill in?', 'Plans are priced and billed in US dollars.'],
-                ['How do I pay?', 'We send invoices through Stripe, which you can pay by card. Enterprise can also pay by bank transfer against an invoice.'],
+                ['What currency do you bill in?', 'Plans are priced and billed in Malaysian ringgit (MYR).'],
+                ['How do I pay?', 'By card at Stripe checkout; your subscription then renews automatically on the same card. Enterprise can also pay by bank transfer against an invoice.'],
             ],
         ],
         [
@@ -142,7 +142,7 @@
             'title'  => 'Getting started',
             'items'  => [
                 ['How long does setup take?', 'Starter is self-serve in a day. Growth usually takes 1–3 days, longer if you are bringing in payroll history. Scale, which adds accounting, depends on how much of your ledger you are moving across.'],
-                ['Can I trial with real employee data?', 'Yes. You own the data you enter, even during the trial. If you don’t continue, ask us to delete the workspace and we will.'],
+                ['Who owns the data I enter?', 'You do. If you cancel, you can export it during the 30-day read-only period, or ask us to delete the workspace and we will.'],
                 ['Do you support single sign-on?', 'Yes on Enterprise, with SAML 2.0 and OIDC. Starter, Growth and Scale use email and password with TOTP two-factor authentication.'],
                 ['What integrations do you have?', 'Stripe for billing, and email for invitations, approvals and notifications. Talk to us about a specific system.'],
                 ['Do you have a mobile app?', 'The web app works on phones and tablets. There is no separate native iOS or Android app.'],
@@ -195,7 +195,7 @@
         <p>We answer sales, security, and implementation questions within one business day.</p>
         <div class="faq-contact-ctas">
             <a href="#" data-ep-action="talk" class="eiaaw-btn eiaaw-btn--primary">Talk to us</a>
-            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--outline">Or just start the trial →</a>
+            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--outline">Or choose a plan →</a>
         </div>
     </div>
 </div>

@@ -2,28 +2,29 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Billing\SignupCheckout;
 use Illuminate\Console\Command;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 /**
- * StripeSyncPrices — create/verify the 12 recurring Prices that EIAAW
- * Workforce bills against.
+ * StripeSyncPrices — create/verify the 6 recurring MYR Prices that EIAAW
+ * Workforce bills against (3 tiers × monthly/annual, per active employee).
+ *
+ * Optional: signup checkout creates any missing Price on first use
+ * (SignupCheckout::priceId). Run this to pre-create them or to audit.
  *
  * Behaviour:
  *   --dry-run   (default when STRIPE_SECRET starts with sk_live_): report
  *               what would be created/updated; change nothing
  *   --apply     actually create the Products + Prices
- *   --emit-env  print the .env block with the resulting price IDs
+ *   --emit-env  list the lookup keys → price IDs (no env vars are needed;
+ *               checkout resolves Prices by lookup key)
  *
- * Product shape:
- *   One Stripe Product per tier ("EIAAW Workforce — Starter" etc.)
- *   Four Prices per Product (MYR/USD × monthly/annual)
- *
- * Price lookup_key — we use a deterministic key per slot so this command
- * is idempotent AND a human in the Stripe dashboard can audit the match:
- *   eiaaw_workforce_{tier}_{ccy_lower}_{period}
- *   e.g. eiaaw_workforce_starter_myr_monthly
+ * Price lookup_key — the SAME key checkout uses (SignupCheckout::lookupKey),
+ * embedding currency + amount + period so a price change never reuses a
+ * stale Price:  eiaaw_workforce_{tier}_myr_{sen}_{period}
+ *               e.g. eiaaw_workforce_growth_myr_5900_monthly
  *
  * Enterprise is skipped — manual invoicing, no Price object.
  *
@@ -38,7 +39,7 @@ class StripeSyncPrices extends Command
         {--i-know-this-is-live : Required alongside --apply when STRIPE_SECRET is a live key}
         {--emit-env : After sync, print the .env block to paste into production}';
 
-    protected $description = 'Create (or verify) the 12 Stripe Prices that back EIAAW Workforce subscriptions.';
+    protected $description = 'Create (or verify) the 6 MYR Stripe Prices that back EIAAW Workforce subscriptions.';
 
     private const PRODUCT_NAME_PREFIX = 'EIAAW Workforce — ';
     private const METADATA_OWNER = 'eiaaw-workforce-sync';
@@ -65,7 +66,7 @@ class StripeSyncPrices extends Command
         $this->info("{$action}Syncing Stripe Prices against {$mode} account.");
 
         $tiers = config('eiaaw.pricing.tiers', []);
-        $annualFactor = 12 - (int) config('eiaaw.pricing.annual_months_free', 2); // 10
+        $checkout = app(SignupCheckout::class);
 
         $envLines = [];
 
@@ -84,30 +85,27 @@ class StripeSyncPrices extends Command
                 return self::FAILURE;
             }
 
-            // Session 11: USD-only. Six Prices total = 3 tiers × monthly/annual.
-            $monthly = $tier['monthly_usd'] ?? null;
-            if ($monthly === null) continue;
+            // Six Prices total = 3 tiers × monthly/annual, MYR per employee.
+            if (($tier['monthly_myr'] ?? null) === null) continue;
 
-            foreach (['monthly', 'annual'] as $period) {
-                $unit = $period === 'monthly' ? $monthly : ($monthly * $annualFactor);
-                $interval = $period === 'monthly' ? 'month' : 'year';
-                $lookupKey = "eiaaw_workforce_{$tierKey}_usd_{$period}";
+            foreach (SignupCheckout::PERIODS as $period => $interval) {
+                $unitAmount = $checkout->unitAmount($tierKey, $period); // sen
+                $lookupKey = $checkout->lookupKey($tierKey, $period);
 
                 $price = $this->ensurePrice(
                     secret: $secret,
                     productId: $product['id'],
                     lookupKey: $lookupKey,
-                    unitAmount: $unit * 100,  // Stripe uses smallest currency unit (cents)
-                    currency: 'usd',
+                    unitAmount: $unitAmount,
+                    currency: SignupCheckout::CURRENCY,
                     interval: $interval,
                     dryRun: $dryRun,
                 );
 
-                $envKey = strtoupper("STRIPE_PRICE_{$tierKey}_USD_{$period}");
                 $priceId = $price['id'] ?? 'price_(would-create)';
-                $amount = number_format($unit, 0);
-                $this->line("    {$envKey}={$priceId}  (USD {$amount} / {$interval})");
-                $envLines[$envKey] = $priceId;
+                $amount = number_format($unitAmount / 100, 0);
+                $this->line("    {$lookupKey}={$priceId}  (RM {$amount} / employee / {$interval})");
+                $envLines[$lookupKey] = $priceId;
             }
         }
 
@@ -115,12 +113,12 @@ class StripeSyncPrices extends Command
         if ($dryRun) {
             $this->comment('Dry run complete. Re-run with --apply to actually create the objects.');
         } else {
-            $this->info('Sync complete. Save these IDs to your production environment:');
+            $this->info('Sync complete. No env vars needed — checkout resolves Prices by lookup key.');
         }
 
         if ($this->option('emit-env') || !$dryRun) {
             $this->newLine();
-            $this->line('# ── Stripe Price IDs (paste into production env) ──');
+            $this->line('# ── Stripe Price lookup keys → IDs (for audit; not env vars) ──');
             foreach ($envLines as $k => $v) {
                 $this->line("{$k}={$v}");
             }
@@ -202,6 +200,7 @@ class StripeSyncPrices extends Command
             'lookup_key' => $lookupKey,
             'recurring[interval]' => $interval,
             'billing_scheme' => 'per_unit',
+            'tax_behavior' => 'exclusive',
             "metadata[owner]" => self::METADATA_OWNER,
         ]);
 

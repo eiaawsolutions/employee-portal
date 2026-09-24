@@ -14,11 +14,11 @@ EIAAW Workforce is a product of EIAAW Solutions (https://eiaawsolutions.com), a 
 
 ## Pricing
 
-Per active employee per month, in USD. Minimum 5 billable employees on Starter, Growth and Scale. Annual billing = 10 × monthly (2 months free). 14-day free trial of the chosen plan, no credit card.
+Per active employee per month, in Malaysian ringgit (MYR). Minimum 5 billable employees on Starter, Growth and Scale. Annual billing = 10 × monthly (2 months free). No free trial: the first month or year is paid by card at Stripe checkout, and the workspace is created once payment succeeds.
 
-- **Starter** — USD 6 · employee journey
-- **Growth** — USD 14 · employee journey + IT assets + HR and payroll
-- **Scale** — USD 29 · everything, including accounting
+- **Starter** — RM 25 · employee journey
+- **Growth** — RM 59 · employee journey + IT assets + HR and payroll
+- **Scale** — RM 119 · everything, including accounting
 - **Enterprise** — custom · Scale + SAML/OIDC single sign-on, dedicated database, audit-log export
 
 ## Security and privacy

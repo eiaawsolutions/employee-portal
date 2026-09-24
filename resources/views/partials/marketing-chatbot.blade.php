@@ -339,16 +339,16 @@
 
             <div class="ep-modal-actions">
                 <button type="button" class="ep-btn ep-btn--primary" id="ep-c-submit">Send enquiry →</button>
-                <a href="{{ route('marketing.pricing') }}" class="ep-btn ep-btn--ghost">Or just start the trial</a>
+                <a href="{{ route('marketing.pricing') }}" class="ep-btn ep-btn--ghost">Or see plans</a>
             </div>
         </div>
 
         <div data-view="success" hidden>
             <span class="ep-modal-eyebrow">Message sent</span>
             <h3>Thanks — we&rsquo;ll <em>be in touch.</em></h3>
-            <p class="ep-modal-lede">Your enquiry just landed at <strong>{{ config('eiaaw.sales_email', 'sales@eiaawsolutions.com') }}</strong>. While you wait, you&rsquo;re welcome to keep exploring or start the 14-day trial — no credit card.</p>
+            <p class="ep-modal-lede">Your enquiry just landed at <strong>{{ config('eiaaw.sales_email', 'sales@eiaawsolutions.com') }}</strong>. While you wait, you&rsquo;re welcome to keep exploring or compare plans.</p>
             <div class="ep-modal-actions">
-                <a href="{{ route('marketing.pricing') }}" class="ep-btn ep-btn--primary">Start 14-day trial →</a>
+                <a href="{{ route('marketing.pricing') }}" class="ep-btn ep-btn--primary">See plans →</a>
                 <button type="button" class="ep-btn ep-btn--ghost" data-ep-close>Close</button>
             </div>
         </div>
@@ -433,7 +433,7 @@
             b.addEventListener('click', () => {
                 quickEl.innerHTML = '';
                 if (it.action === 'talk') openContactModal();
-                else if (it.action === 'trial') window.location.href = '{{ route('marketing.pricing') }}';
+                else if (it.action === 'plans') window.location.href = '{{ route('marketing.pricing') }}';
                 else if (it.send) sendMessage(it.send);
             });
             quickEl.appendChild(b);
@@ -441,10 +441,10 @@
     }
 
     function seedGreeting() {
-        addBubble("Hi — I'm the EIAAW Workforce assistant. I can answer questions about features, pricing, security, and how to start the 14-day trial. For anything else, the Talk-to-us form is the fastest path. What brings you here?", 'bot');
+        addBubble("Hi — I'm the EIAAW Workforce assistant. I can answer questions about features, pricing, security, and how to sign up. For anything else, the Talk-to-us form is the fastest path. What brings you here?", 'bot');
         setQuickReplies([
             { label: 'How much does it cost?', send: 'How much does EIAAW Workforce cost?' },
-            { label: 'Start the trial',         action: 'trial' },
+            { label: 'See plans',               action: 'plans' },
             { label: 'Talk to us',               action: 'talk' },
         ]);
     }
@@ -537,7 +537,7 @@
 
             setQuickReplies([
                 { label: 'Talk to us',       action: 'talk' },
-                { label: 'Start the trial',  action: 'trial' },
+                { label: 'See plans',        action: 'plans' },
             ]);
         } catch (e) {
             removeTyping();

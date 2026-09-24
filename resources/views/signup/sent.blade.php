@@ -54,17 +54,17 @@
 
         @if(session('signup_mail_sent') === false)
             <span class="eyebrow" style="color: var(--danger);">Email delivery failed</span>
-            <h1>We couldn't send the <em>confirmation link</em> right now.</h1>
+            <h1>We couldn't send your <em>set-password link</em> right now.</h1>
 
             <p class="lead">
-                Your workspace request for <span class="email-pill">{{ session('signup_email', 'your work email') }}</span>
-                is saved, but our email server didn't accept the message. Please email us at
+                Your payment for <span class="email-pill">{{ session('signup_email', 'your work email') }}</span>
+                is on file, but our email server didn't accept the message. Please email us at
                 <a href="mailto:{{ config('eiaaw.support_email') }}">{{ config('eiaaw.support_email') }}</a>
-                and we'll send your confirmation link manually within one business hour.
+                and we'll send your link manually within one business hour.
             </p>
         @else
-            <span class="eyebrow">Check your inbox</span>
-            <h1>We sent a <em>confirmation link</em> to:</h1>
+            <span class="eyebrow">Already paid · check your inbox</span>
+            <h1>We re-sent your <em>set-password link</em> to:</h1>
 
             <p class="lead">
                 <span class="email-pill">{{ session('signup_email', 'your work email') }}</span>
@@ -72,22 +72,16 @@
 
             @if(session('signup_plan'))
                 <p class="lead" style="margin-top: -8px;">
-                    Plan: <strong>{{ ucfirst(session('signup_plan')) }}</strong> · 14-day trial
+                    Plan: <strong>{{ ucfirst(session('signup_plan')) }}</strong> · paid
                 </p>
             @endif
 
-            <p class="lead">Click the link in the email to set your password and finish creating your workspace. The link expires in 24 hours.</p>
+            <p class="lead">This email has already paid for a workspace, so you won't be charged again. Click the link in the email to set your password and finish creating it.</p>
         @endif
 
         <div class="next-steps">
             <strong>Didn't get it?</strong>
-            Check your spam folder (including Promotions), or
-            @if(session('signup_plan'))
-                <a href="{{ route('signup.form', ['plan' => session('signup_plan')]) }}">try a different email address</a>.
-            @else
-                <a href="{{ route('marketing.pricing') }}">choose a plan and try again</a>.
-            @endif
-            Still stuck? Email us at
+            Check your spam folder (including Promotions). Still stuck? Email us at
             <a href="mailto:{{ config('eiaaw.support_email') }}">{{ config('eiaaw.support_email') }}</a>.
         </div>
 

@@ -7,7 +7,7 @@
 <div class="auth-shell">
 
     @include('auth.partials._aside', [
-        'quote' => 'Already invited? Activate the account your <em>HR team set up</em> for you. New here? Try the trial signup instead.',
+        'quote' => 'Already invited? Activate the account your <em>HR team set up</em> for you. New here? Choose a plan to set up your workspace instead.',
     ])
 
     <main class="auth-main">
@@ -47,7 +47,7 @@
                 Already activated? <a href="{{ route('login') }}" class="auth-link">Sign in</a>
             </p>
             <p style="text-align:center; font-size: 13px; color: var(--mute); margin-top: 8px;">
-                New customer? <a href="{{ route('marketing.pricing') }}" class="auth-link">Start a 14-day trial</a>
+                New customer? <a href="{{ route('marketing.pricing') }}" class="auth-link">Choose a plan</a>
             </p>
 
             <p class="footer-mini text-center">&copy; {{ date('Y') }} EIAAW Solutions</p>

@@ -9,7 +9,7 @@
     {{-- Consent gate: the Meta Pixel loads only after the visitor opts in (public/consent.js) --}}
     <script src="{{ asset('consent.js') }}?v=20260924ep" nonce="{{ $cspNonce ?? '' }}"></script>
 
-    <title>Start your EIAAW Workforce trial · {{ config('eiaaw.product_name', 'EIAAW Workforce') }}</title>
+    <title>Set up your workspace · {{ config('eiaaw.product_name', 'EIAAW Workforce') }}</title>
     <link rel="icon" type="image/png" href="{{ asset('brand/shield.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +41,7 @@
         .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px; letter-spacing: -0.005em; }
         .field .hint { font-size: 12px; color: var(--mute); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.04em; }
         .field .error { font-size: 12.5px; color: var(--danger); margin-top: 4px; }
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
             width: 100%; box-sizing: border-box;
             border: 1px solid var(--line); border-radius: 10px;
             padding: 11px 14px; font-family: var(--sans); font-size: 14.5px;
@@ -82,7 +82,15 @@
         .plan-summary-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
         .plan-summary-row strong { font-size: 17px; font-weight: 600; color: var(--ink); }
         .plan-summary-price { font-size: 12.5px; color: var(--ink-2); }
-        .plan-summary-trial { font-size: 12px; color: var(--primary-dark); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.02em; }
+        .plan-summary-note { font-size: 12px; color: var(--primary-dark); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.02em; }
+        .period-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .period-option { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; font-size: 14px; color: var(--ink-2); }
+        .period-option:has(input:checked) { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(31,168,150,0.12); color: var(--ink); }
+        .period-option input { margin: 0; accent-color: var(--primary-dark); }
+        .period-option small { color: var(--primary-dark); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; }
+        .checkout-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line-soft); margin-top: 10px; padding-top: 10px; font-size: 13px; color: var(--ink-2); }
+        .checkout-total strong { font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .alert-info { background: var(--bg-warm); border: 1px solid var(--line); color: var(--ink-2); border-radius: 10px; font-size: 13.5px; padding: 10px 14px; margin-bottom: 16px; }
         .aside-hero { font-family: var(--sans); font-weight: 500; font-size: clamp(28px, 3vw, 40px); line-height: 1.1; letter-spacing: -0.02em; max-width: 22ch; }
         .aside-hero em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--primary-dark); }
         .aside-bullets { list-style: none; padding: 0; margin: 32px 0 0; font-size: 14px; color: var(--ink-2); }
@@ -112,14 +120,14 @@
             </a>
 
             <p class="aside-hero">
-                Start your <em>14-day trial</em> in two minutes — no card, full feature access.
+                Your workspace, <em>live in minutes</em> — pay once at checkout, then set your password.
             </p>
 
             <ul class="aside-bullets">
                 <li>Full HR, payroll, claims, leave, attendance, IT assets</li>
                 <li>AI assistant that answers from your own records</li>
-                <li>Up to 5 users free during trial</li>
-                <li>Cancel anytime; auto-converts to Starter on day&nbsp;15</li>
+                <li>Billed in ringgit, monthly or annually, through Stripe</li>
+                <li>Cancel any time; access runs to the end of the paid period</li>
             </ul>
         </div>
 
@@ -132,25 +140,38 @@
             <input type="hidden" name="plan" value="{{ $plan }}">
 
             <span class="eyebrow">New workspace</span>
-            <h1>Tell us where to send the <em>confirmation link</em>.</h1>
-            <p class="lead">We'll email a link to confirm your address and set your password. The 14-day trial begins after you confirm.</p>
+            <h1>Set up your <em>workspace</em>.</h1>
+            <p class="lead">Pay securely with Stripe, then set your password — your workspace is created as soon as payment goes through. No free trial.</p>
 
-            @php $tier = config('eiaaw.pricing.tiers.' . $plan, []); @endphp
-            <div class="plan-summary">
+            @php
+                $tier = config('eiaaw.pricing.tiers.' . $plan, []);
+                $monthly = (int) ($tier['monthly_myr'] ?? 0);
+                $annualMonths = 12 - (int) config('eiaaw.pricing.annual_months_free', 2);
+                $minSeats = (int) config("plans.{$plan}.min_seats", 5);
+                $period = old('period', request('period') === 'annual' ? 'annual' : 'monthly');
+            @endphp
+            <div class="plan-summary" id="plan-summary"
+                 data-monthly="{{ $monthly }}" data-annual-months="{{ $annualMonths }}" data-min="{{ $minSeats }}">
                 <div class="plan-summary-line">
                     <span class="plan-summary-label">Selected plan</span>
                     <a href="{{ route('marketing.pricing') }}" class="plan-summary-change">Change</a>
                 </div>
                 <div class="plan-summary-row">
                     <strong>{{ $tier['name'] ?? ucfirst($plan) }}</strong>
-                    @if(!empty($tier['monthly_usd']))
-                        <span class="plan-summary-price">US${{ $tier['monthly_usd'] }}/active employee/mo after trial</span>
-                    @endif
+                    <span class="plan-summary-price">RM&nbsp;{{ $monthly }} per active employee / month</span>
                 </div>
-                <div class="plan-summary-trial">14-day free trial · no credit card required</div>
+                <div class="plan-summary-note">Minimum {{ $minSeats }} employees · billed in MYR</div>
+                <div class="checkout-total">
+                    <span id="checkout-total-label">Due today</span>
+                    <strong id="checkout-total">RM&nbsp;{{ number_format($monthly * max($minSeats, (int) old('headcount', $minSeats))) }}</strong>
+                </div>
             </div>
 
-            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug','plan','consent']))
+            @if(request('canceled'))
+                <div class="alert-info" role="status">Checkout was cancelled — nothing was charged. You can pick up where you left off.</div>
+            @endif
+
+            @if($errors->any() && !$errors->hasAny(['work_email','full_name','company_name','desired_slug','plan','consent','period','headcount']))
                 <div class="alert-danger">{{ $errors->first() }}</div>
             @endif
 
@@ -187,6 +208,27 @@
             </div>
 
             <div class="field">
+                <label for="headcount">Number of employees</label>
+                <input type="number" id="headcount" name="headcount" value="{{ old('headcount', $minSeats) }}" required min="1" max="5000" step="1" inputmode="numeric">
+                <div class="hint">Billed per active employee, minimum {{ $minSeats }}.</div>
+                @error('headcount')<div class="error">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="field">
+                <label>Billing</label>
+                <div class="period-options">
+                    <label class="period-option">
+                        <input type="radio" name="period" value="monthly" @checked($period === 'monthly')> Monthly
+                    </label>
+                    <label class="period-option">
+                        <input type="radio" name="period" value="annual" @checked($period === 'annual')>
+                        <span>Annual <small>2 months free</small></span>
+                    </label>
+                </div>
+                @error('period')<div class="error">{{ $message }}</div>@enderror
+            </div>
+
+            <div class="field">
                 <label for="consent" style="display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.5;cursor:pointer">
                     <input type="checkbox" id="consent" name="consent" value="1" required style="margin-top:3px;width:auto;flex:none" @checked(old('consent'))>
                     <span>I agree to the <a href="{{ route('marketing.terms') }}" target="_blank" rel="noopener" style="color:#11766A">Terms of Service</a> and to EIAAW processing my details, including through service providers outside my country, as described in the <a href="{{ route('marketing.privacy') }}" target="_blank" rel="noopener" style="color:#11766A">Privacy Notice</a>.</span>
@@ -195,10 +237,11 @@
             </div>
 
             <button type="submit" class="submit">
-                Continue → confirm by email
+                Continue to secure checkout →
             </button>
 
             <p class="legal">
+                Payment is handled by Stripe; we never see your card number.
                 Already have an account?
                 <a href="/find-workspace">Find your workspace</a>.
             </p>
@@ -206,5 +249,26 @@
     </main>
 
 </div>
+<script nonce="{{ $cspNonce ?? '' }}">
+(function () {
+    var box = document.getElementById('plan-summary');
+    var out = document.getElementById('checkout-total');
+    var label = document.getElementById('checkout-total-label');
+    var input = document.getElementById('headcount');
+    if (!box || !out || !input) return;
+    var monthly = +box.dataset.monthly, months = +box.dataset.annualMonths, min = +box.dataset.min;
+
+    function render() {
+        var seats = Math.max(min, parseInt(input.value, 10) || 0);
+        var annual = (document.querySelector('input[name="period"]:checked') || {}).value === 'annual';
+        var total = monthly * seats * (annual ? months : 1);
+        out.textContent = 'RM ' + total.toLocaleString('en-MY');
+        label.textContent = 'Due today (' + seats + ' employees, ' + (annual ? 'billed yearly' : 'billed monthly') + ')';
+    }
+    input.addEventListener('input', render);
+    document.querySelectorAll('input[name="period"]').forEach(function (r) { r.addEventListener('change', render); });
+    render();
+})();
+</script>
 </body>
 </html>

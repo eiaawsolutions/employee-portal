@@ -147,23 +147,25 @@ class LaunchPreflight extends Command
         ];
     }
 
+    /**
+     * Stripe Prices are resolved by lookup key at checkout (created on first
+     * use), so there are no price-ID env vars to check — only that every
+     * self-serve tier has an MYR price configured.
+     */
     private function checkStripePriceIds(): array
     {
         $pricing = config('eiaaw.pricing.tiers', []);
         $missing = [];
         foreach (['starter', 'growth', 'scale'] as $tier) {
-            foreach (['monthly', 'annual'] as $period) {
-                $id = data_get($pricing, "{$tier}.stripe_prices.{$period}");
-                if (empty($id)) {
-                    $missing[] = strtoupper("{$tier}_USD_{$period}");
-                }
+            if (!is_numeric(data_get($pricing, "{$tier}.monthly_myr"))) {
+                $missing[] = $tier;
             }
         }
         return [
             'ok' => empty($missing),
             'detail' => empty($missing)
-                ? 'all 6 Stripe Price IDs populated (USD-only since Session 11)'
-                : count($missing) . ' / 6 missing — run `php artisan stripe:sync-prices --apply` or paste STRIPE_PRICE_* env vars',
+                ? 'MYR prices set for starter/growth/scale; Stripe Prices resolve by lookup key at checkout'
+                : 'no monthly_myr for: ' . implode(', ', $missing),
         ];
     }
 

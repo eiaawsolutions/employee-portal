@@ -82,7 +82,9 @@ return [
     ],
 
     /*
-     * Pricing — USD per active employee per month (Session 11 rework).
+     * Pricing — MYR per active employee per month, paid at Stripe Checkout
+     * before the workspace is created. No free trial (2026-09-24; was USD
+     * with a 14-day no-card trial).
      *
      * Module bundling:
      *   M1 Employee Journey  — onboarding, listing, offboarding
@@ -91,35 +93,30 @@ return [
      *   M4 Finance           — full accounting
      *
      * Tier bundles:
-     *   Starter     $6   — M1 only
-     *   Growth      $14  — M1 + M2 + M3 (Employee Journey + Assets + HRM)
-     *   Scale       $29  — M1 + M2 + M3 + M4 (adds Finance — everything)
+     *   Starter     RM 25  — M1 only
+     *   Growth      RM 59  — M1 + M2 + M3 (Employee Journey + Assets + HRM)
+     *   Scale       RM 119 — M1 + M2 + M3 + M4 (adds Finance — everything)
      *   Enterprise  Custom — Scale + SSO + dedicated DB + audit export + SLA
      *
-     * Annual = monthly × 10 (2 months free). Stripe Price IDs populated via
-     * `php artisan stripe:sync-prices --apply`; until then the pricing page
-     * falls back to plain CTA.
+     * Annual = monthly × 10 (2 months free). Stripe Prices are found or
+     * created on first checkout by lookup key (App\Services\Billing\SignupCheckout)
+     * — no price-ID env vars.
      */
     'pricing' => [
         'annual_months_free' => 2,
-        'trial_days' => 14,
         'currency' => [
-            'code' => 'USD',
-            'symbol' => '$',
-            'label' => 'US Dollar',
+            'code' => 'MYR',
+            'symbol' => 'RM',
+            'label' => 'Malaysian Ringgit',
         ],
         'tiers' => [
             'starter' => [
                 'name' => 'Starter',
                 'tagline' => 'Formalise your employee records. Onboarding, listing, and offboarding — nothing more, nothing less.',
-                'monthly_usd' => 6,
-                'stripe_prices' => [
-                    'monthly' => env('STRIPE_PRICE_STARTER_USD_MONTHLY'),
-                    'annual'  => env('STRIPE_PRICE_STARTER_USD_ANNUAL'),
-                ],
+                'monthly_myr' => 25,
                 'headcount_label' => 'Module 1 — Employee Journey',
                 'featured' => false,
-                'cta' => ['label' => 'Start 14-day trial', 'route' => 'signup.form', 'plan' => 'starter'],
+                'cta' => ['label' => 'Choose Starter', 'route' => 'signup.form', 'plan' => 'starter'],
                 'modules_included' => ['M1 Employee Journey'],
                 'features' => [
                     'Employee records with document vault',
@@ -139,15 +136,11 @@ return [
             'growth' => [
                 'name' => 'Growth',
                 'tagline' => 'Employee records plus IT assets plus full HRM — leave, payroll, claims, EA forms on one backbone.',
-                'monthly_usd' => 14,
-                'stripe_prices' => [
-                    'monthly' => env('STRIPE_PRICE_GROWTH_USD_MONTHLY'),
-                    'annual'  => env('STRIPE_PRICE_GROWTH_USD_ANNUAL'),
-                ],
+                'monthly_myr' => 59,
                 'headcount_label' => 'Modules 1 + 2 + 3',
                 'featured' => true,
                 'badge' => 'Most popular',
-                'cta' => ['label' => 'Start 14-day trial', 'route' => 'signup.form', 'plan' => 'growth'],
+                'cta' => ['label' => 'Choose Growth', 'route' => 'signup.form', 'plan' => 'growth'],
                 'modules_included' => ['M1 Employee Journey', 'M2 Asset Management', 'M3 HRM'],
                 'features' => [
                     'Everything in Starter',
@@ -171,14 +164,10 @@ return [
             'scale' => [
                 'name' => 'Scale',
                 'tagline' => 'The complete EIAAW Workforce platform — Employee Journey, Assets, HRM, and Finance on one backbone.',
-                'monthly_usd' => 29,
-                'stripe_prices' => [
-                    'monthly' => env('STRIPE_PRICE_SCALE_USD_MONTHLY'),
-                    'annual'  => env('STRIPE_PRICE_SCALE_USD_ANNUAL'),
-                ],
+                'monthly_myr' => 119,
                 'headcount_label' => 'All four modules',
                 'featured' => false,
-                'cta' => ['label' => 'Start 14-day trial', 'route' => 'signup.form', 'plan' => 'scale'],
+                'cta' => ['label' => 'Choose Scale', 'route' => 'signup.form', 'plan' => 'scale'],
                 'modules_included' => ['M1 Employee Journey', 'M2 Asset Management', 'M3 HRM', 'M4 Finance'],
                 'features' => [
                     'Everything in Growth',
@@ -199,8 +188,7 @@ return [
             'enterprise' => [
                 'name' => 'Enterprise',
                 'tagline' => 'For groups, regulated industries, and sovereign-data needs. Everything in Scale plus enterprise controls.',
-                'monthly_usd' => null,
-                'stripe_prices' => ['monthly' => null, 'annual' => null],
+                'monthly_myr' => null,
                 'price_label' => 'Custom',
                 'headcount_label' => '500+ employees or regulated sector',
                 'featured' => false,

@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
 @section('title', 'HR, Payroll & Accounting Software Malaysia | EIAAW Workforce')
-@section('description', 'HR, payroll (EPF, SOCSO, EIS, PCB, EA forms), IT-asset and accounting software for Malaysian SMEs in one workspace. 14-day free trial.')
+@section('description', 'HR, payroll (EPF, SOCSO, EIS, PCB, EA forms), IT-asset and accounting software for Malaysian SMEs in one workspace. From RM 25 per employee per month.')
 
 @push('head')
 {{-- ── Structured data ────────────────────────────────────────────────────
@@ -12,8 +12,9 @@
     $marketingHost = config('eiaaw.marketing_host', 'ep.eiaawsolutions.com');
     $base = app()->environment('production') ? 'https://'.trim($marketingHost, '/') : rtrim(url('/'), '/');
     $canonical = $base.'/';
-    $currency = $pricing['currency']['code'] ?? 'USD';
-    $priced = collect($pricing['tiers'] ?? [])->pluck('monthly_usd')->filter(fn ($p) => $p !== null);
+    $currency = $pricing['currency']['code'] ?? 'MYR';
+    $currencySymbol = $pricing['currency']['symbol'] ?? 'RM';
+    $priced = collect($pricing['tiers'] ?? [])->pluck('monthly_myr')->filter(fn ($p) => $p !== null);
     $fromPrice = $priced->min();
 
     $jsonFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
@@ -25,7 +26,7 @@
         ['Which Malaysian statutory items does payroll cover?', 'EPF, SOCSO, EIS and PCB are calculated on every payroll run, and EA forms are generated for each employee at year-end. You review and approve each pay run and make the statutory submissions yourself.'],
         ['Is the AI assistant safe to use on real employee data?', 'The assistant answers only from records the signed-in person is already allowed to see, shows which records it used, cannot change anything in your workspace, and runs under a monthly usage cap per workspace. Your data is never used to train AI models.'],
         ['How is tenant data isolated?', 'EIAAW Workforce runs on Postgres with Row-Level Security in FORCE mode, enforcing each workspace’s tenant ID at the database level. The database refuses cross-tenant reads even if application code has a bug.'],
-        ['Can I start without a credit card?', 'Yes. Sign up with your work email, pick a workspace URL and set a password. Your workspace starts a 14-day free trial of the plan you chose, with no credit card.'],
+        ['Is there a free trial?', 'No. Choose a plan, enter your headcount and pay for the first month or year at Stripe checkout, in ringgit. Your workspace is created as soon as payment goes through and you set a password.'],
     ];
 
     $graph = [
@@ -644,7 +645,7 @@
                 </h1>
 
                 <p class="ln-hero-lede">
-                    <strong>EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs</strong>, from {{ $currency }}&nbsp;{{ $fromPrice }} per active employee per month. Onboarding, leave, EPF/SOCSO/EIS/PCB payroll, EA forms, company assets and a full ledger share one employee record, so HR, IT and Finance stop re-keying the same data.
+                    <strong>EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs</strong>, from {{ $currencySymbol }}&nbsp;{{ $fromPrice }} per active employee per month. Onboarding, leave, EPF/SOCSO/EIS/PCB payroll, EA forms, company assets and a full ledger share one employee record, so HR, IT and Finance stop re-keying the same data.
                 </p>
 
                 <div class="ln-hero-pillars" aria-label="Departments included">
@@ -654,7 +655,7 @@
                 </div>
 
                 <div class="ln-hero-ctas">
-                    <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Start 14-day trial · no credit card</a>
+                    <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose your plan →</a>
                     <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See every feature →</a>
                     <a href="#" data-ep-action="talk" class="eiaaw-btn eiaaw-btn--outline">Talk to us</a>
                 </div>
@@ -906,8 +907,8 @@
             @foreach($pricing['tiers'] as $key => $tier)
                 <div class="ln-prc-cell {{ $tier['featured'] ? 'featured' : '' }}">
                     <span class="ln-prc-cell-name">{{ $tier['name'] }}@if($tier['featured']) · Most popular @endif</span>
-                    @if($tier['monthly_usd'] !== null)
-                        <div class="ln-prc-cell-price">${{ $tier['monthly_usd'] }}<small>/emp/mo</small></div>
+                    @if($tier['monthly_myr'] !== null)
+                        <div class="ln-prc-cell-price">RM{{ $tier['monthly_myr'] }}<small>/emp/mo</small></div>
                     @else
                         <div class="ln-prc-cell-price">Custom</div>
                     @endif
@@ -925,12 +926,12 @@
 <section class="ln-cta">
     <div class="mk-container mk-container--narrow">
         <h2>Run HR, IT, and Finance <em>on one platform</em> — starting this week.</h2>
-        <p>Sign up with your work email, pick a workspace URL and set a password. Your workspace starts a 14-day free trial of the plan you choose, with no credit card.</p>
+        <p>Choose a plan, pay securely at checkout, then set a password — your workspace is created the moment payment goes through.</p>
         <div class="ln-cta-row">
-            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose plan & start trial</a>
+            <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose your plan →</a>
             <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See features</a>
         </div>
-        <div class="ln-cta-note">No credit card · 14-day free trial · Postgres RLS isolation</div>
+        <div class="ln-cta-note">From RM 25 per employee · billed in ringgit · Postgres RLS isolation</div>
     </div>
 </section>
 

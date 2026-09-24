@@ -62,9 +62,9 @@
             </span>
         </a>
 
-        <span class="eyebrow">Last step</span>
+        <span class="eyebrow">Payment received · last step</span>
         <h1>Welcome, <em>{{ $invite->full_name }}</em>.</h1>
-        <p class="lead">Set a password and we'll spin up your workspace. The 14-day trial begins now.</p>
+        <p class="lead">Thanks — your payment went through. Set a password and we'll spin up your workspace.</p>
 
         <div class="summary">
             <strong>Workspace:</strong> {{ $invite->company_name }}<br>
@@ -72,12 +72,21 @@
             <strong>Sign-in email:</strong> {{ $invite->work_email }}
         </div>
 
-        @if($errors->any() && !$errors->has('password'))
+        @if($errors->any() && !$errors->hasAny(['password', 'desired_slug']))
             <div class="alert-danger">{{ $errors->first() }}</div>
         @endif
 
         <form action="{{ route('signup.confirm.submit', $invite->confirmation_token) }}" method="POST">
             @csrf
+
+            @error('desired_slug')
+                {{-- The paid-for URL was taken before provisioning: pick another here (no second checkout). --}}
+                <div class="field">
+                    <label for="desired_slug">Choose a different workspace URL</label>
+                    <input type="text" id="desired_slug" name="desired_slug" value="{{ old('desired_slug') }}" required minlength="3" maxlength="60" pattern="[a-z0-9](?:[a-z0-9-]{1,58}[a-z0-9])?">
+                    <div class="error">{{ $message }}</div>
+                </div>
+            @enderror
 
             <div class="field">
                 <label for="password">Password</label>
@@ -91,7 +100,7 @@
                 <input type="password" id="password_confirmation" name="password_confirmation" autocomplete="new-password" required minlength="12">
             </div>
 
-            <button type="submit" class="submit">Create workspace and start trial →</button>
+            <button type="submit" class="submit">Create my workspace →</button>
         </form>
 
         <p class="meta">EIAAW Solutions &middot; Made in Malaysia</p>

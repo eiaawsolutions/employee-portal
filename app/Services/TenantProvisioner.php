@@ -15,13 +15,11 @@ use Illuminate\Support\Facades\Hash;
  * Single transaction across two surfaces (the "global" surface that creates
  * the Tenant, and the "tenant-scoped" surface that creates the first owner
  * User). After commit:
- *   - Tenant exists with a 14-day trial set
+ *   - Tenant exists on an active, already-paid MYR subscription (no trial) —
+ *     the Stripe customer + subscription come from the paid Checkout Session
+ *     recorded on the invite (SignupCheckout::recordPayment)
  *   - First owner User exists in the tenant_users pivot with role=owner
  *   - Welcome state is set so the dashboard onboarding wizard fires
- *
- * Stripe customer is NOT created here — Cashier creates it lazily on first
- * payment-method attach or subscription create. Webhook handles seat
- * reconciliation in Wk3.
  */
 class TenantProvisioner
 {
@@ -47,11 +45,15 @@ class TenantProvisioner
                     'slug'               => $invite->desired_slug,
                     'name'               => $invite->company_name,
                     'plan'               => $invite->plan,
-                    'plan_seats'         => 5,
-                    'trial_ends_at'      => now()->addDays((int) env('STRIPE_TRIAL_DAYS', 14)),
+                    'plan_seats'         => max(5, (int) $invite->seats),
+                    'trial_ends_at'      => null,
                     'status'             => Tenant::STATUS_ACTIVE,
                     'country_code'       => 'MY',
-                    'billing_currency'   => 'USD',
+                    'billing_currency'   => 'MYR',
+                    'stripe_id'              => $invite->stripe_customer_id,
+                    'stripe_customer_id'     => $invite->stripe_customer_id,
+                    'stripe_subscription_id' => $invite->stripe_subscription_id,
+                    'subscription_status'    => $invite->isPaid() ? 'active' : null,
                 ]);
             });
 

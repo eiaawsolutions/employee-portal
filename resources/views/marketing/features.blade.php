@@ -305,9 +305,9 @@
     <div class="mk-container mk-container--narrow">
         <span class="eyebrow" style="justify-content: center;">Ready to explore?</span>
         <h2 style="font-family: var(--sans); font-weight: 500; font-size: clamp(34px, 4vw, 52px); line-height: 1.05; letter-spacing: -0.025em; margin: 18px 0 24px;">
-            Start with the 14-day trial. <em style="font-family: var(--serif); font-style: italic; color: var(--primary-dark);">See it on your own data.</em>
+            Pick a plan, pay at checkout. <em style="font-family: var(--serif); font-style: italic; color: var(--primary-dark);">Run it on your own data this week.</em>
         </h2>
-        <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose plan & start trial</a>
+        <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose your plan →</a>
     </div>
 </section>
 

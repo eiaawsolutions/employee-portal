@@ -20,7 +20,7 @@ class SignupConfirmationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirm your EIAAW Workforce signup',
+            subject: 'Payment received — set your EIAAW Workforce password',
         );
     }
 

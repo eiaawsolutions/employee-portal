@@ -1,7 +1,7 @@
 @extends('marketing.legal._layout')
 
 @section('title', 'Terms of Service — EIAAW Workforce')
-@section('description', 'The terms for using EIAAW Workforce: trial, per-employee billing, your data, AI features, cancellation and liability. Governed by Malaysian law.')
+@section('description', 'The terms for using EIAAW Workforce: subscription and per-employee billing, your data, AI features, cancellation and liability. Governed by Malaysian law.')
 
 @section('legal-title', 'Terms of service')
 @section('legal-lede', 'The agreement between your organisation and EIAAW SOLUTIONS for using EIAAW Workforce.')
@@ -19,14 +19,14 @@
     <h2>3. Accounts and security</h2>
     <p>Keep the details you give us accurate, keep sign-in credentials confidential, and tell us promptly at <a href="mailto:{{ $contact }}">{{ $contact }}</a> if you suspect unauthorised access. You decide who gets access to your workspace and what role they have, and you are responsible for what your users do in it. We recommend turning on two-factor authentication for every administrator.</p>
 
-    <h2>4. Free trial</h2>
-    <p>A new workspace starts with a 14-day free trial of the plan you chose, for up to 5 users, without a payment card. If you haven’t chosen a paid plan when the trial ends, the workspace moves to the Starter plan and keeps your data. Starter is a paid plan: to keep using the workspace after the trial, tell us you want to subscribe and we’ll send you an invoice. We never charge a card you haven’t given us.</p>
+    <h2>4. Subscribing</h2>
+    <p>There is no free trial. You choose a plan, a billing period and the number of employees, and pay for the first period at checkout through Stripe. Your workspace is created once that payment succeeds. Your subscription then renews automatically at the start of each billing period until you cancel.</p>
 
     <h2>5. Fees and billing</h2>
     <ul>
-        <li>Plans are priced in US dollars per active employee per month. An active employee is an employee record with an active status in your workspace; invited employees who haven’t started, and deactivated or exited employees, are not counted.</li>
-        <li>Starter, Growth and Scale have a minimum of 5 billable employees. Enterprise pricing, minimums and terms are agreed in an order form.</li>
-        <li>You pay monthly or annually, in advance. We send invoices through Stripe, which you can pay by card. Annual billing costs 10 times the monthly price.</li>
+        <li>Plans are priced in Malaysian ringgit (MYR) per active employee per month. An active employee is an employee record with an active status in your workspace; invited employees who haven’t started, and deactivated or exited employees, are not counted.</li>
+        <li>Starter, Growth and Scale have a minimum of 5 billable employees. You set the number of employees at checkout; if your active headcount changes, tell us and we’ll adjust your subscription from the next billing period. Enterprise pricing, minimums and terms are agreed in an order form.</li>
+        <li>You pay monthly or annually, in advance, by card through Stripe, which charges the card you give at checkout at the start of each billing period. Annual billing costs 10 times the monthly price.</li>
         <li>Prices exclude any applicable taxes, which we show on the invoice.</li>
         <li>You can change plan at any time by telling us; the new plan’s features apply straight away and its price applies from your next billing period.</li>
         <li>If a payment fails and isn’t fixed within the grace period we tell you about, we may suspend the workspace until it is. We don’t refund partial periods except where the law requires it or these terms say so.</li>
