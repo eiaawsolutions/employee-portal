@@ -923,6 +923,27 @@
     </div>
 </section>
 
+<section class="mk-section" id="ringkasan" aria-labelledby="ringkasan-heading">
+    <div class="mk-container">
+        <span class="eyebrow">Payroll &amp; HR software Malaysia</span>
+        <h2 id="ringkasan-heading" class="mk-display" style="font-size:clamp(28px,4vw,44px);margin-top:12px">One system for HR, payroll, <em>IT assets and accounts.</em></h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;margin-top:32px">
+            <div>
+                <h3>What it replaces</h3>
+                <p>Use EIAAW Workforce if you are looking for <strong>payroll software in Malaysia</strong> that calculates <strong>EPF, SOCSO, EIS and PCB (MTD)</strong> on every run, generates <strong>EA forms</strong>, and handles <strong>leave management, attendance, staff claims, employee onboarding, IT asset tracking and SME accounting</strong> in one cloud HRMS. Priced per active employee per month, from RM 25.</p>
+            </div>
+            <div lang="ms">
+                <h3>Bahasa Malaysia</h3>
+                <p>EIAAW Workforce ialah <strong>sistem HR dan gaji (payroll) untuk PKS di Malaysia</strong>. Caruman KWSP, PERKESO, SIP dan potongan cukai PCB dikira pada setiap larian gaji, borang EA dijana pada hujung tahun, dan cuti, kehadiran, tuntutan, aset IT serta perakaunan berada dalam satu sistem. Dari RM 25 setiap pekerja aktif sebulan.</p>
+            </div>
+            <div lang="zh-Hans">
+                <h3>中文</h3>
+                <p>EIAAW Workforce 是为马来西亚中小企业打造的 <strong>人力资源与薪资系统</strong>。每次发薪自动计算 EPF、SOCSO、EIS 及 PCB 扣税，年底生成 EA 表格，并把请假、考勤、报销、IT 资产与会计整合在同一系统。每位在职员工每月 RM 25 起。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="ln-cta">
     <div class="mk-container mk-container--narrow">
         <h2>Run HR, IT, and Finance <em>on one platform</em> — starting this week.</h2>
