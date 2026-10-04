@@ -276,6 +276,40 @@
         .ln-hero-mock-card { animation: none; }
     }
 
+    /* ── Hero film (silent loop + narrated "Play with sound") ── */
+    .ln-hero-mock--video { aspect-ratio: 4 / 5; max-width: 500px; }
+    .ln-hero-video {
+        position: absolute; inset: 0; margin: 0; z-index: 1;
+        border-radius: 18px; overflow: hidden; background: #FAF7F2;
+        box-shadow:
+            0 1px 2px rgba(15, 26, 29, 0.04),
+            0 4px 8px rgba(15, 26, 29, 0.05),
+            0 16px 32px -8px rgba(15, 26, 29, 0.14),
+            0 36px 64px -16px rgba(15, 26, 29, 0.22),
+            0 80px 140px -28px rgba(15, 26, 29, 0.28);
+    }
+    .ln-hero-video video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+    .ln-hero-video .hv-film[hidden] { display: none; }
+    .hv-sound {
+        position: absolute; left: clamp(14px, 2vw, 22px); bottom: clamp(14px, 2vw, 22px); z-index: 3;
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 12px 20px 12px 16px; border: 0; border-radius: 999px; cursor: pointer;
+        background: #0F1A1D; color: #FFFFFF; font: 600 15px/1 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        box-shadow: 0 8px 24px rgba(15, 26, 29, 0.22);
+        transition: transform .25s ease, background .25s ease;
+    }
+    .hv-sound:hover { background: #11766A; transform: translateY(-1px); }
+    .hv-sound:focus-visible { outline: 3px solid #1FA896; outline-offset: 3px; }
+    .hv-ico { width: 20px; height: 20px; fill: currentColor; flex: none; }
+    .hv-ico-off { display: none; }
+    .ln-hero-video[data-mode="sound"][data-muted="true"] .hv-ico-on { display: none; }
+    .ln-hero-video[data-mode="sound"][data-muted="true"] .hv-ico-off { display: block; }
+    .hv-progress { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 4px; background: rgba(15, 26, 29, 0.08); opacity: 0; transition: opacity .3s ease; }
+    .hv-progress span { display: block; height: 100%; width: 0; background: #11766A; }
+    .ln-hero-video[data-mode="sound"] .hv-progress { opacity: 1; }
+    @media (max-width: 640px) { .hv-sound { padding: 10px 16px 10px 12px; font-size: 14px; } }
+    @media (prefers-reduced-motion: reduce) { .hv-sound, .hv-progress { transition: none; } }
+
     /* ── Social proof strip ── */
     .ln-proof {
         border-top: 1px solid var(--line-soft);
@@ -665,16 +699,24 @@
                 </div>
             </div>
 
-            <aside class="ln-hero-mock" aria-label="Product preview: EIAAW Workforce dashboard with one-click platform run">
-                <figure class="ln-hero-mock-main">
-                    <img src="{{ asset('images/landing/platform-hero-v2.svg') }}"
-                         alt="Illustrative EIAAW Workforce dashboard with sample data: HR, IT and Finance modules in the sidebar, headcount, assets and revenue tiles, and an activity stream covering onboarding, claims, AARF acknowledgements and payroll."
-                         width="720" height="540" loading="eager" fetchpriority="high">
-                </figure>
-                <figure class="ln-hero-mock-card" aria-hidden="true">
-                    <img src="{{ asset('images/landing/one-click-card.svg') }}"
-                         alt=""
-                         width="320" height="360" loading="eager">
+            {{-- Hero film: silent loop on load; "Play with sound" plays the narrated 26s tour (public/js/hero-video.js) --}}
+            <aside class="ln-hero-mock ln-hero-mock--video" aria-label="EIAAW Workforce product film">
+                <figure class="ln-hero-video" data-hero-video
+                    data-loop-desktop="{{ asset('media/hero/ep-hero-4x5.mp4') }}"
+                    data-film-desktop="{{ asset('media/hero/ep-film-narrated-4x5.mp4') }}"
+                    data-poster-desktop="{{ asset('media/hero/ep-poster-4x5.jpg') }}"
+                    data-loop-mobile="{{ asset('media/hero/ep-hero-4x5.mp4') }}"
+                    data-film-mobile="{{ asset('media/hero/ep-film-narrated-4x5.mp4') }}"
+                    data-poster-mobile="{{ asset('media/hero/ep-poster-4x5.jpg') }}">
+                    <video class="hv-loop" playsinline muted loop preload="auto" poster="{{ asset('media/hero/ep-poster-4x5.jpg') }}" aria-hidden="true"></video>
+                    <video class="hv-film" playsinline preload="none" hidden aria-label="EIAAW Workforce: 26-second narrated tour"></video>
+                    <button class="hv-sound" type="button" aria-pressed="false">
+                        <svg class="hv-ico hv-ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        <svg class="hv-ico hv-ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        <span class="hv-label">Play with sound</span>
+                    </button>
+                    <div class="hv-progress" aria-hidden="true"><span></span></div>
+                    <noscript><img src="{{ asset('media/hero/ep-poster-4x5.jpg') }}" alt="EIAAW Workforce" width="1080" height="1350"></noscript>
                 </figure>
             </aside>
         </div>
@@ -957,3 +999,7 @@
 </section>
 
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/hero-video.js') }}?v=20261004a" nonce="{{ $cspNonce ?? '' }}" defer></script>
+@endpush
