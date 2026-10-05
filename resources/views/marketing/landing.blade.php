@@ -290,8 +290,11 @@
     }
     .ln-hero-video video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
     .ln-hero-video .hv-film[hidden] { display: none; }
-    .hv-sound {
+    .hv-controls {
         position: absolute; left: clamp(14px, 2vw, 22px); bottom: clamp(14px, 2vw, 22px); z-index: 3;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .hv-sound {
         display: inline-flex; align-items: center; gap: 10px;
         padding: 12px 20px 12px 16px; border: 0; border-radius: 999px; cursor: pointer;
         background: #0F1A1D; color: #FFFFFF; font: 600 15px/1 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -304,11 +307,25 @@
     .hv-ico-off { display: none; }
     .ln-hero-video[data-mode="sound"][data-muted="true"] .hv-ico-on { display: none; }
     .ln-hero-video[data-mode="sound"][data-muted="true"] .hv-ico-off { display: block; }
+    /* Pause / Play: quieter than the sound pill so "Play with sound" stays the primary action */
+    .hv-pause {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 44px; height: 44px; padding: 0; border: 1px solid #D9CFBC; border-radius: 999px; cursor: pointer;
+        background: #FFFFFF; color: #0F1A1D;
+        box-shadow: 0 8px 24px rgba(15, 26, 29, 0.16);
+        transition: transform .25s ease, background .25s ease;
+    }
+    .hv-pause:hover { background: #F3EDE0; transform: translateY(-1px); }
+    .hv-pause:focus-visible { outline: 3px solid #1FA896; outline-offset: 3px; }
+    .hv-pause .hv-ico { width: 18px; height: 18px; }
+    .hv-ico-play { display: none; }
+    .ln-hero-video[data-paused="true"] .hv-ico-pause { display: none; }
+    .ln-hero-video[data-paused="true"] .hv-ico-play { display: block; }
     .hv-progress { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 4px; background: rgba(15, 26, 29, 0.08); opacity: 0; transition: opacity .3s ease; }
     .hv-progress span { display: block; height: 100%; width: 0; background: #11766A; }
     .ln-hero-video[data-mode="sound"] .hv-progress { opacity: 1; }
     @media (max-width: 640px) { .hv-sound { padding: 10px 16px 10px 12px; font-size: 14px; } }
-    @media (prefers-reduced-motion: reduce) { .hv-sound, .hv-progress { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .hv-sound, .hv-pause, .hv-progress { transition: none; } }
 
     /* ── Social proof strip ── */
     .ln-proof {
@@ -699,7 +716,7 @@
                 </div>
             </div>
 
-            {{-- Hero film: silent loop on load; "Play with sound" plays the narrated 26s tour (public/js/hero-video.js) --}}
+            {{-- Hero film: silent loop autoplays on load; "Play with sound" plays the narrated 26s tour; pause/play controls whichever is showing (public/js/hero-video.js) --}}
             <aside class="ln-hero-mock ln-hero-mock--video" aria-label="EIAAW Workforce product film">
                 <figure class="ln-hero-video" data-hero-video
                     data-loop-desktop="{{ asset('media/hero/ep-hero-4x5.mp4') }}"
@@ -710,11 +727,17 @@
                     data-poster-mobile="{{ asset('media/hero/ep-poster-4x5.jpg') }}">
                     <video class="hv-loop" playsinline muted loop preload="auto" poster="{{ asset('media/hero/ep-poster-4x5.jpg') }}" aria-hidden="true"></video>
                     <video class="hv-film" playsinline preload="none" hidden aria-label="EIAAW Workforce: 26-second narrated tour"></video>
-                    <button class="hv-sound" type="button" aria-pressed="false">
-                        <svg class="hv-ico hv-ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                        <svg class="hv-ico hv-ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                        <span class="hv-label">Play with sound</span>
-                    </button>
+                    <div class="hv-controls">
+                        <button class="hv-sound" type="button" aria-pressed="false">
+                            <svg class="hv-ico hv-ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <svg class="hv-ico hv-ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                            <span class="hv-label">Play with sound</span>
+                        </button>
+                        <button class="hv-pause" type="button" aria-label="Pause video">
+                            <svg class="hv-ico hv-ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+                            <svg class="hv-ico hv-ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+                        </button>
+                    </div>
                     <div class="hv-progress" aria-hidden="true"><span></span></div>
                     <noscript><img src="{{ asset('media/hero/ep-poster-4x5.jpg') }}" alt="EIAAW Workforce" width="1080" height="1350"></noscript>
                 </figure>
@@ -1001,5 +1024,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/hero-video.js') }}?v=20261004a" nonce="{{ $cspNonce ?? '' }}" defer></script>
+<script src="{{ asset('js/hero-video.js') }}?v=20261005a" nonce="{{ $cspNonce ?? '' }}" defer></script>
 @endpush
