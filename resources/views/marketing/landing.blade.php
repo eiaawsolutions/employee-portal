@@ -1,7 +1,7 @@
 @extends('layouts.marketing')
 
 @section('title', 'HR, Payroll & Accounting Software Malaysia | EIAAW Workforce')
-@section('description', 'HR, payroll (EPF, SOCSO, EIS, PCB, EA forms), IT-asset and accounting software for Malaysian SMEs in one workspace. From RM 25 per employee per month.')
+@section('description', 'HR, payroll (EPF, SOCSO, EIS, PCB, EA forms), IT-asset and accounting software for Malaysian SMEs in one workspace. From RM 25 per employee per month; payroll from RM 59.')
 
 @push('head')
 {{-- ── Structured data ────────────────────────────────────────────────────
@@ -16,6 +16,8 @@
     $currencySymbol = $pricing['currency']['symbol'] ?? 'RM';
     $priced = collect($pricing['tiers'] ?? [])->pluck('monthly_myr')->filter(fn ($p) => $p !== null);
     $fromPrice = $priced->min();
+    // Payroll is not in Starter (config/eiaaw.php: "Leave, payroll & attendance (Growth tier)"), so say where it starts.
+    $payrollFrom = data_get($pricing, 'tiers.growth.monthly_myr');
 
     $jsonFlags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
     $orgRef = ['@id' => 'https://eiaawsolutions.com/#organization'];
@@ -696,7 +698,7 @@
                 </h1>
 
                 <p class="ln-hero-lede">
-                    <strong>EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs</strong>, from {{ $currencySymbol }}&nbsp;{{ $fromPrice }} per active employee per month. Onboarding, leave, EPF/SOCSO/EIS/PCB payroll, EA forms, company assets and a full ledger share one employee record, so HR, IT and Finance stop re-keying the same data.
+                    <strong>EIAAW Workforce is HR, payroll, IT-asset and accounting software for Malaysian SMEs</strong>, from {{ $currencySymbol }}&nbsp;{{ $fromPrice }} per active employee per month{!! $payrollFrom ? ', with payroll from '.e($currencySymbol).'&nbsp;'.e($payrollFrom) : '' !!}. Onboarding, leave, EPF/SOCSO/EIS/PCB payroll, EA forms, company assets and a full ledger share one employee record, so HR, IT and Finance stop re-keying the same data.
                 </p>
 
                 <div class="ln-hero-pillars" aria-label="Departments included">
@@ -995,15 +997,15 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;margin-top:32px">
             <div>
                 <h3>What it replaces</h3>
-                <p>Use EIAAW Workforce if you are looking for <strong>payroll software in Malaysia</strong> that calculates <strong>EPF, SOCSO, EIS and PCB (MTD)</strong> on every run, generates <strong>EA forms</strong>, and handles <strong>leave management, attendance, staff claims, employee onboarding, IT asset tracking and SME accounting</strong> in one cloud HRMS. Priced per active employee per month, from RM 25.</p>
+                <p>Use EIAAW Workforce if you are looking for <strong>payroll software in Malaysia</strong> that calculates <strong>EPF, SOCSO, EIS and PCB (MTD)</strong> on every run, generates <strong>EA forms</strong>, and handles <strong>leave management, attendance, staff claims, employee onboarding, IT asset tracking and SME accounting</strong> in one cloud HRMS. Priced per active employee per month, from RM 25; payroll is included from RM 59 (Growth).</p>
             </div>
             <div lang="ms">
                 <h3>Bahasa Malaysia</h3>
-                <p>EIAAW Workforce ialah <strong>sistem HR dan gaji (payroll) untuk PKS di Malaysia</strong>. Caruman KWSP, PERKESO, SIP dan potongan cukai PCB dikira pada setiap larian gaji, borang EA dijana pada hujung tahun, dan cuti, kehadiran, tuntutan, aset IT serta perakaunan berada dalam satu sistem. Dari RM 25 setiap pekerja aktif sebulan.</p>
+                <p>EIAAW Workforce ialah <strong>sistem HR dan gaji (payroll) untuk PKS di Malaysia</strong>. Caruman KWSP, PERKESO, SIP dan potongan cukai PCB dikira pada setiap larian gaji, borang EA dijana pada hujung tahun, dan cuti, kehadiran, tuntutan, aset IT serta perakaunan berada dalam satu sistem. Dari RM 25 setiap pekerja aktif sebulan; gaji (payroll) dari RM 59 (Growth).</p>
             </div>
             <div lang="zh-Hans">
                 <h3>中文</h3>
-                <p>EIAAW Workforce 是为马来西亚中小企业打造的 <strong>人力资源与薪资系统</strong>。每次发薪自动计算 EPF、SOCSO、EIS 及 PCB 扣税，年底生成 EA 表格，并把请假、考勤、报销、IT 资产与会计整合在同一系统。每位在职员工每月 RM 25 起。</p>
+                <p>EIAAW Workforce 是为马来西亚中小企业打造的 <strong>人力资源与薪资系统</strong>。每次发薪自动计算 EPF、SOCSO、EIS 及 PCB 扣税，年底生成 EA 表格，并把请假、考勤、报销、IT 资产与会计整合在同一系统。每位在职员工每月 RM 25 起；薪资功能 RM 59 起（Growth）。</p>
             </div>
         </div>
     </div>
@@ -1017,7 +1019,7 @@
             <a href="{{ route('marketing.pricing') }}" class="eiaaw-btn eiaaw-btn--primary">Choose your plan →</a>
             <a href="{{ route('marketing.features') }}" class="eiaaw-btn eiaaw-btn--outline">See features</a>
         </div>
-        <div class="ln-cta-note">From RM 25 per employee · billed in ringgit · Postgres RLS isolation</div>
+        <div class="ln-cta-note">From RM 25 per employee · payroll from RM 59 · billed in ringgit · Postgres RLS isolation</div>
     </div>
 </section>
 
