@@ -74,7 +74,9 @@
     .ep-voice-status a { color: var(--primary-dark, #11766A); text-decoration: underline; }
 </style>
 
-<button type="button" class="ep-voice-launcher" id="ep-voice-launcher" aria-label="Talk to the assistant by voice">
+{{-- Hidden until the Sales Agent says the voice line is up (it pauses
+     itself while its Retell account is out of credit). --}}
+<button type="button" class="ep-voice-launcher" id="ep-voice-launcher" aria-label="Talk to the assistant by voice" hidden>
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"
               stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -102,12 +104,19 @@
     'use strict';
 
     const VOICE_API = 'https://sa.eiaawsolutions.com/api/voice/public-session';
+    const AVAILABILITY_API = 'https://sa.eiaawsolutions.com/api/voice/availability';
     const SOURCE   = 'ep.eiaawsolutions.com';
 
     const launcher = document.getElementById('ep-voice-launcher');
     const status   = document.getElementById('ep-voice-status');
     const notice   = document.getElementById('ep-voice-notice');
     if (!launcher || !status || !notice) return;
+
+    // Shown only when the voice line is up; no answer means no button.
+    fetch(AVAILABILITY_API, { headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { launcher.hidden = !(d && d.available === true); })
+        .catch(function () { launcher.hidden = true; });
 
     function escapeHtml(t) {
         const d = document.createElement('div');
@@ -150,6 +159,8 @@
                     false
                 );
             } else {
+                // The line paused after this page loaded: take the button away.
+                if (data && data.paused) launcher.hidden = true;
                 // Surface the server error verbatim so the visitor can see why
                 // (rate limited, voice not configured, etc.) — but always offer
                 // the Talk-to-us fallback so we never lose a lead.
