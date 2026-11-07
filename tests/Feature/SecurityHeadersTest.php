@@ -39,10 +39,13 @@ class SecurityHeadersTest extends TestCase
         $this->assertNotNull($csp, 'CSP header must be present');
         $this->assertStringContainsString("default-src 'self'", $csp);
         $this->assertStringContainsString("frame-ancestors 'none'", $csp);
-        $this->assertStringContainsString("frame-src 'none'", $csp);
+        // Frames and form posts: only the Meta pixel's hidden frame and form,
+        // on marketing pages. MarketingComplianceTest pins 'none' / 'self' on
+        // the other pages.
+        $this->assertStringContainsString('frame-src https://www.facebook.com;', $csp);
         $this->assertStringContainsString("object-src 'none'", $csp);
         $this->assertStringContainsString("base-uri 'self'", $csp);
-        $this->assertStringContainsString("form-action 'self'", $csp);
+        $this->assertStringContainsString("form-action 'self' https://www.facebook.com;", $csp);
         $this->assertStringContainsString("upgrade-insecure-requests", $csp);
     }
 

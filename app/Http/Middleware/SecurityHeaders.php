@@ -54,6 +54,11 @@ class SecurityHeaders
         $metaScript = $marketing ? ' https://connect.facebook.net' : '';
         $metaImg = $marketing ? ' https://www.facebook.com' : '';
         $metaConnect = $marketing ? ' https://www.facebook.com https://connect.facebook.net' : '';
+        // In Chrome the Pixel sends an event whose URL is 2048+ characters by
+        // posting a hidden form to https://www.facebook.com/tr/ into a hidden
+        // iframe, so it needs facebook.com in frame-src and form-action too.
+        $frameSrc = $marketing ? 'https://www.facebook.com' : "'none'";
+        $metaForm = $marketing ? ' https://www.facebook.com' : '';
 
         $cspEnforced = implode('; ', [
             "default-src 'self'",
@@ -70,10 +75,10 @@ class SecurityHeaders
             // (2) the Meta Pixel, marketing pages only and only after consent.
             "connect-src 'self' https://sa.eiaawsolutions.com{$metaConnect}",
             "frame-ancestors 'none'",
-            "frame-src 'none'",
+            "frame-src {$frameSrc}",
             "object-src 'none'",
             "base-uri 'self'",
-            "form-action 'self'",
+            "form-action 'self'{$metaForm}",
             "upgrade-insecure-requests",
         ]);
         $response->headers->set('Content-Security-Policy', $cspEnforced);
