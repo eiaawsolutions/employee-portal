@@ -72,6 +72,39 @@ class MarketingComplianceTest extends TestCase
         $this->assertStringNotContainsString('facebook', $login);
     }
 
+    public function test_the_pixels_long_events_can_post_from_marketing_pages_only(): void
+    {
+        // In Chrome, fbevents.js sends an event whose URL is 2048+ characters
+        // by posting a hidden form to https://www.facebook.com/tr/ into a
+        // hidden iframe. frame-src 'none' and form-action 'self' dropped those
+        // events until 8 Nov 2026.
+        foreach (['marketing.landing', 'marketing.pricing'] as $name) {
+            $csp = $this->directives($this->get(route($name))->headers->get('Content-Security-Policy'));
+            $this->assertSame('https://www.facebook.com', $csp['frame-src'], $name);
+            $this->assertSame("'self' https://www.facebook.com", $csp['form-action'], $name);
+        }
+
+        $signup = $this->directives($this->get(route('signup.form', ['plan' => 'growth']))->headers->get('Content-Security-Policy'));
+        $this->assertSame('https://www.facebook.com', $signup['frame-src']);
+        $this->assertSame("'self' https://www.facebook.com", $signup['form-action']);
+
+        $login = $this->directives($this->get(route('login'))->headers->get('Content-Security-Policy'));
+        $this->assertSame("'none'", $login['frame-src']);
+        $this->assertSame("'self'", $login['form-action']);
+    }
+
+    /** @return array<string, string> each directive's source list */
+    private function directives(?string $csp): array
+    {
+        $map = [];
+        foreach (array_filter(array_map('trim', explode(';', (string) $csp))) as $part) {
+            [$name, $sources] = array_pad(explode(' ', $part, 2), 2, '');
+            $map[$name] = $sources;
+        }
+
+        return $map;
+    }
+
     // ── Legal pages are real ────────────────────────────────────────────
 
     public function test_legal_pages_are_final_not_placeholders(): void
